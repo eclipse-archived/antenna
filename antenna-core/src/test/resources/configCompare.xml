@@ -1,0 +1,162 @@
+<!--
+  ~ Copyright (c) Bosch Software Innovations GmbH 2016.
+  ~
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.eclipse.org/legal/epl-v20.html
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+<config>
+	<!-- Override Artifact values -->
+	<overrides>
+		<!-- Conflicting Override -->
+		<override>
+			<artifactSelector>
+				<artifactIdentifier>
+					<filename>director-ant.jar</filename>
+				</artifactIdentifier>
+			</artifactSelector>
+			<overrideValue>
+				<artifact>
+					<artifactIdentifier>
+						<mavenCoordinates>
+							<artifactId>conflictingValue</artifactId>
+						</mavenCoordinates>
+					</artifactIdentifier>
+				</artifact>
+			</overrideValue>
+		</override>
+		<override>
+			<artifactSelector>
+				<artifactIdentifier>
+					<filename>overrideAll.jar</filename>
+				</artifactIdentifier>
+			</artifactSelector>
+			<overrideValue>
+				<artifact>
+					<artifactIdentifier>
+						<filename>overrideName.jar</filename>
+						<mavenCoordinates>
+							<artifactId>testID</artifactId>
+							<groupId>testGroupId</groupId>
+							<version>testVersion</version>
+						</mavenCoordinates>
+						<bundleCoordinates>
+							<symbolicName>testName</symbolicName>
+							<bundleVersion>testVersion</bundleVersion>
+						</bundleCoordinates>
+					</artifactIdentifier>
+					<declaredLicense>
+						<licenseStatement op="AND">
+								<license>
+									<name>testLicense</name>
+								</license>
+								<license>
+									<name>testLicense2</name>
+								</license>
+						</licenseStatement>
+					</declaredLicense>
+				</artifact>
+			</overrideValue>
+		</override>
+	</overrides>
+
+	<!-- Ignore for BomResolving, artifact will be ignored during download,
+		validation and license validation -->
+	<removeArtifact>
+		<artifactSelector>
+			<artifactIdentifier>
+				<filename>org.eclipse.emf.source.compare.jar</filename>
+			</artifactIdentifier>
+		</artifactSelector>
+	</removeArtifact>
+
+	<addArtifact>
+		<artifact>
+			<artifactIdentifier>
+				<filename>addArtifact.jar</filename>
+				<mavenCoordinates>
+					<artifactId>addArtifactId</artifactId>
+					<groupId>addGroupId</groupId>
+					<version>addVersion</version>
+				</mavenCoordinates>
+				<bundleCoordinates>
+					<symbolicName>addSymbolicName</symbolicName>
+					<bundleVersion>addBundleVersion</bundleVersion>
+				</bundleCoordinates>
+			</artifactIdentifier>
+			<declaredLicense>
+				<license>
+					<name>Apache</name>
+				</license>
+			</declaredLicense>
+			<isProprietary>false</isProprietary>
+			<matchState>EXACT</matchState>
+		</artifact>
+		<artifact>
+			<artifactIdentifier>
+				<filename>compare.jar</filename>
+				<mavenCoordinates>
+					<artifactId>addArtifactId</artifactId>
+					<groupId>addGroupId</groupId>
+					<version>addVersion</version>
+				</mavenCoordinates>
+				<bundleCoordinates>
+					<symbolicName>addSymbolicName</symbolicName>
+					<bundleVersion>addBundleVersion</bundleVersion>
+				</bundleCoordinates>
+			</artifactIdentifier>
+			<isProprietary>false</isProprietary>
+			<matchState>SIMILAR</matchState>
+		</artifact>
+	</addArtifact>
+
+
+
+	<sourceResolving>
+		<preferP2>
+			<artifactSelector>
+				<artifactIdentifier>
+					<filename>compare-slf4j-api-1.6.6.jar</filename>
+				</artifactIdentifier>
+			</artifactSelector>
+		</preferP2>
+		<!--ignore for source Download -->
+		<ignoreForSourceResolving>
+			<artifactSelector>
+				<artifactIdentifier>
+					<filename>slf4j-api-1.6.6.jar
+					</filename>
+				</artifactIdentifier>
+			</artifactSelector>
+		</ignoreForSourceResolving>
+	</sourceResolving>
+
+	<setFinalLicenses>
+		<!-- set effective license for Artifact -->
+		<setFinalLicense>
+			<artifactSelector>
+				<artifactIdentifier>
+					<filename>overrideName.jar</filename>
+				</artifactIdentifier>
+			</artifactSelector>
+			<license>
+				<name>EPL-1.0</name>
+			</license>
+		</setFinalLicense>
+	</setFinalLicenses>
+
+	<sourceValidation failOnMissingSources="true" failOnIncompleteSources="false">
+		<!-- ignore for sourceValidation -->
+		<handleSourceAsValid incompleteSources="true" missingSources="true">
+			<artifactSelector>
+				<artifactIdentifier>
+					<filename>org.eclipse.emf.source.jar</filename>
+				</artifactIdentifier>
+			</artifactSelector>
+		</handleSourceAsValid>
+	</sourceValidation>
+</config>
+      

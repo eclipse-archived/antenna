@@ -1,0 +1,10 @@
+**/.classpath
+**/.project
+**/.settings/
+/eclipse
+**/target
+**/.checkstyle
+.idea/
+*.iml
+.gitreview
+velocity.log

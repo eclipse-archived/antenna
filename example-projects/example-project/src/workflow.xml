@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) Bosch Software Innovations GmbH 2017-2018.
+  ~
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.eclipse.org/legal/epl-v20.html
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+<workflow>
+    <analyzers>
+        <step>
+            <name>JSON Analyzer</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.analyzers.JsonAnalyzer</classHint>
+            <configuration>
+                <entry key="base.dir" value="${project.basedir}"/>
+                <entry key="file.path" value="src/reportData.json"/>
+            </configuration>
+        </step>
+        <step>
+            <name>CSV Analyzer</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer</classHint>
+            <configuration>
+                <entry key="base.dir" value="${project.basedir}"/>
+                <entry key="file.path" value="src/dependencies.csv"/>
+            </configuration>
+        </step>
+    </analyzers>
+    <generators>
+        <step>
+            <name>SW360 Updater</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.generators.SW360Updater</classHint>
+            <configuration>
+                <entry key="rest.server.url" value="http://localhost:8080/resource/api"/>
+                <entry key="auth.server.url" value="http://localhost:8080/authorization"/>
+                <entry key="username" value="admin@sw360.org"/>
+                <entry key="password" value="12345"/>
+            </configuration>
+            <deactivated>true</deactivated>
+        </step>
+        <step>
+            <name>SW360 Report Generator</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.generators.SW360DisclosureDocumentGenerator</classHint>
+            <configuration>
+                <entry key="disclosure.doc.formats" value="txt,html"/>
+            </configuration>
+        </step>
+    </generators>
+    <outputHandlers>
+        <step>
+            <name>Add disclosure document to jar</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.outputHandlers.FileToArchiveWriter</classHint>
+            <configuration>
+                <entry key="instructions" value="disclosure-sw360-doc-txt:${project.build.directory}/${project.artifactId}-${project.version}.jar:/legalnotice/DisclosureDoc.txt"/>
+            </configuration>
+        </step>
+    </outputHandlers>
+</workflow>

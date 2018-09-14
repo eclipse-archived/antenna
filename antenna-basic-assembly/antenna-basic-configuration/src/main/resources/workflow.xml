@@ -1,0 +1,97 @@
+<workflow>
+    <processors>
+        <step>
+            <name>Processing of antenna configuration</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.AntennaConfHandler</classHint>
+        </step>
+        <!-- enricher -->
+        <step>
+            <name>Maven Artifact Resolver</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.MavenArtifactResolver</classHint>
+        </step>
+        <step>
+            <name>P2 Artifact Resolver</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.P2ArtifactResolverMetaStep</classHint>
+            <deactivated>true</deactivated>
+        </step>
+        <step>
+            <name>Child Jar Resolver</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.ChildJarResolver</classHint>
+        </step>
+        <step>
+            <name>Manifest Resolver</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.ManifestResolver</classHint>
+        </step>
+        <step>
+            <name>License Resolver</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.LicenseResolver</classHint>
+        </step>
+        <step>
+            <name>License Knowledgebase Resolver</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.LicenseKnowledgeBaseResolver</classHint>
+        </step>
+        <!-- validators -->
+        <step>
+            <name>Coordinates Validator</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.CoordinatesValidator</classHint>
+            <configuration>
+                <entry key="failOnMissingCoordinates" value="WARN"/>
+            </configuration>
+        </step>
+        <step>
+            <name>Source Validator</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.SourceValidator</classHint>
+            <configuration>
+                <entry key="missingSourcesSeverity" value="WARN"/>
+                <entry key="incompleteSourcesSeverity" value="WARN"/>
+            </configuration>
+        </step>
+        <step>
+            <name>License Validator</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.LicenseValidator</classHint>
+            <configuration>
+                <entry key="forbiddenLicenseSeverity" value="FAIL"/>
+                <entry key="missingLicenseInformationSeverity" value="WARN"/>
+                <entry key="missingLicenseTextSeverity" value="WARN"/>
+                <entry key="forbiddenLicenses" value=""/>
+                <entry key="ignoredLicenses" value=""/>
+            </configuration>
+        </step>
+        <step>
+            <name>Match State Validator</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.MatchStateValidator</classHint>
+            <configuration>
+                <entry key="severityOfSIMILAR" value="INFO"/>
+                <entry key="severityOfUNKNOWN" value="WARN"/>
+            </configuration>
+        </step>
+        <step>
+            <name>Security Issue Validator</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator</classHint>
+            <configuration>
+                <entry key="forbiddenSecurityIssueStatusSeverity" value="FAIL"/>
+                <entry key="securityIssueSeverityLimitSeverity" value="FAIL" />
+                <entry key="forbiddenSecurityIssueStatuses" value="Open" />
+                <entry key="securityIssueSeverityLimit" value="5.0" />
+            </configuration>
+        </step>
+        <!-- sort -->
+        <step>
+            <name>Sort Artifacts</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.ArtifactSorter</classHint>
+        </step>
+    </processors>
+    <generators>
+        <step>
+            <name>SW360 Report Generator</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.generators.SW360DisclosureDocumentGenerator</classHint>
+            <configuration>
+                <entry key="disclosure.doc.formats" value="docx,txt,html"/>
+            </configuration>
+        </step>
+        <step>
+            <name>Source Zip Writer</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.generators.SourceZipWriter</classHint>
+		</step>
+	</generators>
+</workflow>

@@ -1,0 +1,53 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'maven'
+//    id 'maven-publish'
+}
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile gradleApi()
+    testCompile gradleTestKit()
+    // other dependencies are prepared by maven
+    compile fileTree(dir: 'target/dependencies/compile', include: '*.jar')
+    runtime fileTree(dir: 'target/dependencies/runtime', include: '*.jar')
+    testCompile fileTree(dir: 'target/dependencies/test', include: '*.jar')
+}
+
+jar {
+	manifest {
+		attributes 'Implementation-Version': (version ? version : 'unknown')
+	}
+}
+
+group 'org.eclipse.sw360.antenna'
+
+gradlePlugin {
+    plugins {
+        OSMRunner {
+            id = 'org.eclipse.sw360.antenna'
+            implementationClass = 'org.eclipse.sw360.antenna.gradle.AntennaBasicGradlePlugin'
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+	classifier = "javadoc"
+	from javadoc
+}
+
+artifacts {
+	archives sourcesJar
+	archives javadocJar
+}

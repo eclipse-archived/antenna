@@ -1,0 +1,118 @@
+# Tool Configuration
+
+Antenna can be used as plugin for different build systems. 
+Currently, the configuration is almost the same for all three types (maven, gradle, cli). It is based on the structure of the Maven pom configuration.
+In what follows the configuration is described and some hints are given if special means have to be taken into account for certain build systems.
+
+For maven the configuration looks like what follows. For other build systems you would create a file with the same xml content but you can omit the maven coordinates.
+
+```xml
+<plugin>
+    <groupId>org.eclipse.sw360.antenna</groupId>
+    <artifactId>antenna-maven-plugin</artifactId>
+    <version>x.y.z</version> <!-- enter current/desired version here ;-) -->
+
+    <configuration>
+        <configFiles>
+            <param> ${basedir}/config.xml </param>
+            <param> ${basedir}/config2.xml </param>
+        </configFiles>
+
+        <!--Properties for Disclosure Document -->
+        <productName>Modeler</productName>
+        <productFullname>Visual Rules - Modeler</productFullname>
+        <version>6.3.0</version>
+
+        <!--Properties for attaching Artifacts-->
+        <attachAll>true</attachAll>
+        <filesToAttach>
+            <param>sources-zip,zip,OSS-sources</param>
+        </filesToAttach>
+        <isMavenInstalled>false</isMavenInstalled>
+        <sourcesRepositoryUrl>...</sourcesRepositoryUrl>
+
+        <workflowDefinitionFile>${basedir}/workflow.xml</workflowDefinitionFile>
+
+        <proxyHost>${proxyHost}</proxyHost>
+        <proxyPort>${proxyPort}</proxyPort>
+
+    </configuration>
+</plugin>
+```
+
+
+#### Explanation of parameters
+
+All parameters are required unless otherwise specified as optional.
+
+
+* `productName`: *(deprecated)* Name of the product (e.g. Modeler).
+* `productFullname`: Full name of the product (e.g. Visual Rules - Modeler)
+* `version`: Version of the product
+* `configFiles`: *(optional)* Path to your configuration file(s).
+* `configFileUri`: *(optional)* URI to your config file.
+* `licenseValidation`: In this section a license can be defined as
+forbidden and parameter for the license Validation can be set.
+* `disableP2Resolving`: This element can be used to disable fetching of artifacts from P2 repositories. Default value is `false`.
+* `copyrightHoldersName`: *(optional)* The name of the copyright holder
+* `copyrightNotice`: *(optional)* Annotation to the copyright
+* `proxyHost`: *(optional)* Parameter to provide a proxy configuration
+* `proxyPort`: *(optional)* Port to the provided proxy server
+
+
+**Related to attaching artifacts**
+
+* `attachAll`: *(optional)* Attaches all files created by the plugin to
+the current build. Defaults to `false`. The default properties are:
+
+| File                | Identifier       | Type | Classifier           |
+|---------------------|------------------|------|----------------------|
+|sources.zip          |sources-zip       |zip   |antenna-sources-zip      |
+|processing report    |antenna-sources-zip  |txt   |antenna-processing-report|
+|disclosure document  |disclosure-doc    |pdf   |antenna-disclosure-doc   |
+|clm report           |clm-report        |json  |antenna-clm-report       |
+|artifacts information|artifact-information|csv |antenna-artifact-info    |
+|clm report pdf       |clm-report-pdf    |pdf   |clm-report-pdf        |
+
+* `filesToAttach`: *(optional)* If you want to attach single files or
+to overwrite default values, use this parameter (identifier from table):
+
+```xml
+<filesToAttach>
+ <!--<param>identifier,type,classifier</param-->
+     <param>sources-zip,zip,OSS-sources</param>
+</filesToAttach>
+```
+### The following configuration options are special to the CLI Frontend
+
+* `isMavenInstalled`: If set to false, tells Antenna that Maven is not
+installed on this machine.
+* `sourcesRepositoryUrl`: By default, artifacts will be downloaded
+from Maven Central. However, you can optionally set your own remote
+repository address (e.g. if you use a Nexus repository). It must be in
+the format:
+`http(s)://example.com/path/to/root/`
+
+**Other**
+
+* `antennaTargetDirectory`: The folder where the documents created by Antenna
+are stored.
+
+**License Validation**
+
+It can be defined if the license validation will fail on forbidden licenses, missing license information or missing license text. The default value for all parameters is `false`.
+
+Furthermore you can define a license as forbidden.
+
+```xml
+<licenseValidation> 
+    <failOnForbiddenLicenses>true</failOnForbiddenLicenses>
+    <failOnMissingLicenseInformation>false</failOnMissingLicenseInformation>
+    <failOnMissingLicenseText>false</failOnMissingLicenseText>
+    <forbidden>
+        <license>
+            <name>GPL</name>
+        </license>
+    </forbidden>
+</licenseValidation>
+```

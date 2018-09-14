@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+  ~
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.eclipse.org/legal/epl-v20.html
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+    <xsd:element name="config">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element name="overrides" type="attributeOverrides" minOccurs="0" />
+                <xsd:element name="removeArtifact" type="removeArtifact" minOccurs="0" />
+                <xsd:element name="addArtifact" type="addArtifact" minOccurs="0" />
+                <xsd:element name="sourceResolving" type="sourceResolving" minOccurs="0" />
+                <xsd:element name="setFinalLicenses" type="setFinalLicenses" minOccurs="0" />
+                <xsd:element name="sourceValidation" type="sourceValidation" minOccurs="0" />
+                <xsd:element name="securityIssues" type="securityIssues" minOccurs="0" />
+            </xsd:all>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:complexType name="securityIssues">
+        <xsd:sequence>
+            <xsd:element name="securityIssue" type="securityIssue" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element name="suppress" type="suppress" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="suppress">
+        <xsd:sequence>
+            <xsd:element name="artifactSelector" type="artifactSelector" />
+        </xsd:sequence>
+        <xsd:attribute name="reference" type="xsd:string"/>
+        <xsd:attribute name="until" type="xsd:date"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="securityIssue">
+        <xsd:sequence>
+            <xsd:element name="artifactSelector" type="artifactSelector" />
+            <xsd:element name="issues" type="issues" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="issues">
+        <xsd:sequence>
+            <xsd:element name="issue" type="issue" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="issue">
+        <xsd:all>
+            <xsd:element name="reference" type="xsd:string" />
+            <xsd:element name="severity" type="xsd:double" minOccurs="0" />
+            <xsd:element name="source" type="xsd:string" minOccurs="0" />
+            <xsd:element name="status" type="securityIssueStatus" minOccurs="0" />
+            <xsd:element name="url" type="xsd:anyURI" minOccurs="0" />
+        </xsd:all>
+    </xsd:complexType>
+
+    <xsd:simpleType name="securityIssueStatus">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Open" />
+            <xsd:enumeration value="Acknowledged" />
+            <xsd:enumeration value="Not Applicable" />
+            <xsd:enumeration value="Confirmed" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="sourceResolving">
+        <xsd:all>
+            <xsd:element name="preferP2" type="preferP2" minOccurs="0" />
+            <xsd:element name="ignoreForSourceResolving" type="ignoreForSourceResolving" minOccurs="0" />
+        </xsd:all>
+    </xsd:complexType>
+
+    <xsd:complexType name="removeArtifact">
+        <xsd:sequence>
+            <xsd:element name="artifactSelector" type="artifactSelector" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="addArtifact">
+        <xsd:sequence>
+            <xsd:element name="artifact" type="artifact" minOccurs="1" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="attributeOverrides">
+        <xsd:sequence>
+            <xsd:element name="override" type="attributeOverride"
+                         maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ignoreForSourceResolving">
+        <xsd:sequence>
+            <xsd:element name="artifactSelector" type="artifactSelector" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="attributeOverride">
+        <xsd:all>
+            <xsd:element name="artifactSelector" type="artifactSelector" />
+            <xsd:element name="overrideValue" type="overrideValue" />
+        </xsd:all>
+    </xsd:complexType>
+
+    <xsd:complexType name="overrideValue">
+        <xsd:sequence>
+            <xsd:element name="artifact" type="artifact" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="preferP2">
+        <xsd:sequence>
+            <xsd:element name="artifactSelector" type="artifactSelector" maxOccurs="unbounded" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="sourceValidation">
+        <xsd:sequence>
+            <xsd:element name="handleSourceAsValid" type="ignoreForSourceValidation" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="failOnMissingSources" type="xsd:boolean" default="false" />
+        <xsd:attribute name="failOnIncompleteSources" type="xsd:boolean" default="false" />
+    </xsd:complexType>
+
+    <xsd:complexType name="ignoreForSourceValidation">
+        <xsd:all>
+            <xsd:element name="artifactSelector" type="artifactSelector" />
+        </xsd:all>
+        <xsd:attribute name="incompleteSources" default="true" use="optional" type="xsd:boolean" />
+        <xsd:attribute name="missingSources" default="true" use="optional" type="xsd:boolean" />
+    </xsd:complexType>
+
+    <xsd:complexType name="setFinalLicenses">
+        <xsd:sequence>
+            <xsd:element name="setFinalLicense" type="setFinalLicense" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="setFinalLicense">
+        <xsd:sequence>
+            <xsd:element name="artifactSelector" type="artifactSelector" />
+            <xsd:element ref="licenseInfo" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="artifactIdentifier">
+        <xsd:sequence>
+            <xsd:element name="hash" type="xsd:string" minOccurs="0" />
+            <xsd:element name="filename" type="xsd:string" minOccurs="0" />
+            <xsd:element name="mavenCoordinates" type="mavenCoordinates" minOccurs="0" />
+            <xsd:element name="bundleCoordinates" type="bundleCoordinates" minOccurs="0" />
+            <xsd:element name="javaScriptCoordinates" type="javaScriptCoordinates" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="artifactSelector">
+        <xsd:sequence>
+            <xsd:element name="artifactIdentifier" type="artifactIdentifier" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="license">
+        <xsd:complexContent>
+            <xsd:extension base="licenseInformation">
+            <xsd:all>
+                <xsd:element name="name" type="xsd:string" />
+                <xsd:element name="longName" type="xsd:string" minOccurs="0" />
+                <xsd:element name="text" type="xsd:string" minOccurs="0" />
+                <xsd:element name="threatGroup" type="licenseThreatGroup"
+                             minOccurs="0" maxOccurs="1" />
+                <xsd:element name="classification" type="licenseClassification"
+                             minOccurs="0" maxOccurs="1" />
+            </xsd:all>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="licenseInformation" abstract="true">
+        <xsd:sequence />
+    </xsd:complexType>
+
+    <xsd:complexType name="licenseStatement">
+        <xsd:complexContent>
+            <xsd:extension base="licenseInformation">
+                <xsd:sequence>
+                    <xsd:element ref="licenseInfo" minOccurs="2" maxOccurs="2"/>
+                </xsd:sequence>
+                <xsd:attribute name="op" type="licenseOperator" />
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:simpleType name="licenseOperator">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="AND" />
+            <xsd:enumeration value="OR" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+    <xsd:element name="licenseInfo" type="licenseInformation"/>
+    <xsd:element name="license" type="license" substitutionGroup="licenseInfo"/>
+    <xsd:element name="licenseStatement" type="licenseStatement" substitutionGroup="licenseInfo"/>
+
+    <xsd:simpleType name="licenseClassification">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Yes" />
+            <xsd:enumeration value="No" />
+            <xsd:enumeration value="" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="licenseThreatGroup">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="UNKNOWN" />
+            <xsd:enumeration value="LIBERAL" />
+            <xsd:enumeration value="STRICT_COPYLEFT" />
+            <xsd:enumeration value="HIGH_RISK" />
+            <xsd:enumeration value="FREEWARE" />
+            <xsd:enumeration value="NON_STANDARD" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="artifact">
+        <xsd:all>
+            <xsd:element name="artifactIdentifier" type="artifactIdentifier" minOccurs="0" />
+            <xsd:element name="declaredLicense" type="declaredLicense" minOccurs="0" />
+            <xsd:element name="isProprietary" type="xsd:boolean" minOccurs="0" nillable="false" />
+            <xsd:element name="matchState" type="matchState" minOccurs="0" />
+            <xsd:element name="copyrightStatement" type="xsd:string"
+                         minOccurs="0" />
+            <xsd:element name="modificationStatus" type="xsd:string"
+                         minOccurs="0" />
+        </xsd:all>
+    </xsd:complexType>
+
+    <xsd:simpleType name="matchState">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="EXACT" />
+            <xsd:enumeration value="SIMILAR" />
+            <xsd:enumeration value="UNKNOWN" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="declaredLicense">
+        <xsd:sequence>
+            <xsd:element ref="licenseInfo"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="observedLicense">
+        <xsd:sequence>
+            <xsd:element ref="licenseInfo"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="effectiveLicense">
+        <xsd:sequence>
+            <xsd:element ref="licenseInfo"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="overridenLicense">
+        <xsd:sequence>
+            <xsd:element ref="licenseInfo" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="artifactCoordinates" abstract="true">
+        <xsd:sequence />
+    </xsd:complexType>
+
+    <xsd:complexType name="mavenCoordinates">
+        <xsd:complexContent>
+            <xsd:extension base="artifactCoordinates">
+                <xsd:all>
+                    <xsd:element name="artifactId" minOccurs="0" type="xsd:string" />
+                    <xsd:element name="groupId" minOccurs="0" type="xsd:string"/>
+                    <xsd:element name="version" minOccurs="0" type="xsd:string"/>
+                </xsd:all>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="bundleCoordinates">
+        <xsd:complexContent>
+            <xsd:extension base="artifactCoordinates">
+                <xsd:all>
+                    <xsd:element name="symbolicName" minOccurs="0"  type="xsd:string"/>
+                    <xsd:element name="bundleVersion" minOccurs="0"  type="xsd:string"/>
+                </xsd:all>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="javaScriptCoordinates">
+        <xsd:complexContent>
+            <xsd:extension base="artifactCoordinates">
+                <xsd:all>
+                    <xsd:element name="artifactId" minOccurs="0"  type="xsd:string"/>
+                    <xsd:element name="name" minOccurs="0"  type="xsd:string"/>
+                    <xsd:element name="version" minOccurs="0"  type="xsd:string"/>
+                </xsd:all>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+</xsd:schema>

@@ -1,0 +1,86 @@
+{
+  "components":[
+    {
+      "hash":"0235ba8b489512805ac1",
+      "mavenCoordinates":{
+        "groupId":"aopalliance",
+        "artifactId":"aopalliance",
+        "version":"1.0"
+      },
+      "matchState":"exact",
+      "proprietary":false,
+      "pathnames":[
+        "target/bp-6.3.0-SNAPSHOT.zip/bp-6.3.0-SNAPSHOT/internal/lib/aopalliance-1.0.jar",
+        "target/bp-6.3.0-SNAPSHOT.zip/bp-6.3.0-SNAPSHOT/maintenance/maintenanceTool.zip/bp-maintenance-6.3.0-SNAPSHOT/lib/aopalliance-1.0.jar",
+        "target/bp-6.3.0-SNAPSHOT.zip/bp-6.3.0-SNAPSHOT/plugins/bp-visualrules-plugins-6.3.0-20140312.163640-48-site.zip/plugins/com.bosch.bp.vrplugin.artifactprovider_6.3.0.201403121635.jar/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"
+      ],
+      "licenseData": {
+        "declaredLicenses": [
+          {
+            "licenseId": "license1",
+            "licenseName": "license1"
+          },
+          {
+            "licenseId": "license2",
+            "licenseName": "license2"
+          },
+          {
+            "licenseId": "license3",
+            "licenseName": "license3"
+          }
+        ],
+        "observedLicenses": [
+          {
+            "licenseId": "No-Source-License",
+            "licenseName": "No Source License"
+          }
+        ],
+        "overriddenLicenses": [
+        ],
+        "status":"Open"
+      },
+      "securityData":{
+        "securityIssues":[
+
+        ]
+      }
+    },
+    {
+      "hash":"0759f6c11f515ee79981",
+      "mavenCoordinates":{
+        "groupId":"c3p0",
+        "artifactId":"c3p0",
+        "version":"0.9.1"
+      },
+      "matchState":"exact",
+      "proprietary":false,
+      "pathnames":[
+        "target/bp-6.3.0-SNAPSHOT.zip/bp-6.3.0-SNAPSHOT/internal/lib/c3p0-0.9.1.jar",
+        "target/bp-6.3.0-SNAPSHOT.zip/bp-6.3.0-SNAPSHOT/plugins/bp-visualrules-plugins-6.3.0-20140312.163640-48-site.zip/plugins/com.bosch.bp.vrplugin.artifactprovider_6.3.0.201403121635.jar/repository/c3p0/c3p0/0.9.1/c3p0-0.9.1.jar"
+      ],
+      "licenseData":{
+        "declaredLicenses":[
+          {
+            "licenseId":"LGPL-3.0",
+            "licenseName":"LGPL-3.0"
+          }
+        ],
+        "observedLicenses":[
+          {
+            "licenseId":"LGPL-2.1",
+            "licenseName":"LGPL-2.1"
+          }
+        ],
+        "overriddenLicenses":[
+
+        ],
+        "status":"Open"
+      },
+      "securityData":{
+        "securityIssues":[
+
+        ]
+      }
+    }
+  ]
+}

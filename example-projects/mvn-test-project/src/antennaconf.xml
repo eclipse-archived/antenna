@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) Bosch Software Innovations GmbH 2017-2018.
+  ~
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.eclipse.org/legal/epl-v20.html
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+<config>
+   <sourceValidation failOnMissingSources="false" failOnIncompleteSources="true">
+   </sourceValidation>
+
+   <!-- Expectation: Artifact is neither in document, nor in reports or source bundle-->
+   <removeArtifact>
+      <artifactSelector>
+         <artifactIdentifier>
+          <filename>commons-lang-2.0.jar</filename>
+         </artifactIdentifier>
+      </artifactSelector>
+   </removeArtifact>
+
+   <addArtifact>
+      <artifact>
+         <artifactIdentifier>
+            <filename>ArbitraryCopiedCode</filename>
+         </artifactIdentifier>
+         <declaredLicense>
+            <license>
+               <name>CC-BY-SA-3.0</name>
+            </license>
+         </declaredLicense>
+         <isProprietary>false</isProprietary>
+         <matchState>EXACT</matchState>
+         <copyrightStatement>Copyright 1970 Some Arbitrary Guy</copyrightStatement>
+         <modificationStatus>modified</modificationStatus>
+      </artifact>
+
+
+      <!-- This is an entry that has a source code bundle in maven central which should appear in the sources.zip -->
+      <artifact>
+         <artifactIdentifier>
+            <mavenCoordinates>
+               <groupId>org.apache.logging.log4j</groupId>
+               <artifactId>log4j-core</artifactId>
+               <version>2.6.2</version>
+            </mavenCoordinates>
+         </artifactIdentifier>
+         <declaredLicense>
+            <license>
+               <name>Apache-2.0</name>
+            </license>
+         </declaredLicense>
+         <isProprietary>false</isProprietary>
+         <matchState>EXACT</matchState>
+      </artifact>
+
+      <artifact>
+         <artifactIdentifier>
+            <mavenCoordinates>
+               <groupId>com.proprietary.software</groupId>
+               <artifactId>system</artifactId>
+               <version>1.0.0</version>
+            </mavenCoordinates>
+         </artifactIdentifier>
+         <declaredLicense>
+            <license>
+               <name>Apache-2.0</name>
+            </license>
+         </declaredLicense>
+         <isProprietary>false</isProprietary>
+         <matchState>EXACT</matchState>
+      </artifact>
+
+      <artifact>
+         <artifactIdentifier>
+            <mavenCoordinates>
+               <groupId>a.test.project</groupId>
+               <artifactId>system</artifactId>
+               <version>1.0.0</version>
+            </mavenCoordinates>
+         </artifactIdentifier>
+         <declaredLicense>
+            <license>
+               <name>htmlArea-1.0</name>
+            </license>
+         </declaredLicense>
+         <isProprietary>false</isProprietary>
+         <matchState>EXACT</matchState>
+      </artifact>
+
+      <!-- Add further artifacts, which you need in your disclosure document here -->
+
+   </addArtifact>
+
+   <sourceResolving>
+      <!-- Expectation no code for org.apache.commons.commons-math3 is in source code bundle -->
+      <ignoreForSourceResolving>
+         <artifactSelector>
+            <artifactIdentifier>
+               <mavenCoordinates>
+                  <groupId>org.apache.commons</groupId>
+                  <artifactId>commons-math3</artifactId>
+                  <version>3.2</version>
+               </mavenCoordinates>
+            </artifactIdentifier>
+         </artifactSelector>
+      </ignoreForSourceResolving>
+   </sourceResolving>
+
+   <setFinalLicenses>
+      <!-- Expectation: the final license of jackons-annotations is set to Apache-2.0 in disclosure document -->
+      <setFinalLicense>
+         <artifactSelector>
+            <artifactIdentifier>
+               <filename>jackson-annotations-2.8.4.jar</filename>
+            </artifactIdentifier>
+         </artifactSelector>
+         <license>
+            <name>Apache-2.0</name>
+         </license>
+      </setFinalLicense>
+      <setFinalLicense>
+         <!-- Expectation component has PropL License as license with the given text as license text -->
+         <artifactSelector>
+            <artifactIdentifier>
+               <mavenCoordinates>
+                  <groupId>com.proprietary.software</groupId>
+                  <artifactId>system</artifactId>
+                  <version>1.0.0</version>
+               </mavenCoordinates>
+            </artifactIdentifier>
+         </artifactSelector>
+         <license>
+            <name>PropL</name>
+            <longName>A proprietary License</longName>
+            <text>a very long license text with custom information only relevant for this project.</text>
+         </license>
+      </setFinalLicense>
+   </setFinalLicenses>
+
+
+
+</config>

@@ -1,0 +1,99 @@
+# Auto-detect all text files and make sure that CRLF is replaced with LF when
+# writing text files to the object database and turn all LF back into native
+# eols (CRLF or LF) when writing out into the working directory.
+#
+# Note: Overrides the client specific 'core.autocrlf' setting.
+#
+# Note: Denote all files that are truly text or binary below '* text=auto' to
+#       overrule auto-detection. 
+* text=auto
+
+# Explicitly declare text files we want to always be normalized and converted 
+# to native line endings on checkout.
+LICENSE             text
+NOTICE              text
+README              text
+.htaccess           text
+*.LICENSE           text
+*.MF                text
+*.aj                text
+*.blacklist         text
+*.c                 text
+*.checkstyle        text
+*.classpath         text
+*.conf              text
+*.cpp               text
+*.cs                text
+*.csproj            text
+*.css               text
+*.csv               text
+*.cvsignore         text
+*.ddl               text
+*.ecore             text
+*.ecorediag         text
+*.empty             text
+*.genmodel          text
+*.h                 text
+*.htm               text
+*.html              text
+*.inf               text
+*.ini               text
+*.java              text
+*.jmx               text
+*.jsp               text
+*.js                text
+*.json              text
+*.launch            text
+*.log               text
+*.php               text
+*.prefs             text
+*.project           text
+*.properties        text
+*.py                text
+*.rb                text
+*.txt               text
+*.svg               text
+*.umlproject        text
+*.vr                text
+*.vrmodel           text
+*.vrpackage         text
+*.vrrule            text
+*.vrtable           text
+*.vrtest            text
+*.wsdl              text
+*.xconf             text
+*.xml               text
+*.xsd               text
+*.xsl               text
+
+# Declare files that will always have CRLF line endings on checkout.
+*.bat               text    eol=crlf
+*.cmd               text    eol=crlf
+*.sh                text    eol=lf
+
+# Denote all files that are truly binary and should not be modified.
+*.bmp               binary
+*.class             binary
+*.dll               binary
+*.doc               binary
+*.docx              binary
+*.exe               binary
+*.fm                binary
+*.gif               binary
+*.gz                binary
+*.ico               binary
+*.jar               binary
+*.jpg               binary
+*.pdf               binary
+*.png               binary
+*.ppt               binary
+*.pptx              binary
+*.tar               binary
+*.tif               binary
+*.ttf               binary
+*.vra               binary
+*.vrexecution       binary
+*.war               binary
+*.xls               binary
+*.xlsx              binary
+*.zip               binary

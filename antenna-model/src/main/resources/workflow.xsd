@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+  ~
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.eclipse.org/legal/epl-v20.html
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+    <xsd:complexType name="workflow">
+        <xsd:all>
+            <xsd:element name="analyzers" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xsd:element name="step" type="workflowStep"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="processors" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xsd:element name="step" type="workflowStep"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="generators" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xsd:element name="step" type="workflowStep"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="outputHandlers" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                        <xsd:element name="step" type="workflowStep"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:all>
+    </xsd:complexType>
+
+    <xsd:complexType name="workflowStep">
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="classHint" type="xsd:string"/>
+            <xsd:element name="configuration" type="stepConfiguration" minOccurs="0"/>
+            <xsd:element name="deactivated" type="xsd:boolean" default="false"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="stepConfiguration">
+        <xsd:sequence>
+            <xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="entryKey" type="xsd:string" minOccurs="0"/>
+                        <xsd:element name="entryValue" type="xsd:string" minOccurs="0"/>
+                    </xsd:sequence>
+                    <xsd:attribute name="key" type="xsd:string"/>
+                    <xsd:attribute name="value" type="xsd:string"/>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>

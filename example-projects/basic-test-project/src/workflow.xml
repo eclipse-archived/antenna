@@ -1,0 +1,45 @@
+<!--
+  ~ Copyright (c) Bosch Software Innovations GmbH 2017.
+  ~ Part of the SW360 Portal Project.
+  ~
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.eclipse.org/legal/epl-v20.html
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+<workflow>
+    <analyzers>
+        <step>
+          <name>Example Analyzer</name>
+          <classHint>full.qualified.class.name</classHint>
+          <configuration>
+            <entry key="configuration_key_1" value="configuration_value_1"/>
+            <entry key="configuration_key_2" value="configuration_value_2"/>
+          </configuration>
+        </step>
+    </analyzers>
+    <generators>
+        <step>
+          <name>First Generator</name>
+          <classHint>full.qualified.generator1.class.name</classHint>
+          <configuration>
+            <entry key="configuration_key_1" value="configuration_value_1"/>
+          </configuration>
+        </step>
+        <step>
+          <name>Second Generator</name>
+          <classHint>full.qualified.generator2.class.name</classHint>
+        </step>
+      </generators>
+      <processors>
+        <step>
+          <name>Arbitrary processor</name>
+          <classHint>full.qualified.processor.class.name</classHint>
+          <configuration>
+            <entry key="configuration_key_1" value="configuration_value_1"/>
+          </configuration>
+        </step>
+      </processors>
+</workflow>

@@ -1,0 +1,58 @@
+<!--
+  ~ Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+  ~
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.eclipse.org/legal/epl-v20.html
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.eclipse.sw360.antenna</groupId>
+        <artifactId>antenna-management</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>antenna-workflow-steps</artifactId>
+    <name>antenna-workflow-steps</name>
+    <packaging>pom</packaging>
+
+    <modules>
+        <!-- analyzers -->
+        <module>analyzers/antenna-csv-analyzer</module>
+        <module>analyzers/antenna-json-analyzer</module>
+        <module>analyzers/antenna-mvn-dependency-tree-analyzer</module>
+        <!-- processors -->
+        <module>processors/antenna-conf-processor</module>
+        <module>processors/abstract-antenna-compliance-checker</module>
+        <module>processors/enricher/antenna-artifact-resolver</module>
+        <module>processors/enricher/antenna-child-jar-resolver</module>
+        <module>processors/enricher/antenna-license-knowledgebase-resolver</module>
+        <module>processors/enricher/antenna-license-resolver</module>
+        <module>processors/enricher/antenna-manifest-resolver</module>
+        <module>processors/validators/antenna-coordinates-validator</module>
+        <module>processors/validators/antenna-source-validator</module>
+        <module>processors/validators/antenna-security-issue-validator</module>
+        <module>processors/validators/antenna-license-validator</module>
+        <module>processors/validators/antenna-match-state-validator</module>
+        <module>processors/antenna-artifact-sorter</module>
+        <!-- generators -->
+        <module>generators/antenna-csv-generator</module>
+        <module>generators/antenna-HTML-report-generator</module>
+        <module>generators/antenna-source-zip-generator</module>
+        <!-- outputHandlers -->
+        <module>outputHandlers/antenna-add-to-archive-output-handler</module>
+    </modules>
+    <profiles>
+        <profile>
+            <id>experimental-steps</id>
+            <modules>
+                <module>generators/antenna-sw360-update-generator</module>
+            </modules>
+        </profile>
+    </profiles>
+</project>

@@ -1,0 +1,46 @@
+{
+  "aaData" : [
+    {
+    "hash" : "19d4e90b43059058f6e0",
+    "groupId" : "xpp3",
+    "artifactId" : "xpp3_min",
+    "version" : "1.1.4c",
+    "declaredLicenses" : [ "Non-Standard", "Public Domain" ],
+    "observedLicenses" : [ "BSD" ],
+    "effectiveLicenses" : [ "Non-Standard" ],
+    "securityCounters" : {
+      "Critical" : 0,
+      "Severe" : 0,
+      "Moderate" : 0
+    },
+    "effectiveLicenseThreat" : 0,
+    "matchState" : "exact",
+    "proprietary" : false,
+    "securityThreatLevel" : null,
+    "catalogDate" : 1196500002000,
+    "status" : "Selected",
+    "overriddenLicenses" : [ "Public Domain" ],
+    "comment" : "http://www.extreme.indiana.edu/xgws/xsoap/PullParser/LICENSE.txt",
+    "overriddenLicenseThreat" : 0
+  },
+  {
+    "hash" : "0235ba8b489512805ac1",
+    "groupId" : "aopalliance",
+    "artifactId" : "aopalliance",
+    "version" : "1.0",
+    "declaredLicenses" : [ "Public Domain" ],
+    "observedLicenses" : [ "No Source License" ],
+    "effectiveLicenses" : [ "Public Domain" ],
+    "securityCounters" : {
+      "Critical" : 0,
+      "Severe" : 0,
+      "Moderate" : 0
+    },
+    "effectiveLicenseThreat" : 0,
+    "matchState" : "exact",
+    "proprietary" : false,
+    "securityThreatLevel" : null,
+    "catalogDate" : 1172529820000
+  }
+  
+]  }

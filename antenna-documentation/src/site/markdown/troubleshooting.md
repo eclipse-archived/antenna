@@ -1,0 +1,98 @@
+# Troubleshooting
+
+## Configuration Problems
+
+Here is a list of known problems that can be solved with the help of a
+configuration file. If you have solved another problem, which could be 
+interesting for others, feel free to append it to the list, maybe
+someone will be deeply grateful for your help.
+
+### Problem: The source of an artifact is not added to the source jar
+
+Message type in processing report
+: `MISSING_COORDINATES`, `MISSING_SOURCES`
+ 
+Possible solution
+: The artifact has no coordinates, therefore the sources can't be 
+downloaded from a repository.
+
+
+Message type in processing report
+: `ARTIFACT_IS_PROPRIETARY`
+
+Possible solution
+: Override the MavenCoordinates in the override section of your
+configuration file.
+
+Message type in processing report
+: `MATCHSTATE_UNKNOWN`, `MATCH_STATE_NOT_EXACT`
+ 
+Possible solution
+: Override the isProprietary attribute in the override section of your 
+config file. The Match State of the artifact is declared as UNKNOWN or 
+SIMILAR by the scan source. Override it with EXACT in the override section.
+
+### Problem: An artifact does not appear at all
+ 
+Possible solution
+: Add it in the addArtifact section to the artifacts list.
+
+### Problem: The license of an artifact is missing
+
+Message type in processing report
+: `MISSING_LICENSE_INFORMATION`
+ 
+Possible solution
+: Set the license of the artifact in the setFinalLicense section of your 
+artifact.
+
+
+## Other problems
+
+### Problem: Missing license text
+
+Message type in processing report
+: MISSING_LICENSE_TEXT
+ 
+Possible solution
+: Add the license text to the knowledgebase.
+
+### Problem: Antenna fails because it does not find files for disclosure document
+ 
+Possible solution
+: Have a look at your projects path. Unfortunately Antenna can't deal with 
+spaces in pathnames.
+
+### Problem: The build fails with the message "There are conflicting configurations....."
+
+Message type in processing report
+: `CONFLICTING_CONFIGURATIONS`
+ 
+Possible solution
+: Check the processing report and resolve the problems in your 
+configuration files.
+
+### Problem: Antenna uses a sources jar artifact to create the sources.zip file which contains only references to the main jar file
+ 
+Possible solution
+: Upload a custom sources jar artifact with the missing sources to nexus 
+and wipe the local maven repo.
+
+### Problem: The build fails with missing parameters message
+
+The build fails with:
+
+```
+[ERROR] Failed to execute goal 
+org.eclipse.sw360.antenna:antenna-maven-plugin:1.4.2:analyze (default-cli) on project 
+wfs-project: The parameters 'applicationId' for goal 
+org.eclipse.sw360.antenna:antenna-maven-plugin:1.4.2:analyze are missing or invalid
+```
+ 
+Possible solution
+: You probably run the Maven job with the wrong pom that does not 
+contain the Antenna configuration - this can easily happen when you create 
+a Jenkins job for multi module project where the Antenna configuration is 
+not in the main pom that Jenkins uses by default. So, just check what 
+you've entered in the field "POM" of your Jenkins Maven Goals 
+configuration (which by default is hidden).

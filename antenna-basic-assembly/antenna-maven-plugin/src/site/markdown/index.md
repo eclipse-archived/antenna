@@ -1,0 +1,65 @@
+# How to use Antenna as a Maven plugin
+
+Using Antenna as a Maven plugin is made possible by following the steps in
+the configuration instructions (see [Configuration guide](../how-to-configure-antenna.html)). Adding
+antenna-maven-plugin to your project's list of plugins enables the Antenna 
+Maven commands.
+
+```xml
+<plugin>
+    <groupId>org.eclipse.sw360.antenna</groupId>
+    <artifactId>antenna-maven-plugin</artifactId>
+    <version>x.y.z</version> <!-- enter desired version here -->
+
+    <configuration>
+        ...
+    </configuration>
+</plugin>
+```
+
+You can execute the plugin either with the command line call:
+
+`mvn antenna:analyze`
+
+Or bind the analyze goal to a phase:
+
+```xml
+<executions>
+    <execution>
+        <goals>
+            <goal>analyze</goal>
+        </goals>
+        <phase>package</phase>
+    </execution>
+</executions>
+```
+
+## Customizing the disclosure document
+
+Antenna provides a built-in disclosure document template that works out of 
+the box. However, you can install jar files that apply a different theme 
+to the document.
+ 
+To do this, add a dependency to your project's pom.xml file where you
+install the Antenna plugin, something like this:
+
+```xml
+<dependency>
+    <groupId>org.eclipse.sw360.antenna</groupId>
+    <artifactId>antenna-disclosure-document-bosch</artifactId>
+</dependency>
+```
+
+## Adding a rules engine
+
+If you want to use a rule engine to validate your artifacts, you can
+install a rule engine module by adding a dependency to your project's 
+pom.xml file where you install the Antenna plugin, something like this: 
+
+```xml
+<dependency>
+    <groupId>org.eclipse.sw360.antenna.rules</groupId>
+    <artifactId>simple-rule-engine</artifactId>
+    <version>1.0-SNAPSHOT</version>
+</dependency>
+```
