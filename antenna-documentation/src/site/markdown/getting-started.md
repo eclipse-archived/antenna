@@ -1,0 +1,204 @@
+# Getting started
+
+## Overview
+
+This guide shows how to bring Antenna into action. It will show which tools are required and how to set up
+Antenna in a small java example project using maven.
+
+## Requirements
+
+The following tools need to be installed:
+
+- Maven
+- Java JDK 1.8
+- An IDE/editor of your choice
+
+Check that these tools are set up correctly and functional.
+
+
+## Using Antenna in a java project
+
+### Getting Antenna
+
+Fetch Antenna from the corresponding repository or build it yourself.
+
+## The example project
+### Setting up the example project
+
+We create a new maven project. This will result in a project structure like this.
+
+```
+example_project
+│   pom.xml
+└───src
+    ├───main
+    │   ├───java
+    │   └───resources
+    └───test
+        └───java
+```
+
+Now we're going to add Antenna to our project. Therefor we have to edit the pom.xml to our needs. We add the `antenna-maven-plugin` as a plugin.
+
+The plugin section of our pom should look like this:
+
+```xml
+<plugins>
+    ...
+    <plugin>
+        <groupId>org.eclipse.sw360.antenna</groupId>
+        <artifactId>antenna-maven-plugin</artifactId>
+        <version>DESIRED_VERSION</version>
+
+        <executions>
+            <execution>
+                <goals>
+                    <goal>analyze</goal>
+                </goals>
+                <phase>package</phase>
+            </execution>
+        </executions>
+
+        <configuration>
+            <productFullname>Example Project</productFullname>
+            <version>1.0</version>
+
+            <workflowDefinitionFile>${project.basedir}/src/workflow.xml</workflowDefinitionFile>
+            <disableP2Resolving>true</disableP2Resolving>
+        </configuration>
+    </plugin>
+</plugins>
+```
+
+With the above mentioned configuration Antenna will be executed while the `package` execution step is running. Also have a look at the
+`<workflowDefinitionFile>` key (further reading about plugin specific settings [here][toolconfig]). This points to our workflow.xml which we still have to define. It will contain which analyzers, processors and
+generators Antenna should use.
+
+In this example we are going to use the `JSON Analyzer` and generate an HTML Report wih the `HTML Report Writer`. For this we have to create our workflow.xml in the `src` folder with the following content:
+
+```xml
+<workflow>
+    <analyzers>
+        <step>
+            <name>JSON Analyzer</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.analyzers.JsonAnalyzer</classHint>
+            <configuration>
+                <entry key="base.dir" value="${project.basedir}"/>
+                <entry key="file.path" value="src/dependencies.json"/>
+            </configuration>
+        </step>
+    </analyzers>
+
+    <generators>
+        <step>
+            <name>HTML Report Writer</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.generators.HTMLReportGenerator</classHint>
+        </step>
+    </generators>
+</workflow>
+```
+
+This configuration adds the JSON Analyzer(further reading [here][jsonanalyzer]) and the HTML Report Writer. The JSON Analyzer refers to a json file, which
+contains the dependencies used in our project. This is not provided yet so let us add it to the project. Like mentioned above it is also placed in the `src` directory.
+The json file is called `dependencies.json`. You can call it whatever you feel like but don't forget to let the analyzer point to the correct path in your workflow.xml. To keep things small and easy
+we are going to have only one dependency and this is the commons-lang3 library.
+
+```json
+{
+  "components": [
+    {
+      "hash": "b2921b7862e7b26b43aa",
+      "componentIdentifier": {
+        "coordinates": {
+          "artifactId": "commons-lang3",
+          "groupId": "org.apache.commons",
+          "version": "3.5"
+        }
+      },
+      "proprietary": false,
+      "matchState": "exact",
+      "pathnames": [
+        "commons-lang-2.0.jar"
+      ],
+      "licenseData": {
+        "declaredLicenses": [
+          {
+            "licenseId": "Apache-2.0",
+            "licenseName": "Apache License, v2.0"
+          }
+        ],
+        "observedLicenses": [
+          {
+            "licenseId": "Apache-1.1",
+            "licenseName": "Apache License, v1.1"
+          }
+        ],
+        "overriddenLicenses": []
+      }
+    }
+  ]
+}
+```
+
+You can add as many dependency entries (here called components) to the json file. To understand the parameters more deeply please read the
+[JSON analyzer][jsonanalyzer] guide. It is also possible to provide a CSV file instead or additionally to the json analyzer(check the [CSV analzyer][csvanalyzer] guide).
+
+The final project structure after adding the workflow.xml and dependencies.json file should now look like this:
+
+```
+example_project
+│   pom.xml
+└───src
+    │   dependencies.json
+    │   workflow.xml
+    │
+    ├───main
+    │   ├───java
+    │   └───resources
+    └───test
+        └───java
+```
+
+### Building the example project
+
+After the setup and configuration of our project we are ready to build and execute it. Like above mentioned we attached Antenna to be executed in the
+build step `package`. Therefor we can just execute
+
+```
+mvn package
+```
+
+or any post build step after package. It is also possible to execute Antenna right away with
+
+```
+mvn antenna:analyze
+```
+
+this is useful if the plugin is not bound to a build step or only the project should be analyzed without being build.
+
+### Result
+
+After building our project a target folder will be created by maven. A subfolder called `antenna` was created in it.
+The hierarchy of it looks like this:
+
+```
+antenna
+│   3rdparty-licenses.html
+│   AntennaDisclosureDocument.docx
+│   AntennaDisclosureDocument.html
+│   AntennaDisclosureDocument.txt
+│   Antenna_3rdPartyAnalysisReport.txt
+│   sources.zip
+│
+└───dependencies
+        commons-lang3-3.5-sources.jar
+        commons-lang3-3.5.jar
+```
+
+Congratulations you created your first disclosure document!
+
+[workflow]: workflow-configuration.html
+[jsonanalyzer]: json-analyzer-step.html
+[mavenplugin]: external/antenna-maven-plugin/index.html
+[toolconfig]: tool-configuration.html
+[csvanalyzer]: csv-analyzer-step.html

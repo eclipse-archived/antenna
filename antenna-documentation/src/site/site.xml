@@ -23,8 +23,8 @@
 
     <body>
         <menu name="Overview" inherit="top">
-            <item name="Introduction and Goals" href="index.html" />
-            <item name="What Antenna Does" href="what-antenna-does.html" />
+            <item name="About" href="index.html" />
+            <item name="Getting started" href="getting-started.html" />
             <item name="How to Use Antenna" href="how-to-use-antenna.html">
                 <item name="Maven Plugin" href="antenna-maven-plugin/index.html" />
                 <item name="Command Line Interface" href="antenna-cli/index.html" />
@@ -42,6 +42,7 @@
                 <item name="Workflow Configuration" href="workflow-configuration.html" >
                     <item name="CSV analyzer" href="csv-analyzer-step.html" />
                     <item name="JSON analyzer" href="json-analyzer-step.html" />
+                    <item name="Maven Dependency Tree analyzer" href="mvn-dep-tree-analyzer-step.html" />
                 </item>
             </item>
             <item name="Development Guide" href="dev-guide.html" />

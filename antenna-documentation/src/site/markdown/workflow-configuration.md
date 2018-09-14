@@ -1,10 +1,57 @@
 # Workflow configuration
 
-The way Antenna works is configured via a workflow XML file. This file describes:
+The way Antenna works is configured in a workflow configuration that comprises the configuration of:
 
 * used analyzers
 * optional processors
 * used generators.
+
+The configuration is located either in a separate workflow.xml file or directly in the tool configuration (e.g. pom.xml).
+Both ways use the same syntax with on minor difference. In case the tool configuration is used you have specify the configuration entries with:
+
+```xml
+<project>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.sw360.antenna</groupId>
+                <artifactId>antenna-maven-plugin</artifactId>
+                <version>${org.eclipse.sw360.antenna.version}</version>
+                <configuration>
+                    ...
+                    <workflow>
+                        <processors>
+                            <step>
+                                <name>Source Validator</name>
+                                <classHint>org.eclipse.sw360.antenna.workflow.processors.SourceValidator</classHint>
+                                <configuration>
+                                    <entry>
+                                        <entryKey>missingSourcesSeverity</entryKey>
+                                        <entryValue>FAIL</entryValue>
+                                    </entry>
+                                    <entry>
+                                        <entryKey>incompleteSourcesSeverity</entryKey>
+                                        <entryValue>WARN</entryValue>
+                                    </entry>
+                                </configuration>
+                                <deactivated>true</deactivated>
+                            </step>
+                        </processors>
+                    </workflow>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>analyze</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
 
 The file can contain variables that are replaced with values that are configured in the tool configuration (e.g. pom.xml).
 
@@ -51,10 +98,11 @@ The following example shows a workflow with one analyzer, one additional process
 ```
 
 ### Configuring default workflow steps
-Antenna core is prepackaged with 2 analyzers and 4 generators:
+Antenna core is prepackaged with 3 analyzers and 4 generators:
 
 * JSON Analyzer
 * CSV Analyzer
+* Maven Dependency Tree Analyzer
 * PDF Generator
 * HTML Generator
 * CSV Generator
