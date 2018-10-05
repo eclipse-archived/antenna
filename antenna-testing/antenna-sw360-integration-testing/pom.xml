@@ -64,14 +64,12 @@
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>antenna-frontend-stubs-testing</artifactId>
             <version>2.0.1-SNAPSHOT</version>
-            <scope>test</scope>
         </dependency>
         <!-- Required to set up logging -->
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>antenna-core</artifactId>
             <version>2.0.1-SNAPSHOT</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

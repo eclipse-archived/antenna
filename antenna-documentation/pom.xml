@@ -23,6 +23,8 @@
         <copyright.year>2018</copyright.year>
         <generated.source.path>${project.build.directory}/generated-sources</generated.source.path>
         <copied.site.files.path>${generated.source.path}/markdown</copied.site.files.path>
+        <docName>antenna</docName>
+        <docNameCap>Antenna</docNameCap>
     </properties>
 
     <build>
@@ -88,7 +90,7 @@
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${copied.site.files.path}/antenna-cli</outputDirectory>
-                                    <includes>**/*.md</includes>
+                                    <includes>**/*.md,**/*.md.vm</includes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.eclipse.sw360.antenna</groupId>
@@ -97,7 +99,7 @@
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${copied.site.files.path}/antenna-maven-plugin</outputDirectory>
-                                    <includes>**/*.md</includes>
+                                    <includes>**/*.md,**/*.md.vm</includes>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -112,6 +114,7 @@
                 <directory>${project.basedir}/src/site/markdown</directory>
                 <includes>
                     <include>**/*.md</include>
+                    <include>**/*.md.vm</include>
                 </includes>
             </resource>
 

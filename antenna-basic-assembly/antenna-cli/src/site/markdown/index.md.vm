@@ -1,18 +1,18 @@
-# How to use Antenna from the Command Line
+# How to use ${docNameCap} from the Command Line
 
-Antenna is also available as a standalone Java jar file, enabling Antenna to
+${docNameCap} is also available as a standalone Java jar file, enabling ${docNameCap} to
 be used as a plain CLI tool. Although it is built from the same sources 
 as the Maven plugin version, a few differences must be kept in mind when 
 using the CLI frontend.
 
 ## Configuring
 
-Antenna CLI reads the pom.xml configuration file that the Maven plugin 
+${docNameCap} CLI reads the pom.xml configuration file that the Maven plugin
 version does. However, the CLI understands this file only as plain XML 
 and not as Maven pom format. This means that some functionality provided 
 by Maven cannot be relied upon.
 
-Here are some pointers on writing a configuration file for Antenna CLI:
+Here are some pointers on writing a configuration file for ${docNameCap} CLI:
 
 * Unlike the Maven plugin frontend, the CLI frontend won't copy the 
 project's artifacts into place, so your `<filesToScanPattern>` section 
@@ -33,7 +33,7 @@ Here's an example shell script:
 # Add your configuration here
 #
 
-# Location of main Antenna jar file
+# Location of main ${docNameCap} jar file
 ANTENNA_JAR=/path/to/antenna.jar
 
 # Location of custom disclosure document jar file
@@ -46,10 +46,10 @@ RULE_ENGINE_JAR=/path/to/rule-engine.jar
 POM_FILE=osmi-configuration/pom.xml
 
 #
-# Run Antenna
+# Run ${docNameCap}
 #
 
-# Put these together on the classpath and run Antenna
+# Put these together on the classpath and run ${docNameCap}
 CLASSPATH=$ANTENNA_JAR:$DISCLOSURE_DOCUMENT_JAR:$RULE_ENGINE_JAR
 java -cp $CLASSPATH org.eclipse.sw360.antenna.frontend.AntennaCLIFrontend $POM_FILE
 ```
@@ -61,7 +61,7 @@ And the equivalent batch script:
 
 REM Add your configuration here
 
-REM Location of main Antenna jar file
+REM Location of main ${docNameCap} jar file
 SET ANTENNA_JAR=c:\path\to\antenna.jar
 
 REM Location of rule engine jar file
@@ -70,7 +70,7 @@ SET RULE_ENGINE_JAR=c:\path\to\rule-engine.jar
 REM Pom.xml file for your project
 SET POM_FILE=osmi-configuration\pom.xml
 
-REM Run Antenna
+REM Run ${docNameCap}
 SET CLASSPATH=%ANTENNA_JAR%;%RULE_ENGINE_JAR%
 java -cp %CLASSPATH% org.eclipse.sw360.antenna.frontend.AntennaCLIFrontend %POM_FILE%
 ```
