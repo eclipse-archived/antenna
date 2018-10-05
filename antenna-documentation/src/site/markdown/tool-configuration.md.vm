@@ -1,6 +1,6 @@
 # Tool Configuration
 
-Antenna can be used as plugin for different build systems. 
+${docNameCap} can be used as plugin for different build systems. 
 Currently, the configuration is almost the same for all three types (maven, gradle, cli). It is based on the structure of the Maven pom configuration.
 In what follows the configuration is described and some hints are given if special means have to be taken into account for certain build systems.
 
@@ -85,7 +85,7 @@ to overwrite default values, use this parameter (identifier from table):
 ```
 ### The following configuration options are special to the CLI Frontend
 
-* `isMavenInstalled`: If set to false, tells Antenna that Maven is not
+* `isMavenInstalled`: If set to false, tells ${docNameCap} that Maven is not
 installed on this machine.
 * `sourcesRepositoryUrl`: By default, artifacts will be downloaded
 from Maven Central. However, you can optionally set your own remote
@@ -95,7 +95,7 @@ the format:
 
 **Other**
 
-* `antennaTargetDirectory`: The folder where the documents created by Antenna
+* `antennaTargetDirectory`: The folder where the documents created by ${docNameCap}
 are stored.
 
 **License Validation**

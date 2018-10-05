@@ -25,7 +25,7 @@
         <menu name="Overview" inherit="top">
             <item name="About" href="index.html" />
             <item name="Getting started" href="getting-started.html" />
-            <item name="How to Use Antenna" href="how-to-use-antenna.html">
+            <item name="How to use Antenna" href="how-to-use.html">
                 <item name="Maven Plugin" href="antenna-maven-plugin/index.html" />
                 <item name="Command Line Interface" href="antenna-cli/index.html" />
                 <!---
@@ -36,7 +36,7 @@
             <item name="Troubleshooting" href="troubleshooting.html" />
         </menu>
         <menu name="Development" inherit="top">
-            <item name="How to Configure Antenna" href="how-to-configure-antenna.html">
+            <item name="How to configure Antenna" href="how-to-configure.html">
                 <item name="Tool Configuration" href="tool-configuration.html" />
                 <item name="config.xml" href="config-configuration.html" />
                 <item name="Workflow Configuration" href="workflow-configuration.html" >

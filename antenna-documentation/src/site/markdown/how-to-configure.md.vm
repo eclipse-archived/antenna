@@ -1,6 +1,6 @@
-# How to configure Antenna
+# How to configure ${docNameCap}
 
-Before you use Antenna, you need to set some configuration settings.
+Before you use ${docNameCap}, you need to set some configuration settings.
 There are actually three levels to configure the tool behavior:
 
 1. On a build system integration level. This is done in the [Tool Configuration](tool-configuration.md).

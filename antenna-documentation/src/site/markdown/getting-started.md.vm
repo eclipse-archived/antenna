@@ -2,8 +2,8 @@
 
 ## Overview
 
-This guide shows how to bring Antenna into action. It will show which tools are required and how to set up
-Antenna in a small java example project using maven.
+This guide shows how to bring ${docNameCap} into action. It will show which tools are required and how to set up
+${docNameCap} in a small java example project using maven.
 
 ## Requirements
 
@@ -16,11 +16,11 @@ The following tools need to be installed:
 Check that these tools are set up correctly and functional.
 
 
-## Using Antenna in a java project
+## Using ${docNameCap} in a java project
 
-### Getting Antenna
+### Getting ${docNameCap}
 
-Fetch Antenna from the corresponding repository or build it yourself.
+Fetch ${docNameCap} from the corresponding repository or build it yourself.
 
 ## The example project
 ### Setting up the example project
@@ -38,7 +38,7 @@ example_project
         └───java
 ```
 
-Now we're going to add Antenna to our project. Therefor we have to edit the pom.xml to our needs. We add the `antenna-maven-plugin` as a plugin.
+Now we're going to add ${docNameCap} to our project. Therefor we have to edit the pom.xml to our needs. We add the `antenna-maven-plugin` as a plugin.
 
 The plugin section of our pom should look like this:
 
@@ -70,9 +70,9 @@ The plugin section of our pom should look like this:
 </plugins>
 ```
 
-With the above mentioned configuration Antenna will be executed while the `package` execution step is running. Also have a look at the
+With the above mentioned configuration ${docNameCap} will be executed while the `package` execution step is running. Also have a look at the
 `<workflowDefinitionFile>` key (further reading about plugin specific settings [here][toolconfig]). This points to our workflow.xml which we still have to define. It will contain which analyzers, processors and
-generators Antenna should use.
+generators ${docNameCap} should use.
 
 In this example we are going to use the `JSON Analyzer` and generate an HTML Report wih the `HTML Report Writer`. For this we have to create our workflow.xml in the `src` folder with the following content:
 
@@ -161,14 +161,14 @@ example_project
 
 ### Building the example project
 
-After the setup and configuration of our project we are ready to build and execute it. Like above mentioned we attached Antenna to be executed in the
+After the setup and configuration of our project we are ready to build and execute it. Like above mentioned we attached ${docNameCap} to be executed in the
 build step `package`. Therefor we can just execute
 
 ```
 mvn package
 ```
 
-or any post build step after package. It is also possible to execute Antenna right away with
+or any post build step after package. It is also possible to execute ${docNameCap} right away with
 
 ```
 mvn antenna:analyze
@@ -199,6 +199,6 @@ Congratulations you created your first disclosure document!
 
 [workflow]: workflow-configuration.html
 [jsonanalyzer]: json-analyzer-step.html
-[mavenplugin]: external/antenna-maven-plugin/index.html
+[mavenplugin]: external/${docName}-maven-plugin/index.html
 [toolconfig]: tool-configuration.html
 [csvanalyzer]: csv-analyzer-step.html

@@ -1,6 +1,6 @@
 ### Create config.xml
 
-The `config.xml` file configures Antenna's behaviour when it handles licenses, sources and artifacts.
+The `config.xml` file configures ${docNameCap}'s behaviour when it handles licenses, sources and artifacts.
 
 In the config file you can:
 
@@ -38,7 +38,7 @@ artifact.
 * `addArtifact`: This section can be used to add artifacts to the
 artifacts list.
 * `removeArtifact`: This section can be used to define that an artifact
-shall be ignored during the whole process of Antenna.
+shall be ignored during the whole process of ${docNameCap}.
 * `sourceResolving`: This section can be used to define:
     * that the source for an artifact shall not be downloaded.
 * `sourceValidation`: In this section parameter for the license
@@ -182,7 +182,7 @@ Values defined in the overrideValue section will replace the values of the artif
 
 **removeArtifact**
 
-Artifacts identified by an artifactSelector in the removeArtifact element will not be added to the list of artifacts, which will be resolved by Antenna.
+Artifacts identified by an artifactSelector in the removeArtifact element will not be added to the list of artifacts, which will be resolved by ${docNameCap}.
 
 ```xml
 <removeArtifact>
@@ -198,7 +198,7 @@ Artifacts identified by an artifactSelector in the removeArtifact element will n
 
 **addArtifact**
 
-Artifacts declared in the `addArtifact` section will be added to the artifacts list, which will be resolved by Antenna.
+Artifacts declared in the `addArtifact` section will be added to the artifacts list, which will be resolved by ${docNameCap}.
 
 These artifacts are handled in the same way as the artifacts are declared in the pom. Therefore all other configurations (final license, validation,...) must be added to the other parts of the configuration file if necessary.
 
@@ -262,7 +262,7 @@ Sources for artifacts specified in the ignore block will not be downloaded.
 It can be defined if the validation will fail in the case an incomplete source, or an artifact without source is found. The default value is
 `false`.
 
-If the validation returns false, Antenna throws a MojoExecutionException and the build fails.
+If the validation returns false, ${docNameCap} throws a MojoExecutionException and the build fails.
 
 `handleSourceAsValid`: It is possible to define sources as valid for incomplete sources and for missing sources. The default value is `true`.
 
