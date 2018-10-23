@@ -17,12 +17,12 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.sw360.SW360Connector;
+import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
+import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 public class SW360Updater extends AbstractGenerator {
     private static final String REST_SERVER_URL_KEY = "rest.server.url";
@@ -47,9 +47,16 @@ public class SW360Updater extends AbstractGenerator {
 
     @Override
     public Map<String, IAttachable> produce(Collection<Artifact> intermediates) throws AntennaException {
-        SW360Connector sw360Connector = new SW360Connector(sw360RestServerUrl, sw360AuthServerUrl, sw360User, sw360Password);
+        SW360MetaDataUpdater sw360MetaDataUpdater = new SW360MetaDataUpdater(sw360RestServerUrl, sw360AuthServerUrl, sw360User, sw360Password);
+
         try {
-            sw360Connector.updateSW360Project(project);
+            List<SW360Release> releases = new ArrayList<>();
+            for (Artifact artifact : intermediates) {
+                Set<String> licenses = sw360MetaDataUpdater.getOrCreateLicenses(artifact);
+                SW360Component component = sw360MetaDataUpdater.getOrCreateComponent(artifact);
+                releases.add(sw360MetaDataUpdater.getOrCreateRelease(artifact, licenses, component));
+            }
+            sw360MetaDataUpdater.createProject(project, releases);
         } catch (IOException e) {
             throw new AntennaException("Problem occurred during updating SW360.", e);
         }

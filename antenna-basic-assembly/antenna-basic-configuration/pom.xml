@@ -150,6 +150,12 @@
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>antenna-sw360-update-generator</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
@@ -168,16 +174,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <profiles>
-        <profile>
-            <id>experimental-steps</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.eclipse.sw360.antenna</groupId>
-                    <artifactId>antenna-sw360-update-generator</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 </project>

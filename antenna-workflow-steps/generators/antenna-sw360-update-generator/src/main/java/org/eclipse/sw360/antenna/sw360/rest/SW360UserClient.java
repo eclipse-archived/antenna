@@ -35,26 +35,20 @@ public class SW360UserClient {
     }
 
     public SW360User getUserByEmail(String email, HttpHeaders header) throws AntennaException {
-        try {
-            String userUUID = Base64.getEncoder().encodeToString(email.getBytes("utf-8"));
-            HttpEntity<String> httpEntity = RestUtils.getHttpEntity(Collections.emptyMap(), header);
+        HttpEntity<String> httpEntity = RestUtils.getHttpEntity(Collections.emptyMap(), header);
 
-            ResponseEntity<Resource<SW360User>> response =
-                    this.restTemplate.exchange(this.usersRestUrl + "/" + userUUID ,
-                            HttpMethod.GET,
-                            httpEntity,
-                            new ParameterizedTypeReference<Resource<SW360User>>() {});
+        ResponseEntity<Resource<SW360User>> response =
+                this.restTemplate.exchange(this.usersRestUrl + "/" + email ,
+                        HttpMethod.GET,
+                        httpEntity,
+                        new ParameterizedTypeReference<Resource<SW360User>>() {});
 
-            if (response.getStatusCode() == HttpStatus.OK) {
-                return response.getBody().getContent();
-            }
-            else {
-                throw new AntennaException("Request to get user " + email + " failed with "
-                        + response.getStatusCode());
-            }
-        } catch (IOException e) {
-            throw new AntennaException("Problem occurred during requesting user, reason=["
-                    + e.getMessage() + "]", e);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody().getContent();
+        }
+        else {
+            throw new AntennaException("Request to get user " + email + " failed with "
+                    + response.getStatusCode());
         }
     }
 }

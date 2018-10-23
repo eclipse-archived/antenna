@@ -16,6 +16,10 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectEmbedded;
+import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectType;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
+import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.core.ParameterizedTypeReference;
@@ -24,9 +28,8 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 public class SW360ProjectClient {
     private static final String PROJECTS_ENDPOINT = "/projects";
@@ -39,7 +42,7 @@ public class SW360ProjectClient {
         projectsRestUrl = restUrl + PROJECTS_ENDPOINT;
     }
 
-    public List<SW360Project> searchByName(String name, HttpHeaders header) throws JsonProcessingException, AntennaException {
+    public List<SW360Project> searchByName(String name, HttpHeaders header) throws AntennaException {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(projectsRestUrl)
                 .queryParam(SW360Attributes.PROJECT_SEARCH_BY_NAME, name);
@@ -66,7 +69,7 @@ public class SW360ProjectClient {
     }
 
     public SW360Project createProject(SW360Project sw360Project, HttpHeaders header) throws JsonProcessingException, AntennaException {
-        HttpEntity<String> httpEntity = RestUtils.convertSW360ProjectToHttpEntity(sw360Project, header);
+        HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Project, header);
 
         ResponseEntity<Resource<SW360Project>> response = this.restTemplate
                 .exchange(this.projectsRestUrl,
@@ -96,5 +99,54 @@ public class SW360ProjectClient {
             throw new AntennaException("Request to get project " + projectId + " failed with "
                     + response.getStatusCode());
         }
+    }
+
+    public void addReleasesToProject(String projectId, List<String> releases, HttpHeaders header) throws IOException, AntennaException {
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromUriString(projectsRestUrl)
+                .pathSegment(projectId, SW360Attributes.PROJECT_RELEASES);
+
+        HttpEntity<List<String>> httpEntity = new HttpEntity<>(releases, header);
+
+        ResponseEntity<String> response = this.restTemplate
+                .exchange(builder.build(false).toUriString(),
+                        HttpMethod.POST,
+                        httpEntity,
+                        String.class);
+
+        if (!(response.getStatusCode() == HttpStatus.CREATED)) {
+            throw new AntennaException("Request to add linked releases to project " + projectId + " failed with "
+                    + response.getStatusCode());
+        }
+    }
+
+    public List<SW360Release> getLinkedReleases(String projectId, boolean transitive, HttpHeaders header) throws AntennaException {
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromUriString(projectsRestUrl)
+                .pathSegment(projectId, SW360Attributes.PROJECT_RELEASES)
+                .queryParam(SW360Attributes.PROJECT_RELEASES_TRANSITIVE, transitive);
+
+        HttpEntity<String> httpEntity = RestUtils.getHttpEntity(Collections.emptyMap(), header);
+
+        ResponseEntity<Resource<SW360Project>> response = this.restTemplate.
+                exchange(builder.build(false).toUriString(),
+                        HttpMethod.GET,
+                        httpEntity,
+                        new ParameterizedTypeReference<Resource<SW360Project>>() {});
+        if (response.getStatusCode() == HttpStatus.OK) {
+            SW360Project<LinkObjects, SW360ReleaseEmbedded> resource = response.getBody().getContent();
+            if ((resource.get_Embedded() != null) && (resource.get_Embedded().getReleases() != null)) {
+                return resource.get_Embedded().getReleases();
+            } else {
+                return new ArrayList<>();
+            }
+        } else {
+            throw new AntennaException("Request to get linked releases of project with id=[ " + projectId + "] failed with "
+                    + response.getStatusCode());
+        }
+    }
+
+    public List<SW360Release> getLinkedReleases(String projectId, HttpHeaders header) throws AntennaException {
+        return getLinkedReleases(projectId, false, header);
     }
 }
