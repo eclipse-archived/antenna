@@ -126,7 +126,9 @@ public class XmlSettingsReader {
     }
 
     public File getFileProperty(String tagName) {
-        return new File(this.getStringProperty(tagName, null));
+        return Optional.ofNullable(getStringProperty(tagName, null))
+                .map(File::new)
+                .orElse(null);
     }
 
     /**
