@@ -85,9 +85,6 @@ public class ArtifactAttacher {
         artifactsToAttach.entrySet().stream()
                 .filter(filterFunc)
                 .forEach(a -> attachArtifact(a.getValue()));
-        artifactsToAttach.entrySet().stream()
-                .filter(filterFunc)
-                .forEach(a -> attachArtifact(a.getValue()));
     }
 
     private void attachArtifact(IAttachable attachable) {
