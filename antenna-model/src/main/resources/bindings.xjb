@@ -181,6 +181,16 @@
                 }
 
                 public String getLinkStr(){
+                    if(getLeftStatement() == null && getRightStatement() == null) {
+                        return "";
+                    }
+                    if(getLeftStatement() == null) {
+                        return getRightStatement().getLinkStr();
+                    }
+                    if(getRightStatement() == null) {
+                        return getLeftStatement().getLinkStr();
+                    }
+
                     if(op == LicenseOperator.OR){
                         return String.format("<listitem><itemizedlist>%s %s</itemizedlist></listitem>", getLeftStatement().getLinkStr() , getRightStatement().getLinkStr());
                     }
