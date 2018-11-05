@@ -32,7 +32,7 @@
 
     <scm>
         <connection>
-            scm:git:https://github.com/bsinno/osm-tina-2.0
+            scm:git:https://github.com/eclipse/antenna
         </connection>
         <tag>HEAD</tag>
     </scm>
@@ -524,18 +524,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>inst-osmi-releases</id>
-            <name>Nexus Repo</name>
-            <url>https://repo.bosch-si.com/content/repositories/inst-osmi-releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>inst-osmi-snapshots</id>
-            <url>https://repo.bosch-si.com/content/repositories/inst-osmi-snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <reporting>
         <plugins>

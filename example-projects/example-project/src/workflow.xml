@@ -44,7 +44,7 @@
             <name>SW360 Report Generator</name>
             <classHint>org.eclipse.sw360.antenna.workflow.generators.SW360DisclosureDocumentGenerator</classHint>
             <configuration>
-                <entry key="disclosure.doc.formats" value="txt,html"/>
+                <entry key="disclosure.doc.formats" value="txt"/>
             </configuration>
         </step>
     </generators>
