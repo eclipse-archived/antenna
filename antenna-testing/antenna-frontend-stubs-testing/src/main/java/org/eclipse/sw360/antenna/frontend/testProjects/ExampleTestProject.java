@@ -107,7 +107,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
         result.addAll(new BasicConfiguration().getGenerators(projectRoot.toString()));
         result.stream()
                 .filter(g -> "SW360 Report Generator".equals(g.getName()))
-                .forEach(g -> g.setConfiguration(StepConfiguration.fromMap(Collections.singletonMap("disclosure.doc.formats","txt,html"))));
+                .forEach(g -> g.setConfiguration(StepConfiguration.fromMap(Collections.singletonMap("disclosure.doc.formats","txt"))));
         return result;
     }
 
@@ -148,7 +148,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public Collection<String> getExpectedBuildArtifacts() {
-        return Stream.of("artifact-information", "disclosure-doc", "disclosure-sw360-doc-html", "disclosure-sw360-doc-txt", "sources-zip", "antenna-report").collect(Collectors.toSet());
+        return Stream.of("artifact-information", "disclosure-doc", "disclosure-sw360-doc-txt", "sources-zip", "antenna-report").collect(Collectors.toSet());
     }
 
     @Override
