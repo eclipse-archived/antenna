@@ -1,0 +1,21 @@
+# Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v2.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+language: java
+jdk:
+  - openjdk8
+  # - openjdk10
+  # - openjdk11
+  # - oraclejdk8
+  # - oraclejdk9
+  # - oraclejdk11
+
+script:
+  - mvn clean verify -DskipTests=true
+  - mvn install -DskipTests=true
+  - mvn install
