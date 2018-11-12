@@ -77,6 +77,10 @@ public class SecurityIssueValidator extends AbstractComplianceChecker {
                 LOGGER.debug("Do not validate security issue=[" + issue.getReference() + "], since it is ignored for validation");
                 continue;
             }
+            if(SecurityIssueStatus.NOT_APPLICABLE.equals(issue.getStatus())) {
+                LOGGER.debug("Ignore not applicable issue=[" + issue.getReference() + "]");
+                continue;
+            }
             if (suppressedSecurityIssues != null && suppressedSecurityIssues.containsKey(issue.getReference())) {
                 final Map<ArtifactSelector, GregorianCalendar> issueSuppressors = suppressedSecurityIssues.get(issue.getReference());
                 final Optional<GregorianCalendar> suppressedUntil = issueSuppressors.entrySet().stream()

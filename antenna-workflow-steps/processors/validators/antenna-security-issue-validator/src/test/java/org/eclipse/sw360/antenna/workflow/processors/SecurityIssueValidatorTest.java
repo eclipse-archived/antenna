@@ -32,6 +32,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     private Issue openIssue;
     private Issue acknowledgedIssue;
     private Issue confirmedIssue;
+    private Issue notApplicableIssue;
     private SecurityIssueValidator validator;
     private Map<String, String> configMap;
 
@@ -49,7 +50,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
         confirmedIssue.setStatus(SecurityIssueStatus.CONFIRMED);
         confirmedIssue.setSeverity(5.5);
 
-        Issue notApplicableIssue = new Issue();
+        notApplicableIssue = new Issue();
         notApplicableIssue.setStatus(SecurityIssueStatus.NOT_APPLICABLE);
         notApplicableIssue.setSeverity(9.0);
 
@@ -168,5 +169,16 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
                 .findFirst()
                 .get()
                 .getSeverity()).isEqualTo(IEvaluationResult.Severity.FAIL);
+    }
+
+    @Test
+    public void validateDontFindNotApplicable() throws AntennaConfigurationException {
+        Artifact artifact = mkArtifact(Arrays.asList(notApplicableIssue));
+        configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, "1.0");
+        configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_SEVERITY_KEY, "FAIL");
+        configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "Open");
+        validator.configure(configMap);
+
+        assertThat(validator.validate(artifact).size()).isEqualTo(0);
     }
 }
