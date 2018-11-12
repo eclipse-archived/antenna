@@ -96,7 +96,7 @@ public class FileToArchiveWriterTest extends AntennaTestWithMockedContext {
     private String getContentOfEntryInZip(File zipFile, String entryName) throws IOException {
         try (ZipFile zip = new ZipFile(zipFile)) {
             return zip.stream()
-                    .filter(e -> entryName.equals(e.getName()))
+                    .filter(e -> Paths.get(entryName).compareTo(Paths.get(e.getName())) == 0)
                     .map(entry -> {
                         try {
                             return zip.getInputStream(entry);
@@ -119,9 +119,11 @@ public class FileToArchiveWriterTest extends AntennaTestWithMockedContext {
     @Test
     public void testAddFileToArchive() throws Exception {
         fileToArchiveWriter.addFileToArchive(fileToAddIntoArchive.toPath(), archiveToAddFileIn.toPath(), innerPath);
-
         List<String> filesInZip = listContentsOfZip(archiveToAddFileIn);
-        assertThat(filesInZip, hasItem(innerPath.toString()));
+        assertThat(filesInZip.stream()
+                        .map(f -> innerPath.compareTo(Paths.get(f)))
+                        .anyMatch(result -> result == 0),
+                is(true));
         originalContentOfZip.forEach(
                 f -> assertThat(filesInZip, hasItem(f))
         );
