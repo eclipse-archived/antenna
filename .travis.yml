@@ -1,4 +1,4 @@
-# Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+# Copyright (c) Bosch Software Innovations GmbH 2018.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v2.0
@@ -6,7 +6,14 @@
 # http://www.eclipse.org/legal/epl-v20.html
 #
 # SPDX-License-Identifier: EPL-2.0
+sudo: false
 language: java
+cache:
+  apt: true
+  directories:
+    - $HOME/.m2
+before_cache:
+  - rm -rf $HOME/.m2/repository/org/eclipse/sw360/antenna/
 jdk:
   - openjdk8
   # - openjdk10
@@ -15,7 +22,14 @@ jdk:
   # - oraclejdk9
   # - oraclejdk11
 
-script:
-  - mvn clean verify -DskipTests=true
-  - mvn install -DskipTests=true
-  - mvn install
+jobs:
+  include:
+    - name: mvn test
+      install:
+        - mvn clean verify -P '!build-assembly' -DskipTests=true -V -B
+        - mvn install -P '!build-assembly' -DskipTests=true -B
+      script:
+        - mvn test -P '!build-assembly' -B
+    - name: test for license headers
+      install: true
+      script: .travis/testForLicenseHeaders.sh

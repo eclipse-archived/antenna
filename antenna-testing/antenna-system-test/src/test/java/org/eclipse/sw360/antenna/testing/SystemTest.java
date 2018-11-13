@@ -81,7 +81,7 @@ public class SystemTest {
         pdfTest(projectDir, expectedPdfResult);
 
         // HTML Test
-        String expectedHtmlResult = "/analyzer/jsonanalyzer/expected_html_result";
+        String expectedHtmlResult = "/analyzer/jsonanalyzer/expected_html_result.html";
         htmlTest(projectDir, expectedHtmlResult);
 
         // ZipFile Test
@@ -89,7 +89,7 @@ public class SystemTest {
         zipTest(projectDir, expectedFiles);
 
         // workflow Test
-        String expectedMergedResult = "/analyzer/jsonanalyzer/expectedMergedWorkflow";
+        String expectedMergedResult = "/analyzer/jsonanalyzer/expectedMergedWorkflow.xml";
         workflowTest(projectDir, expectedMergedResult);
     }
 
@@ -106,7 +106,7 @@ public class SystemTest {
         pdfTest(projectDir, expectedPdfResult);
 
         // HTML Test
-        String expectedHtmlResult = "/analyzer/jsonanalyzer/expected_html_result";
+        String expectedHtmlResult = "/analyzer/jsonanalyzer/expected_html_result.html";
         htmlTest(projectDir, expectedHtmlResult);
 
         // ZipFile Test
@@ -114,32 +114,7 @@ public class SystemTest {
         zipTest(projectDir, expectedFiles);
 
         // workflow Test
-        String expectedMergedResult = "/analyzer/csvanalyzer/expectedMergedWorkflow";
-        workflowTest(projectDir, expectedMergedResult);
-    }
-
-    @Ignore
-    @Test
-    public void testSonatypeIQAnalyzer()
-            throws Exception {
-
-        initiateCopyAndRunProject("sonatypeiqanalyzer");
-        Path projectDir = testProject.getProjectRoot();
-
-        // PDF Test
-        String expectedPdfResult = "/analyzer/jsonanalyzer/expected_result";
-        pdfTest(projectDir, expectedPdfResult);
-
-        // HTML Test
-        String expectedHtmlResult = "/analyzer/jsonanalyzer/expected_html_result";
-        htmlTest(projectDir, expectedHtmlResult);
-
-        // ZipFile Test
-        int expectedFiles = 799;
-        zipTest(projectDir, expectedFiles);
-
-        // workflow Test
-        String expectedMergedResult = "/analyzer/sonatypeiqanalyzer/expectedMergedWorkflow";
+        String expectedMergedResult = "/analyzer/csvanalyzer/expectedMergedWorkflow.xml";
         workflowTest(projectDir, expectedMergedResult);
     }
 }
