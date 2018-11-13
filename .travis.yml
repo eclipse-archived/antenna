@@ -15,7 +15,8 @@ jdk:
   # - oraclejdk9
   # - oraclejdk11
 
+install:
+  - mvn clean verify -P '!build-assembly' -DskipTests=true -V -B
+  - mvn install -P '!build-assembly' -DskipTests=true -B
 script:
-  - mvn clean verify -DskipTests=true
-  - mvn install -DskipTests=true
-  - mvn install
+  - mvn test -P '!build-assembly' -B
