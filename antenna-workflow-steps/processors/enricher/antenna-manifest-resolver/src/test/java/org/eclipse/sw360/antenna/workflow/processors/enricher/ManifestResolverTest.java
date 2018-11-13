@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactJar;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
@@ -72,7 +73,7 @@ public class ManifestResolverTest extends AntennaTestWithMockedContext {
 
     @Test
     public void resolveArtifactsTest() throws IOException {
-        Path jarWithManifest = jarCreator.createJarWithManifest();
+        Path jarWithManifest = jarCreator.createJarWithManifest(JarCreator.jarWithManifestName);
         List<Artifact> artifacts = makeArtifacts(jarWithManifest);
 
         resolver.process(artifacts);
@@ -95,6 +96,21 @@ public class ManifestResolverTest extends AntennaTestWithMockedContext {
     public void testJarInJar() throws IOException {
         Path jarInJarInJar = jarCreator.createJarInJar()
                 .resolve(JarCreator.jarWithManifestName);
+        List<Artifact> artifacts = makeArtifacts(jarInJarInJar);
+
+        resolver.process(artifacts);
+
+        final Optional<Path> artifactFile = artifacts.get(0).askForGet(ArtifactFile.class);
+
+        assertThat(artifactFile.isPresent()).isTrue();
+        assertThat(artifactFile.get().toFile().getName()).isEqualTo(JarCreator.jarWithManifestName);
+        assertManifestMetadata(artifacts.get(0));
+    }
+
+    @Test
+    public void testJarInJarInNestedFolders() throws IOException {
+        Path jarInJarInJar = jarCreator.createJarInJarInNestedFolders()
+                .resolve(JarCreator.jarInFoldersName);
         List<Artifact> artifacts = makeArtifacts(jarInJarInJar);
 
         resolver.process(artifacts);
