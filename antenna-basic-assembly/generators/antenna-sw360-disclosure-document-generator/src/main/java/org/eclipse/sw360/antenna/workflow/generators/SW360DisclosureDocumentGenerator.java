@@ -23,10 +23,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
 import org.eclipse.sw360.antenna.repository.Attachable;
 import org.eclipse.sw360.datahandler.thrift.SW360Exception;
-import org.eclipse.sw360.datahandler.thrift.licenseinfo.LicenseInfo;
-import org.eclipse.sw360.datahandler.thrift.licenseinfo.LicenseInfoFile;
-import org.eclipse.sw360.datahandler.thrift.licenseinfo.LicenseInfoParsingResult;
-import org.eclipse.sw360.datahandler.thrift.licenseinfo.LicenseNameWithText;
+import org.eclipse.sw360.datahandler.thrift.licenseinfo.*;
 import org.eclipse.sw360.licenseinfo.outputGenerators.DocxGenerator;
 import org.eclipse.sw360.licenseinfo.outputGenerators.OutputGenerator;
 import org.eclipse.sw360.licenseinfo.outputGenerators.TextGenerator;
@@ -75,13 +72,13 @@ public class SW360DisclosureDocumentGenerator extends AbstractGenerator {
         Map<String, IAttachable> results = new HashMap<>();
 
         if(selectedOutputFormats.contains(DOCX_KEY)){
-            results.putAll(produce(new DocxGenerator(), projectLicenseInfoResults));
+            results.putAll(produce(new DocxGenerator(OutputFormatVariant.DISCLOSURE, ""), projectLicenseInfoResults));
         }
         if(selectedOutputFormats.contains(TXT_KEY)){
-            results.putAll(produce(new TextGenerator(), projectLicenseInfoResults));
+            results.putAll(produce(new TextGenerator(OutputFormatVariant.DISCLOSURE, ""), projectLicenseInfoResults));
         }
         if(selectedOutputFormats.contains(HTML_KEY)){
-            results.putAll(produce(new XhtmlGenerator(), projectLicenseInfoResults));
+            results.putAll(produce(new XhtmlGenerator(OutputFormatVariant.DISCLOSURE, ""), projectLicenseInfoResults));
         }
         return results;
     }
@@ -165,7 +162,7 @@ public class SW360DisclosureDocumentGenerator extends AbstractGenerator {
                     .orElse(Optional.ofNullable(toolConfiguration.getProductName())
                             .orElse(""));
             String licenseInfoHeaderText = Optional.ofNullable(toolConfiguration.getCopyrightNotice()).orElse("");
-            output = generator.generateOutputFile(projectLicenseInfoResults, projectName, licenseInfoHeaderText);
+            output = generator.generateOutputFile(projectLicenseInfoResults, projectName, "", licenseInfoHeaderText);
         } catch (SW360Exception e) {
             throw new AntennaExecutionException("Failed to generate output via SW360 libraries",e);
         }

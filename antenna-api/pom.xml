@@ -18,8 +18,6 @@
 	</parent>
 	<artifactId>antenna-api</artifactId>
 
-	<packaging>bundle</packaging>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.sw360.antenna</groupId>

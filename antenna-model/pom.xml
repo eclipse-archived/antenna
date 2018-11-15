@@ -17,7 +17,6 @@
         <version>2.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>antenna-model</artifactId>
-    <packaging>bundle</packaging>
     <dependencies>
         <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>
@@ -42,16 +41,6 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Export-Package>org.eclipse.sw360.antenna.api,org.eclipse.sw360.antenna.model,org.eclipse.sw360.antenna.model.xml.generated</Export-Package>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                    </instructions>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
