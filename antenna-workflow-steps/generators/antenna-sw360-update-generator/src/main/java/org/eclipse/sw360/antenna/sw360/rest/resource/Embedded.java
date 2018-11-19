@@ -11,9 +11,11 @@
 
 package org.eclipse.sw360.antenna.sw360.rest.resource;
 
+import org.eclipse.sw360.antenna.sw360.rest.deserializer.SW360ResourceDeserializer;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectEmbedded;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.springframework.hateoas.hal.Jackson2HalModule;
 
-@JsonDeserialize(as = SW360ProjectEmbedded.class)
+@JsonDeserialize(using = SW360ResourceDeserializer.class)
 public interface Embedded {
 }

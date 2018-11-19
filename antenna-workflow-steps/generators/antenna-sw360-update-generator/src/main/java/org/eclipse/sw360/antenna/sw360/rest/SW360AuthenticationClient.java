@@ -44,7 +44,7 @@ public class SW360AuthenticationClient {
         this.authServerUrl = authServerUrl;
     }
 
-    public String getOAuth2AccessToken(String username, String password) throws IOException, AntennaException {
+    public String getOAuth2AccessToken(String username, String password) throws AntennaException {
         String requestUrl = authServerUrl + GET_ACCESS_TOKEN_ENDPOINT;
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(requestUrl)
@@ -62,13 +62,17 @@ public class SW360AuthenticationClient {
                             httpEntity,
                             String.class);
             if (response.getStatusCode() == HttpStatus.OK) {
-                return (String) new ObjectMapper().readValue(response.getBody(), HashMap.class).get("access_token");
+                try {
+                    return (String) new ObjectMapper().readValue(response.getBody(), HashMap.class).get("access_token");
+                } catch (IOException e) {
+                    throw new AntennaException("Error when attempting to deserialise the response body.", e);
+                }
             } else {
                 throw new AntennaException("Could not request OAuth2 access token for [" + username + "].");
             }
     }
 
-    private HttpHeaders addBasicAuthentication(HttpHeaders headers, String liferayClient) throws UnsupportedEncodingException {
+    private HttpHeaders addBasicAuthentication(HttpHeaders headers, String liferayClient) {
         String base64ClientCredentials = Base64.getEncoder().encodeToString(liferayClient.getBytes(StandardCharsets.UTF_8));
         headers.add(HttpHeaders.AUTHORIZATION, AUTHORIZATION_BASIC_VALUE + base64ClientCredentials );
         return headers;
@@ -79,7 +83,7 @@ public class SW360AuthenticationClient {
         return headers;
     }
 
-    public HttpHeaders getHeadersForAccessToken() throws UnsupportedEncodingException {
+    public HttpHeaders getHeadersForAccessToken() {
         String clientCredentials = "trusted-sw360-client:sw360-secret";
         String base64ClientCredentials =
                 Base64.getEncoder().encodeToString(clientCredentials.getBytes(StandardCharsets.UTF_8));

@@ -44,15 +44,8 @@
         <module>generators/antenna-csv-generator</module>
         <module>generators/antenna-HTML-report-generator</module>
         <module>generators/antenna-source-zip-generator</module>
+        <module>generators/antenna-sw360-update-generator</module>
         <!-- outputHandlers -->
         <module>outputHandlers/antenna-add-to-archive-output-handler</module>
     </modules>
-    <profiles>
-        <profile>
-            <id>experimental-steps</id>
-            <modules>
-                <module>generators/antenna-sw360-update-generator</module>
-            </modules>
-        </profile>
-    </profiles>
 </project>

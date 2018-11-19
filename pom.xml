@@ -276,7 +276,7 @@
             <dependency>
                 <groupId>org.springframework.hateoas</groupId>
                 <artifactId>spring-hateoas</artifactId>
-                <version>0.43.0.RELEASE</version>
+                <version>0.25.0.RELEASE</version>
             </dependency>
             <!-- ################################ testing dependencies ################################ -->
             <dependency>
