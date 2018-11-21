@@ -11,6 +11,9 @@
 
 package org.eclipse.sw360.antenna.frontend.mojo;
 
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.project.DefaultProjectBuildingRequest;
+import org.apache.maven.project.ProjectBuildingRequest;
 import org.eclipse.sw360.antenna.api.AbstractP2ArtifactsResolver;
 import org.eclipse.sw360.antenna.api.FrontendCommons;
 import org.eclipse.sw360.antenna.api.IAttachable;
@@ -303,7 +306,11 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
 
         if(dependencyGraphBuilder != null) {
             try {
-                DependencyNode dependencyNode = dependencyGraphBuilder.buildDependencyGraph(mvnBuildContext.getSession().getCurrentProject(), null);
+                MavenSession session = mvnBuildContext.getSession();
+                ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest(session.getProjectBuildingRequest());
+                buildingRequest.setProject(session.getCurrentProject());
+
+                DependencyNode dependencyNode = dependencyGraphBuilder.buildDependencyGraph(buildingRequest, null);
                 CollectingDependencyNodeVisitor visitor = new CollectingDependencyNodeVisitor();
                 dependencyNode.accept(visitor);
                 wrappedDependencyNodes = new WrappedDependencyNodes(visitor.getNodes());

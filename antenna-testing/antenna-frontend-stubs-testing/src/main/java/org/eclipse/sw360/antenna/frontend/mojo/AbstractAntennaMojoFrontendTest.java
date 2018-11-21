@@ -10,8 +10,9 @@
  */
 package org.eclipse.sw360.antenna.frontend.mojo;
 
-import org.eclipse.sw360.antenna.frontend.AbstractAntennaFrontendTest;
-import org.eclipse.sw360.antenna.frontend.testProjects.AbstractTestProjectWithExpectations;
+import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
+import org.apache.maven.artifact.repository.MavenArtifactRepository;
+import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.LegacySupport;
 import org.apache.maven.plugin.MojoExecution;
@@ -23,6 +24,8 @@ import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 import org.eclipse.aether.repository.NoLocalRepositoryManagerException;
+import org.eclipse.sw360.antenna.frontend.AbstractAntennaFrontendTest;
+import org.eclipse.sw360.antenna.frontend.testProjects.AbstractTestProjectWithExpectations;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,16 +73,15 @@ public abstract class AbstractAntennaMojoFrontendTest extends AbstractAntennaFro
         MavenProject mvnProject = mojoRule.readMavenProject(basedir);
         Assert.assertNotNull(mvnProject);
 
-        setUpRepositorySession(mvnProject);
-
         MavenSession mvnSession = mojoRule.newMavenSession(mvnProject);
         Assert.assertNotNull(mvnSession);
+        setUpRepositorySession(mvnSession);
         mvnSession.getRequest().setUserProperties(userProperties);
         return mvnSession;
     }
 
-    private void setUpRepositorySession(MavenProject mvnProject) throws NoLocalRepositoryManagerException {
-        DefaultRepositorySystemSession repositorySession = (DefaultRepositorySystemSession) mvnProject.getProjectBuildingRequest().getRepositorySession();
+    private void setUpRepositorySession(MavenSession mvnSession) throws NoLocalRepositoryManagerException {
+        DefaultRepositorySystemSession repositorySession = (DefaultRepositorySystemSession) mvnSession.getProjectBuildingRequest().getRepositorySession();
         String baseDir = String.format("%s%s%s", this.testData.projectRoot, File.separator, LOCAL_REPOSITORY_ROOT);
         LocalRepository localRepository = new LocalRepository(baseDir);
         SimpleLocalRepositoryManagerFactory managerFactory = new SimpleLocalRepositoryManagerFactory();
