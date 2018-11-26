@@ -35,4 +35,8 @@ project's `pom.xml` file and adding settings to the `<configuration>`
 section. As a standalone executable is configured as an executable jar in the command line. 
 Find out how to configure Antenna by reading [How to configure Antenna](antenna-documentation/src/site/markdown/how-to-configure-antenna.md). 
 
+#### Configure Antenna for Java 9 or newer
+Antenna can be used with Java versions 9 or newer.
+However, it requires some additional configuration described in [Tool Configuration](antenna-documentation/src/site/markdown/tool-configuration.md/#additional-configuration-for-java-9-or-newer). 
+
  *To find answers in the most frequent questions/problems go to [Troubleshooting](antenna-documentation/src/site/markdown/troubleshooting.md).*

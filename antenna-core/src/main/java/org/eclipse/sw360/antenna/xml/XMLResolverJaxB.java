@@ -45,7 +45,6 @@ public class XMLResolverJaxB implements IXMLResolver {
         try {
             JAXBContext context = JAXBContext.newInstance(AntennaConfig.class);
             Unmarshaller um = context.createUnmarshaller();
-            um.setProperty("com.sun.xml.internal.bind.ObjectFactory", new ObjectFactory());
             return (AntennaConfig) um.unmarshal(new InputStreamReader(new FileInputStream(file), encoding));
         } catch (JAXBException e) {
             throw new AntennaConfigurationException("The config.xml could not be resolved.", e);

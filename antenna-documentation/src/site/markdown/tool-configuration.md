@@ -116,3 +116,35 @@ Furthermore you can define a license as forbidden.
     </forbidden>
 </licenseValidation>
 ```
+
+### Additional configuration for Java 9 or newer
+Since some Java EE dependencies like JAXB have been removed from the standard installation 
+one has to manually add these dependencies when configuring the plugin.
+
+```xml
+<plugin>
+    <groupId>org.eclipse.sw360.antenna</groupId>
+    <artifactId>antenna-maven-plugin</artifactId>
+    <version>x.y.z</version>
+    <configuration>
+        <!-- ... -->
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+    </dependencies>
+</plugin>
+```

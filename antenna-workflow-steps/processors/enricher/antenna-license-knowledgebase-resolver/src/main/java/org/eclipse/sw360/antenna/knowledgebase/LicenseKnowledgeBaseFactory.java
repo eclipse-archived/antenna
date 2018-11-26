@@ -35,7 +35,7 @@ public class LicenseKnowledgeBaseFactory implements Supplier<ILicenseManagementK
 
     @Override
     public ILicenseManagementKnowledgeBase get() {
-        Iterator<ILicenseManagementKnowledgeBase> iter = ServiceLoader.load(ILicenseManagementKnowledgeBase.class).iterator();
+        Iterator<ILicenseManagementKnowledgeBase> iter = ServiceLoader.load(ILicenseManagementKnowledgeBase.class, getClass().getClassLoader()).iterator();
         if(!iter.hasNext()){
             throw new AntennaExecutionException("Was not able to find any implementation for the ILicenseManagementKnowledgeBase interface.");
         }
