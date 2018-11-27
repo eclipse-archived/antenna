@@ -46,6 +46,7 @@
         <module>antenna-frontend-stubs</module>
         <module>antenna-workflow-steps</module>
         <module>antenna-documentation</module>
+        <module>antenna-sw360-adapter</module>
     </modules>
 
     <profiles>
