@@ -21,10 +21,8 @@ import org.junit.*;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
-import static org.junit.Assert.assertTrue;
 import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.assumeToBeConnectedToTheInternet;
 
 public class AntennaGradlePluginTest {
@@ -56,7 +54,7 @@ public class AntennaGradlePluginTest {
         assumeToBeConnectedToTheInternet();
         AntennaImpl runner = new AntennaImpl(exampleTestProject.getProjectPom());
         runner.execute();
-        assertTrue(projectRoot.resolve("antenna").toFile().exists()); // TODO
+        assertThat(projectRoot.resolve("antenna").toFile()).exists(); // TODO
     }
 
     @Test
@@ -72,11 +70,10 @@ public class AntennaGradlePluginTest {
                 .build();
 
 
-        assertThat(result.task(":" + AntennaBasicGradlePlugin.TASK_NAME).getOutcome(),
-                equalTo(SUCCESS));
+        assertThat(result.task(":" + AntennaBasicGradlePlugin.TASK_NAME).getOutcome()).isEqualTo(SUCCESS);
 
-        assertTrue(projectRoot.resolve("build/antenna").toFile().exists());
-        assertTrue(projectRoot.resolve("build/antenna/AntennaDisclosureDocument.txt").toFile().exists());
-        assertTrue(projectRoot.resolve("build/antenna/sources.zip").toFile().exists());
+        assertThat(projectRoot.resolve("build/antenna").toFile()).exists();
+        assertThat(projectRoot.resolve("build/antenna/AntennaDisclosureDocument.txt").toFile()).exists();
+        assertThat(projectRoot.resolve("build/antenna/sources.zip").toFile()).exists();
     }
 }

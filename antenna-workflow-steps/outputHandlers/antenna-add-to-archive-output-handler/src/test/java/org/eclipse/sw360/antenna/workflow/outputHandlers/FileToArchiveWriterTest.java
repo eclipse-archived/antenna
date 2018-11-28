@@ -10,23 +10,22 @@
  */
 package org.eclipse.sw360.antenna.workflow.outputHandlers;
 
-import org.eclipse.sw360.antenna.report.Reporter;
-import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.apache.commons.io.IOUtils;
-import org.hamcrest.Matchers;
+import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -34,11 +33,8 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
-import java.nio.file.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(Parameterized.class)
 public class FileToArchiveWriterTest extends AntennaTestWithMockedContext {
@@ -120,16 +116,12 @@ public class FileToArchiveWriterTest extends AntennaTestWithMockedContext {
     public void testAddFileToArchive() throws Exception {
         fileToArchiveWriter.addFileToArchive(fileToAddIntoArchive.toPath(), archiveToAddFileIn.toPath(), innerPath);
         List<String> filesInZip = listContentsOfZip(archiveToAddFileIn);
-        assertThat(filesInZip.stream()
-                        .map(f -> innerPath.compareTo(Paths.get(f)))
-                        .anyMatch(result -> result == 0),
-                is(true));
+        assertThat(filesInZip.stream().map(Paths::get)).contains(innerPath);
         originalContentOfZip.forEach(
-                f -> assertThat(filesInZip, hasItem(f))
-        );
+                f -> assertThat(filesInZip).contains(f));
 
         String contentOfAddedFile = getContentOfEntryInZip(archiveToAddFileIn, innerPath.toString());
-        assertThat(contentOfAddedFile, is(contentOfInnerFile));
+        assertThat(contentOfAddedFile).isEqualTo(contentOfInnerFile);
 
     }
 }

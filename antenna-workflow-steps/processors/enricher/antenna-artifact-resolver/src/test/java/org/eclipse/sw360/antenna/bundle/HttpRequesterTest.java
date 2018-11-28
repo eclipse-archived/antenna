@@ -44,9 +44,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockRunnerDelegate(Parameterized.class)
@@ -128,15 +127,15 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
         Mockito.verify(httpClientMock).execute(captor.capture());
         Mockito.verify(httpEntityMock).getContent();
         
-        assertThat(resultFile, is(expectedJarFile));
+        assertThat(resultFile).isEqualTo(expectedJarFile);
         
         HttpGet response = captor.getValue();
         Iterator<Path> requestPathIterator = Paths.get(response.getURI().getPath()).iterator();
         
-        assertThat(requestPathIterator.next().toString(), is(mavenCoordinates.getGroupId()));
-        assertThat(requestPathIterator.next().toString(), is(mavenCoordinates.getArtifactId()));
-        assertThat(requestPathIterator.next().toString(), is(mavenCoordinates.getVersion()));
-        assertThat(requestPathIterator.next().toString(), is(expectedJarBaseName));
+        assertThat(requestPathIterator.next().toString()).isEqualTo(mavenCoordinates.getGroupId());
+        assertThat(requestPathIterator.next().toString()).isEqualTo(mavenCoordinates.getArtifactId());
+        assertThat(requestPathIterator.next().toString()).isEqualTo(mavenCoordinates.getVersion());
+        assertThat(requestPathIterator.next().toString()).isEqualTo(expectedJarBaseName);
     }
     
     @Test(expected = ArtifactDoesNotExistException.class)

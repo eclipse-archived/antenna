@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.workflow.processors;
 
 import static org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator.*;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;

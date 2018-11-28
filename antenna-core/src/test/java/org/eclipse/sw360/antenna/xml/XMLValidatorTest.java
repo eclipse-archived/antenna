@@ -10,19 +10,15 @@
  */
 package org.eclipse.sw360.antenna.xml;
 
-import static org.fest.assertions.Assertions.assertThat;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.junit.Test;
 
-import org.eclipse.sw360.antenna.xml.XMLValidator;
-
 public class XMLValidatorTest {
     @Test
-    public void validateXMLTestValidURL() throws MalformedURLException, AntennaConfigurationException {
+    public void validateXMLTestValidURL() throws AntennaConfigurationException {
         XMLValidator validator = new XMLValidator();
         URL xsd = validator.getClass().getResource("/configTest.xsd");
         URL xml = validator.getClass().getResource("/antennaconf.xml");

@@ -11,7 +11,6 @@
 package org.eclipse.sw360.antenna.util;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import java.net.URL;
@@ -19,8 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assume.*;
 
 public class AntennaUtilsTest {
@@ -42,10 +40,10 @@ public class AntennaUtilsTest {
 
         final Path jarPath = AntennaUtils.getJarPath(url);
 
-        assertThat(jarPath.toString(), not(startsWith("file:")));
-        assertThat(jarPath.toString(), not(startsWith("jar:")));
-        assertThat(jarPath.getFileName().toString(), is(fileBasename));
-        assertThat(jarPath.toFile().exists(), is(true));
+        assertThat(jarPath.toString()).doesNotStartWith("file:");
+        assertThat(jarPath.toString()).doesNotStartWith("jar:");
+        assertThat(jarPath).hasFileName(fileBasename);
+        assertThat(jarPath).exists();
     }
 
     @Test
@@ -56,7 +54,7 @@ public class AntennaUtilsTest {
 
         final Path jarPath = AntennaUtils.getJarPath(url);
 
-        assertThat(jarPath, isPath("C:\\Documents and Settings\\antenna\\someFile.jar"));
+        assertThat(jarPath).hasToString("C:\\Documents and Settings\\antenna\\someFile.jar");
     }
 
     @Test
@@ -67,7 +65,7 @@ public class AntennaUtilsTest {
 
         final Path jarPath = AntennaUtils.getJarPath(url);
 
-        assertThat(jarPath, isPath("C:\\Documents and Settings\\antenna\\someFile.jar"));
+        assertThat(jarPath).hasToString("C:\\Documents and Settings\\antenna\\someFile.jar");
     }
 
     @Test
@@ -76,7 +74,7 @@ public class AntennaUtilsTest {
 
         final Path jarPath = AntennaUtils.getJarPath(filePath);
 
-        assertThat(jarPath, isPath("/some/path/to/file.jar"));
+        assertThat(jarPath).hasToString("/some/path/to/file.jar");
     }
 
     @Test(expected = AntennaExecutionException.class)
@@ -92,7 +90,7 @@ public class AntennaUtilsTest {
 
         final Path jarPath = AntennaUtils.getJarPath(filePath);
 
-        assertThat(jarPath, isPath("/some/path/to/file.jar"));
+        assertThat(jarPath).hasToString("/some/path/to/file.jar");
     }
 
     @Test
@@ -101,7 +99,7 @@ public class AntennaUtilsTest {
 
         final Path jarPath = AntennaUtils.getJarPath(filePath);
 
-        assertThat(jarPath, isPath("/some/path/to/file.jar"));
+        assertThat(jarPath).hasToString("/some/path/to/file.jar");
     }
 
     @Test
@@ -111,16 +109,16 @@ public class AntennaUtilsTest {
         final Iterator<Path> iterator = AntennaUtils.getJarPathIteratorFromPath(Paths.get(filePath).toAbsolutePath());
 
         Path val;
-        assertThat(iterator.hasNext(), is(true));
+        assertThat(iterator.hasNext()).isTrue();
         val = iterator.next();
-        assertThat(val, isPath("/some/path/to/file.jar"));
-        assertThat(iterator.hasNext(), is(true));
+        assertThat(val).hasToString("/some/path/to/file.jar");
+        assertThat(iterator.hasNext()).isTrue();
         val = iterator.next();
-        assertThat(val, isPath("/child.war", true));
-        assertThat(iterator.hasNext(), is(true));
+        assertThat(val).hasToString("/child.war");
+        assertThat(iterator.hasNext()).isTrue();
         val = iterator.next();
-        assertThat(val, isPath("/subChild.jar", true));
-        assertThat(iterator.hasNext(), is(false));
+        assertThat(val).hasToString("/subChild.jar");
+        assertThat(iterator.hasNext()).isFalse();
     }
 
     @Test
@@ -129,7 +127,7 @@ public class AntennaUtilsTest {
 
         Path computed = AntennaUtils.computeInnerReplacementJarPath(filePath);
 
-        assertThat(computed, isPath("/some/path/to/file_jar/child_war/subChild.jar"));
+        assertThat(computed).hasToString("/some/path/to/file_jar/child_war/subChild.jar");
     }
 
     @Test
@@ -140,7 +138,7 @@ public class AntennaUtilsTest {
 
         final Path jarPath = AntennaUtils.getJarPath(url);
 
-        assertThat(jarPath, isPath("C:\\some\\path\\to\\file.jar"));
+        assertThat(jarPath).hasToString("C:\\some\\path\\to\\file.jar");
     }
 
     @Test
@@ -150,17 +148,6 @@ public class AntennaUtilsTest {
 
         final Path jarPath = AntennaUtils.getJarPath(url);
 
-        assertThat(jarPath, isPath("/some/path/to/file.jar"));
-    }
-
-    private Matcher<Path> isPath(String string){
-        return isPath(string, false);
-    }
-
-    private Matcher<Path> isPath(String string, boolean notAbsolutefied){
-        if(notAbsolutefied){
-            return is(Paths.get(string));
-        }
-        return is(Paths.get(string).toAbsolutePath());
+        assertThat(jarPath).hasToString("/some/path/to/file.jar");
     }
 }
