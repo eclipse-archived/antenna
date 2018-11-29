@@ -23,7 +23,7 @@ while read file ; do
     echo "$(tput bold)ERROR: epl-2.0 header is not found in $file$(tput sgr0)"
     failure=true
 done <<< "$(git ls-files \
-    | grep -Ev '\.(csv|rdf|ent|dtd|png|gitignore|gitattributes|md|bat|jar|json)' \
+    | grep -Ev '\.(csv|rdf|ent|dtd|png|gitignore|gitattributes|md|bat|jar|json|couch|view)' \
     | grep -Ev '(gradlew|build.gradle|settings.gradle|gradle.properties|gradle/wrapper)' \
     | grep -Ev '(LICENSE|NOTICE|README)' \
     | grep -v 'antenna-testing/antenna-system-test/src/test/resources/analyzer')"

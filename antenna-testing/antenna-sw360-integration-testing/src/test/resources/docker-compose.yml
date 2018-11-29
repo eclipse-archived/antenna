@@ -1,0 +1,64 @@
+# Copyright (c) Bosch Software Innovations GmbH 2018.
+#
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v2.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/epl-v20.html
+#
+# SPDX-License-Identifier: EPL-2.0
+
+version: '2'
+services:
+  test_sw360:
+    image: sw360/sw360populated
+    networks:
+    - test_sw360DBs
+    depends_on:
+    - test_sw360postgres
+    - test_sw360couchdb
+    environment:
+    - POSTGRES_USER=sw360
+    - POSTGRES_HOST=test_sw360postgres
+    - COUCHDB_HOST=test_sw360couchdb
+    - COUCHDB_USER=sw360
+    - POSTGRES_PASSWORD=sw360fossy
+
+  test_sw360postgres:
+    image: postgres:9
+    networks:
+    - test_sw360DBs
+    volumes:
+    - ./postgres:/docker-entrypoint-initdb.d
+    environment:
+    - POSTGRES_DB=sw360pgdb
+    - POSTGRES_USER=sw360
+    - POSTGRES_PASSWORD=sw360fossy
+
+  test_sw360couchdb:
+    image: sw360/sw360couchdb
+    networks:
+    - test_sw360DBs
+    volumes:
+    - ./couchdb/data:/initial-data
+    environment:
+    - COUCHDB_USER=sw360
+    - COUCHDB_LUCENE_HOST=sw360couchdb-lucene
+
+  test_sw360couchdb-lucene:
+    image: sw360/couchdb-lucene
+    networks:
+    - test_sw360DBs
+    depends_on:
+    - test_sw360couchdb
+    environment:
+    - COUCHDB_HOST=sw360couchdb
+    - COUCHDB_USER=sw360
+
+networks:
+  test_sw360DBs:
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.31.15.0/24
+        gateway: 172.31.15.254
+
