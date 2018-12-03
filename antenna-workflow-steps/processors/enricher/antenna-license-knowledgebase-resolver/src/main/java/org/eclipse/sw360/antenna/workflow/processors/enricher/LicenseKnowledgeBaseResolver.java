@@ -16,8 +16,10 @@ import java.util.*;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.knowledgebase.LicenseKnowledgeBaseFactory;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactLicenseInformation;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,12 +52,16 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
      *            List of artifacts which will be resolved
      */
     private void resolveKnowledgeBase(Collection<Artifact> artifacts) {
-        artifacts.stream().map(artifact -> artifact.getFinalLicenses().getLicenses())
-                .forEach(license -> {
-                    aliasToIdentifier(license);
-                    setText(license);
-                    setThreatGroup(license);
-                    setClassification(license);
+        artifacts.stream()
+                .map(artifact -> artifact.askForAll(ArtifactLicenseInformation.class))
+                .flatMap(List::stream)
+                .map(ArtifactLicenseInformation::get)
+                .map(LicenseInformation::getLicenses)
+                .forEach(licenses -> {
+                    aliasToIdentifier(licenses);
+                    setText(licenses);
+                    setThreatGroup(licenses);
+                    setClassification(licenses);
         });
     }
 

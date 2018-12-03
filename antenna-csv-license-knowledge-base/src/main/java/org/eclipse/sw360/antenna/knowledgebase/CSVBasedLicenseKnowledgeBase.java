@@ -166,7 +166,7 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
 
             String[] headers = reader.readNext();
             if (headers.length != NUMCOLS) {
-                String errMsg = String.format("License knowledgebase malformed. %d rows expected but %d found.", NUMCOLS, headers.length);
+                String errMsg = String.format("License knowledgebase malformed. %d facts expected but %d found.", NUMCOLS, headers.length);
                 LOGGER.error(errMsg);
                 LOGGER.error("Found headers {}", String.join("; ", headers));
                 throw new AntennaExecutionException(errMsg);

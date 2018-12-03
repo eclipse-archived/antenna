@@ -85,11 +85,6 @@
                 <entry key="securityIssueSeverityLimit" value="5.0" />
             </configuration>
         </step>
-        <!-- sort -->
-        <step>
-            <name>Sort Artifacts</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.ArtifactSorter</classHint>
-        </step>
     </processors>
     <generators>
         <step>
@@ -102,6 +97,6 @@
         <step>
             <name>Source Zip Writer</name>
             <classHint>org.eclipse.sw360.antenna.workflow.generators.SourceZipWriter</classHint>
-		</step>
-	</generators>
+        </step>
+    </generators>
 </workflow>

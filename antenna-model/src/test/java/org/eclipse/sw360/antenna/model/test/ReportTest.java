@@ -22,7 +22,7 @@ public class ReportTest {
     @Test
     public void test() {
         Report report = new Report();
-        ProcessingMessage msg = new ProcessingMessage(MessageType.PROCESSING_FAILURE);
+        ProcessingMessage msg = new ProcessingMessage(MessageType.PROCESSING_FAILURE, "msg");
         report.add(msg);
         assertThat(report.getMessageList().get(0)).isEqualTo(msg);
     }

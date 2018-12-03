@@ -10,73 +10,92 @@
  */
 package org.eclipse.sw360.antenna.model.test;
 
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.*;
+import org.eclipse.sw360.antenna.model.artifact.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
+import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
+import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ArtifactTest {
     private Artifact artifact;
-    private File jar, mavenSourcesJar;
+    private Path jar, mavenSourcesJar;
     private TemporaryFolder temp;
-    License license;
+    private License license;
 
     @Before
     public void init() throws IOException {
-        this.artifact = new Artifact();
-        artifact.getArtifactIdentifier().getMavenCoordinates().setArtifactId("testId");
-        artifact.getArtifactIdentifier().getMavenCoordinates().setGroupId("testGroupId");
-        artifact.getArtifactIdentifier().getMavenCoordinates().setVersion("testVersion");
-        artifact.setMatchState(MatchState.EXACT);
-        artifact.setProprietary(true);
         temp = new TemporaryFolder();
         temp.create();
-        jar = temp.newFile("jar");
-        mavenSourcesJar = temp.newFile("sourcesJar");
-        artifact.setJar(jar);
-        artifact.setMavenSourceJar(mavenSourcesJar);
+        jar = temp.newFile("jar.jar").toPath();
+        mavenSourcesJar = temp.newFile("sourcesJar.jar").toPath();
+
+        artifact = new Artifact("Test")
+                .addFact(new MavenCoordinates("artifactId", "groupId", "version"))
+                .addFact(new GenericArtifactCoordinates("name", "version"))
+                .addFact(new ArtifactFile(jar))
+                .addFact(new ArtifactSourceFile(mavenSourcesJar))
+                .addFact(new ArtifactMatchingMetadata(MatchState.EXACT))
+                .setProprietary(true);
+
+
         license = new License();
         license.setName("testLicense");
-        artifact.setIgnoreForDownload(true);
+        artifact.setFlag(Artifact.IS_IGNORE_FOR_DOWNLOAD_KEY);
+    }
+
+    @Test
+    public void artifactTest() {
+        System.out.println(artifact.prettyPrint());
+        assertThat(artifact.getArtifactIdentifiers().size()).isEqualTo(3);
+
+        Optional<GenericArtifactCoordinates> oArtifactCoordinates = artifact.askFor(GenericArtifactCoordinates.class);
+        assertThat(oArtifactCoordinates.isPresent()).isTrue();
+        GenericArtifactCoordinates artifactCoordinates = oArtifactCoordinates.get();
+        assertThat(artifactCoordinates.getName()).isEqualTo("name");
+        assertThat(artifactCoordinates.getVersion()).isEqualTo("version");
+
+        final MavenCoordinates mavenCoordinates = artifact.askFor(MavenCoordinates.class).get();
+        assertThat(mavenCoordinates.getName()).isEqualTo("groupId:artifactId");
+        assertThat(mavenCoordinates.getVersion()).isEqualTo("version");
+        assertThat(mavenCoordinates.getGroupId()).isEqualTo("groupId");
+        assertThat(mavenCoordinates.getArtifactId()).isEqualTo("artifactId");
+
+        File found = artifact.askForGet(ArtifactFile.class).get().toFile();
+        assertThat(found).isEqualTo(jar.toFile());
     }
 
     @Test
     public void artifactIdentifierTest() {
-        assertThat(artifact.getArtifactIdentifier().getMavenCoordinates().getArtifactId()).isEqualTo("testId");
-        assertThat(artifact.getArtifactIdentifier().getMavenCoordinates().getGroupId()).isEqualTo("testGroupId");
-        assertThat(artifact.getArtifactIdentifier().getMavenCoordinates().getVersion()).isEqualTo("testVersion");
-        assertThat(artifact.hasSources()).isTrue();
-        assertThat(artifact.isIgnoreForDownload()).isTrue();
-        artifact.setIgnoreForDownload(false);
-        assertThat(artifact.isIgnoreForDownload()).isFalse();
-        artifact.setMavenSourceJar(null);
-        artifact.setP2SourceJar(null);
-        artifact.setJar(null);
-        assertThat(artifact.hasSources()).isFalse();
-        artifact.setP2SourceJar(new File(""));
-        assertThat(artifact.hasSources()).isTrue();
-        artifact.setP2SourceJar(null);
-        artifact.setMavenSourceJar(new File(""));
-
-        assertThat(artifact.hasSources()).isTrue();
+        assertThat(artifact.askFor(MavenCoordinates.class).get().getArtifactId()).isEqualTo("artifactId");
+        assertThat(artifact.askFor(MavenCoordinates.class).get().getGroupId()).isEqualTo("groupId");
+        assertThat(artifact.askFor(MavenCoordinates.class).get().getVersion()).isEqualTo("version");
+        assertThat(artifact.askFor(ArtifactFile.class).isPresent()).isTrue();
+        assertThat(artifact.getFlag(Artifact.IS_IGNORE_FOR_DOWNLOAD_KEY)).isTrue();
     }
 
     @Test
     public void testEquals() {
-        assertThat(artifact.equals(artifact)).isTrue();
-        assertThat(artifact.equals(null)).isFalse();
-        assertThat(artifact.equals(new Artifact())).isFalse();
-        assertThat(artifact.equals(new File(""))).isFalse();
+        assertThat(artifact).isEqualTo(artifact);
+        assertThat(artifact).isNotNull();
+        assertThat(artifact).isNotEqualTo(new Artifact());
+        assertThat(artifact).isNotEqualTo(new File(""));
         Artifact artifact1 = new Artifact();
-        artifact1.setDeclaredLicenses(license);
+        artifact1.addFact(new DeclaredLicenseInformation(license));
         assertThat(artifact.equals(artifact1)).isFalse();
 
     }
@@ -94,16 +113,18 @@ public class ArtifactTest {
     @Test
     public void licenseTest() {
         Artifact artifact = new Artifact();
-        artifact.setDeclaredLicenses(license);
-        artifact.setObservedLicenses(license);
-        assertThat(artifact.getDeclaredLicenses()).isEqualTo(license);
-        assertThat(artifact.getObservedLicenses()).isEqualTo(license);
+        artifact.addFact(new DeclaredLicenseInformation(license));
+        artifact.addFact(new ObservedLicenseInformation(license));
+        assertThat(artifact.askForGet(DeclaredLicenseInformation.class).get()).isEqualTo(license);
+        assertThat(artifact.askForGet(ObservedLicenseInformation.class).get()).isEqualTo(license);
     }
 
     @Test
     public void fileTest() {
-        assertThat(artifact.getJar()).isEqualTo(jar);
-        assertThat(artifact.getMvnSourceJar()).isEqualTo(mavenSourcesJar);
+        assertThat(artifact.askForGet(ArtifactFile.class).orElseThrow(null).toFile())
+                .isEqualTo(jar.toFile());
+        assertThat(artifact.askForGet(ArtifactSourceFile.class).orElseThrow(null).toFile())
+                .isEqualTo(mavenSourcesJar.toFile());
         temp.delete();
     }
 
@@ -119,11 +140,11 @@ public class ArtifactTest {
         declaredLicenses.setName("license1");
         declaredLicenses.setLongName("licenseNumber1");
 
-        artifact.setDeclaredLicenses(declaredLicenses);
-        artifact.setConfiguredLicense(new LicenseStatement());
-        artifact.setOverriddenLicenses(new LicenseStatement());
+        artifact.addFact(new DeclaredLicenseInformation(declaredLicenses));
+        artifact.addFact(new ConfiguredLicenseInformation(new LicenseStatement()));
+        artifact.addFact(new OverriddenLicenseInformation(new LicenseStatement()));
 
-        assertThat(artifact.getFinalLicenses().evaluate().equals(declaredLicenses.getName()));
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact).evaluate().equals(declaredLicenses.getName()));
 
         LicenseStatement observedLicenses = new LicenseStatement();
         License license2 = new License();
@@ -132,26 +153,26 @@ public class ArtifactTest {
         observedLicenses.setLeftStatement(license2);
         observedLicenses.setRightStatement(declaredLicenses);
         observedLicenses.setOp(LicenseOperator.AND);
-        artifact.setObservedLicenses(observedLicenses);
+        artifact.addFact(new ObservedLicenseInformation(observedLicenses));
         List<License> licenses = new ArrayList<>();
         licenses.add(license2);
         licenses.add(declaredLicenses);
 
         assertThat(observedLicenses.evaluate()).isEqualTo("( license2 AND license1 )");
         assertThat(observedLicenses.evaluateLong()).isEqualTo("( licenseNumber2 AND licenseNumber1 )");
-        assertThat(artifact.getFinalLicenses()).isEqualTo(declaredLicenses);
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact)).isEqualTo(declaredLicenses);
         assertThat(observedLicenses.getLicenses().equals(licenses)).isTrue();
 
         License configuredLicense = new License();
         configuredLicense.setName("license3");
-        artifact.setConfiguredLicense(configuredLicense);
+        artifact.addFact(new ConfiguredLicenseInformation(configuredLicense));
 
-        assertThat(artifact.getFinalLicenses()).isEqualTo(configuredLicense);
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact)).isEqualTo(configuredLicense);
 
         License overriddenLicense = new License();
         overriddenLicense.setName("license4");
-        artifact.setOverriddenLicenses(overriddenLicense);
-        artifact.setConfiguredLicense(new LicenseStatement());
-        assertThat(artifact.getFinalLicenses()).isEqualTo(overriddenLicense);
+        artifact.addFact(new OverriddenLicenseInformation(overriddenLicense));
+        artifact.addFact(new ConfiguredLicenseInformation(new LicenseStatement()));
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact)).isEqualTo(overriddenLicense);
     }
 }

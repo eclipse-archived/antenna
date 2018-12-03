@@ -15,7 +15,9 @@ import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
+import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
@@ -26,6 +28,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import java.util.Collection;
 import java.util.List;
@@ -71,7 +74,7 @@ public class SW360Enricher extends AbstractProcessor {
     }
 
     private void updateLicenses(Artifact artifact, SW360Release release) {
-        List<License> artifactLicenses = artifact.getFinalLicenses().getLicenses();
+        List<License> artifactLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
         List<SW360SparseLicense> releaseLicenses = release.get_Embedded().getLicenses();
 
         if (!artifactLicenses.isEmpty()) {
@@ -129,13 +132,13 @@ public class SW360Enricher extends AbstractProcessor {
                 LOGGER.error("Exception while getting license details from SW360", e);
             }
         }
-        artifact.setConfiguredLicense(licenseStatement);
+        artifact.addFact(new ConfiguredLicenseInformation(licenseStatement));
     }
 
     private void warnAndReport(Artifact artifact, String message) {
         LOGGER.warn(message);
-        reporter.addProcessingMessage(
-                artifact.getArtifactIdentifier(),
+        reporter.add(
+                artifact,
                 MessageType.PROCESSING_FAILURE,
                 message);
     }

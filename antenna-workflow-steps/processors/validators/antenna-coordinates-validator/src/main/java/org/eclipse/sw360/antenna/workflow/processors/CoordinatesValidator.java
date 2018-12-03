@@ -14,8 +14,8 @@ package org.eclipse.sw360.antenna.workflow.processors;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.predicates.ArtifactPredicates;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractComplianceChecker;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvaluation;
 
@@ -33,8 +33,8 @@ public class CoordinatesValidator extends AbstractComplianceChecker {
     public IPolicyEvaluation evaluate(Collection<Artifact> artifacts) {
         DefaultPolicyEvaluation policyEvaluation = new DefaultPolicyEvaluation();
         artifacts.stream()
-                .filter(artifact -> !artifact.isProprietary())
-                .filter(ArtifactPredicates::hasNoCoordinates)
+                .filter(artifact -> ! artifact.getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY))
+                .filter(artifact -> artifact.askForAll(ArtifactCoordinates.class).size() == 0)
                 .forEach(artifact -> policyEvaluation.addEvaluationResult("CoordinatesValidator::rule1", "Artifact has no Coordinates", missingCoordinatesSeverity, artifact));
         return policyEvaluation;
     }

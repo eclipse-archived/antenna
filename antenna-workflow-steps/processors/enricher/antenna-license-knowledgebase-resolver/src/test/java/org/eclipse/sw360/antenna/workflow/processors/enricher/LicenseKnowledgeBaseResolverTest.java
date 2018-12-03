@@ -11,12 +11,15 @@
 package org.eclipse.sw360.antenna.workflow.processors.enricher;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
+import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
@@ -73,12 +76,13 @@ public class LicenseKnowledgeBaseResolverTest {
         license.setName(LICENSE_ID);
         
         Artifact artifact = new Artifact();
-        artifact.setConfiguredLicense(license);
+        artifact.addFact(new ConfiguredLicenseInformation(license));
 
         knowledgeBaseResolver.process(Collections.singletonList(artifact));
-        
-        assertEquals(1, artifact.getFinalLicenses().getLicenses().size());
-        License l = artifact.getFinalLicenses().getLicenses().stream().findAny().get();
+
+        final List<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
+        assertEquals(1, finalLicenses.size());
+        License l = finalLicenses.stream().findAny().get();
         assertEquals(LICENSE_ID, l.getName());
         assertEquals(LICENSE_NAME, l.getLongName());
         assertEquals(LICENSE_TEXT, l.getText());
@@ -96,13 +100,14 @@ public class LicenseKnowledgeBaseResolverTest {
         license.setClassification(LICENSE_CLASSIFICATION);
         
         Artifact artifact = new Artifact();
-        artifact.setConfiguredLicense(license);
+        artifact.addFact(new ConfiguredLicenseInformation(license));
 
         knowledgeBaseResolver.process(Collections.singletonList(artifact));
-        
 
-        assertEquals(artifact.getFinalLicenses().getLicenses().size(), 1);
-        License l = artifact.getFinalLicenses().getLicenses().stream().findAny().get();
+
+        final List<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
+        assertEquals(1, finalLicenses.size());
+        License l = finalLicenses.stream().findAny().get();
         assertEquals(LICENSE_ID, l.getName());
         assertEquals(LICENSE_NAME, l.getLongName());
         assertEquals(LICENSE_TEXT, l.getText());
@@ -117,12 +122,13 @@ public class LicenseKnowledgeBaseResolverTest {
         license.setName(licenseName);
         
         Artifact artifact = new Artifact();
-        artifact.setConfiguredLicense(license);
-        
+        artifact.addFact(new ConfiguredLicenseInformation(license));
+
         knowledgeBaseResolver.process(Collections.singletonList(artifact));
-        
-        assertEquals(artifact.getFinalLicenses().getLicenses().size(), 1);
-        License l = artifact.getFinalLicenses().getLicenses().stream().findAny().get();
+
+        final List<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
+        assertEquals(1, finalLicenses.size());
+        License l = finalLicenses.stream().findAny().get();
         assertEquals(licenseName, l.getName());
         assertNull(l.getLongName());
         assertNull(l.getText());

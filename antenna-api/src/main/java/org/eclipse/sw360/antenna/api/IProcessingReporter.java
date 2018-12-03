@@ -13,10 +13,11 @@ package org.eclipse.sw360.antenna.api;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
 import org.eclipse.sw360.antenna.model.reporting.Report;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
 
 import java.io.OutputStream;
 
@@ -25,52 +26,17 @@ import java.io.OutputStream;
  */
 public interface IProcessingReporter {
 
-    public static String getIdentifier() {
+    static String getIdentifier() {
         return "antenna-report";
     }
 
-    /**
-     * 
-     * @return Report of the reporter.
-     */
     Report getProcessingReport();
 
-    /**
-     * Adds a new ProcessingMessage with the given parameters to the report.
-     *
-     * @param type
-     *            MessageType that describes the content of the message.
-     * @param message
-     */
-    void addProcessingMessage(MessageType type, String message);
-
-    /**
-     * Adds a new ProcessingMessage with the given parameters to the report.
-     * 
-     * @param id
-     *            ArtifactIdentifier of the artifact to which the message refers
-     *            to.
-     * @param type
-     *            MessageType that describes the content of the message.
-     * @param message
-     */
-    void addProcessingMessage(ArtifactIdentifier id, MessageType type, String message);
-
-    /**
-     * Adds a new ProcessingMessage with the given parameters to the report.
-     * 
-     * @param licenseName
-     * @param type
-     * @param message
-     */
-    void add(String licenseName, MessageType type, String message);
-
-    /**
-     * Adds the given ProcessingMessage to the report.
-     * 
-     * @param msg
-     */
     void add(ProcessingMessage msg);
+    void add(MessageType type, String message);
+    void add(String identifier, MessageType type, String message);
+    void add(Artifact artifact, MessageType type, String message);
+    void add(ArtifactIdentifier id, MessageType type, String message);
 
     /**
      * Writes the report to the given OutputStream.
@@ -80,6 +46,4 @@ public interface IProcessingReporter {
     void writeReport(OutputStream stream) throws AntennaException;
 
     IAttachable writeReportToReportPath() throws AntennaExecutionException;
-
-    void add(String message, MessageType type);
 }

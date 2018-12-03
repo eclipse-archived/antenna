@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.sw360;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.adapter.*;
 import org.eclipse.sw360.antenna.sw360.rest.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;

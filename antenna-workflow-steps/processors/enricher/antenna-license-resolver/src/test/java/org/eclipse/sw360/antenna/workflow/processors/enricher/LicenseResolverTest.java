@@ -22,14 +22,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.*;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 public class LicenseResolverTest extends AntennaTestWithMockedContext {
 
@@ -44,21 +48,14 @@ public class LicenseResolverTest extends AntennaTestWithMockedContext {
         Artifact artifact0 = new Artifact();
 
         Artifact artifact1 = new Artifact();
-        artifactIdentifier1 = new ArtifactIdentifier();
-        artifactIdentifier1.setFilename("aopalliance-1.0.jar");
-        MavenCoordinates mavenCoordinates1 = new MavenCoordinates();
-        mavenCoordinates1.setArtifactId("aopalliance");
-        mavenCoordinates1.setGroupId("aopalliance");
-        mavenCoordinates1.setVersion("1.0");
-        artifactIdentifier1.setMavenCoordinates(mavenCoordinates1);
-        artifactIdentifier1.setHash("0235ba8b489512805ac1");
-        artifact1.setArtifactIdentifier(artifactIdentifier1);
+        artifact1.addFact(new ArtifactFilename("aopalliance-1.0.jar", "0235ba8b489512805ac1"));
+        artifact1.addFact(new MavenCoordinates("aopalliance", "aopalliance", "1.0"));
 
         Artifact artifact2 = new Artifact();
 
         artifacts = Stream.of(artifact0, artifact1, artifact2).collect(Collectors.toList());
 
-        ArtifactSelector selector = new ArtifactSelector(artifactIdentifier1);
+        ArtifactSelector selector = new ArtifactFilename("aopalliance-1.0.jar", "0235ba8b489512805ac1");
 
         License license1 = new License();
         license1.setName("license1");
@@ -91,11 +88,9 @@ public class LicenseResolverTest extends AntennaTestWithMockedContext {
         licenseResolver.process(artifacts);
 
         assertThat(artifacts.size()).isEqualTo(3);
-        assertThat(artifacts.get(0)
-                .getFinalLicenses())
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)))
                 .isNotEqualTo(configuredLicense);
-        assertThat(artifacts.get(1)
-                .getFinalLicenses())
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(1)))
                 .isEqualTo(configuredLicense);
     }
 

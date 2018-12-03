@@ -14,7 +14,7 @@ import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.ConfigurationChecker;
 import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerAdd;
 import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerOverride;

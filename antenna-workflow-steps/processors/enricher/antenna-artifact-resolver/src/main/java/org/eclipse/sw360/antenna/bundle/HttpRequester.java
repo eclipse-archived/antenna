@@ -25,13 +25,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.maven.repository.ArtifactDoesNotExistException;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
 
 /**
  * Requests jar files for artifacts by making HTTP requests.
@@ -119,9 +118,8 @@ public class HttpRequester extends IArtifactRequester {
 
 
     @Override
-    public File requestFile(ArtifactIdentifier artifactIdentifier, Path targetDirectory, boolean isSource)
+    public File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource)
             throws ArtifactDoesNotExistException, IOException {
-        MavenCoordinates coordinates = artifactIdentifier.getMavenCoordinates();
         String jarBaseName = getExpectedJarBaseName(coordinates, isSource);
         File localJarFile = targetDirectory.resolve(jarBaseName).toFile();
 

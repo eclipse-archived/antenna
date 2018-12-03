@@ -14,25 +14,23 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.frontend.mojo.WrappedDependencyNodes;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MvnDependencyTreeAnalyzer extends AbstractAnalyzer {
 
     @Override
     public WorkflowStepResult yield() {
-        Set<Artifact> antennaArtifacts = new HashSet<>();
 
         Optional<WrappedDependencyNodes> wrappedProjectsOptional = context.getGeneric(WrappedDependencyNodes.class);
-
 
         if (!wrappedProjectsOptional.isPresent()) {
             throw new AntennaExecutionException("No Maven dependency tree was provided for analysis.");
@@ -40,13 +38,15 @@ public class MvnDependencyTreeAnalyzer extends AbstractAnalyzer {
 
         List<DependencyNode> projectList = wrappedProjectsOptional.get().getDependencyNodes();
 
-        projectList.forEach(node -> antennaArtifacts.add(getArtifactFromNode(node)));
+        final List<Artifact> collect = projectList.stream()
+                .map(this::getArtifactFromNode)
+                .collect(Collectors.toList());
 
-        return new WorkflowStepResult(antennaArtifacts);
+        return new WorkflowStepResult(collect);
     }
 
     private Artifact getArtifactFromNode(DependencyNode node) {
-        Artifact antennaArtifact = new Artifact();
+        Artifact antennaArtifact = new Artifact(getName());
 
         String[] paths;
         if(node.getArtifact().getFile() != null) {
@@ -55,26 +55,21 @@ public class MvnDependencyTreeAnalyzer extends AbstractAnalyzer {
             paths = new String[0];
         }
 
-        antennaArtifact.setArtifactIdentifier(getArtifactIdentifier(node));
-        antennaArtifact.setPathnames(paths);
-        antennaArtifact.setAnalysisSource(getName());
-        antennaArtifact.setMatchState(MatchState.EXACT);
+        antennaArtifact.addFact(getMavenCoordinates(node));
+        if(node.getArtifact().getFile() != null) {
+            antennaArtifact.addFact(new ArtifactFile(node.getArtifact().getFile().toPath()));
+        }
+        antennaArtifact.addFact(new ArtifactPathnames(paths));
+        antennaArtifact.addFact(new ArtifactMatchingMetadata(MatchState.EXACT));
         return antennaArtifact;
     }
 
-    private ArtifactIdentifier getArtifactIdentifier(DependencyNode node) {
-        MavenCoordinates coordinates = new MavenCoordinates();
+    private ArtifactIdentifier getMavenCoordinates(DependencyNode node) {
+        MavenCoordinates.MavenCoordinatesBuilder coordinates = new MavenCoordinates.MavenCoordinatesBuilder();
         coordinates.setArtifactId(node.getArtifact().getArtifactId());
         coordinates.setGroupId(node.getArtifact().getGroupId());
         coordinates.setVersion(node.getArtifact().getVersion());
-
-        ArtifactIdentifier identifier = new ArtifactIdentifier();
-        identifier.setMavenCoordinates(coordinates);
-        if(node.getArtifact().getFile() != null) {
-            identifier.setFilename(node.getArtifact().getFile().getPath());
-        }
-
-        return identifier;
+        return coordinates.build();
     }
 
     @Override

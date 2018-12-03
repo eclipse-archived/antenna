@@ -14,9 +14,7 @@
     </sourceValidation>
     <addArtifact>
         <artifact>
-            <artifactIdentifier>
-                <filename>ArbitraryCopiedCode</filename>
-            </artifactIdentifier>
+            <filename>ArbitraryCopiedCode</filename>
             <declaredLicense>
                 <license>
                     <name>CC-BY-SA-3.0</name>
@@ -29,13 +27,11 @@
     <setFinalLicenses>
         <setFinalLicense>
             <artifactSelector>
-                <artifactIdentifier>
-                    <mavenCoordinates>
-                        <groupId>com.proprietary.software</groupId>
-                        <artifactId>system</artifactId>
-                        <version>1.0.0</version>
-                    </mavenCoordinates>
-                </artifactIdentifier>
+                <mavenCoordinates>
+                    <groupId>com.proprietary.software</groupId>
+                    <artifactId>system</artifactId>
+                    <version>1.0.0</version>
+                </mavenCoordinates>
             </artifactSelector>
             <license>
                 <name>PropL</name>

@@ -17,9 +17,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorAndSet;
+import org.eclipse.sw360.antenna.model.artifact.FromXmlArtifactBuilder;
 import org.eclipse.sw360.antenna.model.xml.generated.*;
-
-import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Contains values of the configuration file.
@@ -71,35 +73,17 @@ public class Configuration {
                 setPrefereP2(createListOfArtifactSelector(
                         antennaConfig.getSourceResolving().getPreferP2().getArtifactSelector()));
             }
-            setAddArtifact(createArtifactList(antennaConfig.getAddArtifact().getArtifact()));
+            setAddArtifact(antennaConfig.getAddArtifact().getArtifact().stream()
+                    .map(FromXmlArtifactBuilder::build)
+                    .collect(Collectors.toList()));
             setSecurityIssuesByList(antennaConfig.getSecurityIssues().getSecurityIssue());
             setSecurityIssueSuppressesByList(antennaConfig.getSecurityIssues().getSuppress());
         }
     }
 
-    @SuppressWarnings("boxing")
-    private List<Artifact> createArtifactList(final List<Artifact> generatedArtifacts) {
-        final List<Artifact> artifacts = new ArrayList<>();
-        for (final Artifact generatedArtifact : generatedArtifacts) {
-            final Artifact newArtifact = new Artifact();
-            newArtifact.setArtifactIdentifier(generatedArtifact.getArtifactIdentifier());
-            if (generatedArtifact.getMatchState() != null) {
-                newArtifact.setMatchState(generatedArtifact.getMatchState());
-            } else {
-                newArtifact.setMatchState(MatchState.EXACT);
-            }
-            newArtifact.setProprietary(generatedArtifact.isProprietary());
-            if (generatedArtifact.getDeclaredLicenses() != null) {
-                newArtifact.setDeclaredLicenses(generatedArtifact.getDeclaredLicenses());
-            }
-            artifacts.add(newArtifact);
-        }
-        return artifacts;
-    }
-
-    private List<ArtifactSelector> createListOfArtifactSelector(final List<XmlArtifactSelector> generatedSelectors) {
+    private List<ArtifactSelector> createListOfArtifactSelector(final List<FromXmlArtifactSelectorBuilder> generatedSelectors) {
         return generatedSelectors.stream()
-                .map(ArtifactSelector::new)
+                .map(FromXmlArtifactSelectorBuilder::build)
                 .collect(Collectors.toList());
     }
 
@@ -107,10 +91,10 @@ public class Configuration {
         final List<IgnoreForSourceValidation> list = sourceValidation.getHandleSourceAsValid();
         for (final IgnoreForSourceValidation ignore : list) {
             if (ignore.isIncompleteSources()) {
-                validForIncompleteSources.add(new ArtifactSelector(ignore.getArtifactSelector()));
+                validForIncompleteSources.add(ignore.getArtifactSelector().build());
             }
             if (ignore.isMissingSources()) {
-                validForMissingSources.add(new ArtifactSelector(ignore.getArtifactSelector()));
+                validForMissingSources.add(ignore.getArtifactSelector().build());
             }
         }
     }
@@ -118,8 +102,7 @@ public class Configuration {
     private Map<ArtifactSelector, LicenseInformation> createFinalLicenses(final List<SetFinalLicense> setFinalLicenses) {
         final Map<ArtifactSelector, LicenseInformation> finalLicenses = new HashMap<>();
         for(SetFinalLicense entry: setFinalLicenses) {
-            adaptIdentifierValues(entry.getArtifactSelector().getArtifactIdentifier());
-            finalLicenses.put(new ArtifactSelector(entry.getArtifactSelector()), entry.getLicenseInfo().getValue());
+            finalLicenses.put(entry.getArtifactSelector().build(), entry.getLicenseInfo().getValue());
         }
 
 
@@ -135,27 +118,10 @@ public class Configuration {
     private Map<ArtifactSelector, Artifact> createOverride(final List<AttributeOverride> overrideList) {
         final Map<ArtifactSelector, Artifact> overrideMap = new HashMap<>();
         for (final AttributeOverride override : overrideList) {
-            adaptIdentifierValues(override.getArtifactSelector().getArtifactIdentifier());
-            final ArtifactIdentifier identifier = override.getOverrideValue().getArtifact().getArtifactIdentifier();
-            if (null != identifier) {
-                adaptIdentifierValues(identifier);
-            }
-            overrideMap.put(new ArtifactSelector(override.getArtifactSelector()),
-                    override.getOverrideValue().getArtifact());
+            overrideMap.put(override.getArtifactSelector().build(),
+                    override.getOverrideValue().getArtifact().build());
         }
         return overrideMap;
-    }
-
-    private void adaptIdentifierValues(final ArtifactIdentifier identifier) {
-        identifier.setFilename((adaptValue(identifier.getFilename())));
-        identifier.setHash(adaptValue(identifier.getHash()));
-        identifier.getBundleCoordinates()
-                .setSymbolicName(adaptValue(identifier.getBundleCoordinates().getSymbolicName()));
-        identifier.getBundleCoordinates()
-                .setBundleVersion((adaptValue(identifier.getBundleCoordinates().getBundleVersion())));
-        identifier.getMavenCoordinates().setArtifactId(adaptValue(identifier.getMavenCoordinates().getArtifactId()));
-        identifier.getMavenCoordinates().setGroupId(adaptValue(identifier.getMavenCoordinates().getGroupId()));
-        identifier.getMavenCoordinates().setVersion(adaptValue(identifier.getMavenCoordinates().getVersion()));
     }
 
     /**
@@ -270,7 +236,7 @@ public class Configuration {
 
     private void setSecurityIssuesByList(List<SecurityIssue> securityIssues) {
         this.securityIssues = securityIssues.stream()
-                .collect(Collectors.toMap(securityIssue -> new ArtifactSelector(securityIssue.getArtifactSelector()),
+                .collect(Collectors.toMap(securityIssue -> securityIssue.getArtifactSelector().build(),
                         SecurityIssue::getIssues));
     }
 
@@ -286,7 +252,7 @@ public class Configuration {
         Function<Suppress,String> keyMapper = Suppress::getReference;
 
         Function<Suppress,Map<ArtifactSelector, GregorianCalendar>> valueMapper =
-                suppress -> Collections.singletonMap(new ArtifactSelector(suppress.getArtifactSelector()),
+                suppress -> Collections.singletonMap(suppress.getArtifactSelector().build(),
                         suppress.getUntil().toGregorianCalendar());
 
         this.suppressedSecurityIssues = suppresses.stream()

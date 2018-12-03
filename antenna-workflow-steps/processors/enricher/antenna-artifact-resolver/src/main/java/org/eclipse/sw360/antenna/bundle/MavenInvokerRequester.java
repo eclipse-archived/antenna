@@ -24,8 +24,7 @@ import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,9 +107,8 @@ public class MavenInvokerRequester extends IArtifactRequester {
     }
 
     @Override
-    public File requestFile(ArtifactIdentifier artifactIdentifier, Path targetDirectory, boolean isSource)
+    public File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource)
             throws ArtifactDoesNotExistException, AntennaExecutionException {
-        MavenCoordinates coordinates = artifactIdentifier.getMavenCoordinates();
 
         File expectedJarFile = getExpectedJarFile(coordinates, targetDirectory, isSource);
 

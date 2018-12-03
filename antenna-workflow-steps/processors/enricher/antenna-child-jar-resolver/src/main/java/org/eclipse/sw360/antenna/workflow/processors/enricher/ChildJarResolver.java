@@ -21,15 +21,16 @@ import java.util.zip.ZipEntry;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.util.AntennaUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.io.IOUtils;
 
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
 
 /**
  * Resolves the Manifest file of Jars packaged in an other zip/war/jar.
@@ -45,14 +46,18 @@ public class ChildJarResolver extends AbstractProcessor {
      */
     private void resolveArtifacts(Collection<Artifact> artifacts) {
         for (Artifact artifact : artifacts) {
-            boolean hasPathnames = artifact.getPathnames().length > 0;
-            if (!artifact.hasSources() && hasPathnames) {
-                Path path = Paths.get(artifact.getPathnames()[0]);
+            final Optional<List<String>> pathnames = artifact.askForGet(ArtifactPathnames.class);
+            boolean hasPathnames = pathnames.isPresent() && ! pathnames.get().isEmpty();
+            boolean hasSources = artifact.askForGet(ArtifactSourceFile.class).isPresent();
+            if (!hasSources && hasPathnames) {
+                String firstPath = pathnames.get().get(0);
+
+                Path path = Paths.get(firstPath);
                 if (isPathContainingInnerJars(path)) {
                     resolveSources(artifacts, artifact, path);
                 }
-            } else if (hasPathnames && !artifact.hasSources()) {
-                this.reporter.addProcessingMessage(artifact.getArtifactIdentifier(), MessageType.MISSING_PATHNAME,
+            } else if (hasPathnames && !hasSources) {
+                this.reporter.add(artifact, MessageType.MISSING_PATHNAME,
                         "As Artifact has no Pathnames, the Manifest file could not be resolved and no bundle coordinates were found.");
             }
         }
@@ -69,22 +74,17 @@ public class ChildJarResolver extends AbstractProcessor {
 
             if (parentArtifactFileName.isPresent() &&
                     parentJarName.equals(parentArtifactFileName.get())) {
-                File parentSource;
                 String fileName = parentArtifactFileName.get();
 
                 try {
-                    if (parentArtifact.getMvnSourceJar() != null) {
-                        parentSource = parentArtifact.getMvnSourceJar();
-                        artifactWithinSomeOtherJar.setMavenSourceJar(getChildSourceJar(parentSource, fileName));
-                        return;
-                    } else if (parentArtifact.getP2SourceJar() != null) {
-                        parentSource = parentArtifact.getP2SourceJar();
-                        artifactWithinSomeOtherJar.setP2SourceJar(getChildSourceJar(parentSource, fileName));
-                        return;
+                    final Optional<Path> sourceFile = parentArtifact.askForGet(ArtifactSourceFile.class);
+                    if (sourceFile.isPresent()) {
+                        File parentSource = sourceFile.get().toFile();
+                        artifactWithinSomeOtherJar.addFact(new ArtifactSourceFile(getChildSourceJar(parentSource, fileName).toPath()));
                     }
                 } catch (IOException e) {
                     LOGGER.warn(e.getMessage());
-                    reporter.addProcessingMessage(artifactWithinSomeOtherJar.getArtifactIdentifier(),
+                    reporter.add(artifactWithinSomeOtherJar,
                             MessageType.PROCESSING_FAILURE,
                             "An exeption occured while Child Source resolving:" + e.getMessage());
                 }
@@ -93,14 +93,12 @@ public class ChildJarResolver extends AbstractProcessor {
     }
 
     private Optional<String> getArtifactFileName(Artifact artifact) {
-        ArtifactIdentifier artifactIdentifier = artifact.getArtifactIdentifier();
-        if (artifactIdentifier == null) {
-            ProcessingMessage msg = new ProcessingMessage(MessageType.PROCESSING_FAILURE);
-            msg.setMessage("No filename available as ArtifactIdentifier of '" + artifact + "' is null.");
-            reporter.add(msg);
-            return Optional.empty();
+        final Optional<String> artifactFilename = artifact.askFor(ArtifactFilename.class)
+                .map(ArtifactFilename::getFilename);
+        if(! artifactFilename.isPresent()) {
+            reporter.add(MessageType.PROCESSING_FAILURE, "No filename available as ArtifactIdentifier of '" + artifact + "' is null.");
         }
-        return Optional.ofNullable(artifactIdentifier.getFilename());
+        return artifactFilename;
     }
 
     /**

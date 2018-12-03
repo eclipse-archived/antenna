@@ -14,17 +14,13 @@
     </sourceValidation>
     <removeArtifact>
         <artifactSelector>
-            <artifactIdentifier>
-                <filename>commons-lang-2.0.jar</filename>
-            </artifactIdentifier>
+            <filename>commons-lang-2.0.jar</filename>
         </artifactSelector>
     </removeArtifact>
     <setFinalLicenses>
         <setFinalLicense>
             <artifactSelector>
-                <artifactIdentifier>
-                    <filename>commons-lang-2.0.jar</filename>
-                </artifactIdentifier>
+                <filename>commons-lang-2.0.jar</filename>
             </artifactSelector>
             <license>
                 <name>Apache-2.0</name>

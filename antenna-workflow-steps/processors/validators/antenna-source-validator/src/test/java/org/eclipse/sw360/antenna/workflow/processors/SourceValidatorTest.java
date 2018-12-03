@@ -16,30 +16,27 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.BiConsumer;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
 
-@RunWith(Parameterized.class)
 public class SourceValidatorTest extends AntennaTestWithMockedContext {
 
-    private final BiConsumer<Artifact, File> setter;
     @Rule
     public TemporaryFolder tmpFolder = new TemporaryFolder();
 
@@ -47,18 +44,6 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     private File jar;
 
     private SourceValidatorTestTools sourceValidatorTestTools;
-
-    @Parameterized.Parameters(name = "{index}: {0}")
-    public static Collection<Object[]> data(){
-        return Arrays.asList(new Object[][] {
-                {"maven", (BiConsumer<Artifact,File>) Artifact::setMavenSourceJar},
-                {"p2",    (BiConsumer<Artifact,File>) Artifact::setP2SourceJar}
-        });
-    }
-
-    public SourceValidatorTest(String name, BiConsumer<Artifact,File> setter){
-        this.setter = setter;
-    }
 
     @Before
     public void before() throws Exception {
@@ -86,27 +71,19 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     private ArtifactIdentifier mkArtifactIdentifier() {
-        ArtifactIdentifier artifactIdentifier = new ArtifactIdentifier();
-        MavenCoordinates mavenCoordinates = new MavenCoordinates();
-        mavenCoordinates.setArtifactId("source-validator-test-artifact");
-        mavenCoordinates.setGroupId("org");
-        mavenCoordinates.setVersion("1.0");
-        artifactIdentifier.setMavenCoordinates(mavenCoordinates);
-        return artifactIdentifier;
+        return new MavenCoordinates("source-validator-test-artifact","org","1.0");
     }
 
     private Artifact mkArtifact(File sourceJar) {
         Artifact artifact = new Artifact();
-        artifact.setArtifactIdentifier(mkArtifactIdentifier());
+        artifact.addFact(mkArtifactIdentifier());
 
-        artifact.setJar(jar);
-        setter.accept(artifact, sourceJar);
+        artifact.addFact(new ArtifactFile(jar.toPath()));
+        if(sourceJar != null) {
+            artifact.addFact(new ArtifactSourceFile(sourceJar.toPath()));
+        }
 
         return artifact;
-    }
-
-    private ArtifactSelector mkArtifactSelector() {
-        return new ArtifactSelector(mkArtifactIdentifier());
     }
 
     private Artifact setupForTest(int percentage) throws Exception {
@@ -201,7 +178,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
 
     @Test
     public void testWithHalfCompleteSourcesAndWhitelist() throws Exception {
-        Artifact artifact = setupForTest(Collections.emptyMap(), 50, Collections.emptyList(), Collections.singletonList(mkArtifactSelector()));
+        Artifact artifact = setupForTest(Collections.emptyMap(), 50, Collections.emptyList(), Collections.singletonList(mkArtifactIdentifier()));
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));
 
@@ -211,7 +188,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
 
     @Test
     public void testWithHalfCompleteSourcesAndWhitelistInATransitiveWay() throws Exception {
-        Artifact artifact = setupForTest(Collections.emptyMap(), 50, Collections.singletonList(mkArtifactSelector()), Collections.emptyList());
+        Artifact artifact = setupForTest(Collections.emptyMap(), 50, Collections.singletonList(mkArtifactIdentifier()), Collections.emptyList());
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));
 
@@ -251,7 +228,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
 
     @Test
     public void testWithoutSourceJarAndWhitelist() throws Exception {
-        configure(Collections.emptyMap(), Collections.singletonList(mkArtifactSelector()), Collections.emptyList());
+        configure(Collections.emptyMap(), Collections.singletonList(mkArtifactIdentifier()), Collections.emptyList());
         Artifact artifact = mkArtifact(null);
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));
@@ -266,7 +243,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
 
     @Test
     public void testWithoutSourceJarAndWhitelistInAWrongWay() throws Exception {
-        configure(Collections.emptyMap(), Collections.emptyList(), Collections.singletonList(mkArtifactSelector()));
+        configure(Collections.emptyMap(), Collections.emptyList(), Collections.singletonList(mkArtifactIdentifier()));
         Artifact artifact = mkArtifact(null);
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));
@@ -283,7 +260,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     @Test
     public void testWithoutJar() throws AntennaConfigurationException {
         Artifact artifact = new Artifact();
-        artifact.setArtifactIdentifier(mkArtifactIdentifier());
+        artifact.addFact(mkArtifactIdentifier());
         configure(Collections.emptyMap());
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));

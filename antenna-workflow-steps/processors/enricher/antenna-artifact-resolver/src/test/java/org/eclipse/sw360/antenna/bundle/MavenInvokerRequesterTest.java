@@ -11,8 +11,7 @@
 package org.eclipse.sw360.antenna.bundle;
 
 import org.eclipse.sw360.antenna.api.IProject;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.apache.maven.repository.ArtifactDoesNotExistException;
 import org.apache.maven.shared.invoker.DefaultInvoker;
@@ -52,17 +51,11 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
 
     private MavenInvokerRequester mir;
 
-    private ArtifactIdentifier artifactIdentifier;
     private MavenCoordinates mavenCoordinates;
 
     @Before
     public void before() throws IOException {
-        artifactIdentifier = new ArtifactIdentifier();
-        mavenCoordinates = new MavenCoordinates();
-        mavenCoordinates.setGroupId("groupId");
-        mavenCoordinates.setArtifactId("artifactId");
-        mavenCoordinates.setVersion("version");
-        artifactIdentifier.setMavenCoordinates(mavenCoordinates);
+        mavenCoordinates = new MavenCoordinates("artifactId","groupId","version");
 
         System.setProperty("maven.home", temporaryFolder.newFolder("m2").toString());
 
@@ -115,7 +108,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
                     return getDummyInvocationResult(0);
                 });
 
-        File resultFile = mir.requestFile(artifactIdentifier, targetDirectory, false);
+        File resultFile = mir.requestFile(mavenCoordinates, targetDirectory, false);
 
         Mockito.verify(defaultInvokerMock).execute(captor.capture());
 
@@ -143,7 +136,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
         Path targetDirectory = temporaryFolder.newFolder("target").toPath();
         Mockito.when(defaultInvokerMock.execute(ArgumentMatchers.any(InvocationRequest.class)))
                 .thenReturn(getDummyInvocationResult(0));
-        mir.requestFile(artifactIdentifier, targetDirectory, false);
+        mir.requestFile(mavenCoordinates, targetDirectory, false);
     }
 
     @Test(expected = ArtifactDoesNotExistException.class)
@@ -161,6 +154,6 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
                     // return dummy result
                     return getDummyInvocationResult(1);
                 });
-        mir.requestFile(artifactIdentifier, targetDirectory, false);
+        mir.requestFile(mavenCoordinates, targetDirectory, false);
     }
 }

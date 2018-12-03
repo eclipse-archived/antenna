@@ -12,21 +12,15 @@
 package org.eclipse.sw360.antenna.analysis.filter;
 
 import org.eclipse.sw360.antenna.api.IArtifactFilter;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 /**
  * Checks if artifact is proprietary.
  */
 public class ProprietaryArtifactFilter implements IArtifactFilter {
-    /**
-     * @return Returns true if the parameter proprietary of the artifact is
-     *         false;
-     * @param Artifact
-     *            artifact
-     */
     @Override
     public boolean passed(Artifact artifact) {
-        return !artifact.isProprietary();
+        return ! artifact.isProprietary();
     }
 
 }

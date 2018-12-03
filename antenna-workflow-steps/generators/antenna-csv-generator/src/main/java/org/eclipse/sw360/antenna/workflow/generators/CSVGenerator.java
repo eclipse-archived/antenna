@@ -25,7 +25,11 @@ import java.util.Optional;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.repository.Attachable;
 
@@ -62,12 +66,15 @@ public class CSVGenerator extends AbstractGenerator {
         StringBuilder information = new StringBuilder();
         information.append("artifactName;artifactId;groupId;mavenVersion;bundleVersion;license \n");
         for (Artifact artifact : artifacts) {
-            appendInformation(information, artifact.getArtifactIdentifier().getFilename());
-            appendInformation(information, artifact.getArtifactIdentifier().getMavenCoordinates().getArtifactId());
-            appendInformation(information, artifact.getArtifactIdentifier().getMavenCoordinates().getGroupId());
-            appendInformation(information, artifact.getArtifactIdentifier().getMavenCoordinates().getVersion());
-            appendInformation(information, artifact.getArtifactIdentifier().getBundleCoordinates().getBundleVersion());
-            LicenseInformation finalLicenses = artifact.getFinalLicenses();
+            appendInformation(information, artifact.askFor(ArtifactFilename.class).map(ArtifactFilename::getFilename).orElse(""));
+            final Optional<MavenCoordinates> mavenCoordinates = artifact.askFor(MavenCoordinates.class); // TODO
+            appendInformation(information, mavenCoordinates.map(MavenCoordinates::getArtifactId).orElse(""));
+            appendInformation(information, mavenCoordinates.map(MavenCoordinates::getGroupId).orElse(""));
+            appendInformation(information, mavenCoordinates.map(MavenCoordinates::getVersion).orElse(""));
+
+            final Optional<BundleCoordinates> bundleCoordinates = artifact.askFor(BundleCoordinates.class); // TODO
+            appendInformation(information, bundleCoordinates.map(BundleCoordinates::getBundleVersion).orElse(""));
+            LicenseInformation finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact);
             StringBuilder licenses = new StringBuilder();
             if (finalLicenses.evaluateLong() != null) {
                 licenses.append(finalLicenses.evaluateLong());

@@ -10,9 +10,10 @@
  */
 package org.eclipse.sw360.antenna.model.test;
 
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.facts.GenericArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,28 +25,22 @@ public class ProcessingMessageTest {
 
     @Before
     public void init() {
-        this.processingMessage = new ProcessingMessage(MessageType.UNKNOWN_LICENSE);
-        id = new ArtifactIdentifier();
-        this.processingMessage.setIdentifier(id);
-        this.processingMessage.setMessage("test");
+        id = new GenericArtifactCoordinates("Name", "Version");
+        this.processingMessage = new ProcessingMessage(MessageType.UNKNOWN_LICENSE, id.toString(), "test");
     }
 
     @Test
     public void setterAndGetterTestforLicenseMessage() {
-        ProcessingMessage licenseMessage = new ProcessingMessage(MessageType.HANDLE_AS_VALID);
-        licenseMessage.setLicenseName("license");
-        assertThat(licenseMessage.getLicenseName()).isEqualTo("license");
+        ProcessingMessage licenseMessage = new ProcessingMessage(MessageType.HANDLE_AS_VALID, "license", "msg");
+        assertThat(licenseMessage.getIdentifier()).isEqualTo("license");
     }
 
     @Test
     public void testEquals() {
-        ProcessingMessage licenseMessage = new ProcessingMessage(MessageType.HANDLE_AS_VALID);
-        licenseMessage.setLicenseName("license");
-        assertThat(licenseMessage.equals(licenseMessage)).isTrue();
-        assertThat(licenseMessage.equals("")).isFalse();
-        ProcessingMessage compareMessage = new ProcessingMessage(MessageType.PROCESSING_FAILURE);
-        assertThat(licenseMessage.equals(compareMessage)).isFalse();
-        licenseMessage.setIdentifier(new ArtifactIdentifier());
+        ProcessingMessage licenseMessage = new ProcessingMessage(MessageType.HANDLE_AS_VALID, "license", "msg");
+        assertThat(licenseMessage).isEqualTo(licenseMessage);
+        assertThat(licenseMessage).isNotEqualTo("");
+        ProcessingMessage compareMessage = new ProcessingMessage(MessageType.PROCESSING_FAILURE, new GenericArtifactCoordinates("Name", "Version").toString(), "msg");
         assertThat(licenseMessage.equals(compareMessage)).isFalse();
     }
 
@@ -58,11 +53,4 @@ public class ProcessingMessageTest {
     public void messageTest() {
         assertThat(processingMessage.getMessage()).isEqualTo("test");
     }
-
-    @Test
-    public void identifierTest() {
-        assertThat(processingMessage.getIdentifier().isPresent());
-        assertThat(processingMessage.getIdentifier().get()).isEqualTo(id);
-    }
-
 }

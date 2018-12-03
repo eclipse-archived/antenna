@@ -17,8 +17,11 @@ import static org.mockito.Mockito.when;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIssues;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.*;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
@@ -80,23 +83,13 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
 
     private Artifact mkArtifact(Issues issues) {
         Artifact artifact = new Artifact();
-        artifact.setSecurityIssues(issues);
-        artifact.setArtifactIdentifier(mkArtifactIdentifier());
+        artifact.addFact(new ArtifactIssues(issues));
+        artifact.addFact(mkArtifactIdentifier());
         return artifact;
     }
 
     private ArtifactIdentifier mkArtifactIdentifier() {
-        ArtifactIdentifier artifactIdentifier = new ArtifactIdentifier();
-        MavenCoordinates mvnCoords = new MavenCoordinates();
-        mvnCoords.setGroupId("com.test");
-        mvnCoords.setArtifactId("test-artifact");
-        mvnCoords.setVersion("1.0");
-        artifactIdentifier.setMavenCoordinates(mvnCoords);
-        return artifactIdentifier;
-    }
-
-    private ArtifactSelector mkArtifactSelector() {
-        return new ArtifactSelector(mkArtifactIdentifier());
+        return new MavenCoordinates("com.test","test-artifact","1.0");
     }
 
     @Test
@@ -140,12 +133,12 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     @Test
     public void validateArtifactFromConfiguration() throws AntennaConfigurationException {
         Artifact emptyArtifact = new Artifact();
-        emptyArtifact.setArtifactIdentifier(mkArtifactIdentifier());
+        emptyArtifact.addFact(mkArtifactIdentifier());
 
         Issues issues = new Issues();
         issues.getIssue().add(openIssue);
 
-        Map<ArtifactSelector, Issues> configuredSecurityIssues = Collections.singletonMap(mkArtifactSelector(), issues);
+        Map<ArtifactSelector, Issues> configuredSecurityIssues = Collections.singletonMap(mkArtifactIdentifier(), issues);
 
         when(configMock.getSecurityIssues()).thenReturn(configuredSecurityIssues);
         configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "Open,Acknowledged");

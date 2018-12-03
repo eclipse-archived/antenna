@@ -19,7 +19,6 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaValidationException;
 import org.eclipse.sw360.antenna.api.workflow.*;
-import org.eclipse.sw360.antenna.model.Artifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,20 +48,19 @@ public class AntennaWorkflow {
         try {
             LOGGER.info("Start collecting dependencies from");
             Collection<WorkflowStepResult> sourcesResults = getArtifactsFromAnalyzers();
-            WorkflowStepResult sourcesResult = WorkflowStepResult.merge(sourcesResults);
-            if (sourcesResult.getArtifacts().isEmpty()) {
+            ProcessingState processingState = new ProcessingState(sourcesResults);
+            if (processingState.getArtifacts().isEmpty()) {
                 LOGGER.warn("No analyzer yielded artifacts, skip all other workflow steps");
-                return sourcesResult.getAttachables();
+                return processingState.getAttachables();
             }
 
             LOGGER.info("Process artifacts");
-            WorkflowStepResult processorsResult = applyProcessorsToArtifacts(sourcesResult);
+            applyProcessors(processingState);
 
             LOGGER.info("Generate output");
-            Map<String, IAttachable> generatedOutput = generateOutputViaGenerators(processorsResult);
+            Map<String, IAttachable> generatedOutput = generateOutputViaGenerators(processingState);
 
-            generatedOutput.putAll(sourcesResult.getAttachables());
-            generatedOutput.putAll(processorsResult.getAttachables());
+            generatedOutput.putAll(processingState.getAttachables());
 
             if(postSinksHooks.size() > 0) {
                 LOGGER.info("Post process output");
@@ -95,12 +93,11 @@ public class AntennaWorkflow {
         return results;
     }
 
-    private WorkflowStepResult applyProcessorsToArtifacts(WorkflowStepResult result) throws AntennaException {
+    private void applyProcessors(ProcessingState processingState) throws AntennaException {
         for (AbstractProcessor processor : processors) {
             LOGGER.info("Let {} process dependencies", processor.getWorkflowItemName());
-            result = processor.process(result);
+            processingState.applyWorkflowStepResult(processor.process(processingState));
         }
-        return result;
     }
 
     private void warnIfKeysCollide(AbstractGenerator sink, Map<String, IAttachable> generatedOutput, Map<String, IAttachable> oneGeneratedOutput) {
@@ -113,11 +110,11 @@ public class AntennaWorkflow {
         }
     }
 
-    private Map<String, IAttachable> generateOutputViaGenerators(WorkflowStepResult processorsResult) throws AntennaException {
+    private Map<String, IAttachable> generateOutputViaGenerators(ProcessingState processingState) throws AntennaException {
         Map<String, IAttachable> generatedOutput = new HashMap<>();
         for (AbstractGenerator sink : generators) {
             LOGGER.info("Let {} generate output", sink.getWorkflowItemName());
-            Map<String, IAttachable> oneGeneratedOutput = sink.produce(processorsResult);
+            Map<String, IAttachable> oneGeneratedOutput = sink.produce(processingState);
             warnIfKeysCollide(sink, generatedOutput, oneGeneratedOutput);
             generatedOutput.putAll(oneGeneratedOutput);
         }

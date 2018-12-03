@@ -16,12 +16,11 @@ import java.util.*;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractComplianceChecker;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvaluation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 
 /**
@@ -39,9 +38,13 @@ public class MatchStateValidator extends AbstractComplianceChecker {
     public IPolicyEvaluation evaluate(Collection<Artifact> artifacts) {
         DefaultPolicyEvaluation policyEvaluation = new DefaultPolicyEvaluation();
         artifacts.stream()
-                .filter(artifact -> !artifact.isProprietary())
+                .filter(artifact -> !artifact.getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY))
                 .forEach(artifact -> {
-                    MatchState artifactsMatchState = artifact.getMatchState();
+                    final Optional<ArtifactMatchingMetadata> artifactMatchingMetadata = artifact.askFor(ArtifactMatchingMetadata.class);
+                    if(! artifactMatchingMetadata.isPresent()) {
+                        return;
+                    }
+                    MatchState artifactsMatchState = artifactMatchingMetadata.get().getMatchState();
                     if (MatchState.SIMILAR.equals(artifactsMatchState)) {
                         policyEvaluation.addEvaluationResult("MatchStateValidator::rule", "The match State is SIMILAR", SIMILAR_Severity, artifact);
                     }else if (MatchState.UNKNOWN.equals(artifactsMatchState)) {

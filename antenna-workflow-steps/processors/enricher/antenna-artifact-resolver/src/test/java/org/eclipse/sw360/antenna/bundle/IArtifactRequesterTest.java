@@ -10,8 +10,7 @@
  */
 package org.eclipse.sw360.antenna.bundle;
 
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.apache.maven.repository.ArtifactDoesNotExistException;
 import org.hamcrest.CoreMatchers;
@@ -28,20 +27,17 @@ import static org.junit.Assert.*;
 
 public class IArtifactRequesterTest extends AntennaTestWithMockedContext {
 
-    IArtifactRequester artifactRequester = new IArtifactRequester(antennaContextMock) {
+    private IArtifactRequester artifactRequester = new IArtifactRequester(antennaContextMock) {
         @Override
-        public File requestFile(ArtifactIdentifier identifier, Path targetDirectory, boolean isSource) throws IOException, ArtifactDoesNotExistException {
+        public File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource) throws IOException, ArtifactDoesNotExistException {
             return null;
         }
     };
-    MavenCoordinates mavenCoordinates;
+    private MavenCoordinates mavenCoordinates;
 
     @Before
     public void before() {
-        mavenCoordinates = new MavenCoordinates();
-        mavenCoordinates.setGroupId("groupId");
-        mavenCoordinates.setArtifactId("artifactId");
-        mavenCoordinates.setVersion("version");
+        mavenCoordinates = new MavenCoordinates("groupId","artifactId","version");
     }
 
     @Test

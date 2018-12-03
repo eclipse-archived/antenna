@@ -18,10 +18,9 @@ import org.eclipse.sw360.antenna.analysis.filter.BlacklistFilter;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.Configuration;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 
 public class ConfigurationHandlerOverride extends AbstractProcessor {
@@ -62,25 +61,7 @@ public class ConfigurationHandlerOverride extends AbstractProcessor {
     }
 
     private void overrideArtifact(Artifact artifact, Artifact override) {
-        overrideIdentifier(artifact, override);
-
-        artifact.setProprietary(override.isProprietary());
-
-        if (override.getMatchState() != null) {
-            artifact.setMatchState(override.getMatchState());
-        }
-        if(override.getCopyrightStatement() != null) {
-            artifact.setCopyrightStatement(override.getCopyrightStatement());
-        }
-        if(override.getModificationStatus() != null) {
-            artifact.setModificationStatus(override.getModificationStatus());
-        }
-
-        artifact.setAlteredByConfiguration(true);
-
-        reporter.addProcessingMessage(artifact.getArtifactIdentifier(),
-                MessageType.OVERRIDE_ARTIFACT_ATTRIBUTES,
-                "The artifact attributes were overwritten manually.");
+        artifact.overrideWith(override);
     }
 
     /**
@@ -99,37 +80,12 @@ public class ConfigurationHandlerOverride extends AbstractProcessor {
             BlacklistFilter configFilter = new BlacklistFilter(blackList);
             for (Artifact artifact : artifacts) {
                 if (!configFilter.passed(artifact)) {
-                    artifact.setIgnoreForDownload(true);
-                    reporter2.addProcessingMessage(artifact.getArtifactIdentifier(),
+                    artifact.setFlag(Artifact.IS_IGNORE_FOR_DOWNLOAD_KEY);
+                    reporter2.add(artifact,
                             MessageType.IGNORE_FOR_ARTIFACTRESOLVING, "The Artifact will not be downloaded.");
                 }
             }
         }
-    }
-
-    private void overrideIdentifier(Artifact artifact, Artifact override) {
-        ArtifactIdentifier overrideIdentifier = override.getArtifactIdentifier();
-        String artifactId = overrideIdentifier.getMavenCoordinates().getArtifactId();
-        if (null != artifactId) {
-            artifact.getArtifactIdentifier().getMavenCoordinates().setArtifactId(artifactId);
-        }
-        String groupId = overrideIdentifier.getMavenCoordinates().getGroupId();
-        if (null != groupId) {
-            artifact.getArtifactIdentifier().getMavenCoordinates().setGroupId(groupId);
-        }
-        String version = overrideIdentifier.getMavenCoordinates().getVersion();
-        if (null != version) {
-            artifact.getArtifactIdentifier().getMavenCoordinates().setVersion(version);
-        }
-        String symbolicName = overrideIdentifier.getBundleCoordinates().getSymbolicName();
-        if (null != symbolicName) {
-            artifact.getArtifactIdentifier().getBundleCoordinates().setSymbolicName(symbolicName);
-        }
-        String bundleVersion = overrideIdentifier.getBundleCoordinates().getBundleVersion();
-        if (null != bundleVersion) {
-            artifact.getArtifactIdentifier().getBundleCoordinates().setBundleVersion((bundleVersion));
-        }
-
     }
 
     @Override

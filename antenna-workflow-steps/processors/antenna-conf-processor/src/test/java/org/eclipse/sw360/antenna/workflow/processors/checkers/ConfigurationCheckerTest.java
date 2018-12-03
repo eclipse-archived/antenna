@@ -19,26 +19,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorAndSet;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
 import org.eclipse.sw360.antenna.report.Reporter;
 
 public class ConfigurationCheckerTest {
 
     private File file;
     private TemporaryFolder folder;
-    private ArtifactIdentifier identifier;
     private Artifact artifact;
     private ArtifactSelector selector;
     private List<Artifact> artifacts;
@@ -47,18 +47,19 @@ public class ConfigurationCheckerTest {
 
     @Before
     public void init() throws IOException {
-        this.folder = new TemporaryFolder();
-        this.folder.create();
-        this.file = folder.newFile();
-        this.artifact = new Artifact();
-        this.identifier = new ArtifactIdentifier();
-        identifier.setFilename("foo.jar");
-        MavenCoordinates mavenCoordinates = new MavenCoordinates();
-        mavenCoordinates.setArtifactId("artifact");
-        identifier.setMavenCoordinates(mavenCoordinates);
-        artifact.setArtifactIdentifier(identifier);
-        artifact.setArtifactIdentifier(identifier);
-        this.selector = new ArtifactSelector(identifier);
+        folder = new TemporaryFolder();
+        folder.create();
+        file = folder.newFile();
+        artifact = new Artifact();
+
+        artifact.addFact(new ArtifactFilename("artifact"));
+        artifact.addFact(new MavenCoordinates("artifact", null, null));
+
+        selector = new ArtifactSelectorAndSet(
+                new ArtifactFilename("artifact"),
+                new MavenCoordinates("artifact", null, null)
+        );
+
         config = new Configuration(null);
         artifacts = new ArrayList<>();
         reporter = new Reporter(this.file.toPath());

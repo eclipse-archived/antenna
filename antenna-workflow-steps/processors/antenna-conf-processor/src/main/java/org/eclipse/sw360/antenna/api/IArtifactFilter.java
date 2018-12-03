@@ -11,7 +11,7 @@
 
 package org.eclipse.sw360.antenna.api;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 /**
  * An IArtifactFilter filters artifacts according to the Method implemented by a

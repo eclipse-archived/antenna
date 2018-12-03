@@ -12,15 +12,15 @@
 package org.eclipse.sw360.antenna.workflow.generators;
 
 import org.eclipse.sw360.antenna.analysis.filter.AllowAllArtifactsFilter;
-import org.eclipse.sw360.antenna.analysis.filter.BlacklistFilter;
 import org.eclipse.sw360.antenna.analysis.filter.MatchStateArtifactFilter;
 import org.eclipse.sw360.antenna.api.IArtifactFilter;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.repository.Attachable;
@@ -47,7 +47,6 @@ public class SourceZipWriter extends AbstractGenerator {
 
     private IArtifactFilter notAllowed;
     private IArtifactFilter unknownMatchStateFilter;
-    private IArtifactFilter p2ConfigFilter;
     private Path sourceZipPath;
     private IProcessingReporter reporter;
     private static final Logger LOGGER = LoggerFactory.getLogger(SourceZipWriter.class);
@@ -70,14 +69,10 @@ public class SourceZipWriter extends AbstractGenerator {
                 for (Artifact artifact : artifacts) {
                     if (notAllowed.passed(artifact)) {
                         if (unknownMatchStateFilter.passed(artifact)) {
-                            if (artifact.getMvnSourceJar() != null && p2ConfigFilter.passed(artifact)) {
-                                this.addContentToZip(artifact, zipOutput, "mvn");
-                            } else {
-                                this.addContentToZip(artifact, zipOutput, "p2");
-                            }
+                            addContentToZip(artifact, zipOutput);
                         } else {
                             if (!artifact.isProprietary()) {
-                                this.reporter.addProcessingMessage(artifact.getArtifactIdentifier(),
+                                this.reporter.add(artifact,
                                         MessageType.MATCHSTATE_UNKNOWN,
                                         "Artifact is not added to sources.zip as MatchState of artifact is declared as unknown.");
                             }
@@ -101,60 +96,32 @@ public class SourceZipWriter extends AbstractGenerator {
      *            Artifact of which the content shall be added.
      * @param zipOut
      *            ZipOutputStream for the ZipFile.
-     * @param sourceType
-     *            Can be "mvn" or "p2"
      */
-    private void addContentToZip(Artifact artifact, ZipOutputStream zipOut, String sourceType) {
-        if (this.notAllowed.passed(artifact)) {
-            String filename = getFileNameOrNull(artifact);
-            if (filename == null) {
+    private void addContentToZip(Artifact artifact, ZipOutputStream zipOut) {
+        if (notAllowed.passed(artifact)) {
+            final Optional<Path> sourceFile = artifact.askForGet(ArtifactSourceFile.class);
+            if(! sourceFile.isPresent()) {
                 return;
             }
+            String entryName = artifact.askFor(ArtifactFilename.class)
+                    .map(ArtifactFilename::getFilename)
+                    .orElse(sourceFile.get().toFile().getName())
+                    .replaceAll(".jar", "");
             try {
-                File sourceJar = null;
-                String entryName = filename.replaceAll(".jar", "");
                 LOGGER.debug("Writing File: " + entryName);
-                if ("mvn".equals(sourceType)) {
-                    sourceJar = artifact.getMvnSourceJar();
-                } else {
-                    sourceJar = artifact.getP2SourceJar();
-                }
-                if (null != sourceJar) {
-                    writeContentToZipEntry(zipOut, sourceJar, entryName);
-                }
+                writeContentToZipEntry(zipOut, sourceFile.get().toFile(), entryName);
             } catch (ZipException e) {
-                exceptionHandling(artifact, e);
+                if (! e.getMessage().equals("zip file is empty")) {
+                    reporter.add(artifact, MessageType.PROCESSING_FAILURE,
+                            e.getMessage() + ": caused by File: " + sourceFile);
+                    LOGGER.warn(e.getMessage() + ": caused by File: " + sourceFile);
+                }
             } catch (IOException e) {
-                String message = "An Exception occured during the creation of the zip file: " + sourceType
-                        + " source of " + filename + " could not be resolved: " + e.getMessage();
-                this.reporter.addProcessingMessage(artifact.getArtifactIdentifier(), MessageType.PROCESSING_FAILURE,
+                String message = "An Exception occured during the creation of the zip file: source of " + artifact + " could not be resolved: " + e.getMessage();
+                this.reporter.add(artifact, MessageType.PROCESSING_FAILURE,
                         message);
                 LOGGER.warn(e.getMessage());
             }
-        }
-    }
-
-    String getFileNameOrNull(Artifact artifact) {
-        ArtifactIdentifier artifactIdentifier = artifact.getArtifactIdentifier();
-        String filename = null;
-        if (artifactIdentifier != null && artifactIdentifier.getFilename() != null) {
-            filename = artifactIdentifier.getFilename();
-        } else if (artifact.getMvnSourceJar() != null) {
-            filename = artifact.getMvnSourceJar().getName();
-        } else if (artifact.getP2SourceJar() != null) {
-            filename = artifact.getP2SourceJar().getName();
-        }
-        if (filename == null) {
-            LOGGER.debug("No filename for artifact '" + artifact + "'. ArtifactIdentifier was null.");
-        }
-        return filename;
-    }
-
-    private void exceptionHandling(Artifact artifact, ZipException e) {
-        if (! e.getMessage().equals("zip file is empty")) {
-            reporter.addProcessingMessage(artifact.getArtifactIdentifier(), MessageType.PROCESSING_FAILURE,
-                    e.getMessage() + ": caused by File: " + getFileNameOrNull(artifact));
-            LOGGER.warn(e.getMessage() + ": caused by File: " + getFileNameOrNull(artifact));
         }
     }
 
@@ -218,7 +185,6 @@ public class SourceZipWriter extends AbstractGenerator {
         Set<MatchState> blacklistUnknown = new HashSet<>();
         blacklistUnknown.add(MatchState.UNKNOWN);
         this.unknownMatchStateFilter = new MatchStateArtifactFilter(blacklistUnknown);
-        this.p2ConfigFilter = new BlacklistFilter(context.getConfiguration().getPrefereP2());
 
         if (configMap.containsKey(SOURCE_ZIP_PATH_KEY)) {
             this.sourceZipPath = Paths.get(getConfigValue(SOURCE_ZIP_PATH_KEY, configMap));

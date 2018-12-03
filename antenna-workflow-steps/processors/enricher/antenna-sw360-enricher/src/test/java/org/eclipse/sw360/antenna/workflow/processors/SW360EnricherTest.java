@@ -13,11 +13,11 @@ package org.eclipse.sw360.antenna.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
+import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
@@ -30,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.client.MockRestServiceServer;
 
 import java.io.IOException;
 import java.util.*;
@@ -49,8 +48,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     @Before
     public void setUp() throws AntennaConfigurationException {
         Artifact artifact0 = new Artifact();
-        artifact0.setArtifactIdentifier(new ArtifactIdentifier());
-        artifact0.getArtifactIdentifier().setFilename("filename0");
+        artifact0.addFact(new ArtifactFilename("filename0"));
 
         artifacts = Collections.singletonList(artifact0);
 
@@ -82,8 +80,8 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         sw360Enricher.process(artifacts);
 
-        assertThat(artifacts.get(0).getFinalLicenses().getLicenses()).hasSize(1);
-        assertThat(artifacts.get(0).getFinalLicenses().getLicenses().get(0).getName()).isEqualTo("apache2");
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses()).hasSize(1);
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().get(0).getName()).isEqualTo("apache2");
     }
 
     @Test
@@ -104,8 +102,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         sw360Enricher.process(artifacts);
 
-        List<String> licenseNames = artifacts.get(0)
-                .getFinalLicenses()
+        List<String> licenseNames = ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0))
                 .getLicenses()
                 .stream()
                 .map(License::getName)
@@ -120,7 +117,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         apache.setName("apache2");
         apache.setLongName("Apache 2.0");
         apache.setText("Apache license text");
-        artifacts.get(0).setDeclaredLicenses(apache);
+        artifacts.get(0).addFact(new DeclaredLicenseInformation(apache));
 
         SW360SparseLicense mitSparse = createSparseLicense("mit", "MIT License");
         SW360License mit = createLicenseFromSparseLicense(mitSparse, "MIT license text");
@@ -134,9 +131,9 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         sw360Enricher.process(artifacts);
 
-        verify(reporterMock).addProcessingMessage(any(), any(), any());
-        assertThat(artifacts.get(0).getFinalLicenses().getLicenses()).hasSize(1);
-        assertThat(artifacts.get(0).getFinalLicenses().getLicenses().get(0).getName()).isEqualTo("mit");
+        verify(reporterMock).add(any(Artifact.class), any(), any());
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses()).hasSize(1);
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().get(0).getName()).isEqualTo("mit");
     }
 
     private SW360SparseLicense createSparseLicense(String name, String fullName) {

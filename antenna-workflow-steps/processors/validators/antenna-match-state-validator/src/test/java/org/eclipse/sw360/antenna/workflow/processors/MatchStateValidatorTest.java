@@ -16,14 +16,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.eclipse.sw360.antenna.report.Reporter;
 import org.junit.rules.TemporaryFolder;
 
 public class MatchStateValidatorTest extends AntennaTestWithMockedContext {
@@ -45,20 +45,18 @@ public class MatchStateValidatorTest extends AntennaTestWithMockedContext {
 
 
         artifactUNKNOWN = new Artifact();
-        artifactUNKNOWN.setMatchState(MatchState.UNKNOWN);
-        artifactUNKNOWN.setProprietary(false);
+        artifactUNKNOWN.addFact(new ArtifactMatchingMetadata(MatchState.UNKNOWN));
 
         artifactProprietaryUNKNOWN = new Artifact();
-        artifactProprietaryUNKNOWN.setMatchState(MatchState.UNKNOWN);
-        artifactProprietaryUNKNOWN.setProprietary(true);
+        artifactProprietaryUNKNOWN.addFact(new ArtifactMatchingMetadata(MatchState.UNKNOWN));
+        artifactProprietaryUNKNOWN.setFlag(Artifact.IS_PROPRIETARY_FLAG_KEY);
 
         artifactEXACT = new Artifact();
-        artifactEXACT.setMatchState(MatchState.EXACT);
-        artifactEXACT.setProprietary(false);
+        artifactEXACT.addFact(new ArtifactMatchingMetadata(MatchState.EXACT));
 
         artifactProprietaryEXACT = new Artifact();
-        artifactProprietaryEXACT.setMatchState(MatchState.EXACT);
-        artifactProprietaryEXACT.setProprietary(true);
+        artifactProprietaryEXACT.addFact(new ArtifactMatchingMetadata(MatchState.EXACT));
+        artifactProprietaryEXACT.setFlag(Artifact.IS_PROPRIETARY_FLAG_KEY);
     }
 
     @Test

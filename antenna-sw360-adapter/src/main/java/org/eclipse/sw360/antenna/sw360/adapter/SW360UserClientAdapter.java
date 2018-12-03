@@ -14,12 +14,9 @@ package org.eclipse.sw360.antenna.sw360.adapter;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.SW360UserClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 public class SW360UserClientAdapter {
-    private Logger logger = LoggerFactory.getLogger(SW360UserClientAdapter.class);
     private String restUrl;
 
     public SW360UserClientAdapter(String backendURL) {

@@ -56,12 +56,9 @@ public class BasicConfiguration {
         configMap.put("securityIssueSeverityLimit", "5.0");
         WorkflowStep validator5 = mkWorkflowStep("Security Issue Validator", "org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator",
                 configMap);
-        // sort
-        WorkflowStep sorter = mkWorkflowStep("Sort Artifacts", "org.eclipse.sw360.antenna.workflow.processors.ArtifactSorter");
         return Stream.of(confHandler,
                 enricher1, enricher2, enricher3, enricher4, enricher5, enricher6,
-                validator1, validator2, validator3, validator4, validator5,
-                sorter).collect(Collectors.toList());
+                validator1, validator2, validator3, validator4, validator5).collect(Collectors.toList());
     }
 
     public List<WorkflowStep> getGenerators(String projectRoot) {

@@ -11,15 +11,13 @@
 package org.eclipse.sw360.antenna.bundle;
 
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
-import org.apache.maven.repository.ArtifactDoesNotExistException;
 import org.apache.maven.repository.RepositorySystem;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,11 +42,11 @@ public class MavenRuntimeRequester extends IArtifactRequester {
     }
 
     @Override
-    public File requestFile(ArtifactIdentifier identifier, Path targetDirectory, boolean isSource) throws IOException, ArtifactDoesNotExistException {
+    public File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource) throws IOException {
         if(isSource) {
-            return requestFile(identifier, targetDirectory, "java-source");
+            return requestFile(coordinates, targetDirectory, "java-source");
         }
-        return requestFile(identifier, targetDirectory, "jar");
+        return requestFile(coordinates, targetDirectory, "jar");
     }
 
     private ArtifactResolutionResult doArtifactRequest(org.apache.maven.artifact.Artifact mvnArtifact) {
@@ -59,8 +57,7 @@ public class MavenRuntimeRequester extends IArtifactRequester {
         return repositorySystem.resolve(artifactRequest);
     }
 
-    private File requestFile(ArtifactIdentifier identifier, Path targetDirectory, String type) throws IOException, ArtifactDoesNotExistException {
-        MavenCoordinates mavenCoordinates = identifier.getMavenCoordinates();
+    private File requestFile(MavenCoordinates mavenCoordinates, Path targetDirectory, String type) throws IOException {
         String groupId = mavenCoordinates.getGroupId();
         String artifactId = mavenCoordinates.getArtifactId();
         String version = mavenCoordinates.getVersion();

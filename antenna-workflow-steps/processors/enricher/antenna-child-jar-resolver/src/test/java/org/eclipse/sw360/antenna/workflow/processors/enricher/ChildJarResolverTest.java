@@ -10,7 +10,10 @@
  */
 package org.eclipse.sw360.antenna.workflow.processors.enricher;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.eclipse.sw360.antenna.testing.util.JarCreator;
 import org.junit.After;
@@ -22,10 +25,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -67,9 +67,8 @@ public class ChildJarResolverTest extends AntennaTestWithMockedContext {
         Arrays.stream(paths).forEach(
                 path -> {
                     Artifact artifact = new Artifact();
-                    artifact.setPathnames(new String[] { path.toString() });
-                    artifact.getArtifactIdentifier()
-                            .setFilename(path.getFileName().toString());
+                    artifact.addFact(new ArtifactPathnames(new String[] { path.toString() }));
+                    artifact.addFact(new ArtifactFilename(path.getFileName().toString()));
                     artifacts.add(artifact);
                 });
         return artifacts;
@@ -82,11 +81,11 @@ public class ChildJarResolverTest extends AntennaTestWithMockedContext {
         List<Artifact> artifacts = makeArtifacts(artifactPath, parentArtifactPath);
 
         File jarWithSources = jarCreator.createJarWithSource();
-        artifacts.get(1).setMavenSourceJar(jarWithSources);
+        artifacts.get(1).addFact(new ArtifactSourceFile(jarWithSources.toPath()));
 
         resolver.process(artifacts);
 
-        assertNotNull(artifacts.get(0).getMvnSourceJar());
+        assertTrue(artifacts.get(0).askFor(ArtifactSourceFile.class).isPresent());
     }
 
 
@@ -101,7 +100,6 @@ public class ChildJarResolverTest extends AntennaTestWithMockedContext {
         resolver.process(artifacts);
 
         assertEquals(4, artifacts.size());
-        assertEquals(makeArtifacts(jarWithManifest, jarWithoutManifest, jarInJarInJar, jarInJar), artifacts);
     }
 
     @Test
@@ -113,19 +111,22 @@ public class ChildJarResolverTest extends AntennaTestWithMockedContext {
         List<Artifact> artifacts = makeArtifacts(jarWithManifest, jarWithoutManifest, jarInJarInJar, jarInJar);
 
         File jarWithSources = jarCreator.createJarWithSource();
-        artifacts.get(0).setMavenSourceJar(jarWithSources);
+        artifacts.get(0).addFact(new ArtifactSourceFile(jarWithSources.toPath()));
 
         resolver.process(artifacts);
 
         assertEquals(4, artifacts.size());
         for (int i = 0; i < 4; i++) {
-            assertEquals((i==0 ? jarWithSources : null), artifacts.get(i).getMvnSourceJar());
-            assertNull(artifacts.get(i).getP2SourceJar());
+            final Optional<Path> resultSourceFile = artifacts.get(i).askForGet(ArtifactSourceFile.class);
+            assertEquals(i == 0, resultSourceFile.isPresent());
+            if(resultSourceFile.isPresent()) {
+                assertEquals((i==0 ? jarWithSources : null), resultSourceFile.get().toFile());
+            }
         }
     }
 
     @Test
-    public void testWithMatchingMavenArtifactsWhichHaveSource() throws Exception {
+    public void testWithMatchingArtifactsWhichHaveSource() throws Exception {
         final Path jarWithManifest = jarCreator.createJarWithManifest();
         final Path jarWithoutManifest = jarCreator.createJarWithoutManifest();
         final Path jarWithInJarInJar = jarCreator.createJarInJarInJar();
@@ -141,22 +142,23 @@ public class ChildJarResolverTest extends AntennaTestWithMockedContext {
                 jarInJar);          //4
 
         File jarWithSources = jarCreator.createJarWithSource();
-        artifacts.get(2).setMavenSourceJar(jarWithSources);
+        artifacts.get(2).addFact(new ArtifactSourceFile(jarWithSources.toPath()));
 
         resolver.process(artifacts);
 
         assertEquals(5, artifacts.size());
         for (int i = 0; i < 5; i++) {
+            final Optional<Path> sourceResult = artifacts.get(i).askForGet(ArtifactSourceFile.class);
             if(i == 2) {
-                assertEquals(jarWithSources, artifacts.get(i).getMvnSourceJar());
+                assertEquals(jarWithSources, artifacts.get(i).askForGet(ArtifactSourceFile.class).get().toFile());
             }else if(i == 3) {
-                assertNotNull(artifacts.get(i).getMvnSourceJar());
-                assertNotEquals(jarWithInJarInJar.toFile(), artifacts.get(i).getMvnSourceJar());
-                assertTrue(artifacts.get(i).getMvnSourceJar().exists());
-                assertTrue(artifacts.get(i).getMvnSourceJar().toString().startsWith(workspace.toString()));
+                assertTrue(sourceResult.isPresent());
+                assertNotEquals(jarWithInJarInJar.toFile(), sourceResult.get().toFile());
+                assertTrue(sourceResult.get().toFile().exists());
+                assertTrue(sourceResult.get().toString().startsWith(workspace.toString()));
 
                 int count = 0;
-                try (JarFile parentSourceJar = new JarFile(artifacts.get(i).getMvnSourceJar())) {
+                try (JarFile parentSourceJar = new JarFile(sourceResult.get().toFile())) {
                     final Enumeration<JarEntry> entries = parentSourceJar.entries();
                     while(entries.hasMoreElements()){
                         entries.nextElement();
@@ -165,56 +167,8 @@ public class ChildJarResolverTest extends AntennaTestWithMockedContext {
                 }
                 assertEquals(4, count);
             }else{
-                assertNull(artifacts.get(i).getMvnSourceJar());
+                assertFalse(sourceResult.isPresent());
             }
-            assertNull(artifacts.get(i).getP2SourceJar());
-        }
-    }
-
-    @Test
-    public void testWithMatchingP2ArtifactsWhichHaveSource() throws Exception {
-        final Path jarWithManifest = jarCreator.createJarWithManifest();
-        final Path jarWithoutManifest = jarCreator.createJarWithoutManifest();
-        final Path jarWithInJarInJar = jarCreator.createJarInJarInJar();
-        Path jarInJarInJar = jarWithInJarInJar
-                .resolve(JarCreator.jarInJarName)
-                .resolve(JarCreator.jarWithManifestName);
-        final Path jarInJar = jarCreator.createJarInJar();
-        List<Artifact> artifacts = makeArtifacts(
-                jarWithManifest,    //0
-                jarWithoutManifest, //1
-                jarWithInJarInJar,  //2
-                jarInJarInJar,      //3
-                jarInJar);          //4
-
-        File jarWithSources = jarCreator.createJarWithSource();
-        artifacts.get(2).setP2SourceJar(jarWithSources);
-
-        resolver.process(artifacts);
-
-        assertEquals(5, artifacts.size());
-        for (int i = 0; i < 5; i++) {
-            if(i == 2) {
-                assertEquals(jarWithSources, artifacts.get(i).getP2SourceJar());
-            }else if(i == 3) {
-                assertNotNull(artifacts.get(i).getP2SourceJar());
-                assertNotEquals(jarWithInJarInJar.toFile(), artifacts.get(i).getP2SourceJar());
-                assertTrue(artifacts.get(i).getP2SourceJar().exists());
-                assertTrue(artifacts.get(i).getP2SourceJar().toString().startsWith(workspace.toString()));
-
-                int count = 0;
-                try (JarFile parentSourceJar = new JarFile(artifacts.get(i).getP2SourceJar())) {
-                    final Enumeration<JarEntry> entries = parentSourceJar.entries();
-                    while(entries.hasMoreElements()){
-                        entries.nextElement();
-                        count++;
-                    }
-                }
-                assertEquals(4, count);
-            }else{
-                assertNull(artifacts.get(i).getP2SourceJar());
-            }
-            assertNull(artifacts.get(i).getMvnSourceJar());
         }
     }
 }

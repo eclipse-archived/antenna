@@ -10,8 +10,9 @@
  */
 package org.eclipse.sw360.antenna.analysis.filter;
 
-import org.eclipse.sw360.antenna.model.*;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.junit.Test;
 
@@ -69,14 +70,11 @@ public class FilterTest {
 
     @Test
     public void ConfigurationFilterTest2() {
-        ArtifactIdentifier artifactIdentifier = new ArtifactIdentifier();
-        artifactIdentifier.setFilename("testFilename");
-        ArtifactSelector example = new ArtifactSelector(artifactIdentifier);
-        List<ArtifactSelector> examplesList = Collections.singletonList(example);
+        List<ArtifactSelector> examplesList = Collections.singletonList(new ArtifactFilename("testFilename"));
         BlacklistFilter filter = new BlacklistFilter(examplesList);
 
         Artifact artifact = new Artifact();
-        artifact.getArtifactIdentifier().setFilename("testFilename");
+        artifact.addFact(new ArtifactFilename("testFilename"));
 
         assertThat(filter.passed(artifact)).isFalse();
     }
@@ -84,14 +82,11 @@ public class FilterTest {
 
     @Test
     public void ConfigurationFilterTest3() {
-        ArtifactIdentifier artifactIdentifier = new ArtifactIdentifier();
-        artifactIdentifier.setFilename("test");
-        ArtifactSelector example = new ArtifactSelector(artifactIdentifier);
-        List<ArtifactSelector> examplesList = Collections.singletonList(example);
+        List<ArtifactSelector> examplesList = Collections.singletonList(new ArtifactFilename("test"));
         BlacklistFilter filter = new BlacklistFilter(examplesList);
 
         Artifact artifact = new Artifact();
-        artifact.getArtifactIdentifier().setFilename("testFilename");
+        artifact.addFact(new ArtifactFilename("testFilename"));
 
         assertThat(filter.passed(artifact)).isTrue();
     }

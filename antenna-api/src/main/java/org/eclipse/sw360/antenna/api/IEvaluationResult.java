@@ -11,9 +11,9 @@
 
 package org.eclipse.sw360.antenna.api;
 
-import java.util.Set;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import java.util.Set;
 
 public interface IEvaluationResult {
     enum Severity {

@@ -12,7 +12,8 @@
 package org.eclipse.sw360.antenna.analysis.filter;
 
 import org.eclipse.sw360.antenna.api.IArtifactFilter;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 
 import java.util.Set;
@@ -34,10 +35,10 @@ public class MatchStateArtifactFilter implements IArtifactFilter {
      */
     @Override
     public boolean passed(Artifact artifact) {
-        MatchState matchState = artifact.getMatchState();
-        boolean blacklisted = this.blacklist.contains(matchState);
-        boolean canPass = !blacklisted;
-        return canPass;
+        return artifact.askFor(ArtifactMatchingMetadata.class)
+                .map(ArtifactMatchingMetadata::getMatchState)
+                .map(matchState -> ! this.blacklist.contains(matchState))
+                .orElse(true);
     }
 
 }

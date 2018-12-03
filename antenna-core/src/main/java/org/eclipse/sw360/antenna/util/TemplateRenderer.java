@@ -153,7 +153,7 @@ public class TemplateRenderer {
      * for "Stage 2" the code parses the result of "Stage 1" and enriches the context with the content of properties.
      * The resulting context might look like:
      *     {@code {"prop0" => "prop0value", "prop1" => "prop1value", "prop2" => "prop0value"} }
-     * and the final rendered Result might look like:
+     * and the final rendered ArtifactFact might look like:
      * <pre>{@code
      *     <?xml version=\"1.0\" encoding="UTF-8"?>
      *     <project>

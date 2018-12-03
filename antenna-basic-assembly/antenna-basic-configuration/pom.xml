@@ -140,12 +140,6 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-artifact-sorter</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>antenna-add-to-archive-output-handler</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>

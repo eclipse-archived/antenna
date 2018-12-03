@@ -10,12 +10,16 @@
  */
 package org.eclipse.sw360.antenna.model.test;
 
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.xml.generated.BundleCoordinates;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorAndSet;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.junit.Test;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -195,36 +199,25 @@ public class ArtifactSelectorTest {
     private Artifact createArtifact(String hash, String artifactId, String groupId, String version,
                                     String bundleVersion, String symbolicName) {
         Artifact artifact = new Artifact();
-        artifact.getArtifactIdentifier().setFilename(defaultFileName);
-        artifact.getArtifactIdentifier().setHash(hash);
-        MavenCoordinates mavenCoordinates = new MavenCoordinates();
-        mavenCoordinates.setArtifactId(artifactId);
-        mavenCoordinates.setGroupId(groupId);
-        mavenCoordinates.setVersion(version);
-        artifact.getArtifactIdentifier().setMavenCoordinates(mavenCoordinates);
-        BundleCoordinates bundleCoordinates = new BundleCoordinates();
-        bundleCoordinates.setSymbolicName(symbolicName);
-        bundleCoordinates.setBundleVersion(bundleVersion);
-        artifact.getArtifactIdentifier().setBundleCoordinates(bundleCoordinates);
+        artifact.addFact(new ArtifactFilename(defaultFileName.toString(), hash));
+        artifact.addFact(new MavenCoordinates(artifactId, groupId, version));
+        artifact.addFact(new BundleCoordinates(symbolicName, bundleVersion));
         return artifact;
     }
 
     private ArtifactSelector createArtifactSelector(String filename, String hash, String artifactId, String groupId,
             String version, String bundleVersion, String symbolicName) {
 
-        ArtifactIdentifier artifactIdentifier = new ArtifactIdentifier();
-        artifactIdentifier.setFilename(filename);
-        artifactIdentifier.setHash(hash);
-        MavenCoordinates mavenCoordinates = new MavenCoordinates();
-        mavenCoordinates.setArtifactId(artifactId);
-        mavenCoordinates.setGroupId(groupId);
-        mavenCoordinates.setVersion(version);
-        artifactIdentifier.setMavenCoordinates(mavenCoordinates);
-        BundleCoordinates bundleCoordinates = new BundleCoordinates();
-        bundleCoordinates.setSymbolicName(symbolicName);
-        bundleCoordinates.setBundleVersion(bundleVersion);
-        artifactIdentifier.setBundleCoordinates(bundleCoordinates);
-
-        return new ArtifactSelector(artifactIdentifier);
+        Set<ArtifactIdentifier> identifierSet = new HashSet<>();
+        if(filename != null || hash != null) {
+            identifierSet.add(new ArtifactFilename(filename, hash));
+        }
+        if(artifactId != null || groupId != null || version != null) {
+            identifierSet.add(new MavenCoordinates(artifactId, groupId, version));
+        }
+        if(symbolicName != null || bundleVersion != null) {
+            identifierSet.add(new BundleCoordinates(symbolicName, bundleVersion));
+        }
+        return new ArtifactSelectorAndSet(identifierSet);
     }
 }

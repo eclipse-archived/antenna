@@ -16,17 +16,13 @@
    <!-- Expectation: Artifact is neither in document, nor in reports or source bundle-->
    <removeArtifact>
       <artifactSelector>
-         <artifactIdentifier>
-          <filename>commons-lang-2.0.jar</filename>
-         </artifactIdentifier>
+         <filename>commons-lang-2.0.jar</filename>
       </artifactSelector>
    </removeArtifact>
 
    <addArtifact>
       <artifact>
-         <artifactIdentifier>
-            <filename>ArbitraryCopiedCode</filename>
-         </artifactIdentifier>
+         <filename>ArbitraryCopiedCode</filename>
          <declaredLicense>
             <license>
                <name>CC-BY-SA-3.0</name>
@@ -41,13 +37,11 @@
 
       <!-- This is an entry that has a source code bundle in maven central which should appear in the sources.zip -->
       <artifact>
-         <artifactIdentifier>
-            <mavenCoordinates>
-               <groupId>org.apache.logging.log4j</groupId>
-               <artifactId>log4j-core</artifactId>
-               <version>2.6.2</version>
-            </mavenCoordinates>
-         </artifactIdentifier>
+         <mavenCoordinates>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.6.2</version>
+         </mavenCoordinates>
          <declaredLicense>
             <license>
                <name>Apache-2.0</name>
@@ -58,13 +52,11 @@
       </artifact>
 
       <artifact>
-         <artifactIdentifier>
-            <mavenCoordinates>
-               <groupId>com.proprietary.software</groupId>
-               <artifactId>system</artifactId>
-               <version>1.0.0</version>
-            </mavenCoordinates>
-         </artifactIdentifier>
+         <mavenCoordinates>
+            <groupId>com.proprietary.software</groupId>
+            <artifactId>system</artifactId>
+            <version>1.0.0</version>
+         </mavenCoordinates>
          <declaredLicense>
             <license>
                <name>Apache-2.0</name>
@@ -75,13 +67,11 @@
       </artifact>
 
       <artifact>
-         <artifactIdentifier>
-            <mavenCoordinates>
-               <groupId>a.test.project</groupId>
-               <artifactId>system</artifactId>
-               <version>1.0.0</version>
-            </mavenCoordinates>
-         </artifactIdentifier>
+         <mavenCoordinates>
+            <groupId>a.test.project</groupId>
+            <artifactId>system</artifactId>
+            <version>1.0.0</version>
+         </mavenCoordinates>
          <declaredLicense>
             <license>
                <name>htmlArea-1.0</name>
@@ -99,13 +89,11 @@
       <!-- Expectation no code for org.apache.commons.commons-math3 is in source code bundle -->
       <ignoreForSourceResolving>
          <artifactSelector>
-            <artifactIdentifier>
-               <mavenCoordinates>
-                  <groupId>org.apache.commons</groupId>
-                  <artifactId>commons-math3</artifactId>
-                  <version>3.2</version>
-               </mavenCoordinates>
-            </artifactIdentifier>
+            <mavenCoordinates>
+               <groupId>org.apache.commons</groupId>
+               <artifactId>commons-math3</artifactId>
+               <version>3.2</version>
+            </mavenCoordinates>
          </artifactSelector>
       </ignoreForSourceResolving>
    </sourceResolving>
@@ -114,9 +102,7 @@
       <!-- Expectation: the final license of jackons-annotations is set to Apache-2.0 in disclosure document -->
       <setFinalLicense>
          <artifactSelector>
-            <artifactIdentifier>
-               <filename>jackson-annotations-2.8.4.jar</filename>
-            </artifactIdentifier>
+            <filename>jackson-annotations-2.8.4.jar</filename>
          </artifactSelector>
          <license>
             <name>Apache-2.0</name>
@@ -125,13 +111,11 @@
       <setFinalLicense>
          <!-- Expectation component has PropL License as license with the given text as license text -->
          <artifactSelector>
-            <artifactIdentifier>
-               <mavenCoordinates>
-                  <groupId>com.proprietary.software</groupId>
-                  <artifactId>system</artifactId>
-                  <version>1.0.0</version>
-               </mavenCoordinates>
-            </artifactIdentifier>
+            <mavenCoordinates>
+               <groupId>com.proprietary.software</groupId>
+               <artifactId>system</artifactId>
+               <version>1.0.0</version>
+            </mavenCoordinates>
          </artifactSelector>
          <license>
             <name>PropL</name>
@@ -144,13 +128,11 @@
    <securityIssues>
       <securityIssue>
          <artifactSelector>
-            <artifactIdentifier>
-               <mavenCoordinates>
-                  <groupId>org.apache.logging.log4j</groupId>
-                  <artifactId>log4j-core</artifactId>
-                  <version>2.6.2</version>
-               </mavenCoordinates>
-            </artifactIdentifier>
+            <mavenCoordinates>
+               <groupId>org.apache.logging.log4j</groupId>
+               <artifactId>log4j-core</artifactId>
+               <version>2.6.2</version>
+            </mavenCoordinates>
          </artifactSelector>
          <issues>
             <issue>
@@ -171,13 +153,11 @@
       </securityIssue>
       <suppress reference="CVE-2016-8011" until="2100-01-01">
          <artifactSelector>
-            <artifactIdentifier>
-               <mavenCoordinates>
-                  <groupId>org.apache.logging.log4j</groupId>
-                  <artifactId>log4j-core</artifactId>
-                  <version>2.6.2</version>
-               </mavenCoordinates>
-            </artifactIdentifier>
+            <mavenCoordinates>
+               <groupId>org.apache.logging.log4j</groupId>
+               <artifactId>log4j-core</artifactId>
+               <version>2.6.2</version>
+            </mavenCoordinates>
          </artifactSelector>
       </suppress>
    </securityIssues>

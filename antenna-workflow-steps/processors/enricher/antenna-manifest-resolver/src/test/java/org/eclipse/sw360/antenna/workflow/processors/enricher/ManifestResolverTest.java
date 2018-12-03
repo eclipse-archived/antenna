@@ -17,15 +17,21 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.eclipse.sw360.antenna.testing.util.JarCreator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 public class ManifestResolverTest extends AntennaTestWithMockedContext {
 
@@ -49,17 +55,18 @@ public class ManifestResolverTest extends AntennaTestWithMockedContext {
     private List<Artifact> makeArtifacts(Path path) {
         List<Artifact> artifacts = new ArrayList<>();
         Artifact artifact = new Artifact();
-        artifact.setPathnames(new String[] { path.toString() });
-        artifact.getArtifactIdentifier()
-                .setFilename(path.getFileName().toString());
+        artifact.addFact(new ArtifactPathnames(Collections.singletonList(path.toString())));
+        artifact.addFact(new ArtifactFilename(path.getFileName().toString()));
         artifacts.add(artifact);
         return artifacts;
     }
 
     private void assertManifestMetadata(Artifact artifact) {
-        assertThat(artifact.getArtifactIdentifier().getBundleCoordinates().getSymbolicName())
+        final Optional<BundleCoordinates> bundleCoordinates = artifact.askFor(BundleCoordinates.class);
+        assertThat(bundleCoordinates.isPresent()).isTrue();
+        assertThat(bundleCoordinates.get().getSymbolicName())
                 .isEqualTo(JarCreator.testManifestSymbolicName);
-        assertThat(artifact.getArtifactIdentifier().getBundleCoordinates().getBundleVersion())
+        assertThat(bundleCoordinates.get().getBundleVersion())
                 .isEqualTo(JarCreator.testManifestVersion);
     }
 
@@ -80,8 +87,8 @@ public class ManifestResolverTest extends AntennaTestWithMockedContext {
 
         resolver.process(artifacts);
 
-        assertThat(artifacts.get(0).getArtifactIdentifier().getBundleCoordinates().getSymbolicName()).isEqualTo(null);
-        assertThat(artifacts.get(0).getArtifactIdentifier().getBundleCoordinates().getBundleVersion()).isEqualTo(null);
+        final Optional<BundleCoordinates> bundleCoordinates = artifacts.get(0).askFor(BundleCoordinates.class);
+        assertThat(bundleCoordinates.isPresent()).isFalse();
     }
 
     @Test
@@ -92,8 +99,10 @@ public class ManifestResolverTest extends AntennaTestWithMockedContext {
 
         resolver.process(artifacts);
 
-        assertThat(artifacts.get(0).getJar()).isNotNull();
-        assertThat(artifacts.get(0).getJar().getName()).isEqualTo(JarCreator.jarWithManifestName);
+        final Optional<Path> artifactFile = artifacts.get(0).askForGet(ArtifactFile.class);
+
+        assertThat(artifactFile.isPresent()).isTrue();
+        assertThat(artifactFile.get().toFile().getName()).isEqualTo(JarCreator.jarWithManifestName);
         assertManifestMetadata(artifacts.get(0));
     }
 
@@ -106,8 +115,10 @@ public class ManifestResolverTest extends AntennaTestWithMockedContext {
 
         resolver.process(artifacts);
 
-        assertThat(artifacts.get(0).getJar()).isNotNull();
-        assertThat(artifacts.get(0).getJar().getName()).isEqualTo(JarCreator.jarWithManifestName);
+        final Optional<Path> artifactFile = artifacts.get(0).askForGet(ArtifactFile.class);
+
+        assertThat(artifactFile.isPresent()).isTrue();
+        assertThat(artifactFile.get().toFile().getName()).isEqualTo(JarCreator.jarWithManifestName);
         assertManifestMetadata(artifacts.get(0));
     }
 }

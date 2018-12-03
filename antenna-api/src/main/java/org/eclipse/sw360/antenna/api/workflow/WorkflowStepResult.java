@@ -11,18 +11,31 @@
 package org.eclipse.sw360.antenna.api.workflow;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 import java.util.*;
 
 public class WorkflowStepResult {
-
     private final Set<Artifact> artifacts = new HashSet();
+    /*
+     * if the value artifactsShouldBeAppended is set to
+     *  - false: the set artifacts here is treated as the complete set and it overwrites the set in the state
+     *  - true: the set of artifacts here is added to the set of artifacts in the state
+     */
+    private final boolean artifactsShouldBeAppended;
+
     private final Map<String,IAttachable> attachableMap = new HashMap<>();
+
     private final List<String> additionalReportComments = new ArrayList<>();
+
+    public WorkflowStepResult(Collection<Artifact> artifacts, boolean artifactsShouldBeAppended) {
+        this.artifacts.addAll(artifacts);
+        this.artifactsShouldBeAppended = artifactsShouldBeAppended;
+    }
 
     public WorkflowStepResult(Collection<Artifact> artifacts) {
         this.artifacts.addAll(artifacts);
+        artifactsShouldBeAppended = false;
     }
 
     public Set<Artifact> getArtifacts() {
@@ -49,21 +62,7 @@ public class WorkflowStepResult {
         return additionalReportComments.add(comment);
     }
 
-    public static WorkflowStepResult merge(Collection<WorkflowStepResult> workflowStepResults) {
-        return workflowStepResults.stream()
-                .reduce(WorkflowStepResult::merge)
-                .orElse(new WorkflowStepResult(Collections.emptyList()));
-    }
-
-    private WorkflowStepResult merge(WorkflowStepResult workflowStepResult) {
-        artifacts.addAll(workflowStepResult.artifacts);
-        attachableMap.putAll(workflowStepResult.attachableMap);
-        return this;
-    }
-
-    public WorkflowStepResult mergeWithKeepingArtifacts(WorkflowStepResult workflowStepResult) {
-        attachableMap.putAll(workflowStepResult.attachableMap);
-        additionalReportComments.addAll(0, workflowStepResult.additionalReportComments);
-        return this;
+    public boolean isArtifactsShouldBeAppended() {
+        return artifactsShouldBeAppended;
     }
 }

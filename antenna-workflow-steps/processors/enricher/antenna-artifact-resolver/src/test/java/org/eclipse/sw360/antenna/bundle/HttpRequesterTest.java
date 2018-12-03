@@ -18,6 +18,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.maven.repository.ArtifactDoesNotExistException;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,8 +30,6 @@ import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.modules.junit4.PowerMockRunnerDelegate;
@@ -73,7 +72,6 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
 
     private HttpRequester hr = new HttpRequester(antennaContextMock);
     
-    private ArtifactIdentifier artifactIdentifier;
     private MavenCoordinates mavenCoordinates;
 
     private boolean isSource;
@@ -94,13 +92,8 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
                 + "/" + HttpRequester.ARTIFACT_ID_PLACEHOLDER 
                 + "/" + HttpRequester.VERSION_PLACEHOLDER + "/";
         
-        artifactIdentifier = new ArtifactIdentifier();
-        mavenCoordinates = new MavenCoordinates();
-        mavenCoordinates.setGroupId("groupId");
-        mavenCoordinates.setArtifactId("artifactId");
-        mavenCoordinates.setVersion("version");
-        artifactIdentifier.setMavenCoordinates(mavenCoordinates);
-        
+        mavenCoordinates = new MavenCoordinates("groupId", "artifactId", "version");
+
         PowerMockito.mockStatic(HttpClients.class);
         Mockito.when(HttpClients.createDefault()).thenReturn(httpClientMock);
         Mockito.when(toolConfigMock.getSourcesRepositoryUrl())
@@ -131,7 +124,7 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
         Mockito.when(httpEntityMock.getContent())
                 .then((Answer<InputStream>) result -> new FileInputStream(expectedJarFile));
 
-        File resultFile = hr.requestFile(artifactIdentifier, targetDirectory, isSource);
+        File resultFile = hr.requestFile(mavenCoordinates, targetDirectory, isSource);
         Mockito.verify(httpClientMock).execute(captor.capture());
         Mockito.verify(httpEntityMock).getContent();
         
@@ -157,7 +150,7 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
         Mockito.when(httpClientMock.execute(ArgumentMatchers.any(HttpGet.class)))
                 .thenReturn(httpResponseMock);
         
-       hr.requestFile(artifactIdentifier, targetDirectory, isSource);
+       hr.requestFile(mavenCoordinates, targetDirectory, isSource);
     }
     
     @Test(expected = ArtifactDoesNotExistException.class)
@@ -171,6 +164,6 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
         Mockito.when(httpClientMock.execute(ArgumentMatchers.any(HttpGet.class)))
                 .thenReturn(httpResponseMock);
         
-        hr.requestFile(artifactIdentifier, targetDirectory, isSource);
+        hr.requestFile(mavenCoordinates, targetDirectory, isSource);
     }
 }

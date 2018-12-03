@@ -59,19 +59,15 @@ Overview:
     <overrides>
         <override>
             <artifactSelector>
-                <artifactIdentifier>
-                    <filename>ezmorph-1.0.6.jar</filename>
-                </artifactIdentifier>
+                <filename>ezmorph-1.0.6.jar</filename>
             </artifactSelector>
             <overrideValue>
                 <artifact>
-                    <artifactIdentifier>
-                        <mavenCoordinates>
-                            <artifactId>test</artifactId>
-                            <groupId>test</groupId>
-                            <version>test</version>
-                        </mavenCoordinates>
-                    </artifactIdentifier>
+                    <mavenCoordinates>
+                        <artifactId>test</artifactId>
+                        <groupId>test</groupId>
+                        <version>test</version>
+                    </mavenCoordinates>
                 </artifact>
             </overrideValue>
         </override>
@@ -79,42 +75,34 @@ Overview:
 
     <removeArtifact>      
         <artifactSelector>
-            <artifactIdentifier>
-                <filename>aopalliance-1.0.jar</filename>
-            </artifactIdentifier>
+            <filename>aopalliance-1.0.jar</filename>
         </artifactSelector>
     </removeArtifact>
 
     <addArtifact>
         <artifact>
-            <artifactIdentifier>
-                <filename>spring-beans-3.1.1.RELEASE.jar</filename>
-                <mavenCoordinates>
-                    <artifactId>spring-beans</artifactId>
-                    <groupId>org.springframework</groupId>
-                    <version>3.1.1.RELEASE</version>
-                </mavenCoordinates>
-            </artifactIdentifier>
+            <filename>spring-beans-3.1.1.RELEASE.jar</filename>
+            <mavenCoordinates>
+                <artifactId>spring-beans</artifactId>
+                <groupId>org.springframework</groupId>
+                <version>3.1.1.RELEASE</version>
+            </mavenCoordinates>
         </artifact>
     </addArtifact>
 
     <sourceResolving>
         <preferP2>
             <artifactSelector>
-                <artifactIdentifier>
-                    <filename>ezmorph-1.0.6.jar</filename>
-                </artifactIdentifier>
+                <filename>ezmorph-1.0.6.jar</filename>
             </artifactSelector>          
         </preferP2>
         <ignoreForSourceResolving>
             <artifactSelector>
-                <artifactIdentifier>
-                    <mavenCoordinates>
-                        <artifactId>stax2-api</artifactId>
-                        <groupId>org.codehaus.woodstox</groupId>
-                        <version>3.1.1</version>
-                    </mavenCoordinates>
-                </artifactIdentifier>
+                <mavenCoordinates>
+                    <artifactId>stax2-api</artifactId>
+                    <groupId>org.codehaus.woodstox</groupId>
+                    <version>3.1.1</version>
+                </mavenCoordinates>
             </artifactSelector>
         </ignoreForSourceResolving>
     </sourceResolving>
@@ -122,9 +110,7 @@ Overview:
     <sourceValidation failOnIncompleteSources="false" failOnMissingSources="false">
        <handleSourceAsValid incompleteSources="true" missingSources="true">
             <artifactSelector>
-                <artifactIdentifier>
-                    <filename>batik-gvt-1.7.jar</filename>
-                </artifactIdentifier>
+                <filename>batik-gvt-1.7.jar</filename>
             </artifactSelector>
         </handleSourceAsValid>
     </sourceValidation>
@@ -132,9 +118,7 @@ Overview:
     <setFinalLicenses>
         <setFinalLicense>
             <artifactSelector>
-                <artifactIdentifier>
-                    <filename>jcr-2.0.jar</filename>
-                </artifactIdentifier>
+                <filename>jcr-2.0.jar</filename>
             </artifactSelector>
             <licenseStatement operator="AND">
                 <license>
@@ -168,9 +152,7 @@ Example:
 
 ```xml
 <artifactSelector>
-    <artifactIdentifier>
-        <filename>org.eclipse.*</filename>
-    </artifactIdentifier>
+    <filename>org.eclipse.*</filename>
 </artifactSelector>
 ```
 
@@ -184,18 +166,14 @@ Values defined in the overrideValue section will replace the values of the artif
     <override>
     <!--ArtifactSelector that identifies the artifact of which the values will be replaced.-->
         <artifactSelector>
-            <artifactIdentifier>
-                <filename>c3p0-0.9.1.jar</filename>
-            </artifactIdentifier>
+            <filename>c3p0-0.9.1.jar</filename>
         </artifactSelector>
         <!--New values for the specified artifact.-->          
         <overrideValue>
             <artifact>
-                <artifactIdentifier>
-                    <mavenCoordinates>                          
-                        <version>0.9.1</version>
-                        </mavenCoordinates>
-                </artifactIdentifier>
+                <mavenCoordinates>                          
+                    <version>0.9.1</version>
+                </mavenCoordinates>
             </artifact>
         </overrideValue>
     </override>
@@ -209,13 +187,11 @@ Artifacts identified by an artifactSelector in the removeArtifact element will n
 ```xml
 <removeArtifact>
     <artifactSelector>
-        <artifactIdentifier>
-            <mavenCoordinates>
-                <artifactId>commons-cli</artifactId>
-                <groupId>commons-cli</groupId>
-                <version>1.2</version>
-            </mavenCoordinates>                         
-        </artifactIdentifier>
+        <mavenCoordinates>
+            <artifactId>commons-cli</artifactId>
+            <groupId>commons-cli</groupId>
+            <version>1.2</version>
+        </mavenCoordinates>                         
     </artifactSelector>
 </removeArtifact>
 ```
@@ -231,14 +207,12 @@ If the Match is not specified, it is set to `EXACT` automatically.
 ```xml
 <addArtifact>
     <artifact>
-        <artifactIdentifier>
-            <filename>aopalliance-1.0.jar</filename>
-            <mavenCoordinates>   
-                <artifactId>aopalliance</artifactId>
-                <groupId>aopalliance</groupId>                           
-                <version>1.0</version>
-            </mavenCoordinates>
-        </artifactIdentifier>
+        <filename>aopalliance-1.0.jar</filename>
+        <mavenCoordinates>   
+            <artifactId>aopalliance</artifactId>
+            <groupId>aopalliance</groupId>                           
+            <version>1.0</version>
+        </mavenCoordinates>
         <declaredLicense>
             <license><name>...</name></license>
         </declaredLicense>
@@ -277,9 +251,7 @@ Sources for artifacts specified in the ignore block will not be downloaded.
 <sourceResolving>    
     <ignore>
         <artifactSelector>
-            <artifactIdentifier>
-                <filename>...</filename>
-            </artifactIdentifier>
+            <filename>...</filename>
         </artifactSelector>
     </ignore>
  </sourceResolving>
@@ -298,9 +270,7 @@ If the validation returns false, Antenna throws a MojoExecutionException and the
 <sourceValidation  failOnIncompleteSources="false" failOnMissingSources="false">
     <handleSourceAsValid incompleteSources="true" missingSources="true">
         <artifactSelector>
-            <artifactIdentifier>
-                <filename>commons-configuration-1.10.jar</filename>
-            </artifactIdentifier>
+            <filename>commons-configuration-1.10.jar</filename>
         </artifactSelector>
     </handleSourceAsValid>
 </sourceValidation>
@@ -316,9 +286,7 @@ The license that is defined in this section overrides all other licenses that ar
 <setFinalLicenses>
     <setFinalLicense>
         <artifactSelector>
-            <artifactIdentifier>
-                <filename>stax-api-1.0.1.jar</filename>
-            </artifactIdentifier>
+            <filename>stax-api-1.0.1.jar</filename>
         </artifactSelector>
         <license>
             <name>Apache-2.0</name>

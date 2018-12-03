@@ -40,7 +40,6 @@
         <module>processors/validators/antenna-security-issue-validator</module>
         <module>processors/validators/antenna-license-validator</module>
         <module>processors/validators/antenna-match-state-validator</module>
-        <module>processors/antenna-artifact-sorter</module>
         <!-- generators -->
         <module>generators/antenna-csv-generator</module>
         <module>generators/antenna-HTML-report-generator</module>

@@ -13,10 +13,12 @@ package org.eclipse.sw360.antenna.workflow.analyzers;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.frontend.mojo.WrappedDependencyNodes;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
 import org.apache.maven.plugin.testing.stubs.ArtifactStub;
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.apache.maven.shared.dependency.graph.internal.DefaultDependencyNode;
@@ -27,7 +29,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import java.io.File;
-import java.net.MalformedURLException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +48,7 @@ public class MvnDependencyTreeAnalyzerTest {
     public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Test
-    public void testProjectIsAnalyzedCorrectly() throws MalformedURLException {
+    public void testProjectIsAnalyzedCorrectly() {
         MvnDependencyTreeAnalyzer analyzer = new MvnDependencyTreeAnalyzer();
 
         analyzer.setAntennaContext(antennaContextMock);
@@ -63,10 +65,10 @@ public class MvnDependencyTreeAnalyzerTest {
 
         assertThat(actualArtifact.getAnalysisSource(),
                 is(equalTo(expectedArtifact.getAnalysisSource())));
-        assertThat(actualArtifact.getMatchState(),
-                is(equalTo(expectedArtifact.getMatchState())));
-        assertThat(actualArtifact.getArtifactIdentifier(),
-                is(equalTo(expectedArtifact.getArtifactIdentifier())));
+        assertThat(actualArtifact.askFor(ArtifactMatchingMetadata.class).get().getMatchState(),
+                is(equalTo(expectedArtifact.askFor(ArtifactMatchingMetadata.class).get().getMatchState())));
+        assertThat(actualArtifact.getArtifactIdentifiers(),
+                is(equalTo(expectedArtifact.getArtifactIdentifiers())));
     }
 
     @Test
@@ -92,9 +94,13 @@ public class MvnDependencyTreeAnalyzerTest {
         return new WrappedDependencyNodes(projects);
     }
 
+    private File getFilePathForI(Integer i) {
+        return new File("path", i.toString());
+    }
+
     private DependencyNode getNode(int i) {
         ArtifactStub artifact = new ArtifactStub();
-        artifact.setFile(new File("path/" + i));
+        artifact.setFile(getFilePathForI(i));
         artifact.setGroupId("org.eclipse.sw360.antenna");
         artifact.setArtifactId("artifact-" + i);
         artifact.setVersion("1.0." + i);
@@ -104,22 +110,22 @@ public class MvnDependencyTreeAnalyzerTest {
     }
 
     private Artifact getExpectedArtifact(int i) {
-        Artifact artifact = new Artifact();
-        MavenCoordinates coordinates = new MavenCoordinates();
-        coordinates.setGroupId("org.eclipse.sw360.antenna");
-        coordinates.setArtifactId("artifact-" + i);
-        coordinates.setVersion("1.0." + i);
+        Artifact artifact = new Artifact(new MvnDependencyTreeAnalyzer().getName());
 
-        String path = "path/" + i;
-        ArtifactIdentifier identifier = new ArtifactIdentifier();
-        identifier.setMavenCoordinates(coordinates);
-        identifier.setFilename(new File(path).getPath());
+        MavenCoordinates.MavenCoordinatesBuilder coordinatesBuilder = new MavenCoordinates.MavenCoordinatesBuilder();
+        coordinatesBuilder.setGroupId("org.eclipse.sw360.antenna");
+        coordinatesBuilder.setArtifactId("artifact-" + i);
+        coordinatesBuilder.setVersion("1.0." + i);
+        final MavenCoordinates coordinates = coordinatesBuilder.build();
+        artifact.addFact(coordinates);
+
+        String path = getFilePathForI(i).toString();
+        final ArtifactFile artifactFile = new ArtifactFile(Paths.get(path));
+        artifact.addFact(artifactFile);
 
         String[] pathNames = {path};
-        artifact.setArtifactIdentifier(identifier);
-        artifact.setPathnames(pathNames);
-        artifact.setAnalysisSource(new MvnDependencyTreeAnalyzer().getName());
-        artifact.setMatchState(MatchState.EXACT);
+        artifact.addFact(new ArtifactPathnames(pathNames));
+        artifact.addFact(new ArtifactMatchingMetadata(MatchState.EXACT));
 
         return artifact;
     }

@@ -24,9 +24,9 @@ import org.eclipse.sw360.antenna.api.IArtifactFilter;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.Configuration;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 
 /**
@@ -49,7 +49,7 @@ public class ConfigurationHandlerRemove extends AbstractProcessor {
             boolean overridePropertyValue = getProprietaryOverrideValue(configuration, artifact);
             if (!isProprietaryFilter.passed(artifact)) {
                 if (overridePropertyValue) {
-                    reporter.addProcessingMessage(artifact.getArtifactIdentifier(), MessageType.ARTIFACT_IS_PROPRIETARY,
+                    reporter.add(artifact, MessageType.ARTIFACT_IS_PROPRIETARY,
                             "Artifact is removed from the artifacts list for processing, since it was classified as proprietary.");
                 } else {
                     remove.add(artifact);
@@ -66,7 +66,7 @@ public class ConfigurationHandlerRemove extends AbstractProcessor {
         for (Artifact artifact : artifacts) {
             if (!configFilter.passed(artifact)) {
                 remove.add(artifact);
-                reporter.addProcessingMessage(artifact.getArtifactIdentifier(), MessageType.REMOVE_ARTIFACT,
+                reporter.add(artifact, MessageType.REMOVE_ARTIFACT,
                         "Artifact is removed from artifacts list for processing.");
             }
         }
@@ -85,11 +85,10 @@ public class ConfigurationHandlerRemove extends AbstractProcessor {
                 generatedArtifact = override.get(artifactExample);
             }
         }
-        boolean proprietary = artifact.isProprietary();
         if (null != generatedArtifact) {
-            proprietary = generatedArtifact.isProprietary();
+            return generatedArtifact.getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY);
         }
-        return proprietary;
+        return artifact.getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY);
     }
 
     @Override

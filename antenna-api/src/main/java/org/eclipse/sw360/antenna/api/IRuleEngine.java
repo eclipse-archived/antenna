@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.api;
 
 import java.util.Collection;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 /**
  * Provide an API for calling Antenna Rule Engines.

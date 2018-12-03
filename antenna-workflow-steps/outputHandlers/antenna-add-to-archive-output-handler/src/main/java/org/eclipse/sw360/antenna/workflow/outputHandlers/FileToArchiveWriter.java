@@ -55,7 +55,7 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
         Path zipFile = instruction.zipFile;
         if (! zipFile.toFile().exists()) {
             String msg = "zip file=[" + zipFile + "] does not yet exists";
-            reporter.addProcessingMessage(MessageType.PROCESSING_FAILURE, msg);
+            reporter.add(MessageType.PROCESSING_FAILURE, msg);
             LOGGER.warn(msg);
             return;
         }
@@ -63,7 +63,7 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
         String key = instruction.outputType;
         if (! generatedOutput.containsKey(key)) {
             String msg = "unable to attach File with key=[" + key + "], was not produced";
-            reporter.addProcessingMessage(MessageType.PROCESSING_FAILURE, msg);
+            reporter.add(MessageType.PROCESSING_FAILURE, msg);
             LOGGER.error(msg);
             return;
         }
@@ -114,14 +114,14 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
         private FileToArchiveWriterInstruction(String instruction) throws AntennaConfigurationException {
             if (! instruction.contains(":")) {
                 String msg = "unable to attach File related to instruction=[" + instruction + "], invalid due to missing \":\"";
-                reporter.addProcessingMessage(MessageType.PROCESSING_FAILURE, msg);
+                reporter.add(MessageType.PROCESSING_FAILURE, msg);
                 throw new AntennaConfigurationException(msg);
             }
 
             String[] parts = instruction.split(":", 3);
             if (parts.length != 3) {
                 String msg = "unable to attach File related to instruction=[" + instruction + "], has less then three parts";
-                reporter.addProcessingMessage(MessageType.PROCESSING_FAILURE, msg);
+                reporter.add(MessageType.PROCESSING_FAILURE, msg);
                 throw new AntennaConfigurationException(msg);
             }
 
