@@ -16,9 +16,10 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
 import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
-import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
+import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
@@ -28,7 +29,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 import java.util.Collection;
 import java.util.List;
@@ -66,11 +66,18 @@ public class SW360Enricher extends AbstractProcessor {
             Optional<SW360Release> release = connector.findReleaseForArtifact(artifact);
             if (release.isPresent()) {
                 updateLicenses(artifact, release.get());
+                addSourceUrlIfAvailable(artifact, release.get());
             } else {
                 warnAndReport(artifact, "No SW360 release found for artifact.");
             }
         }
         return intermediates;
+    }
+
+    private void addSourceUrlIfAvailable(Artifact artifact, SW360Release release) {
+        if (release.getDownloadurl() != null && !release.getDownloadurl().isEmpty()) {
+            artifact.addFact(new ArtifactSourceUrl(release.getDownloadurl()));
+        }
     }
 
     private void updateLicenses(Artifact artifact, SW360Release release) {

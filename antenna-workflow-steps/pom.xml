@@ -34,6 +34,7 @@
         <module>processors/enricher/antenna-license-knowledgebase-resolver</module>
         <module>processors/enricher/antenna-license-resolver</module>
         <module>processors/enricher/antenna-manifest-resolver</module>
+        <module>processors/enricher/antenna-source-url-resolver</module>
         <module>processors/enricher/antenna-sw360-enricher</module>
         <module>processors/validators/antenna-coordinates-validator</module>
         <module>processors/validators/antenna-source-validator</module>

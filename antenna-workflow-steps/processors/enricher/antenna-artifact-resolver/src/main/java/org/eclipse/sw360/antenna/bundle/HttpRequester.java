@@ -10,27 +10,19 @@
  */
 package org.eclipse.sw360.antenna.bundle;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.maven.repository.ArtifactDoesNotExistException;
+import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
+import org.eclipse.sw360.antenna.exceptions.FailedToDownloadException;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.util.HttpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * Requests jar files for artifacts by making HTTP requests.
@@ -42,8 +34,11 @@ public class HttpRequester extends IArtifactRequester {
     public static final String VERSION_PLACEHOLDER = "{version}";
     private static final String MAVEN_CENTRAL_URL = "http://repo2.maven.org/maven2/"+GROUP_ID_PLACEHOLDER+"/"+ARTIFACT_ID_PLACEHOLDER+"/"+VERSION_PLACEHOLDER+"/";
 
+    private HttpHelper httpHelper;
+
     public HttpRequester(AntennaContext context) {
         super(context);
+        httpHelper = new HttpHelper(context);
     }
 
     private boolean isValidJarUrlTemplate(String sourceRepoTemplate) {
@@ -86,40 +81,8 @@ public class HttpRequester extends IArtifactRequester {
         return repo + remoteFileName;
     }
 
-    private CloseableHttpClient getConfiguretHttpClient() {
-        ToolConfiguration tc = context.getToolConfiguration();
-
-        if (tc.useProxy()) {
-            LOGGER.info("Using proxy on host {} and port {}", tc.getProxyHost(), tc.getProxyPort());
-            return HttpClients.custom()
-                    .useSystemProperties()
-                    .setProxy(new HttpHost(tc.getProxyHost(), tc.getProxyPort()))
-                    .build();
-        } else {
-            return HttpClients.createDefault();
-        }
-    }
-
-    private CloseableHttpResponse callJarUrl(String jarUrl)
-            throws ArtifactDoesNotExistException, IOException {
-        CloseableHttpClient httpClient = getConfiguretHttpClient();
-
-        try {
-            HttpGet getRequest = new HttpGet(jarUrl);
-            LOGGER.info("Downloading {}", jarUrl);
-            return httpClient.execute(getRequest);
-        } catch (IOException e) {
-            throw new IOException(
-                    "Error when trying to contact source repository (" + jarUrl + "): " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            throw new ArtifactDoesNotExistException("No valid URL could be constructed from the artifact info");
-        }
-    }
-
-
     @Override
-    public File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource)
-            throws ArtifactDoesNotExistException, IOException {
+    public File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource) throws IOException, ArtifactDoesNotExistException {
         String jarBaseName = getExpectedJarBaseName(coordinates, isSource);
         File localJarFile = targetDirectory.resolve(jarBaseName).toFile();
 
@@ -130,25 +93,10 @@ public class HttpRequester extends IArtifactRequester {
 
         String jarUrl = getJarUrl(coordinates, jarBaseName);
 
-        try (CloseableHttpResponse response = callJarUrl(jarUrl)) {
-            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                throw new ArtifactDoesNotExistException("File not found on URL=["+jarUrl+"]");
-            }
-
-            HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                try (InputStream is = entity.getContent()) {
-                    FileUtils.copyInputStreamToFile(is, localJarFile);
-                }
-            }
-
-            if (! localJarFile.exists()) {
-                throw new ArtifactDoesNotExistException("Expected Artifact was not generated");
-            }
-
-            return localJarFile;
-        } catch (IOException e) {
-            throw new IOException("Encountered a problem while processing the url=["+jarUrl+"]: " + e.getMessage());
+        try {
+            return httpHelper.downloadFile(jarUrl, targetDirectory, jarBaseName);
+        } catch (FailedToDownloadException e) {
+            throw new ArtifactDoesNotExistException(e.getMessage());
         }
     }
 }

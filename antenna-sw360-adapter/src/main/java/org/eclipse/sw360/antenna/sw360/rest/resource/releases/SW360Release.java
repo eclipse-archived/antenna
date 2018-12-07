@@ -19,6 +19,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     private String name;
     private String version;
     private String cpeid;
+    private String downloadurl;
     private Set<String> mainLicenseIds;
 
     public String getComponentId() {
@@ -64,5 +65,13 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     public SW360Release setMainLicenseIds(Set<String> mainLicenseIds) {
         this.mainLicenseIds = mainLicenseIds;
         return this;
+    }
+
+    public String getDownloadurl() {
+        return downloadurl;
+    }
+
+    public void setDownloadurl(String downloadurl) {
+        this.downloadurl = downloadurl;
     }
 }
