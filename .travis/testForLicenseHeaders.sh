@@ -20,7 +20,7 @@ while read file ; do
         continue # epl found
     fi
 
-    echo "$(tput bold)ERROR: epl-2.0 header is found in $file$(tput sgr0)"
+    echo "$(tput bold)ERROR: epl-2.0 header is not found in $file$(tput sgr0)"
     failure=true
 done <<< "$(git ls-files \
     | grep -Ev '\.(csv|rdf|ent|dtd|png|gitignore|gitattributes|md|bat|jar|json)' \
