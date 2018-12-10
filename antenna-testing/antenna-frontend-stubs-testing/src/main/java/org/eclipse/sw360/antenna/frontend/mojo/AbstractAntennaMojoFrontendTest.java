@@ -89,7 +89,7 @@ public abstract class AbstractAntennaMojoFrontendTest extends AbstractAntennaFro
         repositorySession.setLocalRepositoryManager(manager);
     }
 
-    private MojoExecution setUpMavenExecution(MavenSession mvnSession) throws Exception {
+    private MojoExecution setUpMavenExecution(MavenSession mvnSession) {
         LegacySupport mvnBuildContext = new DefaultLegacySupport();
         mvnBuildContext.setSession(mvnSession);
         MojoExecution mvnExecution = mojoRule.newMojoExecution(ANTENNA_MOJO_GOAL);

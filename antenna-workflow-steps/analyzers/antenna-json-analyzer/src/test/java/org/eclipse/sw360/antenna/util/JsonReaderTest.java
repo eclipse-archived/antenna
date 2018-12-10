@@ -10,7 +10,10 @@
  */
 package org.eclipse.sw360.antenna.util;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIssues;
+import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.Issue;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.SecurityIssueStatus;
@@ -25,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -38,7 +42,7 @@ public class JsonReaderTest {
         URI uri = this.getClass().getClassLoader().getResource("data.json").toURI();
         InputStream iStream = Files.newInputStream(Paths.get(uri));
         artifacts = jsonReader.createArtifactsList(iStream);
-        assertThat(artifacts.get(0).getDeclaredLicenses().evaluate()).isEqualTo("( license1 AND ( license2 AND license3 ) )");
+        assertThat(artifacts.get(0).askForGet(DeclaredLicenseInformation.class).get().evaluate()).isEqualTo("( license1 AND ( license2 AND license3 ) )");
     }
 
     @Test
@@ -51,26 +55,33 @@ public class JsonReaderTest {
         artifacts = jsonReader.createArtifactsList(iStream);
 
         assertThat(artifacts.stream()
-                .map(Artifact::getDeclaredLicenses)
+                .map(artifact -> artifact.askForGet(DeclaredLicenseInformation.class))
+                .map(Optional::get)
                 .map(LicenseInformation::evaluate)
                 .anyMatch("PUBLIC-DOMAIN"::equals));
         assertThat(artifacts.stream()
                 .map(Artifact::getAnalysisSource)
                 .allMatch("CSV"::equals));
         assertThat(artifacts.stream()
-                .map(artifact -> artifact.getArtifactIdentifier().getFilename())
+                .map(artifact -> artifact.askFor(ArtifactFilename.class))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(ArtifactFilename::getFilename)
                 .anyMatch("aopalliance-1.0.jar"::equals));
+
         artifacts.stream()
-                .map(Artifact::getSecurityIssues)
+                .map(artifact -> artifact.askForGet(ArtifactIssues.class))
+                .map(Optional::get)
                 .findAny()
-                .ifPresent(issues -> assertThat(issues.getIssue().stream()
+                .ifPresent(issues -> assertThat(issues.stream()
                         .map(Issue::getStatus)
                         .anyMatch(SecurityIssueStatus.OPEN::equals)));
 
         artifacts.stream()
-                .map(Artifact::getSecurityIssues)
+                .map(artifact -> artifact.askForGet(ArtifactIssues.class))
+                .map(Optional::get)
                 .findAny()
-                .ifPresent(issues -> assertThat(issues.getIssue().stream()
+                .ifPresent(issues -> assertThat(issues.stream()
                         .map(Issue::getReference)
                         .anyMatch("CVE-2009-1523"::equals)));
     }

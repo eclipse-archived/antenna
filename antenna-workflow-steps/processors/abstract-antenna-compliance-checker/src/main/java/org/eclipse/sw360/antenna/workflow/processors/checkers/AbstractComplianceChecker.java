@@ -17,8 +17,7 @@ import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,38 +78,18 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         // Flag the build as failed if the report engine reports it as so.
         if (failCausingResults.size() > 0) {
             String messagePrefix = "Rule engine=[" + getRulesetDescription() + "] failed evaluation.";
-            reporter.add(messagePrefix, MessageType.PROCESSING_FAILURE);
+            reporter.add(MessageType.PROCESSING_FAILURE, messagePrefix);
             String fullMessage = makeStringForEvaluationResults(messagePrefix, failCausingResults);
             LOGGER.info(fullMessage);
             throw new AntennaComplianceException(fullMessage);
         }
     }
 
-    private String showArtifact(Artifact artifact) {
-        if (artifact.getArtifactIdentifier() == null) {
-            return artifact.toString();
-        }
-
-        ArtifactIdentifier artifactIdentifier = artifact.getArtifactIdentifier();
-
-        if (artifactIdentifier.getMavenCoordinates() != null) {
-            return artifactIdentifier.getMavenCoordinates().getPrettyRepresentation();
-        }
-        if (artifactIdentifier.getBundleCoordinates() != null) {
-            return artifactIdentifier.getBundleCoordinates().getPrettyRepresentation();
-        }
-        if (artifactIdentifier.getFilename() != null) {
-            return artifactIdentifier.getFilename();
-        }
-
-        return artifact.getArtifactIdentifier().toString();
-    }
-
     protected String makeStringForEvaluationResults(String messagePrefix, Set<IEvaluationResult> failCausingResults) {
         Map<String,Set<IEvaluationResult>> transposedFailCausingResults = new HashMap();
         failCausingResults.forEach(iEvaluationResult ->
                 iEvaluationResult.getFailedArtifacts().forEach(artifact -> {
-                            String artifactRepresentation = showArtifact(artifact);
+                            String artifactRepresentation = artifact.toString();
                             if(! transposedFailCausingResults.containsKey(artifactRepresentation)){
                                 transposedFailCausingResults.put(artifactRepresentation, new HashSet<>());
                             }
@@ -151,7 +130,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         if (results.size() > 0) {
             results.forEach(r ->
                     r.getFailedArtifacts().forEach(a ->
-                            reporter.addProcessingMessage(a.getArtifactIdentifier(), MessageType.RULE_ENGINE,
+                            reporter.add(MessageType.RULE_ENGINE,
                                     r.getSeverity() + ": " + r.getDescription())));
         }
     }

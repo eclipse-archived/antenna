@@ -16,14 +16,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.BundleCoordinates;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.junit.rules.TemporaryFolder;
 
 public class CoordinatesValidatorTest extends AntennaTestWithMockedContext {
@@ -40,7 +40,6 @@ public class CoordinatesValidatorTest extends AntennaTestWithMockedContext {
         validator.setAntennaContext(antennaContextMock);
         validator.configure(Collections.emptyMap());
         artifact = new Artifact();
-        artifact.setProprietary(false);
         artifacts = new ArrayList<>();
         artifacts.add(artifact);
     }
@@ -52,40 +51,31 @@ public class CoordinatesValidatorTest extends AntennaTestWithMockedContext {
 
     @Test
     public void validateCoordinatesTest() {
-        artifact.getArtifactIdentifier().setMavenCoordinates(new MavenCoordinates());
+        assertThat(validator.evaluate(artifacts).getEvaluationResults().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void validateCoordinatesTestEmptyMvn() {
+        artifact.addFact(new MavenCoordinates(null,null,null));
         assertThat(validator.evaluate(artifacts).getEvaluationResults().size()).isEqualTo(1);
     }
 
     @Test
     public void validateCoordinatesTestMvn() {
-        MavenCoordinates mavenCoordinates = new MavenCoordinates();
-        mavenCoordinates.setArtifactId("test");
-        mavenCoordinates.setGroupId("test");
-        mavenCoordinates.setVersion("test");
-        artifact.getArtifactIdentifier().setMavenCoordinates(mavenCoordinates);
+        artifact.addFact(new MavenCoordinates("test", "test", "test"));
         assertThat(validator.evaluate(artifacts).getEvaluationResults().size()).isEqualTo(0);
     }
 
     @Test
     public void validateCoordinatesTestP2() {
-        BundleCoordinates bundleCoordinates = new BundleCoordinates();
-        bundleCoordinates.setSymbolicName("test");
-        bundleCoordinates.setBundleVersion("test");
-        artifact.getArtifactIdentifier().setBundleCoordinates(bundleCoordinates);
+        artifact.addFact(new BundleCoordinates("test", "test"));
         assertThat(validator.evaluate(artifacts).getEvaluationResults().size()).isEqualTo(0);
     }
 
     @Test
     public void validateCoordinatesTestP2andMvn() {
-        MavenCoordinates mavenCoordinates = new MavenCoordinates();
-        mavenCoordinates.setArtifactId("test");
-        mavenCoordinates.setGroupId("test");
-        mavenCoordinates.setVersion("test");
-        artifact.getArtifactIdentifier().setMavenCoordinates(mavenCoordinates);
-        BundleCoordinates bundleCoordinates = new BundleCoordinates();
-        bundleCoordinates.setSymbolicName("test");
-        bundleCoordinates.setBundleVersion("test");
-        artifact.getArtifactIdentifier().setBundleCoordinates(bundleCoordinates);
+        artifact.addFact(new MavenCoordinates("test", "test", "test"));
+        artifact.addFact(new BundleCoordinates("test", "test"));
         assertThat(validator.evaluate(artifacts).getEvaluationResults().size()).isEqualTo(0);
     }
 

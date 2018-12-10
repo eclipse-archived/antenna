@@ -21,8 +21,7 @@ import java.util.*;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
 import org.junit.Before;
@@ -34,7 +33,7 @@ import org.mockito.Mockito;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 
 @RunWith(Parameterized.class)
@@ -113,7 +112,7 @@ public class AbstractComplianceCheckerTest extends AntennaTestWithMockedContext 
 
     @After
     public void assertThatOnlyExpectedMethodsAreCalled() {
-        verify(reporterMock, atLeast(0)).addProcessingMessage(any(), any(), anyString());
+        verify(reporterMock, atLeast(0)).add(any(), anyString());
     }
 
     @Test
@@ -129,7 +128,7 @@ public class AbstractComplianceCheckerTest extends AntennaTestWithMockedContext 
         } else {
             complianceChecker.execute(evaluation);
             verify(reporterMock, atMost(0))
-                    .add(anyString(), eq(MessageType.PROCESSING_FAILURE));
+                    .add(eq(MessageType.PROCESSING_FAILURE), anyString());
         }
     }
 
@@ -145,14 +144,12 @@ public class AbstractComplianceCheckerTest extends AntennaTestWithMockedContext 
     }
 
     private Set<Artifact> mkSingletonArtifact(String name){
-        final Artifact artifact = new Artifact();
-        final ArtifactIdentifier artifactIdentifier = new ArtifactIdentifier();
-        final MavenCoordinates mavenCoordinates = new MavenCoordinates();
+        final Artifact artifact = new Artifact("forTest");
+        final MavenCoordinates.MavenCoordinatesBuilder mavenCoordinates = new MavenCoordinates.MavenCoordinatesBuilder();
         mavenCoordinates.setVersion("1.0");
         mavenCoordinates.setGroupId(name + "GroupId");
         mavenCoordinates.setArtifactId(name + "ArtifactId");
-        artifactIdentifier.setMavenCoordinates(mavenCoordinates);
-        artifact.setArtifactIdentifier(artifactIdentifier);
+        artifact.addFact(mavenCoordinates.build());
         return Collections.singleton(artifact);
     }
 

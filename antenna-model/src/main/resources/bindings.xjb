@@ -15,11 +15,45 @@
 
     <jxb:bindings schemaLocation="config.xsd">
 
-        <jxb:bindings node="//xsd:complexType[@name='artifact']">
-            <jxb:class ref="org.eclipse.sw360.antenna.model.Artifact"/>
+        <jxb:bindings node="//xsd:complexType[@name='mavenCoordinates']">
+            <jxb:class name="FromXmlMavenCoordinates" ref="org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates.MavenCoordinatesBuilder"/>
         </jxb:bindings>
+
+        <jxb:bindings node="//xsd:complexType[@name='bundleCoordinates']">
+            <jxb:class ref="org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates.BundleCoordinatesBuilder"/>
+        </jxb:bindings>
+
+        <jxb:bindings node="//xsd:complexType[@name='javaScriptCoordinates']">
+            <jxb:class ref="org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates.JavaScriptCoordinatesBuilder"/>
+        </jxb:bindings>
+
+        <jxb:bindings node="//xsd:complexType[@name='artifact']">
+            <jxb:class ref="org.eclipse.sw360.antenna.model.artifact.FromXmlArtifactBuilder"/>
+        </jxb:bindings>
+
         <jxb:bindings node="//xsd:complexType[@name='artifactSelector']">
-            <jxb:class name="XmlArtifactSelector"/>
+            <jxb:class name="FromXmlArtifactSelectorBuilder"/>
+            <ci:code>
+                <![CDATA[
+                 public org.eclipse.sw360.antenna.model.artifact.ArtifactSelector build() {
+                     java.util.ArrayList<org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier> artifactIdentifiers = new java.util.ArrayList<>();
+                     if(getMavenCoordinates() != null) {
+                         artifactIdentifiers.add(getMavenCoordinates().build());
+                     }
+                     if(getBundleCoordinates() != null) {
+                         artifactIdentifiers.add(getBundleCoordinates().build());
+                     }
+                     if(getJavaScriptCoordinates() != null) {
+                         artifactIdentifiers.add(getJavaScriptCoordinates().build());
+                     }
+                     if(getFilename() != null || getHash() != null) {
+                         artifactIdentifiers.add(new org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename(getFilename(), getHash()));
+                     }
+
+                     return new org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorAndSet(artifactIdentifiers);
+                 }
+                 ]]>
+            </ci:code>
         </jxb:bindings>
 
         <jxb:bindings node="//xsd:simpleType[@name='licenseClassification']/xsd:restriction/xsd:enumeration[@value='Yes']">
@@ -216,89 +250,6 @@
                     else{
                         return String.format(" %s %s ", getLeftStatement().getHTMLLinkStr() , getRightStatement().getHTMLLinkStr());
                     }
-                }
-                ]]>
-            </ci:code>
-        </jxb:bindings>
-
-        <jxb:bindings node="//xsd:complexType[@name='artifactCoordinates']">
-            <ci:code>
-                <![CDATA[
-                 abstract public String getPrettyRepresentation();
-
-                 @Override
-                 public String toString() {
-                     return getPrettyRepresentation();
-                 }
-                 ]]>
-            </ci:code>
-        </jxb:bindings>
-
-        <jxb:bindings node="//xsd:complexType[@name='mavenCoordinates']">
-            <ci:code>
-                <![CDATA[
-                @Override
-                public String getPrettyRepresentation() {
-                    return groupId + ":" + artifactId + ":" + version;
-                }
-                ]]>
-            </ci:code>
-        </jxb:bindings>
-
-        <jxb:bindings node="//xsd:complexType[@name='bundleCoordinates']">
-            <ci:code>
-                <![CDATA[
-                @Override
-                public String getPrettyRepresentation() {
-                    return symbolicName + ":" + bundleVersion;
-                }
-                ]]>
-            </ci:code>
-        </jxb:bindings>
-
-        <jxb:bindings node="//xsd:complexType[@name='javaScriptCoordinates']">
-            <ci:code>
-                <![CDATA[
-                @Override
-                public String getPrettyRepresentation() {
-                    return name + ":" + version + " (" + artifactId + ")";
-                }
-
-                @Override
-                public String toString() {
-                    final StringBuilder sb = new StringBuilder();
-                    sb.append("ArtifactId: ").append(artifactId);
-                    sb.append(" Name: ").append(name);
-                    sb.append(" Version: ").append(version);
-                    return sb.toString();
-                }
-                ]]>
-            </ci:code>
-        </jxb:bindings>
-
-        <jxb:bindings node="//xsd:complexType[@name='artifactIdentifier']">
-            <ci:code>
-                <![CDATA[
-                public ArtifactIdentifier() {
-                    mavenCoordinates = new MavenCoordinates();
-                    bundleCoordinates = new BundleCoordinates();
-                    javaScriptCoordinates = new JavaScriptCoordinates();
-                }
-
-
-                @Override
-                public String toString() {
-                    String result = this.filename + "\t" + "#" + this.hash;
-                    if (mavenCoordinates != null) {
-                        return result + "\t" + mavenCoordinates.toString();
-                    }
-                    if (bundleCoordinates != null) {
-                        return result + "\t" + bundleCoordinates.toString();
-                    }
-                    if (javaScriptCoordinates != null) {
-                        return result + "\t" + javaScriptCoordinates.toString();
-                    }
-                    return result;
                 }
                 ]]>
             </ci:code>

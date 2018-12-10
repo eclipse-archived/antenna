@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.sw360.comparator;
 import java.util.List;
 
 public interface ICommonComparisonProperties {
-    public String getName();
+    String getName();
 
-    public List<String> getVersions();
+    List<String> getVersions();
 }

@@ -15,35 +15,33 @@ import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Special ProcessingMessage for incomplete source jars.
  */
-public class IncompleteSourcesFailure extends ProcessingMessage {
-    /**
-     * Super constructor is used.
-     */
-    public IncompleteSourcesFailure() {
-        super(MessageType.INCOMPLETE_SOURCES);
-    }
-
+public class IncompleteSourcesFailure extends ProcessingMessageWithPayload {
     private List<String> missingSources = new ArrayList<>();
 
-    public void setMissingSources(List<String> missingSources) {
-        this.missingSources = missingSources;
+    public IncompleteSourcesFailure(String message) {
+        super(MessageType.INCOMPLETE_SOURCES, message);
     }
 
-    public List<String> getMissingSources() {
-        return missingSources;
+    public IncompleteSourcesFailure(String identifier, String message) {
+        super(MessageType.INCOMPLETE_SOURCES, identifier, message);
     }
 
-    /**
-     * The name of the missing class is added to the list of missing classes.
-     * 
-     * @param className
-     */
     public void addMissingSources(String className) {
         missingSources.add(className);
+    }
+
+    public void addMissingSources(Collection<String> classNames) {
+        missingSources.addAll(classNames);
+    }
+
+    @Override
+    public List<String> getPayload() {
+        return missingSources;
     }
 }

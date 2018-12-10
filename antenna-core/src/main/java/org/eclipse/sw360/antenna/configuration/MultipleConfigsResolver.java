@@ -15,18 +15,16 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.reporting.Report;
@@ -183,8 +181,7 @@ public class MultipleConfigsResolver {
                     LicenseInformation merged = mergedFinalLicenses.get(selector);
                     LicenseInformation actual = setFinalLicense.get(selector);
                     if (!merged.equals(actual)) {
-                        tempReporter.addProcessingMessage(null,
-                                MessageType.CONFLICTING_CONFIGURATIONS,
+                        tempReporter.add(MessageType.CONFLICTING_CONFIGURATIONS,
                                 "Conflicting configurations in the \"set final license\" section, the declared licenses are not the same. " +
                                         "(artifact selector was=[" + selector.toString() + "])");
                     }
@@ -199,7 +196,7 @@ public class MultipleConfigsResolver {
         for (Configuration configuration : configurations) {
 
             if (!(equal == configuration.isFailOnIncompleteSources())) {
-                tempReporter.addProcessingMessage(null, MessageType.CONFLICTING_CONFIGURATIONS,
+                tempReporter.add(MessageType.CONFLICTING_CONFIGURATIONS,
                         "Conflicting configurations for the attribute \"failOnIncompleteSources\".");
             }
         }
@@ -210,7 +207,7 @@ public class MultipleConfigsResolver {
         boolean equal = configurations.get(0).isFailOnMissingSources();
         for (Configuration configuration : configurations) {
             if (!(equal == configuration.isFailOnMissingSources())) {
-                tempReporter.addProcessingMessage(null, MessageType.CONFLICTING_CONFIGURATIONS,
+                tempReporter.add(MessageType.CONFLICTING_CONFIGURATIONS,
                         "Conflicting configurations for the attribute \"failOnMissingSources\".");
                 return;
             }
@@ -253,8 +250,7 @@ public class MultipleConfigsResolver {
                 if (mergedOverride.containsKey(artifactSelector)) {
                     Artifact generatedArtifact = mergedOverride.get(artifactSelector);
                     if (!generatedArtifact.equals(compare)) {
-                        tempReporter.addProcessingMessage(null,
-                                MessageType.CONFLICTING_CONFIGURATIONS,
+                        tempReporter.add(MessageType.CONFLICTING_CONFIGURATIONS,
                                 "Conflicting configurations in the override section at artifact: "
                                         + "the override values are not equal. (artifact selector was=[" + artifactSelector.toString() + "])");
                         return;

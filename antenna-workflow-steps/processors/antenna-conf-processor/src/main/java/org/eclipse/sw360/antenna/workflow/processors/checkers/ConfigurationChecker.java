@@ -17,16 +17,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.xml.generated.Issues;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.SecurityIssue;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 
@@ -115,8 +113,7 @@ public class ConfigurationChecker extends AbstractProcessor {
         String message = "This artifact is not needed in the \""+type+"\" section of the configuration file as it does not exist in the artifacts list";
         for (ArtifactSelector selector : selectors) {
             if (artifacts.stream().noneMatch(selector::matches)) {
-                reporter.addProcessingMessage(null,
-                        MessageType.UNNECESSARY_CONFIG,
+                reporter.add(MessageType.UNNECESSARY_CONFIG,
                         selector.toString() + ": " + message);
             }
         }

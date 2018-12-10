@@ -17,21 +17,23 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
 import org.apache.maven.repository.ArtifactDoesNotExistException;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactJar;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactSourceJar;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.bundle.ArtifactRequesterFactory;
 import org.eclipse.sw360.antenna.bundle.IArtifactRequester;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
 
 public class MavenArtifactResolver extends AbstractProcessor {
 
@@ -47,66 +49,78 @@ public class MavenArtifactResolver extends AbstractProcessor {
     /**
      * Downloads the maven artifacts for the given lists, if possible.
      *
-     * @param list
+     * @param artifacts
      *            to be resolved
      */
-    private void resolveArtifacts(Collection<Artifact> list) {
+    private void resolveArtifacts(Collection<Artifact> artifacts) {
         // Check directory exists
         File dir = dependencyTargetDirectory.toFile();
         if (!dir.exists()) {
             dir.mkdirs();
         }
 
-        list.stream()
-                .filter(artifact -> artifact.getJar() == null)
+        artifacts.stream()
                 .filter(getFilterPredicate())
                 .filter(artifact -> ! isIgnoredForSourceResolving(artifact))
                 .forEach(artifact -> resolve(artifact, dependencyTargetDirectory));
     }
 
     private Predicate<Artifact> getFilterPredicate() {
-        return artifact -> !artifact.isProprietary() &&
-                artifact.getArtifactIdentifier().getMavenCoordinates().getGroupId() != null &&
-                artifact.getArtifactIdentifier().getMavenCoordinates().getArtifactId() != null;
+        return artifact -> {
+            final Optional<MavenCoordinates> mavenCoordinates = artifact.askFor(MavenCoordinates.class);
+            return !artifact.getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY) &&
+                    mavenCoordinates.isPresent() &&
+                    mavenCoordinates.get().getGroupId() != null &&
+                    mavenCoordinates.get().getArtifactId() != null;
+        };
     }
 
     private void resolve(Artifact artifact, Path dependencyTargetDirectory) {
-        ArtifactIdentifier identifier = artifact.getArtifactIdentifier();
+        Optional<MavenCoordinates> oCoordinates = artifact.askFor(MavenCoordinates.class);
+        if(! oCoordinates.isPresent()) {
+            return;
+        }
+        MavenCoordinates coordinates = oCoordinates.get();
+
         IArtifactRequester artifactRequester = ArtifactRequesterFactory.getArtifactRequester(context);
 
         // Does artifact exist in repo?
-        boolean sourceExists = true, jarExists = true;
+        boolean sourceExists = false, jarExists = false;
 
         try {
-            if (null == artifact.getMvnSourceJar()) {
-                File sourceJar = artifactRequester.requestFile(identifier, dependencyTargetDirectory, true);
-                artifact.setMavenSourceJar(sourceJar);
+            if (! artifact.getSourceFile().isPresent()) {
+                File sourceJar = artifactRequester.requestFile(coordinates, dependencyTargetDirectory, true);
+                if(sourceJar != null) {
+                    artifact.addFact(new ArtifactSourceJar(sourceJar.toPath()));
+                    sourceExists = true;
+                }
+            } else {
+                sourceExists = true;
             }
         } catch (ArtifactDoesNotExistException e) {
-            sourceExists = false;
+            LOGGER.warn("Failed to find source jar: ", e);
         } catch (IOException e) {
             throw new AntennaExecutionException("Downloading sources failed", e);
         }
 
         try {
-            if (null == artifact.getJar()) {
-                File jar = artifactRequester.requestFile(identifier, dependencyTargetDirectory, false);
-                artifact.setJar(jar);
+            if (! artifact.getFile().isPresent()) {
+                File jar = artifactRequester.requestFile(coordinates, dependencyTargetDirectory, false);
+                if(jar != null) {
+                    artifact.addFact(new ArtifactJar(jar.toPath()));
+                    jarExists = true;
+                }
+            } else {
+                jarExists = true;
             }
         } catch (ArtifactDoesNotExistException e) {
-            jarExists = false;
+            LOGGER.warn("Failed to find jar: ", e);
         } catch (IOException e) {
             throw new AntennaExecutionException("Downloading jar failed", e);
         }
 
-        if (null == artifact.getMvnSourceJar() && null == artifact.getJar() && (sourceExists || jarExists)) {
-            ProcessingMessage processingMessage = new ProcessingMessage(MessageType.MISSING_SOURCES);
-            processingMessage.setIdentifier(identifier);
-            processingMessage.setMessage(
-                    "Maven Artifact Coordinates present but non resolvable sources (maybe sources are available using P2).");
-            if (!reporter.getProcessingReport().getMessageList().contains(processingMessage)) {
-                reporter.add(processingMessage);
-            }
+        if (!sourceExists && !jarExists) {
+            reporter.add(artifact, MessageType.MISSING_SOURCES, "Maven Artifact Coordinates present but non resolvable sources (maybe sources are available using P2).");
         }
     }
 

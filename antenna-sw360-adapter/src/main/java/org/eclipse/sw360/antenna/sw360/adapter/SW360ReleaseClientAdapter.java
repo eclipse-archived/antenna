@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.sw360.adapter;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.comparator.ArtifactCommons;
 import org.eclipse.sw360.antenna.sw360.comparator.ArtifactSW360ComponentComparator;
 import org.eclipse.sw360.antenna.sw360.comparator.SW360ComponentCommons;
@@ -56,7 +56,7 @@ public class SW360ReleaseClientAdapter {
     }
 
     public Optional<SW360Release> getReleaseByArtifact(SW360Component component, Artifact artifact, HttpHeaders header) throws AntennaException {
-        String releaseVersionOfArtifact = SW360ComponentAdapterUtils.createSW360ReleaseVersion(artifact.getArtifactIdentifier());
+        String releaseVersionOfArtifact = SW360ComponentAdapterUtils.createSW360ReleaseVersion(artifact);
         if ((component.get_Embedded() != null) && (component.get_Embedded().getReleases() != null)) {
             List<SW360SparseRelease> releases = component.get_Embedded().getReleases();
             Optional<String> releaseId = releases.stream()

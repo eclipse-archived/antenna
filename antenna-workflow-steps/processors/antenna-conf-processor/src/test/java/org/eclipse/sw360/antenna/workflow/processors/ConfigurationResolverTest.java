@@ -22,17 +22,18 @@ import java.util.Optional;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorAndSet;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
-import org.eclipse.sw360.antenna.model.xml.generated.BundleCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerAdd;
 import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerOverride;
@@ -73,24 +74,28 @@ public class ConfigurationResolverTest extends AntennaTestWithMockedContext {
 
     @After
     public void after() {
-        verify(reporterMock, atLeast(0)).addProcessingMessage(any(), any(), any());
+        verify(reporterMock, atLeast(0)).add(any(), any());
+        verify(reporterMock, atLeast(0)).add(any(Artifact.class), any(), any());
     }
 
     @Test
     public void resolveDownloadConfigurationTest() {
         List<Artifact> artifacts = new ArrayList<>();
         Artifact artifact = new Artifact();
-        artifact.getArtifactIdentifier().setFilename("director-ant.jar");
+        artifact.addFact(new ArtifactFilename("director-ant.jar"));
         artifacts.add(artifact);
         Artifact artifact1 = new Artifact();
-        artifact1.getArtifactIdentifier().setFilename("slf4j-api-1.6.6.jar");
+        artifact1.addFact(new ArtifactFilename("slf4j-api-1.6.6.jar"));
         artifacts.add(artifact1);
 
         ConfigurationHandlerOverride resolver = new ConfigurationHandlerOverride(antennaContextMock);
         resolver.process(artifacts);
 
-        assertThat(artifact.getArtifactIdentifier().getFilename()).isEqualTo("director-ant.jar");
-        assertThat(artifact1.isIgnoreForDownload()).isTrue();
+        assertThat(artifact.askFor(ArtifactFilename.class)
+                .map(ArtifactFilename::getFilename)
+                .orElse(""))
+                .isEqualTo("director-ant.jar");
+        assertThat(artifact1.getFlag(Artifact.IS_IGNORE_FOR_DOWNLOAD_KEY)).isTrue();
     }
 
     @Test
@@ -98,17 +103,20 @@ public class ConfigurationResolverTest extends AntennaTestWithMockedContext {
         ConfigurationHandlerOverride resolver = new ConfigurationHandlerOverride(antennaContextMock);
         List<Artifact> artifacts = new ArrayList<>();
         Artifact artifact = new Artifact();
-        artifact.getArtifactIdentifier().setFilename("overrideAll.jar");
+        artifact.addFact(new ArtifactFilename("overrideAll.jar"));
         artifacts.add(artifact);
         artifacts.add(artifact);
 
         resolver.process(artifacts);
 
-        assertThat(artifact.getArtifactIdentifier().getMavenCoordinates().getArtifactId()).isEqualTo("testID");
-        assertThat(artifact.getArtifactIdentifier().getMavenCoordinates().getGroupId()).isEqualTo("testGroupId");
-        assertThat(artifact.getArtifactIdentifier().getMavenCoordinates().getVersion()).isEqualTo("testVersion");
-        assertThat(artifact.getArtifactIdentifier().getBundleCoordinates().getSymbolicName()).isEqualTo("testName");
-        assertThat(artifact.getArtifactIdentifier().getBundleCoordinates().getBundleVersion()).isEqualTo("testVersion");
+        final MavenCoordinates mavenCoordinates = artifact.askFor(MavenCoordinates.class).get();
+        assertThat(mavenCoordinates.getArtifactId()).isEqualTo("testID");
+        assertThat(mavenCoordinates.getGroupId()).isEqualTo("testGroupId");
+        assertThat(mavenCoordinates.getVersion()).isEqualTo("testVersion");
+
+        final BundleCoordinates bundleCoordinates = artifact.askFor(BundleCoordinates.class).get();
+        assertThat(bundleCoordinates.getSymbolicName()).isEqualTo("testName");
+        assertThat(bundleCoordinates.getBundleVersion()).isEqualTo("testVersion");
     }
 
     @Test
@@ -124,22 +132,13 @@ public class ConfigurationResolverTest extends AntennaTestWithMockedContext {
         resolver.process(artifacts);
 
         assertThat(artifacts.size()).isEqualTo(2);
-        assertThat(artifacts.get(0).isProprietary()).isFalse();
-        assertThat(artifacts.get(0).getMatchState()).isEqualTo(MatchState.EXACT);
-        assertThat(artifacts.get(0).getPathnames()).isNotNull();
+        assertThat(artifacts.get(0).getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY)).isFalse();
+        assertThat(artifacts.get(0).askFor(ArtifactMatchingMetadata.class).map(ArtifactMatchingMetadata::getMatchState).get()).isEqualTo(MatchState.EXACT);
 
 
-        ArtifactIdentifier identifier = new ArtifactIdentifier();
-        identifier.setFilename("addArtifact.jar");
-        MavenCoordinates mavenCoordinates = new MavenCoordinates();
-        mavenCoordinates.setArtifactId("addArtifactId");
-        mavenCoordinates.setGroupId("addGroupId");
-        mavenCoordinates.setVersion("addVersion");
-        identifier.setMavenCoordinates(mavenCoordinates);
-        BundleCoordinates bundleCoordinates = new BundleCoordinates();
-        bundleCoordinates.setSymbolicName("addSymbolicName");
-        bundleCoordinates.setBundleVersion("addBundleVersion");
-        identifier.setBundleCoordinates(bundleCoordinates);
-        assertThat(artifacts.get(0).getArtifactIdentifier()).isEqualTo(identifier);
+        final ArtifactSelectorAndSet selector = new ArtifactSelectorAndSet(new ArtifactFilename("addArtifact.jar"),
+                new MavenCoordinates("addArtifactId", "addGroupId", "addVersion"),
+                new BundleCoordinates("addSymbolicName", "addBundleVersion"));
+        assertThat(selector.matches(artifacts.get(0))).isTrue();
     }
 }

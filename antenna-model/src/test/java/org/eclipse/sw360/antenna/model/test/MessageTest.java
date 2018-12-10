@@ -10,9 +10,10 @@
  */
 package org.eclipse.sw360.antenna.model.test;
 
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.facts.GenericArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,10 +25,8 @@ public class MessageTest {
 
     @Before
     public void init() {
-        this.failure = new ProcessingMessage(MessageType.UNKNOWN_LICENSE);
-        id = new ArtifactIdentifier();
-        this.failure.setIdentifier(id);
-        this.failure.setMessage("test");
+        id = new GenericArtifactCoordinates("Name", "Version");
+        this.failure = new ProcessingMessage(MessageType.UNKNOWN_LICENSE, id.toString(), "test");
     }
 
     @Test
@@ -42,12 +41,12 @@ public class MessageTest {
 
     @Test
     public void identifierTest() {
-        assertThat(failure.getIdentifier().get()).isEqualTo(id);
+        assertThat(failure.getIdentifier()).isEqualTo(id.toString());
     }
 
     @Test
     public void testHash() {
-        ProcessingMessage message = new ProcessingMessage(MessageType.DISALLOWED_LICENSE);
+        ProcessingMessage message = new ProcessingMessage(MessageType.DISALLOWED_LICENSE, "id", "message");
         message.hashCode();
     }
 

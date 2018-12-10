@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.workflow.processors.filter;
 
-import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 
@@ -18,12 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.eclipse.sw360.antenna.model.xml.generated.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.junit.After;
 import org.junit.Before;
 
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 
@@ -42,12 +41,10 @@ public abstract class CommonConfigurationHandlerTest extends AntennaTestWithMock
 
     @Before
     public void init(){
-        ArtifactIdentifier identifier = new ArtifactIdentifier();
-        identifier.setFilename(FILENAME);
         specialArtifact = new Artifact();
-        specialArtifact.setArtifactIdentifier(identifier);
+        specialArtifact.addFact(new ArtifactFilename(FILENAME));
         if(artifactMatchState != null){
-            specialArtifact.setMatchState(artifactMatchState);
+            specialArtifact.addFact(new ArtifactMatchingMetadata(artifactMatchState));
         }
 
         // initialize dummy data
@@ -64,15 +61,9 @@ public abstract class CommonConfigurationHandlerTest extends AntennaTestWithMock
 
 
     protected Artifact generateDummyArtifact(String name) {
-        BundleCoordinates otherBundleCoordinates = new BundleCoordinates();
-        otherBundleCoordinates.setBundleVersion("1.2");
-        otherBundleCoordinates.setSymbolicName(name);
-        ArtifactIdentifier otherArtifactIdentifier = new ArtifactIdentifier();
-        otherArtifactIdentifier.setFilename(name);
-        otherArtifactIdentifier.setBundleCoordinates(otherBundleCoordinates);
         Artifact otherArtifact = new Artifact();
-        otherArtifact.setArtifactIdentifier(otherArtifactIdentifier);
-
+        otherArtifact.addFact(new BundleCoordinates(name, "1.2"));
+        otherArtifact.addFact(new ArtifactFilename(name));
         return otherArtifact;
     }
 }

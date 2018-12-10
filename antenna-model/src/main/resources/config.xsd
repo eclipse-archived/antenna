@@ -153,19 +153,15 @@
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="artifactIdentifier">
-        <xsd:sequence>
-            <xsd:element name="hash" type="xsd:string" minOccurs="0" />
-            <xsd:element name="filename" type="xsd:string" minOccurs="0" />
-            <xsd:element name="mavenCoordinates" type="mavenCoordinates" minOccurs="0" />
-            <xsd:element name="bundleCoordinates" type="bundleCoordinates" minOccurs="0" />
-            <xsd:element name="javaScriptCoordinates" type="javaScriptCoordinates" minOccurs="0" />
-        </xsd:sequence>
-    </xsd:complexType>
-
     <xsd:complexType name="artifactSelector">
         <xsd:sequence>
-            <xsd:element name="artifactIdentifier" type="artifactIdentifier" />
+            <xsd:choice minOccurs="0">
+                <xsd:element name="mavenCoordinates" type="mavenCoordinates"/>
+                <xsd:element name="bundleCoordinates" type="bundleCoordinates"/>
+                <xsd:element name="javaScriptCoordinates" type="javaScriptCoordinates"/>
+            </xsd:choice>
+            <xsd:element name="filename" type="xsd:string" minOccurs="0" />
+            <xsd:element name="hash" type="xsd:string" minOccurs="0" />
         </xsd:sequence>
     </xsd:complexType>
 
@@ -233,14 +229,16 @@
 
     <xsd:complexType name="artifact">
         <xsd:all>
-            <xsd:element name="artifactIdentifier" type="artifactIdentifier" minOccurs="0" />
+            <xsd:element name="mavenCoordinates" type="mavenCoordinates" minOccurs="0"/>
+            <xsd:element name="bundleCoordinates" type="bundleCoordinates" minOccurs="0"/>
+            <xsd:element name="javaScriptCoordinates" type="javaScriptCoordinates" minOccurs="0"/>
+            <xsd:element name="filename" type="xsd:string" minOccurs="0" />
+            <xsd:element name="hash" type="xsd:string" minOccurs="0" />
             <xsd:element name="declaredLicense" type="declaredLicense" minOccurs="0" />
-            <xsd:element name="isProprietary" type="xsd:boolean" minOccurs="0" nillable="false" />
+            <xsd:element name="isProprietary" type="xsd:boolean" minOccurs="0"/>
             <xsd:element name="matchState" type="matchState" minOccurs="0" />
-            <xsd:element name="copyrightStatement" type="xsd:string"
-                         minOccurs="0" />
-            <xsd:element name="modificationStatus" type="xsd:string"
-                         minOccurs="0" />
+            <xsd:element name="copyrightStatement" type="xsd:string" minOccurs="0" />
+            <xsd:element name="modificationStatus" type="xsd:string" minOccurs="0" />
         </xsd:all>
     </xsd:complexType>
 
@@ -276,43 +274,27 @@
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="artifactCoordinates" abstract="true">
-        <xsd:sequence />
-    </xsd:complexType>
-
     <xsd:complexType name="mavenCoordinates">
-        <xsd:complexContent>
-            <xsd:extension base="artifactCoordinates">
-                <xsd:all>
-                    <xsd:element name="artifactId" minOccurs="0" type="xsd:string" />
-                    <xsd:element name="groupId" minOccurs="0" type="xsd:string"/>
-                    <xsd:element name="version" minOccurs="0" type="xsd:string"/>
-                </xsd:all>
-            </xsd:extension>
-        </xsd:complexContent>
+        <xsd:all>
+            <xsd:element name="artifactId" minOccurs="0" type="xsd:string" />
+            <xsd:element name="groupId" minOccurs="0" type="xsd:string"/>
+            <xsd:element name="version" minOccurs="0" type="xsd:string"/>
+        </xsd:all>
     </xsd:complexType>
 
     <xsd:complexType name="bundleCoordinates">
-        <xsd:complexContent>
-            <xsd:extension base="artifactCoordinates">
-                <xsd:all>
-                    <xsd:element name="symbolicName" minOccurs="0"  type="xsd:string"/>
-                    <xsd:element name="bundleVersion" minOccurs="0"  type="xsd:string"/>
-                </xsd:all>
-            </xsd:extension>
-        </xsd:complexContent>
+        <xsd:all>
+            <xsd:element name="symbolicName" minOccurs="0"  type="xsd:string"/>
+            <xsd:element name="bundleVersion" minOccurs="0"  type="xsd:string"/>
+        </xsd:all>
     </xsd:complexType>
 
     <xsd:complexType name="javaScriptCoordinates">
-        <xsd:complexContent>
-            <xsd:extension base="artifactCoordinates">
-                <xsd:all>
-                    <xsd:element name="artifactId" minOccurs="0"  type="xsd:string"/>
-                    <xsd:element name="name" minOccurs="0"  type="xsd:string"/>
-                    <xsd:element name="version" minOccurs="0"  type="xsd:string"/>
-                </xsd:all>
-            </xsd:extension>
-        </xsd:complexContent>
+        <xsd:all>
+            <xsd:element name="artifactId" minOccurs="0"  type="xsd:string"/>
+            <xsd:element name="name" minOccurs="0"  type="xsd:string"/>
+            <xsd:element name="version" minOccurs="0"  type="xsd:string"/>
+        </xsd:all>
     </xsd:complexType>
 
 </xsd:schema>

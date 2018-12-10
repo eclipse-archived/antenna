@@ -14,8 +14,9 @@ package org.eclipse.sw360.antenna.workflow.processors;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIssues;
 import org.eclipse.sw360.antenna.model.xml.generated.*;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractComplianceChecker;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvaluation;
@@ -51,17 +52,9 @@ public class SecurityIssueValidator extends AbstractComplianceChecker {
                 .collect(Collectors.toList());
 
         Issues issues = new Issues();
-        issues.getIssue().addAll(mergeIssues(artifact.getSecurityIssues(), configuredIssueList));
+        issues.getIssue().addAll(mergeIssues(artifact.askForGet(ArtifactIssues.class).orElse(Collections.emptyList()), configuredIssueList));
 
         return new ArrayList<>(checkSecurityIssue(artifact, issues.getIssue()));
-    }
-
-    private List<Issue> mergeIssues(Issues issues, List<Issue> configuredIssueList) {
-        if (issues != null) {
-            return mergeIssues(issues.getIssue(), configuredIssueList);
-        } else {
-            return configuredIssueList;
-        }
     }
 
     private List<Issue> mergeIssues(List<Issue> actualIssueList, List<Issue> configuredIssueList) {

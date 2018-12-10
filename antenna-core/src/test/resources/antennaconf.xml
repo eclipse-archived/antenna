@@ -14,40 +14,32 @@
 	<overrides>
 		<override>
 			<artifactSelector>
-				<artifactIdentifier>
 					<filename>director-ant.jar</filename>
-				</artifactIdentifier>
 			</artifactSelector>
 			<overrideValue>
 				<artifact>
-					<artifactIdentifier>
-						<mavenCoordinates>
-							<artifactId>testID</artifactId>
-						</mavenCoordinates>
-					</artifactIdentifier>
+					<mavenCoordinates>
+						<artifactId>testID</artifactId>
+					</mavenCoordinates>
 				</artifact>
 			</overrideValue>
 		</override>
 		<override>
 			<artifactSelector>
-				<artifactIdentifier>
-					<filename>overrideAll.jar</filename>
-				</artifactIdentifier>
+				<filename>overrideAll.jar</filename>
 			</artifactSelector>
 			<overrideValue>
 				<artifact>
-					<artifactIdentifier>
-						<filename>overrideName.jar</filename>
-						<mavenCoordinates>
-							<artifactId>testID</artifactId>
-							<groupId>testGroupId</groupId>
-							<version>testVersion</version>
-						</mavenCoordinates>
-						<bundleCoordinates>
-							<symbolicName>testName</symbolicName>
-							<bundleVersion>testVersion</bundleVersion>
-						</bundleCoordinates>
-					</artifactIdentifier>
+					<filename>overrideName.jar</filename>
+					<mavenCoordinates>
+						<artifactId>testID</artifactId>
+						<groupId>testGroupId</groupId>
+						<version>testVersion</version>
+					</mavenCoordinates>
+					<bundleCoordinates>
+						<symbolicName>testName</symbolicName>
+						<bundleVersion>testVersion</bundleVersion>
+					</bundleCoordinates>
 					<declaredLicense>
 						<license>
 							<name>testLicense</name>
@@ -62,26 +54,22 @@
 		validation and license validation -->
 	<removeArtifact>
 		<artifactSelector>
-			<artifactIdentifier>
-				<filename>org.eclipse.emf.source.jar</filename>
-			</artifactIdentifier>
+			<filename>org.eclipse.emf.source.jar</filename>
 		</artifactSelector>
 	</removeArtifact>
 
 	<addArtifact>
 		<artifact>
-			<artifactIdentifier>
-				<filename>addArtifact.jar</filename>
-				<mavenCoordinates>
-					<artifactId>addArtifactId</artifactId>
-					<groupId>addGroupId</groupId>
-					<version>addVersion</version>
-				</mavenCoordinates>
-				<bundleCoordinates>
-					<symbolicName>addSymbolicName</symbolicName>
-					<bundleVersion>addBundleVersion</bundleVersion>
-				</bundleCoordinates>
-			</artifactIdentifier>
+			<filename>addArtifact.jar</filename>
+			<mavenCoordinates>
+				<artifactId>addArtifactId</artifactId>
+				<groupId>addGroupId</groupId>
+				<version>addVersion</version>
+			</mavenCoordinates>
+			<bundleCoordinates>
+				<symbolicName>addSymbolicName</symbolicName>
+				<bundleVersion>addBundleVersion</bundleVersion>
+			</bundleCoordinates>
 			<declaredLicense>
 				<license>
 					<name>Apache</name>
@@ -91,18 +79,16 @@
 			<matchState>EXACT</matchState>
 		</artifact>
 		<artifact>
-			<artifactIdentifier>
-				<filename>addArtifact2.jar</filename>
-				<mavenCoordinates>
-					<artifactId>addArtifactId</artifactId>
-					<groupId>addGroupId</groupId>
-					<version>addVersion</version>
-				</mavenCoordinates>
-				<bundleCoordinates>
-					<symbolicName>addSymbolicName</symbolicName>
-					<bundleVersion>addBundleVersion</bundleVersion>
-				</bundleCoordinates>
-			</artifactIdentifier>
+			<filename>addArtifact2.jar</filename>
+			<mavenCoordinates>
+				<artifactId>addArtifactId</artifactId>
+				<groupId>addGroupId</groupId>
+				<version>addVersion</version>
+			</mavenCoordinates>
+			<bundleCoordinates>
+				<symbolicName>addSymbolicName</symbolicName>
+				<bundleVersion>addBundleVersion</bundleVersion>
+			</bundleCoordinates>
 			<isProprietary>false</isProprietary>
 			<matchState>SIMILAR</matchState>
 		</artifact>
@@ -113,18 +99,14 @@
 	<sourceResolving>
 		<preferP2>
 			<artifactSelector>
-				<artifactIdentifier>
-					<filename>slf4j-api-1.6.6.jar</filename>
-				</artifactIdentifier>
+				<filename>slf4j-api-1.6.6.jar</filename>
 			</artifactSelector>
 		</preferP2>
 		<!--ignore for source Download -->
 		<ignoreForSourceResolving>
 			<artifactSelector>
-				<artifactIdentifier>
-					<filename>slf4j-api-1.6.6.jar
-					</filename>
-				</artifactIdentifier>
+				<filename>slf4j-api-1.6.6.jar
+				</filename>
 			</artifactSelector>
 		</ignoreForSourceResolving>
 	</sourceResolving>
@@ -133,9 +115,7 @@
 		<!-- set effective license for Artifact -->
 		<setFinalLicense>
 			<artifactSelector>
-				<artifactIdentifier>
-					<filename>overrideName.jar</filename>
-				</artifactIdentifier>
+				<filename>overrideName.jar</filename>
 			</artifactSelector>
 			<license>
 				<name>EPL-2.0</name>
@@ -147,9 +127,7 @@
 		<!-- ignore for sourceValidation -->
 		<handleSourceAsValid incompleteSources="true" missingSources="true">
 			<artifactSelector>
-				<artifactIdentifier>
-					<filename>org.eclipse.emf.source.jar</filename>
-				</artifactIdentifier>
+				<filename>org.eclipse.emf.source.jar</filename>
 			</artifactSelector>
 		</handleSourceAsValid>
 	</sourceValidation>

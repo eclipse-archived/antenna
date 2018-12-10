@@ -16,14 +16,14 @@ import java.util.*;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.predicates.LicensePredicates;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractComplianceChecker;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvaluation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 
 /**
@@ -44,8 +44,8 @@ public class LicenseValidator extends AbstractComplianceChecker {
     public static final String MISSING_LICENSE_TEXT_SEVERITY_KEY = "missingLicenseTextSeverity";
     public static final String FORBIDDEN_LICENSES_KEY = "forbiddenLicenses";
     public static final String IGNORED_LICENSES_KEY = "ignoredLicenses";
-    private IEvaluationResult.Severity missingLicenseInformationSeverity = IEvaluationResult.Severity.FAIL;
-    private IEvaluationResult.Severity missingLicenseTextSeverity = IEvaluationResult.Severity.FAIL;
+    private IEvaluationResult.Severity missingLicenseInformationSeverity = IEvaluationResult.Severity.WARN;
+    private IEvaluationResult.Severity missingLicenseTextSeverity = IEvaluationResult.Severity.WARN;
     private IEvaluationResult.Severity forbiddenLicenseSeverity = IEvaluationResult.Severity.FAIL;
     private List<String> forbiddenLicenseIds;
     private List<String> ignoredLicenseIds;
@@ -60,12 +60,13 @@ public class LicenseValidator extends AbstractComplianceChecker {
      */
     public List<IEvaluationResult> validate(Artifact artifact) {
         List<IEvaluationResult> results = new ArrayList<>();
-        if (! artifact.isProprietary()) {
-            LicenseInformation finalLicenses = artifact.getFinalLicenses();
+        if (! artifact.getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY)) {
+            LicenseInformation finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact);
             if (finalLicenses.isEmpty()) {
                 results.add(new DefaultPolicyEvaluation.DefaultEvaluationResult(
                         "LicenseValidator::noLicense", "No License information found for the artifact.", missingLicenseInformationSeverity, artifact));
-                }
+                return results;
+            }
             for (License license : finalLicenses.getLicenses()) {
                 if(ignoredLicenseIds.contains(license.getName())){
                     LOGGER.debug("Do not validate license=[" + license.getName() + "], since it is ignored for validation");
@@ -74,11 +75,11 @@ public class LicenseValidator extends AbstractComplianceChecker {
                 if (forbiddenLicenseIds.contains(license.getName())) {
                     results.add(new DefaultPolicyEvaluation.DefaultEvaluationResult(
                             "LicenseValidator::forbiddenLicense",
-                            artifact.getArtifactIdentifier().getFilename()
+                            artifact
                             + " is licensed under the forbidden license " + license.getName(),
                             forbiddenLicenseSeverity, artifact));
                 }
-                if (LicensePredicates.hasNoText(license)) {
+                if (license.getText() == null || "".equals(license.getText())) {
                     results.add(new DefaultPolicyEvaluation.DefaultEvaluationResult(
                             "LicenseValidator::noLicenseText",
                             "License contains no Text", missingLicenseTextSeverity, artifact));
@@ -93,7 +94,7 @@ public class LicenseValidator extends AbstractComplianceChecker {
         DefaultPolicyEvaluation policyEvaluation = new DefaultPolicyEvaluation();
 
         artifacts.stream()
-                .filter(artifact -> !artifact.isProprietary())
+                .filter(artifact -> !artifact.getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY))
                 .forEach(artifact -> validate(artifact)
                         .forEach(policyEvaluation::addEvaluationResult));
 
@@ -114,8 +115,8 @@ public class LicenseValidator extends AbstractComplianceChecker {
         forbiddenLicenseIds = getCommaSeparatedConfigValue(FORBIDDEN_LICENSES_KEY, configMap);
         ignoredLicenseIds = getCommaSeparatedConfigValue(IGNORED_LICENSES_KEY, configMap);
 
-        forbiddenLicenseSeverity = getSeverityFromConfig(FORBIDDEN_LICENSE_SEVERITY_KEY, configMap, IEvaluationResult.Severity.FAIL);
-        missingLicenseInformationSeverity = getSeverityFromConfig(MISSING_LICENSE_INFORMATION_SEVERITY_KEY, configMap, IEvaluationResult.Severity.WARN);
-        missingLicenseTextSeverity = getSeverityFromConfig(MISSING_LICENSE_TEXT_SEVERITY_KEY, configMap, IEvaluationResult.Severity.WARN);
+        forbiddenLicenseSeverity = getSeverityFromConfig(FORBIDDEN_LICENSE_SEVERITY_KEY, configMap, forbiddenLicenseSeverity);
+        missingLicenseInformationSeverity = getSeverityFromConfig(MISSING_LICENSE_INFORMATION_SEVERITY_KEY, configMap, missingLicenseInformationSeverity);
+        missingLicenseTextSeverity = getSeverityFromConfig(MISSING_LICENSE_TEXT_SEVERITY_KEY, configMap, missingLicenseTextSeverity);
     }
 }

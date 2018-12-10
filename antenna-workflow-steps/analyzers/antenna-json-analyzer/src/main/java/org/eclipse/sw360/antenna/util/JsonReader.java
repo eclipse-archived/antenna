@@ -11,7 +11,10 @@
 
 package org.eclipse.sw360.antenna.util;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -73,7 +76,6 @@ public class JsonReader {
                 continue;
             }
             Artifact artifact = mapArtifact(obj);
-            artifact.setAnalysisSource("JSON");
             artifacts.add(artifact);
         }
         LOGGER.debug("Creation of artifacts list finished.");
@@ -104,30 +106,30 @@ public class JsonReader {
      * Maps JSONObject to Antenna artifact.
      */
     private Artifact mapArtifact(JSONObject obj) {
-        Artifact artifact = new Artifact();
-        artifact.setPathnames(mapPathNames(obj));
-        artifact.setArtifactIdentifier(mapIdentifier(obj));
-        artifact.setMatchState(mapMatchState(obj));
-        artifact.setProprietary(mapProprietary(obj));
         JSONObject licenseDataObj = (JSONObject) obj.get("licenseData");
-        artifact.setDeclaredLicenses(mapLicenses("declaredLicenses", licenseDataObj));
-        artifact.setObservedLicenses(mapLicenses("observedLicenses", licenseDataObj));
-        artifact.setOverriddenLicenses(mapLicenses("overriddenLicenses", licenseDataObj));
         JSONObject securityDataObj = (JSONObject) obj.get("securityData");
-        artifact.setSecurityIssues(mapSecurityIssues("securityIssues", securityDataObj));
-        return artifact;
+        return new Artifact("JSON")
+                .addFact(mapMavenCoordinates(obj))
+                .addFact(new ArtifactFilename(null, (String) obj.get("hash")))
+                .addFact(new ArtifactPathnames(mapPathNames(obj)))
+                .addFact(new ArtifactMatchingMetadata(mapMatchState(obj)))
+                .addFact(new DeclaredLicenseInformation(mapLicenses("declaredLicenses", licenseDataObj)))
+                .addFact(new ObservedLicenseInformation(mapLicenses("observedLicenses", licenseDataObj)))
+                .addFact(new OverriddenLicenseInformation(mapLicenses("overriddenLicenses", licenseDataObj)))
+                .addFact(new ArtifactIssues(mapSecurityIssues(securityDataObj)))
+                .setProprietary(mapProprietary(obj));
     }
 
-    private Issues mapSecurityIssues(String identifier, JSONObject securityDataObj) {
+    private Issues mapSecurityIssues(JSONObject securityDataObj) {
         Issues issues = new Issues();
         if ( securityDataObj != null ) {
-            JSONArray securityIssueObjs = (JSONArray) securityDataObj.get(identifier);
+            JSONArray securityIssueObjs = (JSONArray) securityDataObj.get("securityIssues");
             if (securityIssueObjs != null) {
-                for (Iterator<?> it = securityIssueObjs.iterator(); it.hasNext(); ) {
-                    JSONObject json = (JSONObject) it.next();
+                for (Object securityIssueObj : securityIssueObjs) {
+                    JSONObject json = (JSONObject) securityIssueObj;
                     Issue issue = new Issue();
                     issue.setReference((String) json.get("reference"));
-                    issue.setSeverity( parseSeverity( json ) );
+                    issue.setSeverity(parseSeverity(json));
                     issue.setSource((String) json.get("source"));
                     issue.setStatus(SecurityIssueStatus.fromValue((String) json.getOrDefault("status", "Open")));
                     issue.setUrl((String) json.get("url"));
@@ -142,7 +144,7 @@ public class JsonReader {
 
         Object o = json.get( "severity" );
         if ( o instanceof Double ) {
-            return ((Double) o).doubleValue();
+            return (Double) o;
         }
         return 10.0;
     }
@@ -187,23 +189,24 @@ public class JsonReader {
         return MatchState.valueOf(ms.toUpperCase());
     }
 
-    private ArtifactIdentifier mapIdentifier(JSONObject obj) {
-        ArtifactIdentifier id = new ArtifactIdentifier();
-        id.setHash((String) obj.get("hash"));
-        id.setMavenCoordinates(mapMavenCoordinates((JSONObject) obj.get("componentIdentifier")));
-        return id;
-    }
-
     private MavenCoordinates mapMavenCoordinates(JSONObject object) {
-        MavenCoordinates c = new MavenCoordinates();
+        MavenCoordinates.MavenCoordinatesBuilder c = new MavenCoordinates.MavenCoordinatesBuilder();
         if (null != object) {
             JSONObject objCoordinates = (JSONObject) object.get("coordinates");
+
+            if (null == objCoordinates) {
+                JSONObject objComponentIdentifier = (JSONObject) object.get("componentIdentifier");
+                if(objComponentIdentifier != null) {
+                    objCoordinates = (JSONObject) objComponentIdentifier.get("coordinates");
+                }
+            }
+
             if (null != objCoordinates) {
                 c.setGroupId((String) objCoordinates.get("groupId"));
                 c.setArtifactId((String) objCoordinates.get("artifactId"));
                 c.setVersion((String) objCoordinates.get("version"));
             }
         }
-        return c;
+        return c.build();
     }
 }

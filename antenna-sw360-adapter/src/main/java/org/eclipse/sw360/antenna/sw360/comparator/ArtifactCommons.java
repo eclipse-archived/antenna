@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.comparator;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ComponentAdapterUtils;
 
 import java.util.Arrays;
@@ -24,12 +24,12 @@ public class ArtifactCommons implements ICommonComparisonProperties {
     }
 
     public String getName() {
-        String name = SW360ComponentAdapterUtils.createComponentName(artifact.getArtifactIdentifier());
+        String name = SW360ComponentAdapterUtils.createComponentName(artifact);
         return name;
     }
 
     public List<String> getVersions() {
-        String version = SW360ComponentAdapterUtils.createComponentVersion(artifact.getArtifactIdentifier());
+        String version = SW360ComponentAdapterUtils.createComponentVersion(artifact);
         return Arrays.asList(version);
     }
 }

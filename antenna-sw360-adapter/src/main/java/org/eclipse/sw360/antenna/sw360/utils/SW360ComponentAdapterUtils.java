@@ -10,51 +10,57 @@
  */
 package org.eclipse.sw360.antenna.sw360.utils;
 
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.GenericArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 
 public class SW360ComponentAdapterUtils {
-    public static String createComponentName(ArtifactIdentifier artifactIdentifier) {
-        String name = "";
-        if (artifactIdentifier != null) {
-            if ((artifactIdentifier.getMavenCoordinates() != null)
-                    && (artifactIdentifier.getMavenCoordinates().getGroupId() != null)
-                    && (artifactIdentifier.getMavenCoordinates().getArtifactId() != null)) {
-                final String groupId = artifactIdentifier.getMavenCoordinates().getGroupId();
-                final String artifactId = artifactIdentifier.getMavenCoordinates().getArtifactId();
-                name = groupId + ":" + artifactId;
-            } else if ((artifactIdentifier.getBundleCoordinates() != null)
-                    && (artifactIdentifier.getBundleCoordinates().getSymbolicName() != null)) {
-                name = artifactIdentifier.getBundleCoordinates().getSymbolicName();
-            } else {
-                name = artifactIdentifier.getFilename();
-            }
+    private static Optional<ArtifactCoordinates> getMostDominantArtifactCoordinates(Artifact artifact) {
+        final Optional<ArtifactCoordinates> mavenCoordinates = artifact.askFor(MavenCoordinates.class)
+                .map(ArtifactCoordinates.class::cast);
+        if(mavenCoordinates.isPresent()) {
+            return mavenCoordinates;
         }
-        return name;
+        final Optional<ArtifactCoordinates> bundleCoordinates = artifact.askFor(BundleCoordinates.class)
+                .map(ArtifactCoordinates.class::cast);
+        if(bundleCoordinates.isPresent()) {
+            return bundleCoordinates;
+        }
+        final Optional<ArtifactCoordinates> otherCoordinates = artifact.askForAll(ArtifactCoordinates.class)
+                .stream()
+                .findFirst();
+        if(otherCoordinates.isPresent()) {
+            return otherCoordinates;
+        }
+        return artifact.askFor(ArtifactFilename.class)
+                .map(ArtifactFilename::getFilename)
+                .map(fn -> new GenericArtifactCoordinates(fn, "-"))
+                .map(ArtifactCoordinates.class::cast);
     }
 
-    public static String createComponentVersion(ArtifactIdentifier artifactIdentifier) {
-        String version = "-";
-        if (artifactIdentifier != null) {
-            if ((artifactIdentifier.getMavenCoordinates() != null)
-                    && (artifactIdentifier.getMavenCoordinates().getVersion() != null)) {
-                version = artifactIdentifier.getMavenCoordinates().getVersion();
-            } else if ((artifactIdentifier.getBundleCoordinates() != null)
-                    && (artifactIdentifier.getBundleCoordinates().getBundleVersion() != null)) {
-                version = artifactIdentifier.getBundleCoordinates().getBundleVersion();
-            }
-        }
-        return version;
+    public static String createComponentName(Artifact artifact) {
+        return getMostDominantArtifactCoordinates(artifact)
+                .map(ArtifactCoordinates::getName)
+                .orElse("");
+    }
+
+    public static String createComponentVersion(Artifact artifact) {
+        return getMostDominantArtifactCoordinates(artifact)
+                .map(ArtifactCoordinates::getVersion)
+                .orElse("-");
     }
 
     public static void setCreatedOn(SW360Component component) {
@@ -72,7 +78,7 @@ public class SW360ComponentAdapterUtils {
     }
 
     public static void setName(SW360Component component, Artifact artifact) {
-        final String name = createComponentName(artifact.getArtifactIdentifier());
+        final String name = createComponentName(artifact);
         if ((name != null) && (!name.isEmpty())) {
             component.setName(name);
         }
@@ -96,50 +102,17 @@ public class SW360ComponentAdapterUtils {
         String componentId = SW360HalResourceUtility.getLastIndexOfLinkObject(component.get_Links()).orElse("");
 
         SW360ComponentAdapterUtils.setVersion(release, artifact);
-        SW360ComponentAdapterUtils.setCpeid(release, artifact);
         release.setName(component.getName());
         release.setComponentId(componentId);
         release.setMainLicenseIds(sw360LicenseIds);
     }
 
-    public static String createSW360ReleaseVersion(ArtifactIdentifier artifactIdentifier) {
-        String version = "-";
-        if (artifactIdentifier != null) {
-            if ((artifactIdentifier.getMavenCoordinates() != null)
-                    && (artifactIdentifier.getMavenCoordinates().getVersion() != null)) {
-                version = artifactIdentifier.getMavenCoordinates().getVersion();
-            } else if ((artifactIdentifier.getBundleCoordinates() != null)
-                    && (artifactIdentifier.getBundleCoordinates().getBundleVersion() != null)) {
-                version = artifactIdentifier.getBundleCoordinates().getBundleVersion();
-            }
-        }
-        return version;
-    }
-
-    public static void setCpeid(SW360Release release, Artifact artifact) {
-        String cpeId = "cpe:/a:";
-        if (artifact.getArtifactIdentifier() != null) {
-            if (artifact.getArtifactIdentifier().getMavenCoordinates() != null) {
-                if ((artifact.getArtifactIdentifier().getMavenCoordinates().getGroupId() != null)
-                        && (artifact.getArtifactIdentifier().getMavenCoordinates().getArtifactId() != null)
-                        && (artifact.getArtifactIdentifier().getMavenCoordinates().getVersion() != null)) {
-                    final String vendor = artifact.getArtifactIdentifier().getMavenCoordinates().getGroupId();
-                    final String product = artifact.getArtifactIdentifier().getMavenCoordinates().getArtifactId();
-                    final String version = artifact.getArtifactIdentifier().getMavenCoordinates().getVersion();
-                    cpeId += vendor + ":" + product + ":" + version + ":" + "::";
-                }
-            } else if (artifact.getArtifactIdentifier().getBundleCoordinates() != null) {
-                if (artifact.getArtifactIdentifier().getBundleCoordinates().getSymbolicName() != null) {
-                    final String vendor = artifact.getArtifactIdentifier().getBundleCoordinates().getSymbolicName();
-                    cpeId += vendor + ":" + "::::";
-                }
-            }
-        }
-        release.setCpeid(cpeId);
+    public static String createSW360ReleaseVersion(Artifact artifact) {
+        return createComponentVersion(artifact);
     }
 
     public static void setVersion(SW360Release release, Artifact artifact) {
-        final String version = SW360ComponentAdapterUtils.createSW360ReleaseVersion(artifact.getArtifactIdentifier());
+        final String version = SW360ComponentAdapterUtils.createSW360ReleaseVersion(artifact);
         if ((version != null) && (!version.isEmpty())) {
             release.setVersion(version);
         }

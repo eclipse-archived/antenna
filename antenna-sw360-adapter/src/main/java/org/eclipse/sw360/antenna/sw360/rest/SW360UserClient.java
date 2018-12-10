@@ -19,8 +19,6 @@ import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.util.Base64;
 import java.util.Collections;
 
 public class SW360UserClient {

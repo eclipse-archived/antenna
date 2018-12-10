@@ -17,20 +17,23 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
+import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.junit.Before;
 import org.junit.Test;
 
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
-import org.eclipse.sw360.antenna.model.xml.generated.BundleCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
 import org.eclipse.sw360.antenna.xml.XMLResolverJaxB;
 
 public class ConfigurationTest {
@@ -46,25 +49,27 @@ public class ConfigurationTest {
     }
 
     private ArtifactSelector mkArtifactSelectorFromFileName(String fileName) {
-        ArtifactIdentifier artifactIdentifier = new ArtifactIdentifier();
-        artifactIdentifier.setFilename(fileName);
-        return new ArtifactSelector(artifactIdentifier);
+        return new ArtifactFilename(fileName);
     }
 
     @Test
     public void test() {
-        final ArtifactIdentifier artifactIdentifier = new ArtifactIdentifier();
-        artifactIdentifier.setFilename("slf4j-api-1.6.6.jar");
-        assertThat(configuration.getIgnoreForSourceResolving().get(0).matches(artifactIdentifier));
+        final ArtifactIdentifier artifactIdentifier = new ArtifactFilename("slf4j-api-1.6.6.jar");
+        assertThat(configuration.getIgnoreForSourceResolving().get(0).matches(artifactIdentifier)).isTrue();
         assertThat(configuration.getIgnoreForSourceResolving().size()).isEqualTo(1);
 
         License license = new License();
         license.setName("EPL-2.0");
 
-        ArtifactSelector selector = mkArtifactSelectorFromFileName("overrideName.jar");
-        List<License> list = configuration.getFinalLicenses().get(selector).getLicenses();
+        ArtifactIdentifier identifier = new ArtifactFilename("overrideName.jar");
+        assertThat(configuration.getFinalLicenses().keySet().stream().anyMatch(k -> k.matches(identifier))).isTrue();
+        List<License> list = configuration.getFinalLicenses().entrySet().stream()
+                .filter(e -> e.getKey().matches(identifier))
+                .map(Map.Entry::getValue)
+                .map(LicenseInformation::getLicenses)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
         assertThat(list.contains(license)).isTrue();
-        assertThat(configuration.getFinalLicenses().containsKey(selector)).isTrue();
         assertThat(configuration.isFailOnMissingSources()).isTrue();
         assertThat(configuration.isFailOnIncompleteSources()).isFalse();
         assertThat(configuration.getValidForIncompleteSources().size()).isEqualTo(2);
@@ -83,42 +88,54 @@ public class ConfigurationTest {
     @Test
     public void overridesTest() {
         assertThat(configuration.getOverride().size()).isEqualTo(2);
-        ArtifactSelector artifactSelector = mkArtifactSelectorFromFileName("overrideAll.jar");
-        Artifact generatedArtifact = configuration.getOverride().get(artifactSelector);
-        assertThat(generatedArtifact.getDeclaredLicenses().getLicenses().get(0).getName()).isEqualTo("testLicense");
-        ArtifactIdentifier artifactIdentifier = new ArtifactIdentifier();
-        artifactIdentifier.setFilename("overrideName.jar");
-        MavenCoordinates mavenCoordinates = new MavenCoordinates();
-        mavenCoordinates.setArtifactId("testID");
-        mavenCoordinates.setGroupId("testGroupId");
-        mavenCoordinates.setVersion("testVersion");
-        artifactIdentifier.setMavenCoordinates(mavenCoordinates);
-        BundleCoordinates bundleCoordinates = new BundleCoordinates();
-        bundleCoordinates.setSymbolicName("testName");
-        bundleCoordinates.setBundleVersion("testVersion");
-        artifactIdentifier.setBundleCoordinates(bundleCoordinates);
-        assertThat(generatedArtifact.getArtifactIdentifier()).isEqualTo(artifactIdentifier);
+
+        ArtifactIdentifier artifactIdentifier = new ArtifactFilename("overrideAll.jar");
+        Artifact generatedArtifact = configuration.getOverride().entrySet().stream()
+                .filter(e -> e.getKey().matches(artifactIdentifier))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .get();
+        assertThat(generatedArtifact.askForGet(DeclaredLicenseInformation.class).get()
+                .getLicenses()
+                .get(0)
+                .getName()
+        ).isEqualTo("testLicense");
+
+        assertThat(generatedArtifact.askFor(ArtifactFilename.class).get().getFilename())
+                .isEqualTo("overrideName.jar");
+        assertThat(generatedArtifact.askFor(MavenCoordinates.class).get().getArtifactId())
+                .isEqualTo("testID");
+        assertThat(generatedArtifact.askFor(MavenCoordinates.class).get().getGroupId())
+                .isEqualTo("testGroupId");
+        assertThat(generatedArtifact.askFor(MavenCoordinates.class).get().getVersion())
+                .isEqualTo("testVersion");
+        assertThat(generatedArtifact.askFor(BundleCoordinates.class).get().getSymbolicName())
+                .isEqualTo("testName");
+        assertThat(generatedArtifact.askFor(BundleCoordinates.class).get().getBundleVersion())
+                .isEqualTo("testVersion");
     }
 
     @Test
     public void addArtifactTest() {
-        Artifact compareArtifact = new Artifact();
-        ArtifactIdentifier identifier = new ArtifactIdentifier();
-        identifier.setFilename("addArtifact.jar");
-        MavenCoordinates mavenCoordinates = new MavenCoordinates();
-        mavenCoordinates.setArtifactId("addArtifactId");
-        mavenCoordinates.setGroupId("addGroupId");
-        mavenCoordinates.setVersion("addVersion");
-        identifier.setMavenCoordinates(mavenCoordinates);
-        BundleCoordinates bundleCoordinates = new BundleCoordinates();
-        bundleCoordinates.setSymbolicName("addSymbolicName");
-        bundleCoordinates.setBundleVersion("addBundleVersion");
-        identifier.setBundleCoordinates(bundleCoordinates);
-        compareArtifact.setArtifactIdentifier(identifier);
         Artifact artifact = configuration.getAddArtifact().get(0);
-        assertThat(artifact.getDeclaredLicenses().getLicenses().get(0).getName()).isEqualTo("Apache");
-        assertThat(artifact.getArtifactIdentifier()).isEqualTo(compareArtifact.getArtifactIdentifier());
-        assertThat(artifact.isProprietary()).isFalse();
-        assertThat(artifact.getMatchState()).isEqualTo(MatchState.EXACT);
+
+        assertThat(artifact.askForGet(DeclaredLicenseInformation.class).get().getLicenses().get(0).getName())
+                .isEqualTo("Apache");
+        assertThat(artifact.askFor(ArtifactFilename.class).get().getFilename())
+                .isEqualTo("addArtifact.jar");
+        assertThat(artifact.askFor(MavenCoordinates.class).get().getArtifactId())
+                .isEqualTo("addArtifactId");
+        assertThat(artifact.askFor(MavenCoordinates.class).get().getGroupId())
+                .isEqualTo("addGroupId");
+        assertThat(artifact.askFor(MavenCoordinates.class).get().getVersion())
+                .isEqualTo("addVersion");
+        assertThat(artifact.askFor(BundleCoordinates.class).get().getSymbolicName())
+                .isEqualTo("addSymbolicName");
+        assertThat(artifact.askFor(BundleCoordinates.class).get().getBundleVersion())
+                .isEqualTo("addBundleVersion");
+        assertThat(artifact.isProprietary())
+                .isFalse();
+        assertThat(artifact.getMatchState())
+                .isEqualTo(MatchState.EXACT);
     }
 }

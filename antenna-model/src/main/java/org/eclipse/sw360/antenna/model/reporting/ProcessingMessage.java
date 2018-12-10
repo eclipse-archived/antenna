@@ -11,10 +11,6 @@
 
 package org.eclipse.sw360.antenna.model.reporting;
 
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-
-import java.util.Optional;
-
 /**
  * Describes a message which gives information about an event that occurred
  * during processing. The ProcessingMessage has a MessageType, a message and
@@ -22,45 +18,31 @@ import java.util.Optional;
  */
 public class ProcessingMessage {
     private final MessageType messageType;
-    private String message;
-    private Optional<ArtifactIdentifier> identifier = Optional.empty();
-    private String licenseName = "";
+    private final String identifier;
+    private final String message;
 
-    /**
-     * 
-     * @param type
-     *            Type of the ProcessingMessage.
-     */
-    public ProcessingMessage(MessageType type) {
+    public ProcessingMessage(MessageType type, String message) {
         this.messageType = type;
+        this.identifier = null;
+        this.message = message;
+    }
+
+    public ProcessingMessage(MessageType type, String identifier, String message) {
+        this.messageType = type;
+        this.identifier = identifier;
+        this.message = message;
     }
 
     public MessageType getMessageType() {
         return messageType;
     }
 
-    public String getLicenseName() {
-        return licenseName;
-    }
-
-    public void setLicenseName(String licenseName) {
-        this.licenseName = licenseName;
-    }
-
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Optional<ArtifactIdentifier> getIdentifier() {
+    public String getIdentifier() {
         return identifier;
-    }
-
-    public void setIdentifier(ArtifactIdentifier identifier) {
-        this.identifier = Optional.ofNullable(identifier);
     }
 
     @Override
@@ -68,7 +50,7 @@ public class ProcessingMessage {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((messageType == null) ? 0 : messageType.hashCode());
-        result = prime * result + identifier.map(ArtifactIdentifier::hashCode).orElse(0);
+        result = prime * result + ((identifier == null) ? 0 : identifier.hashCode());
         result = prime * result + ((message == null) ? 0 : message.hashCode());
         return result;
     }

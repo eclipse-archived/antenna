@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.analysis.filter;
 
 import org.eclipse.sw360.antenna.api.IArtifactFilter;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 /**
  * This class returns always true.

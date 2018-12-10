@@ -14,13 +14,14 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.*;
+
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.junit.Test;
 
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -53,33 +54,30 @@ public class ConfigurationHandlerOverrideTest extends CommonConfigurationHandler
         this.expectedMatchState = expectedMatchState;
     }
 
-    private ArtifactSelector getSelectorForOverwriting() {
-        ArtifactIdentifier keyIdentifier = new ArtifactIdentifier();
-        keyIdentifier.setFilename(FILENAME);
-        return new ArtifactSelector(keyIdentifier);
+    private ArtifactIdentifier getSelectorForOverwriting() {
+        return new ArtifactFilename(FILENAME);
     }
 
     private Artifact getArtifactToOverwriteWith(MatchState matchState) {
         Artifact artifactToOverwriteWith = new Artifact();
-        ArtifactIdentifier overrideValue = new ArtifactIdentifier();
-        MavenCoordinates mavenCoordinates = new MavenCoordinates();
+        MavenCoordinates.MavenCoordinatesBuilder mavenCoordinates = new MavenCoordinates.MavenCoordinatesBuilder();
         mavenCoordinates.setArtifactId(OVERRIDE_ID);
-        overrideValue.setMavenCoordinates(mavenCoordinates);
-        artifactToOverwriteWith.setArtifactIdentifier(overrideValue);
+        artifactToOverwriteWith.addFact(mavenCoordinates);
         Optional.ofNullable(matchState)
-                .ifPresent(artifactToOverwriteWith::setMatchState);
+                .ifPresent(ms -> artifactToOverwriteWith.addFact(new ArtifactMatchingMetadata(ms)));
         return artifactToOverwriteWith;
     }
 
     private Map<ArtifactSelector, Artifact> getOverwriteMap(MatchState matchState, String copyrightStatement, String modificationStatus) {
-        ArtifactSelector artifactSelector = getSelectorForOverwriting();
+        ArtifactIdentifier artifactSelector = getSelectorForOverwriting();
         Artifact artifactToOverwriteWith = getArtifactToOverwriteWith(matchState);
-        artifactToOverwriteWith.setCopyrightStatement(copyrightStatement);
-        artifactToOverwriteWith.setModificationStatus(modificationStatus);
+        artifactToOverwriteWith.addFact(artifactSelector);
+        artifactToOverwriteWith.addFact(new CopyrightStatement(copyrightStatement));
+        artifactToOverwriteWith.addFact(new ArtifactModificationStatus(modificationStatus));
         Map<ArtifactSelector, Artifact> overwriteMap = new HashMap<>();
-        overwriteMap.put(new ArtifactSelector(new ArtifactIdentifier()), generateDummyArtifact("overwriteDummy1"));
+        overwriteMap.put(new GenericArtifactCoordinates("abc", "def"), generateDummyArtifact("overwriteDummy1"));
         overwriteMap.put(artifactSelector, artifactToOverwriteWith);
-        overwriteMap.put(new ArtifactSelector(new ArtifactIdentifier()), generateDummyArtifact("overwriteDummy2"));
+        overwriteMap.put(new GenericArtifactCoordinates("bcd", "efg"), generateDummyArtifact("overwriteDummy2"));
         return overwriteMap;
     }
 
@@ -88,7 +86,7 @@ public class ConfigurationHandlerOverrideTest extends CommonConfigurationHandler
         String copyrightStatement = "someCopyright Statement";
         String modificationStatus = "MODIFIED";
 
-        specialArtifact.setModificationStatus(modificationStatus);
+        specialArtifact.addFact(new ArtifactModificationStatus(modificationStatus));
 
         artifacts.add(specialArtifact);
         when(configMock.getOverride())
@@ -99,13 +97,13 @@ public class ConfigurationHandlerOverrideTest extends CommonConfigurationHandler
 
         assertThat(artifacts.size()).isEqualTo(4);
         Artifact processedArtifact = artifacts.stream()
-                .filter(a -> FILENAME.equals(a.getArtifactIdentifier().getFilename()))
+                .filter(a -> new ArtifactFilename(FILENAME).matches(a))
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("should not happen"));
-        assertThat(processedArtifact.getArtifactIdentifier().getMavenCoordinates().getArtifactId())
+        assertThat(processedArtifact.askFor(MavenCoordinates.class).map(MavenCoordinates::getArtifactId).get())
                 .isEqualTo(OVERRIDE_ID);
-        assertThat(processedArtifact.getMatchState()).isEqualTo(expectedMatchState);
-        assertThat(processedArtifact.getCopyrightStatement()).isEqualTo(copyrightStatement);
-        assertThat(processedArtifact.getModificationStatus()).isEqualTo(modificationStatus);
+        assertThat(processedArtifact.askFor(ArtifactMatchingMetadata.class).map(ArtifactMatchingMetadata::getMatchState).orElse(null)).isEqualTo(expectedMatchState);
+        assertThat(processedArtifact.askForGet(CopyrightStatement.class).get()).isEqualTo(copyrightStatement);
+        assertThat(processedArtifact.askForGet(ArtifactModificationStatus.class).get()).isEqualTo(modificationStatus);
     }
 }

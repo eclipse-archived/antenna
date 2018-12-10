@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.workflow.processors;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -20,15 +21,13 @@ import java.util.jar.JarFile;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
-import org.eclipse.sw360.antenna.predicates.ArtifactPredicates;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractComplianceChecker;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvaluation;
 
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 
 /**
@@ -59,7 +58,8 @@ public class SourceValidator extends AbstractComplianceChecker {
     }
 
     private List<IEvaluationResult> validateSources(Artifact artifact) {
-        if (ArtifactPredicates.hasNoSources(artifact)){
+        final Optional<Path> artifactSourceFile = artifact.getSourceFile();
+        if (!artifactSourceFile.isPresent()){
             if (! isArtifactAllowedToHaveNoSourceJar(artifact)){
                 return Collections.singletonList(new DefaultPolicyEvaluation.DefaultEvaluationResult(
                         "SourceValidator::noSourceJar", "No sources-jar available.", missingSourcesSeverity, artifact));
@@ -70,7 +70,8 @@ public class SourceValidator extends AbstractComplianceChecker {
             }
         }
 
-        if (artifact.getJar() == null || artifact.getJar().length() == 0) {
+        final Optional<Path> artifactFile = artifact.getFile();
+        if (!artifactFile.isPresent()) {
             if (! isArtifactAllowedToHaveIncompleteSources(artifact)) {
                 return Collections.singletonList(
                         new DefaultPolicyEvaluation.DefaultEvaluationResult(
@@ -87,26 +88,18 @@ public class SourceValidator extends AbstractComplianceChecker {
         }
 
         try {
-            return validateArtifactWithJars(artifact);
+            return validateArtifactWithJars(artifact, artifactSourceFile.get(), artifactFile.get());
         } catch (IOException e) {
             String message = "An exception occured during source validation: " + e.getMessage();
-            reporter.addProcessingMessage(artifact.getArtifactIdentifier(), MessageType.PROCESSING_FAILURE, message);
+            reporter.add(artifact, MessageType.PROCESSING_FAILURE, message);
             return Collections.singletonList(new DefaultPolicyEvaluation.DefaultEvaluationResult(
                     "SourceValidator::noJar", message, IEvaluationResult.Severity.FAIL, artifact));
         }
     }
 
-    private List<IEvaluationResult> validateArtifactWithJars(Artifact artifact) throws IOException {
-        JarFile jar = new JarFile(artifact.getJar());
-
-        List<IEvaluationResult> results = new ArrayList<>();
-        if(artifact.getMvnSourceJar() != null) {
-            results.addAll(validate(artifact, jar, artifact.getMvnSourceJar()));
-        }
-        if(artifact.getP2SourceJar() != null) {
-            results.addAll(validate(artifact, jar, artifact.getP2SourceJar()));
-        }
-        return results;
+    private List<IEvaluationResult> validateArtifactWithJars(Artifact artifact, Path artifactSourceFile, Path artifactFile) throws IOException {
+        JarFile jar = new JarFile(artifactFile.toFile());
+        return validate(artifact, jar, artifactSourceFile.toFile());
     }
 
 
@@ -168,10 +161,11 @@ public class SourceValidator extends AbstractComplianceChecker {
         DefaultPolicyEvaluation policyEvaluation = new DefaultPolicyEvaluation();
 
         artifacts.stream()
-                .filter(artifact -> !artifact.isProprietary())
-                .filter(artifact -> artifact.getArtifactIdentifier().getMavenCoordinates().getGroupId() != null &&
-                        artifact.getArtifactIdentifier().getMavenCoordinates().getArtifactId() != null &&
-                        artifact.getArtifactIdentifier().getMavenCoordinates().getVersion() != null)
+                .filter(artifact -> ! artifact.getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY))
+                .filter(artifact ->  {
+                    final Optional<MavenCoordinates> mavenCoordinates = artifact.askFor(MavenCoordinates.class);
+                    return mavenCoordinates.isPresent() && ! mavenCoordinates.get().isEmpty();
+                })
                 .forEach(artifact -> validateSources(artifact)
                         .forEach(policyEvaluation::addEvaluationResult));
 

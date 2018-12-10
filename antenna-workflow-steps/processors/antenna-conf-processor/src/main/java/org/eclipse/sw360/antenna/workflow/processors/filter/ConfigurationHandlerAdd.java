@@ -16,11 +16,9 @@ import java.util.Collection;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 
 /**
  * This class resolves the configuration, specified in the configuration file in
@@ -44,29 +42,9 @@ public class ConfigurationHandlerAdd extends AbstractProcessor {
             IProcessingReporter reporter) {
         configuration.getAddArtifact()
                 .stream()
-                .map(this::cleanupArtifact)
-                .peek(artifact -> reporter.addProcessingMessage(artifact.getArtifactIdentifier(), MessageType.ADD_ARTIFACT,
+                .peek(artifact -> reporter.add(artifact, MessageType.ADD_ARTIFACT,
                         "Artifact was added to artifacts list."))
                 .forEach(artifacts::add);
-    }
-
-    private Artifact cleanupArtifact(Artifact artifact) {
-        if (artifact.getPathnames() == null) {
-            artifact.setPathnames(new String[0]);
-        }
-        if (artifact.getDeclaredLicenses() == null) {
-            artifact.setDeclaredLicenses(new License());
-        }
-        if (artifact.getObservedLicenses() == null) {
-            artifact.setObservedLicenses(new License());
-        }
-        if (artifact.getOverriddenLicenses() == null) {
-            artifact.setOverriddenLicenses(new License());
-        }
-        if (artifact.getMatchState() == null) {
-            artifact.setMatchState(MatchState.EXACT);
-        }
-        return artifact;
     }
 
     @Override

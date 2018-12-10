@@ -11,14 +11,13 @@
 package org.eclipse.sw360.antenna.api.workflow;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 import java.util.Collection;
 
 public abstract class AbstractProcessor extends ConfigurableWorkflowItem implements IWorkflowable {
-    final public WorkflowStepResult process(WorkflowStepResult previousResult) throws AntennaException {
-        WorkflowStepResult newResult = new WorkflowStepResult(process(previousResult.getArtifacts()));
-        newResult.mergeWithKeepingArtifacts(previousResult);
+    final public WorkflowStepResult process(ProcessingState previousState) throws AntennaException {
+        WorkflowStepResult newResult = new WorkflowStepResult(process(previousState.getArtifacts()));
         return postProcessResult(newResult);
     }
 

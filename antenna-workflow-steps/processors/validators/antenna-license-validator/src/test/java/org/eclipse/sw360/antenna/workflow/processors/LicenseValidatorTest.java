@@ -20,14 +20,14 @@ import java.util.Map;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.report.Reporter;
 import org.junit.rules.TemporaryFolder;
 
 public class LicenseValidatorTest extends AntennaTestWithMockedContext {
@@ -66,10 +66,7 @@ public class LicenseValidatorTest extends AntennaTestWithMockedContext {
 
     public Artifact mkArtifact(License decladerLicense) {
         Artifact artifact = new Artifact();
-        artifact.setDeclaredLicenses(decladerLicense);
-        artifact.setConfiguredLicense(emptyLicense);
-        artifact.setObservedLicenses(emptyLicense);
-        artifact.setOverriddenLicenses(emptyLicense);
+        artifact.addFact(new DeclaredLicenseInformation(decladerLicense));
         return artifact;
     }
 
@@ -95,91 +92,48 @@ public class LicenseValidatorTest extends AntennaTestWithMockedContext {
 
     @Test
     public void testForbiddenLicenseFail() throws AntennaConfigurationException {
-        Artifact artifact = mkArtifact(forbiddenLicense);
-
         configMap.put(FORBIDDEN_LICENSE_SEVERITY_KEY, "FAIL");
-
-        validator.configure(configMap);
-        final List<IEvaluationResult> validate = validator.validate(artifact);
-
-        assertThat(validate.size()).isEqualTo(1);
-        assertThat(validate.stream()
-                .map(IEvaluationResult::getSeverity)
-                .allMatch(IEvaluationResult.Severity.FAIL::equals));
+        runTest(forbiddenLicense, IEvaluationResult.Severity.FAIL);
     }
 
     @Test
     public void testForbiddenLicenseWarn() throws AntennaConfigurationException {
-        Artifact artifact = mkArtifact(forbiddenLicense);
-
         configMap.put(FORBIDDEN_LICENSE_SEVERITY_KEY, "WARN");
-
-        validator.configure(configMap);
-        final List<IEvaluationResult> validate = validator.validate(artifact);
-
-        assertThat(validate.size()).isEqualTo(1);
-        assertThat(validate.stream()
-                .map(IEvaluationResult::getSeverity)
-                .allMatch(IEvaluationResult.Severity.WARN::equals));
+        runTest(forbiddenLicense, IEvaluationResult.Severity.WARN);
     }
 
     @Test
     public void testLicenseWithoutTextTestFail() throws AntennaConfigurationException {
-        Artifact artifact = mkArtifact(emptyTextLicense);
-
         configMap.put(MISSING_LICENSE_TEXT_SEVERITY_KEY, "WARN");
-
-        validator.configure(configMap);
-        final List<IEvaluationResult> validate = validator.validate(artifact);
-
-        assertThat(validate.size()).isEqualTo(1);
-        assertThat(validate.stream()
-                .map(IEvaluationResult::getSeverity)
-                .allMatch(IEvaluationResult.Severity.FAIL::equals));
+        runTest(emptyTextLicense, IEvaluationResult.Severity.FAIL);
     }
 
     @Test
     public void testLicenseWithoutTextTestWarn() throws AntennaConfigurationException {
-        Artifact artifact = mkArtifact(emptyTextLicense);
-
         configMap.put(MISSING_LICENSE_TEXT_SEVERITY_KEY, "WARN");
-
-        validator.configure(configMap);
-        final List<IEvaluationResult> validate = validator.validate(artifact);
-
-        assertThat(validate.size()).isEqualTo(1);
-        assertThat(validate.stream()
-                .map(IEvaluationResult::getSeverity)
-                .allMatch(IEvaluationResult.Severity.WARN::equals));
+        runTest(emptyTextLicense, IEvaluationResult.Severity.WARN);
     }
 
     @Test
     public void testLicenseWithoutLicenseInformationTestFail() throws AntennaConfigurationException {
-        Artifact artifact = mkArtifact(emptyLicense);
-
         configMap.put(MISSING_LICENSE_INFORMATION_SEVERITY_KEY, "FAIL");
-
-        validator.configure(configMap);
-        final List<IEvaluationResult> validate = validator.validate(artifact);
-
-        assertThat(validate.size()).isEqualTo(1);
-        assertThat(validate.stream()
-                .map(IEvaluationResult::getSeverity)
-                .allMatch(IEvaluationResult.Severity.FAIL::equals));
+        runTest(emptyLicense, IEvaluationResult.Severity.FAIL);
     }
 
     @Test
     public void testLicenseWithoutLicenseInformationTestWarn() throws AntennaConfigurationException {
-        Artifact artifact = mkArtifact(emptyLicense);
-
         configMap.put(MISSING_LICENSE_INFORMATION_SEVERITY_KEY, "WARN");
+        runTest(emptyLicense, IEvaluationResult.Severity.FAIL);
+    }
 
+    private void runTest(License license, IEvaluationResult.Severity expectedSeverity) throws AntennaConfigurationException {
+        Artifact artifact = mkArtifact(license);
         validator.configure(configMap);
         final List<IEvaluationResult> validate = validator.validate(artifact);
 
         assertThat(validate.size()).isEqualTo(1);
         assertThat(validate.stream()
                 .map(IEvaluationResult::getSeverity)
-                .allMatch(IEvaluationResult.Severity.FAIL::equals));
+                .allMatch(expectedSeverity::equals));
     }
 }

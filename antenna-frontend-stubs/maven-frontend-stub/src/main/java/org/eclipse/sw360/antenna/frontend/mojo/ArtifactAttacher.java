@@ -93,9 +93,10 @@ public class ArtifactAttacher {
             projectHelper.attachArtifact(currentProject, attachable.getType(), attachable.getClassifier(),
                     attachable.getFile());
         } catch (Exception e) {
-            ProcessingMessage message = new ProcessingMessage(MessageType.ATTACHING_FAILURE);
-            message.setMessage(String.format("The artifact %s couldn't be attached to the project: %s",
-                     attachable.getClassifier(), e.getMessage()));
+            ProcessingMessage message = new ProcessingMessage(MessageType.ATTACHING_FAILURE,
+                    attachable.getClassifier(),
+                    String.format("The artifact %s couldn't be attached to the project: %s",
+                            attachable.getClassifier(), e.getMessage()));
             this.reporter.add(message);
         }
     }

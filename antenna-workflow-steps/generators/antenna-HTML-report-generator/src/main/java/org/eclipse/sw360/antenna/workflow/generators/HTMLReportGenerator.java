@@ -17,13 +17,12 @@ import java.nio.file.Path;
 import java.util.*;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
+import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.repository.Attachable;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
-import org.apache.velocity.runtime.log.Log4JLogChute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 
 /**
@@ -79,7 +78,7 @@ public class HTMLReportGenerator extends AbstractGenerator {
 
     private Set<License> getAllLicenses(Collection<Artifact> artifacts) {
          Set<License> licenses = new HashSet<>();
-         artifacts.stream().map(artifact -> artifact.getFinalLicenses().getLicenses())
+         artifacts.stream().map(artifact -> ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses())
                  .flatMap(Collection::stream)
                  .forEach(licenses::add);
          return licenses;

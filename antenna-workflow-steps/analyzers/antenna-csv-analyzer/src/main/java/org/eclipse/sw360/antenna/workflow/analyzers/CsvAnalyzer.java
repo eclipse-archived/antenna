@@ -19,6 +19,10 @@ import java.util.List;
 
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -26,9 +30,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.IOUtils;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.xml.generated.License; import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.xml.generated.License;
 
 public class CsvAnalyzer extends ManualAnalyzer {
     private static final String NAME = "Artifact Id";
@@ -44,13 +46,7 @@ public class CsvAnalyzer extends ManualAnalyzer {
         List<CSVRecord> records = getRecords();
 
         for (CSVRecord record : records) {
-            MavenCoordinates coordinates = new MavenCoordinates();
-            coordinates.setArtifactId(record.get(NAME));
-            coordinates.setGroupId(record.get(GROUP));
-            coordinates.setVersion(record.get(VERSION));
-
-            ArtifactIdentifier identifier = new ArtifactIdentifier();
-            identifier.setMavenCoordinates(coordinates);
+            MavenCoordinates coordinates = new MavenCoordinates(record.get(NAME),record.get(GROUP),record.get(VERSION));
 
             License license = new License();
             license.setName(record.get(LICENSE_SHORT_NAME));
@@ -65,17 +61,16 @@ public class CsvAnalyzer extends ManualAnalyzer {
                 }
             }).toArray(String[]::new);
 
-            Artifact artifact = new Artifact();
-            artifact.setDeclaredLicenses(license);
-            artifact.setArtifactIdentifier(identifier);
-            artifact.setPathnames(pathNames);
-            artifact.setAnalysisSource(getName());
-            artifact.setMatchState(MatchState.EXACT);
+            Artifact artifact = new Artifact(getName())
+                    .addFact(coordinates)
+                    .addFact(new DeclaredLicenseInformation(license))
+                    .addFact(new ArtifactPathnames(pathNames))
+                    .addFact(new ArtifactMatchingMetadata(MatchState.EXACT));
 
             artifacts.add(artifact);
         }
 
-        return new WorkflowStepResult(artifacts);
+        return new WorkflowStepResult(artifacts, true);
     }
 
     private List<CSVRecord> getRecords() throws AntennaExecutionException {

@@ -14,17 +14,17 @@ package org.eclipse.sw360.antenna.workflow.processors.enricher;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 /**
  * Maps the values of a LicenseDocument to the license attributes of the
@@ -44,7 +44,8 @@ public class LicenseResolver extends AbstractProcessor {
      */
     private void resolveLicenses(Collection<Artifact> artifacts) {
         for (Artifact artifact : artifacts) {
-            artifact.setConfiguredLicense(findConfiguredLicense(artifact, configuredLicenses));
+            findConfiguredLicense(artifact, configuredLicenses)
+                    .ifPresent(lic -> artifact.addFact(new ConfiguredLicenseInformation(lic)));
         }
     }
 
@@ -57,14 +58,14 @@ public class LicenseResolver extends AbstractProcessor {
      * @return
      */
 
-    private LicenseInformation findConfiguredLicense(Artifact artifact, Map<ArtifactSelector, LicenseInformation> configuration) {
+    private Optional<LicenseInformation> findConfiguredLicense(Artifact artifact, Map<ArtifactSelector, LicenseInformation> configuration) {
         for (Entry<ArtifactSelector, LicenseInformation> entry : configuration.entrySet()) {
             ArtifactSelector selector = entry.getKey();
             if (selector.matches(artifact)) {
-                return entry.getValue();
+                return Optional.ofNullable(entry.getValue());
             }
         }
-        return new License();
+        return Optional.empty();
     }
 
     @Override

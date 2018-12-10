@@ -10,10 +10,12 @@
  */
 package org.eclipse.sw360.antenna.report;
 
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.facts.GenericArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,26 +37,19 @@ public class ReporterTest {
     public void init(){
         reporter = new Reporter(folder.getRoot().toPath());
 
-        id = new ArtifactIdentifier();
-        id.setFilename("testfile");
-        id.setHash("testhash");
-        MavenCoordinates mvnCrds = new MavenCoordinates();
-        mvnCrds.setArtifactId("testAid");
-        mvnCrds.setGroupId("testGid");
-        mvnCrds.setVersion("testVer");
-        id.setMavenCoordinates(mvnCrds);
+//        id = new ArtifactFilename("testfile","testhash");
+        id = new MavenCoordinates("testAid","testGid","testVer");
 
         msg = "Some processing message message";
     }
 
     @Test
     public void testAddMessageWithArtifactIdentifier() {
-        reporter.addProcessingMessage(id, MessageType.MISSING_SOURCES, msg);
+        reporter.add(id, MessageType.MISSING_SOURCES, msg);
 
         final ProcessingMessage processingMessage = reporter.getProcessingReport().getMessageList().get(0);
-        assertThat(processingMessage.getIdentifier().isPresent());
-        assertThat(processingMessage.getIdentifier().get())
-                .isEqualTo(id);
+        assertThat(processingMessage.getIdentifier())
+                .isEqualTo(id.toString());
         assertThat(processingMessage.getMessageType()).isEqualTo(MessageType.MISSING_SOURCES);
         assertThat(processingMessage.getMessage()).isEqualTo(msg);
 
@@ -62,12 +57,12 @@ public class ReporterTest {
         reporter.writeReport(stream);
         String reportString = new String(stream.toByteArray());
         assertThat(reportString.contains(msg));
-        assertThat(reportString.contains(id.getMavenCoordinates().getVersion()));
+        assertThat(reportString.contains(((ArtifactCoordinates<ArtifactCoordinates>) id).getVersion()));
     }
 
     @Test
     public void testAddMessageWithNullArtifactIdentifier() {
-        reporter.addProcessingMessage(new ArtifactIdentifier(), MessageType.MISSING_COORDINATES, msg);
+        reporter.add(new GenericArtifactCoordinates("Name","Version"), MessageType.MISSING_COORDINATES, msg);
 
         final ProcessingMessage processingMessage = reporter.getProcessingReport().getMessageList().get(0);
         assertThat(processingMessage.getMessageType()).isEqualTo(MessageType.MISSING_COORDINATES);
@@ -81,7 +76,7 @@ public class ReporterTest {
 
     @Test
     public void testAddMessageWithoutArtifactIdentifier() {
-        reporter.addProcessingMessage(MessageType.UNKNOWN_LICENSE, msg);
+        reporter.add(MessageType.UNKNOWN_LICENSE, msg);
 
         final ProcessingMessage processingMessage = reporter.getProcessingReport().getMessageList().get(0);
         assertThat(processingMessage.getMessageType()).isEqualTo(MessageType.UNKNOWN_LICENSE);
@@ -99,7 +94,7 @@ public class ReporterTest {
         reporter.add(license, MessageType.UNKNOWN_LICENSE, msg);
 
         final ProcessingMessage processingMessage = reporter.getProcessingReport().getMessageList().get(0);
-        assertThat(processingMessage.getLicenseName())
+        assertThat(processingMessage.getIdentifier())
                 .isEqualTo(license);
         assertThat(processingMessage.getMessageType())
                 .isEqualTo(MessageType.UNKNOWN_LICENSE);
@@ -109,7 +104,7 @@ public class ReporterTest {
         reporter.writeReport(stream);
         String reportString = new String(stream.toByteArray());
         assertThat(reportString.contains(msg));
-        assertThat(reportString.contains(id.getMavenCoordinates().getVersion()));
+        assertThat(reportString.contains(((ArtifactCoordinates<ArtifactCoordinates>) id).getVersion()));
         assertThat(reportString.contains(license));
     }
 

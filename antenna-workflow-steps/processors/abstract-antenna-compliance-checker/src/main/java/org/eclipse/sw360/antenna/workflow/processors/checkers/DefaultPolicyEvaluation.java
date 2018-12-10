@@ -12,7 +12,7 @@ package org.eclipse.sw360.antenna.workflow.processors.checkers;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 import java.util.*;
 

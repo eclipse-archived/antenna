@@ -21,13 +21,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.model.xml.generated.BundleCoordinates;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.sw360.antenna.model.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.util.AntennaUtils;
 
@@ -51,15 +52,16 @@ public class ManifestResolver extends AbstractProcessor {
      */
     private void resolveManifest(Collection<Artifact> artifacts) {
         for (Artifact artifact : artifacts) {
-            if (artifact.getPathnames().length > 0) {
-                resolveManifest(artifact);
+            final Optional<List<String>> pathnames = artifact.askForGet(ArtifactPathnames.class);
+            if (pathnames.isPresent() && pathnames.get().size() > 0) {
+                resolveManifest(pathnames.get().get(0), artifact);
             }
         }
     }
 
-    private void resolveManifest(Artifact artifact){
-        LOGGER.debug("Resolving {}", artifact.getPathnames()[0]);
-        Path jarPath = context.getToolConfiguration().getAntennaTargetDirectory().resolve(artifact.getPathnames()[0]);
+    private void resolveManifest(String pathname, Artifact artifact){
+        LOGGER.debug("Resolving {}", pathname);
+        Path jarPath = context.getToolConfiguration().getAntennaTargetDirectory().resolve(pathname);
 
         try {
             final Path jar = resolveJarFile(jarPath);
@@ -68,11 +70,11 @@ public class ManifestResolver extends AbstractProcessor {
                 setBundleCoordinates(artifact, jarFile.getManifest());
             }
 
-            artifact.setJar(jar.toFile());
+            artifact.addFact(new ArtifactFile(jar));
         } catch (IOException e) {
             LOGGER.error("Unable to process \"{}\" because of {}", jarPath,
                     e.getMessage());
-            this.reporter.addProcessingMessage(artifact.getArtifactIdentifier(),
+            this.reporter.add(artifact,
                     MessageType.PROCESSING_FAILURE,
                     "An exeption occured while Manifest resolving:" + e.getMessage());
         }
@@ -130,11 +132,11 @@ public class ManifestResolver extends AbstractProcessor {
      * @param manifest
      */
     private void setBundleCoordinates(Artifact artifact, Manifest manifest) {
-        final BundleCoordinates bundleCoordinates = artifact.getArtifactIdentifier().getBundleCoordinates();
-        getAttribute(manifest, "Bundle-SymbolicName")
-                .ifPresent(bundleCoordinates::setSymbolicName);
-        getAttribute(manifest, "Bundle-Version")
-                .ifPresent(bundleCoordinates::setBundleVersion);
+        final Optional<String> symbolicName = getAttribute(manifest, "Bundle-SymbolicName");
+        final Optional<String> version = getAttribute(manifest, "Bundle-Version");
+        if(symbolicName.isPresent() || version.isPresent()) {
+            artifact.addFact(new BundleCoordinates(symbolicName.orElse(null), version.orElse(null)));
+        }
     }
 
     /**

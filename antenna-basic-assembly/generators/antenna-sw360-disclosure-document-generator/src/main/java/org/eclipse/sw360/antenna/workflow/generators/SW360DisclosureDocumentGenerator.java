@@ -16,11 +16,10 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.xml.generated.BundleCoordinates;
-import org.eclipse.sw360.antenna.model.xml.generated.JavaScriptCoordinates;
-import org.eclipse.sw360.antenna.model.xml.generated.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.repository.Attachable;
 import org.eclipse.sw360.datahandler.thrift.SW360Exception;
 import org.eclipse.sw360.datahandler.thrift.licenseinfo.*;
@@ -83,40 +82,62 @@ public class SW360DisclosureDocumentGenerator extends AbstractGenerator {
         return results;
     }
 
+    protected Optional<ArtifactCoordinates> getBestArtifactCoordinates(Collection<ArtifactCoordinates> artifactCoordinates) {
+        Comparator<ArtifactCoordinates> sortByMoreInformationToLess = (o1, o2) -> {
+            boolean o1NameIsPresent = o1.getName() == null;
+            boolean o1VersionIsPresent = o1.getVersion() == null;
+            boolean o2NameIsPresent = o2.getName() == null;
+            boolean o2VersionIsPresent = o2.getVersion() == null;
+            if (o1NameIsPresent && o1VersionIsPresent && o2NameIsPresent && o2VersionIsPresent) {
+                return 0;
+            }
+            if (o1NameIsPresent && o1VersionIsPresent) {
+                return 1;
+            }
+            if (o2NameIsPresent && o2VersionIsPresent) {
+                return -1;
+            }
+            if (o1NameIsPresent) {
+                return 1;
+            }
+            if (o2NameIsPresent) {
+                return -1;
+            }
+            if (o1VersionIsPresent) {
+                return 1;
+            }
+            if (o2VersionIsPresent) {
+                return -1;
+            }
+            return 0;
+        };
+        return artifactCoordinates.stream()
+                .min(sortByMoreInformationToLess);
+    }
+
     private Collection<LicenseInfoParsingResult> getParsingResults(Collection<Artifact> intermediates) {
         return intermediates.stream()
                 .map(a -> {
                     final LicenseInfoParsingResult licenseInfoParsingResult = new LicenseInfoParsingResult();
+                    final Optional<ArtifactCoordinates> coordinates = getBestArtifactCoordinates(a.askForAll(ArtifactCoordinates.class));
 
-                    final ArtifactIdentifier artifactIdentifier = a.getArtifactIdentifier();
-                    final MavenCoordinates mavenCoordinates = artifactIdentifier.getMavenCoordinates();
-                    final BundleCoordinates bundleCoordinates = artifactIdentifier.getBundleCoordinates();
-                    final JavaScriptCoordinates javaScriptCoordinates = artifactIdentifier.getJavaScriptCoordinates();
-                    if(mavenCoordinates != null &&
-                            (mavenCoordinates.getVersion() != null || mavenCoordinates.getArtifactId() != null)) {
-                        licenseInfoParsingResult.setVersion(mavenCoordinates.getVersion());
-                        licenseInfoParsingResult.setName(mavenCoordinates.getGroupId() + ":" + mavenCoordinates.getArtifactId());
-                    } else if(bundleCoordinates != null &&
-                            (bundleCoordinates.getBundleVersion() != null || bundleCoordinates.getSymbolicName() != null)) {
-                        licenseInfoParsingResult.setVersion(bundleCoordinates.getBundleVersion());
-                        licenseInfoParsingResult.setName(bundleCoordinates.getSymbolicName());
-                    } else if(javaScriptCoordinates != null &&
-                            (javaScriptCoordinates.getArtifactId() != null || javaScriptCoordinates.getVersion() != null)) {
-                        licenseInfoParsingResult.setVersion(javaScriptCoordinates.getVersion());
-                        licenseInfoParsingResult.setName(javaScriptCoordinates.getName());
+                    if (coordinates.isPresent()) {
+                        coordinates.ifPresent(artifactCoordinates -> {
+                            licenseInfoParsingResult.setName(artifactCoordinates.getName());
+                            licenseInfoParsingResult.setVersion(artifactCoordinates.getVersion());
+                        });
                     } else {
-                        licenseInfoParsingResult.setName(artifactIdentifier.getFilename());
-                    }
-
-                    if (licenseInfoParsingResult.getName() == null || "".equals(licenseInfoParsingResult.getName())){
-                        licenseInfoParsingResult.setName("UNKNOWN");
-                    }
-                    if (licenseInfoParsingResult.getVersion() == null || "".equals(licenseInfoParsingResult.getVersion())){
+                        final Optional<ArtifactIdentifier> identifier = a.getArtifactIdentifiers().stream().findFirst();
+                        if(identifier.isPresent()) {
+                            licenseInfoParsingResult.setName(identifier.get().toString());
+                        } else {
+                            licenseInfoParsingResult.setName("UNKNOWN");
+                        }
                         licenseInfoParsingResult.setVersion("UNKNOWN");
                     }
 
                     LicenseInfo licenseInfo = new LicenseInfo();
-                    Set<LicenseNameWithText> licenseNamesWithTexts = a.getFinalLicenses()
+                    Set<LicenseNameWithText> licenseNamesWithTexts = ArtifactLicenseUtils.getFinalLicenses(a)
                             .getLicenses().stream()
                             .map(l -> new LicenseNameWithText()
                                     .setLicenseText(l.getText())

@@ -12,8 +12,8 @@
 package org.eclipse.sw360.antenna.analysis.filter;
 
 import org.eclipse.sw360.antenna.api.IArtifactFilter;
-import org.eclipse.sw360.antenna.model.Artifact;
-import org.eclipse.sw360.antenna.model.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 
 import java.util.List;
 
