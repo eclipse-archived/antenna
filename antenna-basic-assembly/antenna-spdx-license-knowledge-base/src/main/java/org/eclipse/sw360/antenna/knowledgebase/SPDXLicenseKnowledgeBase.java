@@ -13,28 +13,28 @@ package org.eclipse.sw360.antenna.knowledgebase;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.spdx.rdfparser.InvalidSPDXAnalysisException;
-import org.spdx.rdfparser.license.License;
-import org.spdx.rdfparser.license.LicenseInfoFactory;
+import org.spdx.rdfparser.license.*;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
 
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
-import org.spdx.rdfparser.license.SimpleLicensingInfo;
-import org.spdx.rdfparser.license.SpdxListedLicense;
 
 import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 public class SPDXLicenseKnowledgeBase implements ILicenseManagementKnowledgeBase {
 
     private IProcessingReporter reporter;
+    private ListedLicenses listedLicenses;
+
+    public SPDXLicenseKnowledgeBase() {
+        listedLicenses = ListedLicenses.getListedLicenses();
+    }
 
     private Optional<SpdxListedLicense> getSpdxLicense(String licenseId) {
         final SpdxListedLicense listedLicenseById;
         try {
-            listedLicenseById = LicenseInfoFactory.getListedLicenseById(licenseId);
+            listedLicenseById = listedLicenses.getListedLicenseById(licenseId);
         } catch (InvalidSPDXAnalysisException e) {
             reporter.add(licenseId, MessageType.UNKNOWN_LICENSE, "No license found in SPDX with list version: " + LicenseInfoFactory.getLicenseListVersion());
             return Optional.empty();
