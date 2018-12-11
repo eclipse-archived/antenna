@@ -13,8 +13,10 @@ package org.eclipse.sw360.antenna.util;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -108,8 +110,7 @@ public class JsonReader {
     private Artifact mapArtifact(JSONObject obj) {
         JSONObject licenseDataObj = (JSONObject) obj.get("licenseData");
         JSONObject securityDataObj = (JSONObject) obj.get("securityData");
-        return new Artifact("JSON")
-                .addFact(mapMavenCoordinates(obj))
+        Artifact a = new Artifact("JSON")
                 .addFact(new ArtifactFilename(null, (String) obj.get("hash")))
                 .addFact(new ArtifactPathnames(mapPathNames(obj)))
                 .addFact(new ArtifactMatchingMetadata(mapMatchState(obj)))
@@ -118,6 +119,8 @@ public class JsonReader {
                 .addFact(new OverriddenLicenseInformation(mapLicenses("overriddenLicenses", licenseDataObj)))
                 .addFact(new ArtifactIssues(mapSecurityIssues(securityDataObj)))
                 .setProprietary(mapProprietary(obj));
+        mapCoordinates(obj).ifPresent(a::addFact);
+        return a;
     }
 
     private Issues mapSecurityIssues(JSONObject securityDataObj) {
@@ -189,24 +192,49 @@ public class JsonReader {
         return MatchState.valueOf(ms.toUpperCase());
     }
 
-    private MavenCoordinates mapMavenCoordinates(JSONObject object) {
-        MavenCoordinates.MavenCoordinatesBuilder c = new MavenCoordinates.MavenCoordinatesBuilder();
-        if (null != object) {
-            JSONObject objCoordinates = (JSONObject) object.get("coordinates");
+    private Optional<ArtifactCoordinates> mapMavenCoordinates(JSONObject objCoordinates) {
+        if (null != objCoordinates) {
+            MavenCoordinates.MavenCoordinatesBuilder c = new MavenCoordinates.MavenCoordinatesBuilder();
+            c.setGroupId((String) objCoordinates.get("groupId"));
+            c.setArtifactId((String) objCoordinates.get("artifactId"));
+            c.setVersion((String) objCoordinates.get("version"));
+            return Optional.of(c.build());
+        }
+        return Optional.empty();
+    }
 
-            if (null == objCoordinates) {
-                JSONObject objComponentIdentifier = (JSONObject) object.get("componentIdentifier");
-                if(objComponentIdentifier != null) {
-                    objCoordinates = (JSONObject) objComponentIdentifier.get("coordinates");
-                }
-            }
+    private Optional<ArtifactCoordinates> mapJavaScriptCoordinates(JSONObject objCoordinates) {
+        if (objCoordinates != null) {
+            JavaScriptCoordinates.JavaScriptCoordinatesBuilder c = new JavaScriptCoordinates.JavaScriptCoordinatesBuilder();
+            c.setName((String) objCoordinates.get("name"));
+            c.setVersion((String) objCoordinates.get("version"));
+            c.setArtifactId(objCoordinates.get("name") + "-" + objCoordinates.get("version"));
+            return Optional.of(c.build());
+        }
+        return Optional.empty();
+    }
 
-            if (null != objCoordinates) {
-                c.setGroupId((String) objCoordinates.get("groupId"));
-                c.setArtifactId((String) objCoordinates.get("artifactId"));
-                c.setVersion((String) objCoordinates.get("version"));
+    private Optional<ArtifactCoordinates> mapDotNetCoordinates(JSONObject objCoordinates) {
+        if (objCoordinates != null) {
+            DotNetCoordinates.DotNetCoordinatesBuilder c = new DotNetCoordinates.DotNetCoordinatesBuilder();
+            c.setPackageId((String) objCoordinates.get("packageId"));
+            c.setVersion((String) objCoordinates.get("version"));
+            return Optional.of(c.build());
+        }
+        return Optional.empty();
+    }
+
+
+    private Optional<ArtifactCoordinates> mapCoordinates(JSONObject object) {
+        JSONObject objComponentIdentifier = (JSONObject) object.get("componentIdentifier");
+        if (objComponentIdentifier != null) {
+            String format = (String) objComponentIdentifier.get("format");
+            switch (format) {
+                case "a-name": return mapJavaScriptCoordinates((JSONObject) objComponentIdentifier.get("coordinates"));
+                case "maven": return mapMavenCoordinates((JSONObject) objComponentIdentifier.get("coordinates"));
+                case "nuget": return mapDotNetCoordinates((JSONObject) objComponentIdentifier.get("coordinates"));
             }
         }
-        return c.build();
+        return Optional.empty();
     }
 }

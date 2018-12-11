@@ -12,6 +12,7 @@
 package org.eclipse.sw360.antenna.model.artifact;
 
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
@@ -26,6 +27,7 @@ public class FromXmlArtifactBuilder implements IArtifactBuilder {
     protected MavenCoordinates.MavenCoordinatesBuilder mavenCoordinates;
     protected BundleCoordinates.BundleCoordinatesBuilder bundleCoordinates;
     protected JavaScriptCoordinates.JavaScriptCoordinatesBuilder javaScriptCoordinates;
+    protected DotNetCoordinates.DotNetCoordinatesBuilder dotNetCoordinates;
     protected String filename;
     protected String hash;
     protected DeclaredLicense declaredLicense;
@@ -42,6 +44,7 @@ public class FromXmlArtifactBuilder implements IArtifactBuilder {
                 .addFact(mavenCoordinates)
                 .addFact(bundleCoordinates)
                 .addFact(javaScriptCoordinates)
+                .addFact(dotNetCoordinates)
                 .addFact(new CopyrightStatement(copyrightStatement))
                 .addFact(new ArtifactMatchingMetadata(matchState))
                 .addFact(new ArtifactModificationStatus(modificationStatus));

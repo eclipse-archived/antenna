@@ -159,6 +159,7 @@
                 <xsd:element name="mavenCoordinates" type="mavenCoordinates"/>
                 <xsd:element name="bundleCoordinates" type="bundleCoordinates"/>
                 <xsd:element name="javaScriptCoordinates" type="javaScriptCoordinates"/>
+                <xsd:element name="dotNetCoordinates" type="dotNetCoordinates"/>
             </xsd:choice>
             <xsd:element name="filename" type="xsd:string" minOccurs="0" />
             <xsd:element name="hash" type="xsd:string" minOccurs="0" />
@@ -232,6 +233,7 @@
             <xsd:element name="mavenCoordinates" type="mavenCoordinates" minOccurs="0"/>
             <xsd:element name="bundleCoordinates" type="bundleCoordinates" minOccurs="0"/>
             <xsd:element name="javaScriptCoordinates" type="javaScriptCoordinates" minOccurs="0"/>
+            <xsd:element name="dotNetCoordinates" type="dotNetCoordinates" minOccurs="0"/>
             <xsd:element name="filename" type="xsd:string" minOccurs="0" />
             <xsd:element name="hash" type="xsd:string" minOccurs="0" />
             <xsd:element name="declaredLicense" type="declaredLicense" minOccurs="0" />
@@ -293,6 +295,13 @@
         <xsd:all>
             <xsd:element name="artifactId" minOccurs="0"  type="xsd:string"/>
             <xsd:element name="name" minOccurs="0"  type="xsd:string"/>
+            <xsd:element name="version" minOccurs="0"  type="xsd:string"/>
+        </xsd:all>
+    </xsd:complexType>
+
+    <xsd:complexType name="dotNetCoordinates">
+        <xsd:all>
+            <xsd:element name="packageId" minOccurs="0"  type="xsd:string"/>
             <xsd:element name="version" minOccurs="0"  type="xsd:string"/>
         </xsd:all>
     </xsd:complexType>

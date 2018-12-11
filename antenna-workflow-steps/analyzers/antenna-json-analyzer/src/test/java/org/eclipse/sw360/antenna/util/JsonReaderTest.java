@@ -14,6 +14,10 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIssues;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
+import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.JavaCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.Issue;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.SecurityIssueStatus;
@@ -84,5 +88,46 @@ public class JsonReaderTest {
                 .ifPresent(issues -> assertThat(issues.stream()
                         .map(Issue::getReference)
                         .anyMatch("CVE-2009-1523"::equals)));
+    }
+
+    @Test
+    public void testMapCoordinates() throws URISyntaxException, IOException {
+        Path recordFilePath = Paths.get(".", "target", "foo");
+        JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), Charset.forName("UTF-8"));
+        URI uri = this.getClass().getClassLoader().getResource("data3.json").toURI();
+        InputStream iStream = Files.newInputStream(Paths.get(uri));
+        artifacts = jsonReader.createArtifactsList(iStream);
+
+        artifacts.stream()
+                .map(artifact -> artifact.askFor(MavenCoordinates.class))
+                .filter(Optional::isPresent)
+                .findAny()
+                .map(Optional::get)
+                .ifPresent(mC -> {
+                    assertThat(mC.getGroupId()).isEqualTo("org.apache.commons");
+                    assertThat(mC.getArtifactId()).isEqualTo("commons-lang3");
+                    assertThat(mC.getVersion()).isEqualTo("3.5");
+                });
+
+        artifacts.stream()
+                .map(artifact -> artifact.askFor(JavaScriptCoordinates.class))
+                .filter(Optional::isPresent)
+                .findAny()
+                .map(Optional::get)
+                .ifPresent(jsC -> {
+                    assertThat(jsC.getName()).isEqualTo("process");
+                    assertThat(jsC.getVersion()).isEqualTo("0.5.1");
+                    assertThat(jsC.getArtifactId()).isEqualTo("process-0.5.1");
+                });
+
+        artifacts.stream()
+                .map(artifact -> artifact.askFor(DotNetCoordinates.class))
+                .filter(Optional::isPresent)
+                .findAny()
+                .map(Optional::get)
+                .ifPresent(mC -> {
+                    assertThat(mC.getPackageId()).isEqualTo("Microsoft.AspNetCore.SignalR");
+                    assertThat(mC.getVersion()).isEqualTo("1.0.4");
+                });
     }
 }
