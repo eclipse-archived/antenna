@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.workflow.processors;
 
 import static org.eclipse.sw360.antenna.workflow.processors.LicenseValidator.*;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 import java.util.HashMap;

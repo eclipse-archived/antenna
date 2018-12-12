@@ -10,8 +10,6 @@
  */
 package org.eclipse.sw360.antenna.util;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,7 +22,7 @@ import org.junit.Test;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TemplateRendererTest {
 
@@ -111,7 +109,7 @@ public class TemplateRendererTest {
 
 		String result = tr.renderTemplateFile(file);
 
-		assertThat(result, is(composeTemplateXml()));
+		assertThat(result).isEqualTo(composeTemplateXml());
 	}
 
 	@Test
@@ -121,7 +119,7 @@ public class TemplateRendererTest {
 
 		String result = trWithCustomProperties.renderTemplateFile(file);
 
-		assertThat(result, is(composeTemplateXml()));
+		assertThat(result).isEqualTo(composeTemplateXml());
 	}
 
 	@Test
@@ -130,7 +128,7 @@ public class TemplateRendererTest {
 
 		String result = tr.renderTemplateFile(file);
 
-		assertThat(result, is(composeTemplateXml(properties0)));
+		assertThat(result).isEqualTo(composeTemplateXml(properties0));
 	}
 
 	@Test
@@ -140,10 +138,10 @@ public class TemplateRendererTest {
 
 		String result = trWithCustomProperties.renderTemplateFile(file);
 
-		assertThat(result, not(containsString("$"+property1key)));
-		assertThat(result, not(containsString("${"+property1key+"}")));
-		assertThat(result, containsString("$"+property2key));
-		assertThat(result, containsString("<test"+property1key+">"+property1value+"</test"+property1key+">"));
+		assertThat(result).doesNotContain("$"+property1key);
+		assertThat(result).doesNotContain("${"+property1key+"}");
+		assertThat(result).contains("$" + property2key);
+		assertThat(result).contains("<test"+property1key+">"+property1value+"</test"+property1key+">");
 	}
 
 	@Test
@@ -152,10 +150,10 @@ public class TemplateRendererTest {
 
 	    String result = tr.renderTemplateFile(file);
 	    
-	    assertThat(result, not(containsString("$"+property1key)));
-	    assertThat(result, not(containsString("${"+property1key+"}")));
-		assertThat(result, containsString("$"+property2key));
-	    assertThat(result, containsString("<test"+property1key+">"+property1value+"</test"+property1key+">"));
+	    assertThat(result).doesNotContain("$"+property1key);
+	    assertThat(result).doesNotContain("${"+property1key+"}");
+		assertThat(result).contains("$"+property2key);
+	    assertThat(result).contains("<test"+property1key+">"+property1value+"</test"+property1key+">");
 	}
 
 	@Test
@@ -165,11 +163,11 @@ public class TemplateRendererTest {
 
 		String result = trWithCustomProperties.renderTemplateFile(file);
 
-		assertThat(result, not(containsString("$"+property1key)));
-		assertThat(result, not(containsString("${"+property1key+"}")));
-		assertThat(result, not(containsString("$"+property2key)));
-		assertThat(result, containsString("<test"+property1key+">"+property1value+"</test"+property1key+">"));
-		assertThat(result, containsString("<test"+property2key+">"+property2value+"</test"+property2key+">"));
+		assertThat(result).doesNotContain("$"+property1key);
+		assertThat(result).doesNotContain("${"+property1key+"}");
+		assertThat(result).doesNotContain("$"+property2key);
+		assertThat(result).contains("<test"+property1key+">"+property1value+"</test"+property1key+">");
+		assertThat(result).contains("<test"+property2key+">"+property2value+"</test"+property2key+">");
 	}
 
 	@Test
@@ -179,11 +177,11 @@ public class TemplateRendererTest {
 
 		String result = trWithCustomProperties.renderTemplateFile(file);
 
-		assertThat(result, not(containsString("$"+property1key)));
-		assertThat(result, not(containsString("${"+property1key+"}")));
-		assertThat(result, not(containsString("$"+property2key)));
-		assertThat(result, containsString("<test"+property1key+">"+property1value+"</test"+property1key+">"));
-		assertThat(result, containsString("<test"+property2key+">"+property2value+"</test"+property2key+">"));
+		assertThat(result).doesNotContain("$"+property1key);
+		assertThat(result).doesNotContain("${"+property1key+"}");
+		assertThat(result).doesNotContain("$"+property2key);
+		assertThat(result).contains("<test"+property1key+">"+property1value+"</test"+property1key+">");
+		assertThat(result).contains("<test"+property2key+">"+property2value+"</test"+property2key+">");
 	}
 
 	@Test(expected = Exception.class)
@@ -193,6 +191,6 @@ public class TemplateRendererTest {
 
 		String result = tr.renderTemplateFile(file);
 
-		assertThat(result, not(is(invalidXmlTemplate)));
+		assertThat(result).isNotEqualTo(invalidXmlTemplate);
 	}
 }

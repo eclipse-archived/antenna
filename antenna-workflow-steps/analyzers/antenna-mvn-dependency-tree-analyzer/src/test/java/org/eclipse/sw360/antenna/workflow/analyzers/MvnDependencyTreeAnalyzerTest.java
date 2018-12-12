@@ -34,9 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 public class MvnDependencyTreeAnalyzerTest {
@@ -58,17 +56,16 @@ public class MvnDependencyTreeAnalyzerTest {
 
         WorkflowStepResult result = analyzer.yield();
 
-        assertThat(result.getArtifacts().size(), is(equalTo(1)));
+        assertThat(result.getArtifacts()).hasSize(1);
 
         Artifact actualArtifact = result.getArtifacts().iterator().next();
         Artifact expectedArtifact = getExpectedArtifact(0);
 
-        assertThat(actualArtifact.getAnalysisSource(),
-                is(equalTo(expectedArtifact.getAnalysisSource())));
-        assertThat(actualArtifact.askFor(ArtifactMatchingMetadata.class).get().getMatchState(),
-                is(equalTo(expectedArtifact.askFor(ArtifactMatchingMetadata.class).get().getMatchState())));
-        assertThat(actualArtifact.getArtifactIdentifiers(),
-                is(equalTo(expectedArtifact.getArtifactIdentifiers())));
+        assertThat(actualArtifact.getAnalysisSource()).isEqualTo(expectedArtifact.getAnalysisSource());
+        assertThat(actualArtifact.askFor(ArtifactMatchingMetadata.class).get().getMatchState())
+                .isEqualTo(expectedArtifact.askFor(ArtifactMatchingMetadata.class).get().getMatchState());
+        assertThat(actualArtifact.getArtifactIdentifiers())
+                .isEqualTo(expectedArtifact.getArtifactIdentifiers());
     }
 
     @Test
@@ -83,7 +80,7 @@ public class MvnDependencyTreeAnalyzerTest {
 
         WorkflowStepResult result = analyzer.yield();
 
-        assertThat(result.getArtifacts().size(), is(equalTo(size)));
+        assertThat(result.getArtifacts()).hasSize(size);
     }
 
     private WrappedDependencyNodes getNodes(int count) {

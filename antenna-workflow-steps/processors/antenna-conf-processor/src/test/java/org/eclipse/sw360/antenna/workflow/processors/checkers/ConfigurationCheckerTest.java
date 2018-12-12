@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.workflow.processors.checkers;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.IOException;

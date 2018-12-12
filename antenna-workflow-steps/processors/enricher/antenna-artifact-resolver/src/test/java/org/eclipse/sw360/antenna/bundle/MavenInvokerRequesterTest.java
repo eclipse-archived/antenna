@@ -10,14 +10,14 @@
  */
 package org.eclipse.sw360.antenna.bundle;
 
-import org.eclipse.sw360.antenna.api.IProject;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.apache.maven.repository.ArtifactDoesNotExistException;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.utils.cli.CommandLineException;
+import org.eclipse.sw360.antenna.api.IProject;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,15 +25,14 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.*;
 import org.mockito.stubbing.Answer;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
 
@@ -73,9 +72,9 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void getPomFileSanityCheck() throws Exception {
+    public void getPomFileSanityCheck() {
         File pomFile = mir.getPomFileFromContext();
-        assertThat(pomFile.toString(), endsWith(MavenInvokerRequester.POM_FILENAME));
+        assertThat(pomFile.toString()).endsWith(MavenInvokerRequester.POM_FILENAME);
     }
 
     private InvocationResult getDummyInvocationResult(int returncode){
@@ -112,23 +111,15 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
 
         Mockito.verify(defaultInvokerMock).execute(captor.capture());
 
-        assertThat(resultFile, is(expectedJarFile));
+        assertThat(resultFile).isEqualTo(expectedJarFile);
         InvocationRequest invocationRequest = captor.getValue();
         Collection<String> goals = invocationRequest.getGoals();
-        assertThat(goals.size(), not(is(0)));
 
-        assertThat(goals.stream()
-                .filter(s -> s.contains(mavenCoordinates.getGroupId()))
-                .count(), is(1L));
-        assertThat(goals.stream()
-                .filter(s -> s.contains(mavenCoordinates.getArtifactId()))
-                .count(), is(1L));
-        assertThat(goals.stream()
-                .filter(s -> s.contains(mavenCoordinates.getVersion()))
-                .count(), is(1L));
-        assertThat(goals.stream()
-                .filter(s -> s.contains(targetDirectory.toString()))
-                .count(), is(1L));
+        assertThat(goals).isNotEmpty();
+        assertThat(goals).filteredOn(s -> s.contains(mavenCoordinates.getGroupId())).hasSize(1);
+        assertThat(goals).filteredOn(s -> s.contains(mavenCoordinates.getArtifactId())).hasSize(1);
+        assertThat(goals).filteredOn(s -> s.contains(mavenCoordinates.getVersion())).hasSize(1);
+        assertThat(goals).filteredOn(s -> s.contains(targetDirectory.toString())).hasSize(1);
     }
 
     @Test(expected = ArtifactDoesNotExistException.class)

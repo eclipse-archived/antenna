@@ -23,7 +23,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.ByteArrayOutputStream;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ReporterTest {
     @Rule
@@ -56,8 +56,8 @@ public class ReporterTest {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         reporter.writeReport(stream);
         String reportString = new String(stream.toByteArray());
-        assertThat(reportString.contains(msg));
-        assertThat(reportString.contains(((ArtifactCoordinates<ArtifactCoordinates>) id).getVersion()));
+        assertThat(reportString).contains(msg);
+        assertThat(reportString).contains(((ArtifactCoordinates<ArtifactCoordinates>) id).getVersion());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class ReporterTest {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         reporter.writeReport(stream);
         String reportString = new String(stream.toByteArray());
-        assertThat(reportString.contains(msg));
+        assertThat(reportString).contains(msg);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class ReporterTest {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         reporter.writeReport(stream);
         String reportString = new String(stream.toByteArray());
-        assertThat(reportString.contains(msg));
+        assertThat(reportString).contains(msg);
     }
 
     @Test
@@ -94,18 +94,15 @@ public class ReporterTest {
         reporter.add(license, MessageType.UNKNOWN_LICENSE, msg);
 
         final ProcessingMessage processingMessage = reporter.getProcessingReport().getMessageList().get(0);
-        assertThat(processingMessage.getIdentifier())
-                .isEqualTo(license);
-        assertThat(processingMessage.getMessageType())
-                .isEqualTo(MessageType.UNKNOWN_LICENSE);
+        assertThat(processingMessage.getIdentifier()).isEqualTo(license);
+        assertThat(processingMessage.getMessageType()).isEqualTo(MessageType.UNKNOWN_LICENSE);
         assertThat(processingMessage.getMessage()).isEqualTo(msg);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         reporter.writeReport(stream);
         String reportString = new String(stream.toByteArray());
-        assertThat(reportString.contains(msg));
-        assertThat(reportString.contains(((ArtifactCoordinates<ArtifactCoordinates>) id).getVersion()));
-        assertThat(reportString.contains(license));
+        assertThat(reportString).contains(msg);
+        assertThat(reportString).contains(license);
     }
 
 }

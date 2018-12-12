@@ -14,7 +14,7 @@ import org.eclipse.sw360.antenna.model.util.LicenseComparator;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.junit.Test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LicenseComparatorTest {
 
