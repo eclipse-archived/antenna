@@ -14,9 +14,11 @@ package org.eclipse.sw360.antenna.workflow.processors.enricher;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -90,7 +92,7 @@ public class ManifestResolver extends AbstractProcessor {
         }
 
         Path targetJar = computeFinalJarFileName(jarPath);
-        Files.createDirectories(topLevelJar.getParent());
+        Files.createDirectories(targetJar.getParent());
         try(FileInputStream fis = new FileInputStream(topLevelJar.toFile())){
             extractDeepNestedJar(fis, jarPaths, targetJar);
         }
@@ -108,9 +110,9 @@ public class ManifestResolver extends AbstractProcessor {
 
             try (ZipInputStream zipInputStream = new ZipInputStream(zippedInputStream) ) {
                 ZipEntry entry;
-                String nextJarBaseName = nextJarName.getFileName().toString();
                 while ((entry = zipInputStream.getNextEntry()) != null) {
-                    if(nextJarBaseName.equals(entry.getName())) {
+                    String nextJarNameWithoutLeadingSeparator = nextJarName.normalize().toString().replaceAll("^" + Pattern.quote(File.separator), "");
+                    if (nextJarNameWithoutLeadingSeparator.equals(Paths.get(entry.getName()).normalize().toString())) {
                         extractDeepNestedJar(zipInputStream, nestedJars, finalPath);
                         return;
                     }
