@@ -12,14 +12,15 @@
 package org.eclipse.sw360.antenna.workflow.generators;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
+import org.eclipse.sw360.antenna.model.SW360ProjectCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+
 
 import java.io.IOException;
 import java.util.*;
@@ -34,11 +35,23 @@ public class SW360Updater extends AbstractGenerator {
     private String sw360AuthServerUrl;
     private String sw360User;
     private String sw360Password;
-    private IProject project;
+
+    private String projectName;
+    private String projectVersion;
 
     @Override
     public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
-        project = context.getProject();
+        SW360ProjectCoordinates configuredSW360Project = context.getConfiguration().getConfiguredSW360Project();
+        projectName = configuredSW360Project.getName();
+        projectVersion = configuredSW360Project.getVersion();
+
+        if (configuredSW360Project.getName() == null || configuredSW360Project.getName().isEmpty()) {
+            projectName = context.getProject().getProjectId();
+        }
+        if (configuredSW360Project.getVersion() == null || configuredSW360Project.getVersion().isEmpty()) {
+            projectVersion = context.getProject().getVersion();
+        }
+
         sw360RestServerUrl = getConfigValue(REST_SERVER_URL_KEY, configMap);
         sw360AuthServerUrl = getConfigValue(AUTH_SERVER_URL_KEY, configMap);
         sw360User = getConfigValue(USERNAME_KEY, configMap);
@@ -56,7 +69,7 @@ public class SW360Updater extends AbstractGenerator {
                 SW360Component component = sw360MetaDataUpdater.getOrCreateComponent(artifact);
                 releases.add(sw360MetaDataUpdater.getOrCreateRelease(artifact, licenses, component));
             }
-            sw360MetaDataUpdater.createProject(project, releases);
+            sw360MetaDataUpdater.createProject(projectName, projectVersion, releases);
         } catch (IOException e) {
             throw new AntennaException("Problem occurred during updating SW360.", e);
         }

@@ -9,6 +9,10 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 <config>
+	<SW360ProjectCoordinates>
+		<name>anyProjectName</name>
+		<version>anyProjectVersion</version>
+	</SW360ProjectCoordinates>
 
 	<!-- Override Artifact values -->
 	<overrides>

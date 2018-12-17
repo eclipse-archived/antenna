@@ -88,6 +88,7 @@
                      setFinalLicenses = new SetFinalLicenses();
                      sourceValidation = new SourceValidation();
                      securityIssues = new SecurityIssues();
+                     sw360ProjectCoordinates = new FromXmlSW360ProjectCoordinates();
 
                      sourceResolving.setIgnoreForSourceResolving(new IgnoreForSourceResolving());
                      sourceResolving.setPreferP2(new PreferP2());

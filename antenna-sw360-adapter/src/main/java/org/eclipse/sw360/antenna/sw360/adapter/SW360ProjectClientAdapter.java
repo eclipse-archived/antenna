@@ -55,9 +55,9 @@ public class SW360ProjectClientAdapter {
                 .flatMap(SW360HalResourceUtility::getLastIndexOfLinkObject);
     }
 
-    public String addProject(IProject project, SW360User user, HttpHeaders header) throws AntennaException, JsonProcessingException {
+    public String addProject(String projectName, String projectVersion, SW360User user, HttpHeaders header) throws AntennaException, JsonProcessingException {
         SW360Project sw360Project = new SW360Project();
-        SW360ProjectAdapterUtils.prepareProject(sw360Project, project, user);
+        SW360ProjectAdapterUtils.prepareProject(sw360Project, projectName, projectVersion, user);
         SW360Project responseProject = projectClient.createProject(sw360Project, header);
 
         return SW360HalResourceUtility.getLastIndexOfLinkObject(responseProject.get_Links()).orElse("");
