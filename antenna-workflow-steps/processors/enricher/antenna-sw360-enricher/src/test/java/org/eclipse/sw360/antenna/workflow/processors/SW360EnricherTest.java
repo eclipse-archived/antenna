@@ -15,6 +15,7 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
@@ -64,6 +65,21 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         connector = Mockito.mock(SW360MetaDataReceiver.class);
         ReflectionTestUtils.setField(sw360Enricher, "connector", connector);
+    }
+
+    @Test
+    public void downloadUrlIsStoredAsFact() throws AntennaException {
+        SW360Release release0 = new SW360Release();
+        release0.setDownloadurl("some_download_url");
+        release0.set_Embedded(new SW360ReleaseEmbedded());
+        release0.get_Embedded().setLicenses(Collections.emptyList());
+
+        when(connector.findReleaseForArtifact(artifacts.get(0))).thenReturn(Optional.of(release0));
+
+        sw360Enricher.process(artifacts);
+
+        assertThat(artifacts.get(0).askFor(ArtifactSourceUrl.class).isPresent()).isTrue();
+        assertThat(artifacts.get(0).askForGet(ArtifactSourceUrl.class).get()).isEqualTo("some_download_url");
     }
 
     @Test

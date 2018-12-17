@@ -104,6 +104,12 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>antenna-source-url-resolver</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>antenna-license-knowledgebase-resolver</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
