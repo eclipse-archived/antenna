@@ -68,6 +68,7 @@ jobs:
     - name: cli test
       script:
         - .travis/runCLI.sh example-projects/example-project
+        - java -jar antenna-testing/antenna-frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject example-projects/example-project/target
 
     # Test for license headers
     - name: test for license headers
