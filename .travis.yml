@@ -24,7 +24,7 @@ before_install:
   - wget -N -O /tmp/install-jdk.sh https://raw.githubusercontent.com/sormuras/bach/ab648ed36892439f49a827cdf18c25e17c8095db/install-jdk.sh
   - chmod +x /tmp/install-jdk.sh
 install:
-  - mvn install -DskipTests=true -B
+  - mvn install -DskipTests=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
 jobs:
   include:
@@ -32,7 +32,7 @@ jobs:
     - &mvn-test
       name: mvn test
       script:
-        - mvn test -B
+        - mvn test -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
         - cd example-projects/example-project
         - mvn package
     - <<: *mvn-test
@@ -54,7 +54,7 @@ jobs:
         - export JAVA_HOME=$HOME/custom_jdk
         - /tmp/install-jdk.sh -f $EXECUTION_JDK -l GPL --target $JAVA_HOME
         - cd example-projects/example-project
-        - mvn package -Dmaven.compiler.source=$EXECUTION_JDK -Dmaven.compiler.target=$EXECUTION_JDK
+        - mvn package -Dmaven.compiler.source=$EXECUTION_JDK -Dmaven.compiler.target=$EXECUTION_JDK -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
     - <<: *differentJDK-test
       name: mvn test, run with openjdk10
       env:
