@@ -43,6 +43,9 @@
                     <item name="CSV analyzer" href="csv-analyzer-step.html" />
                     <item name="JSON analyzer" href="json-analyzer-step.html" />
                     <item name="Maven Dependency Tree analyzer" href="mvn-dep-tree-analyzer-step.html" />
+                    <item name="CSV generator step" href="csv-generator-step.html" />
+                    <item name="HTML report generator" href="HTML-report-generator-step.html" />
+                    <item name="SW360 disclosure document generator" href="sw360-disclosure-document-generator-step.html" />
                 </item>
             </item>
             <item name="Development Guide" href="dev-guide.html" />
