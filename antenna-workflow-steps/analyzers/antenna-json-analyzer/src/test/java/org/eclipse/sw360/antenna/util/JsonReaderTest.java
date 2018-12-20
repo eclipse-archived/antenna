@@ -11,11 +11,9 @@
 package org.eclipse.sw360.antenna.util;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIssues;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.JavaCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.Issue;
@@ -60,34 +58,24 @@ public class JsonReaderTest {
 
         assertThat(artifacts.stream()
                 .map(artifact -> artifact.askForGet(DeclaredLicenseInformation.class))
-                .map(Optional::get)
-                .map(LicenseInformation::evaluate)
-                .anyMatch("PUBLIC-DOMAIN"::equals));
-        assertThat(artifacts.stream()
-                .map(Artifact::getAnalysisSource)
-                .allMatch("CSV"::equals));
-        assertThat(artifacts.stream()
-                .map(artifact -> artifact.askFor(ArtifactFilename.class))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(ArtifactFilename::getFilename)
-                .anyMatch("aopalliance-1.0.jar"::equals));
+                .map(LicenseInformation::evaluate))
+                .contains("PUBLIC-DOMAIN");
+        assertThat(artifacts.stream()
+                .map(Artifact::getAnalysisSource)).contains("JSON");
 
-        artifacts.stream()
+        Optional<List<Issue>> issues = artifacts.stream()
                 .map(artifact -> artifact.askForGet(ArtifactIssues.class))
+                .filter(Optional::isPresent)
                 .map(Optional::get)
-                .findAny()
-                .ifPresent(issues -> assertThat(issues.stream()
-                        .map(Issue::getStatus)
-                        .anyMatch(SecurityIssueStatus.OPEN::equals)));
+                .findFirst();
 
-        artifacts.stream()
-                .map(artifact -> artifact.askForGet(ArtifactIssues.class))
-                .map(Optional::get)
-                .findAny()
-                .ifPresent(issues -> assertThat(issues.stream()
-                        .map(Issue::getReference)
-                        .anyMatch("CVE-2009-1523"::equals)));
+        assertThat(issues.isPresent()).isTrue();
+        issues.ifPresent(i -> {
+            assertThat(i.stream().map(Issue::getStatus)).contains(SecurityIssueStatus.OPEN);
+            assertThat(i.stream().map(Issue::getReference)).contains("CVE-2018-8014");
+        });
     }
 
     @Test
