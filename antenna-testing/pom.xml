@@ -35,5 +35,11 @@
                 <module>antenna-system-test</module>
             </modules>
         </profile>
+        <profile>
+            <id>it</id>
+            <modules>
+                <module>antenna-sw360-integration-testing</module>
+            </modules>
+        </profile>
     </profiles>
 </project>

@@ -8,3 +8,4 @@
 *.iml
 .gitreview
 velocity.log
+antenna-testing/antenna-sw360-integration-testing/src/test/resources/postgres/sw360pgdb.sql
