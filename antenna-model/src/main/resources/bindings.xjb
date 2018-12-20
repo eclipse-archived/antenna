@@ -27,6 +27,10 @@
             <jxb:class ref="org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates.JavaScriptCoordinatesBuilder"/>
         </jxb:bindings>
 
+        <jxb:bindings node="//xsd:complexType[@name='dotNetCoordinates']">
+            <jxb:class ref="org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates.DotNetCoordinatesBuilder"/>
+        </jxb:bindings>
+
         <jxb:bindings node="//xsd:complexType[@name='artifact']">
             <jxb:class ref="org.eclipse.sw360.antenna.model.artifact.FromXmlArtifactBuilder"/>
         </jxb:bindings>
@@ -45,6 +49,9 @@
                      }
                      if(getJavaScriptCoordinates() != null) {
                          artifactIdentifiers.add(getJavaScriptCoordinates().build());
+                     }
+                     if(getDotNetCoordinates() != null) {
+                         artifactIdentifiers.add(getDotNetCoordinates().build());
                      }
                      if(getFilename() != null || getHash() != null) {
                          artifactIdentifiers.add(new org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename(getFilename(), getHash()));

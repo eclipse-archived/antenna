@@ -1,0 +1,153 @@
+{
+  "components":[
+    {
+      "hash":"2398f3891194874a0a8d",
+      "componentIdentifier":{
+        "format":"a-name",
+        "coordinates":{
+          "name":"process",
+          "qualifier":"",
+          "version":"0.5.1"
+        }
+      },
+      "proprietary":false,
+      "matchState":"exact",
+      "pathnames":[
+        "node_modules/process/index.js"
+      ],
+      "licenseData":{
+        "declaredLicenses":[
+          {
+            "licenseId":"Not-Declared",
+            "licenseName":"Not Declared"
+          }
+        ],
+        "observedLicenses":[
+          {
+            "licenseId":"Not-Supported",
+            "licenseName":"Not Supported"
+          }
+        ],
+        "overriddenLicenses":[
+
+        ],
+        "status":"Open",
+        "effectiveLicenseThreats":[
+          {
+            "licenseThreatGroupName":"High Risk V1",
+            "licenseThreatGroupLevel":10,
+            "licenseThreatGroupCategory":"critical"
+          },
+          {
+            "licenseThreatGroupName":"Non Standard V1",
+            "licenseThreatGroupLevel":0,
+            "licenseThreatGroupCategory":"no-threat"
+          }
+        ]
+      },
+      "securityData":{
+        "securityIssues":[
+
+        ]
+      }
+    },
+    {
+      "hash": "b2921b7862e7b26b43aa",
+      "componentIdentifier": {
+        "format": "maven",
+        "coordinates": {
+          "artifactId": "commons-lang3",
+          "classifier": "",
+          "extension": "jar",
+          "groupId": "org.apache.commons",
+          "version": "3.5"
+        }
+      },
+      "proprietary": false,
+      "matchState": "exact",
+      "pathnames": [
+        "commons-lang-2.0.jar"
+      ],
+      "licenseData": {
+        "declaredLicenses": [
+          {
+            "licenseId": "Not-Declared",
+            "licenseName": "Not Declared"
+          }
+        ],
+        "observedLicenses": [
+          {
+            "licenseId": "Apache-1.1",
+            "licenseName": "Apache-1.1"
+          }
+        ],
+        "overriddenLicenses": [],
+        "status": "Open",
+        "effectiveLicenseThreats": [
+          {
+            "licenseThreatGroupName": "Liberal V1",
+            "licenseThreatGroupLevel": 0,
+            "licenseThreatGroupCategory": "no-threat"
+          }
+        ]
+      },
+      "securityData": {
+        "securityIssues": []
+      }
+    },
+    {
+      "hash":"1419d56ff95153895b31",
+      "componentIdentifier":{
+        "format":"nuget",
+        "coordinates":{
+          "packageId":"Microsoft.AspNetCore.SignalR",
+          "version":"1.0.4"
+        }
+      },
+      "proprietary":false,
+      "matchState":"exact",
+      "pathnames":[
+        "scaninput/Microsoft.AspNetCore.SignalR.dll"
+      ],
+      "licenseData":{
+        "declaredLicenses":[
+          {
+            "licenseId":"Apache-2.0",
+            "licenseName":"Apache-2.0"
+          }
+        ],
+        "observedLicenses":[
+          {
+            "licenseId":"Not-Supported",
+            "licenseName":"Not Supported"
+          }
+        ],
+        "overriddenLicenses":[
+
+        ],
+        "status":"Open",
+        "effectiveLicenseThreats":[
+          {
+            "licenseThreatGroupName":"Liberal V1",
+            "licenseThreatGroupLevel":0,
+            "licenseThreatGroupCategory":"no-threat"
+          },
+          {
+            "licenseThreatGroupName":"Non Standard V1",
+            "licenseThreatGroupLevel":0,
+            "licenseThreatGroupCategory":"no-threat"
+          }
+        ]
+      },
+      "securityData":{
+        "securityIssues":[
+
+        ]
+      }
+    }
+  ],
+  "matchSummary":{
+    "totalComponentCount":5,
+    "knownComponentCount":5
+  }
+}
