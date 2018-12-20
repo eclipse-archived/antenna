@@ -47,9 +47,9 @@
     <a name="artifacts"></a>
     <ul>
     #foreach($artifact in $artifacts)
-        <li><a href="#$artifact.getArtifactIdentifier().getFilename()">
-        #if ( $artifact.getArtifactIdentifier() && $artifact.getArtifactIdentifier().getFilename() )
-            $artifact.getArtifactIdentifier().getFilename()
+        <li><a href="#$artifact.ankerTag">
+        #if ( $artifact.identifier )
+            $artifact.identifier
         #else
             Artifact Identifier not provided
         #end
@@ -59,18 +59,18 @@
     <hr />
     #foreach($artifact in $artifacts)
     <div>
-        <a name="$artifact.getArtifactIdentifier().getFilename()"></a>
+        <a name="$artifact.ankerTag"></a>
         <a class="top" href="#licenses">&#8679;</a>
         <h2>
-            #if ( $artifact.getArtifactIdentifier() && $artifact.getArtifactIdentifier().getFilename() )
-                $artifact.getArtifactIdentifier().getFilename()
+            #if ( $artifact.identifier )
+                $artifact.identifier
             #else
                 Artifact Identifier not provided
             #end
         </h2>
         <p>License:<br />
         <ul>
-        $artifact.getFinalLicenses().getHTMLLinkStr()
+        $artifact.license.getHTMLLinkStr()
         </ul>
         </p>
     </div>
@@ -81,12 +81,15 @@
     <div>
         <a name="$license.getName()"></a>
         <a class="top" href="#artifacts">&#8679;</a>
-        #if($license.getLongName()&&$license.getText())
-        <h3>$license.getLongName()</h3>
-        <p>$license.getText().replaceAll("(\r\n|\n)", "<br />")</p>
+        #if($license.getLongName())
+            <h3>$license.getLongName()</h3>
         #else
-        <h3>$license.getName()</h3>
-        <p>No license text available</p>
+            <h3>$license.getName()</h3>
+        #end
+        #if($license.getText())
+            <p>$license.getText().replaceAll("(\r\n|\n)", "<br />")</p>
+        #else
+            <p>No license text available</p>
         #end
     </div>
     <hr />

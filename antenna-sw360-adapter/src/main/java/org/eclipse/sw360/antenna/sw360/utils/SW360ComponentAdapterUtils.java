@@ -13,7 +13,9 @@ package org.eclipse.sw360.antenna.sw360.utils;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.JavaCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.util.ArtifactUtils;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentType;
@@ -22,31 +24,20 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SW360ComponentAdapterUtils {
+    private static final List<Class<? extends ArtifactCoordinates>> preferedCoordinatesTypes = Stream.of(MavenCoordinates.class,
+            BundleCoordinates.class).collect(Collectors.toList());
+
     private static Optional<ArtifactCoordinates> getMostDominantArtifactCoordinates(Artifact artifact) {
-        final Optional<ArtifactCoordinates> mavenCoordinates = artifact.askFor(MavenCoordinates.class)
-                .map(ArtifactCoordinates.class::cast);
-        if(mavenCoordinates.isPresent()) {
-            return mavenCoordinates;
-        }
-        final Optional<ArtifactCoordinates> bundleCoordinates = artifact.askFor(BundleCoordinates.class)
-                .map(ArtifactCoordinates.class::cast);
-        if(bundleCoordinates.isPresent()) {
-            return bundleCoordinates;
-        }
-        final Optional<ArtifactCoordinates> otherCoordinates = artifact.askForAll(ArtifactCoordinates.class)
-                .stream()
-                .findFirst();
-        if(otherCoordinates.isPresent()) {
-            return otherCoordinates;
-        }
-        return artifact.askFor(ArtifactFilename.class)
-                .map(ArtifactFilename::getFilename)
-                .map(fn -> new GenericArtifactCoordinates(fn, "-"))
-                .map(ArtifactCoordinates.class::cast);
+        return ArtifactUtils.getMostDominantArtifactCoordinates(
+                preferedCoordinatesTypes,
+                artifact);
     }
 
     public static String createComponentName(Artifact artifact) {

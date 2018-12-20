@@ -15,9 +15,10 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.repository.Attachable;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -54,34 +55,60 @@ public class HTMLReportGenerator extends AbstractGenerator {
         ToolConfiguration toolConfig = context.getToolConfiguration();
         Path reportFilePath = toolConfig.getAntennaTargetDirectory().resolve(LICENSE_REPORT_FILE);
 
+        Set<ArtifactForHTMLReport> artifactsForHTMLReport = extractRelevantArtifactInformation(artifacts);
 
-        VelocityEngine ve = new VelocityEngine();
-        ve.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,"org.apache.velocity.runtime.log.NullLogSystem");
-        ve.setProperty("resource.loader", "class");
-        ve.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-
-        // Initialise Velocity and put the artifacts and licenses into context
-        VelocityContext velocityContext = new VelocityContext();
-        velocityContext.put("artifacts", artifacts);
-        velocityContext.put("licenses", getAllLicenses(artifacts));
-
-        // Write the template to the report file
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(reportFilePath.toFile()), encoding)) {
-            Template template = ve.getTemplate(LICENSE_REPORT_TEMPLATE_FILE, "utf-8");
-            template.merge(velocityContext, writer);
-        } catch (IOException e) {
-            throw new AntennaExecutionException("Cannot write HTML report file: " + e.getMessage());
-        }
+        writeReportToFile(artifactsForHTMLReport, reportFilePath.toFile());
 
         return Collections.singletonMap(IDENTIFIER, new Attachable(TYPE, CLASSIFIER, reportFilePath.toFile()));
     }
 
-    private Set<License> getAllLicenses(Collection<Artifact> artifacts) {
-         Set<License> licenses = new HashSet<>();
-         artifacts.stream().map(artifact -> ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses())
-                 .flatMap(Collection::stream)
-                 .forEach(licenses::add);
-         return licenses;
+    protected void writeReportToFile(Set<ArtifactForHTMLReport> artifactsForHTMLReport, File reportFile) {
+        final VelocityEngine velocityEngine = setupVelocityEngine();
+        final VelocityContext velocityContext = setupVelocityContext(artifactsForHTMLReport);
+
+        // Write the template to the report file
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(reportFile), encoding)) {
+            Template template = velocityEngine.getTemplate(LICENSE_REPORT_TEMPLATE_FILE, "utf-8");
+            template.merge(velocityContext, writer);
+        } catch (IOException e) {
+            throw new AntennaExecutionException("Cannot write HTML report file: " + e.getMessage());
+        }
+    }
+
+    private VelocityEngine setupVelocityEngine() {
+        VelocityEngine velocityEngine = new VelocityEngine();
+        velocityEngine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,"org.apache.velocity.runtime.log.NullLogSystem");
+        velocityEngine.setProperty("resource.loader", "class");
+        velocityEngine.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+
+        return velocityEngine;
+    }
+
+    private VelocityContext setupVelocityContext(Set<ArtifactForHTMLReport> artifactsForHTMLReport) {
+        // Initialise Velocity and put the artifacts and licenses into context
+        VelocityContext velocityContext = new VelocityContext();
+        Set<License> licensesForHtmlReport = getAllLicenses(artifactsForHTMLReport);
+
+        velocityContext.put("artifacts", artifactsForHTMLReport);
+        velocityContext.put("licenses", licensesForHtmlReport);
+
+        return velocityContext;
+    }
+
+    private Set<ArtifactForHTMLReport> extractRelevantArtifactInformation(Collection<Artifact> artifacts) {
+        return artifacts.stream()
+                .map(ArtifactForHTMLReport::new)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<License> getAllLicenses(Set<ArtifactForHTMLReport> artifacts) {
+        return artifacts.stream()
+                .map(ArtifactForHTMLReport::getLicense)
+                .filter(Objects::nonNull)
+                .map(LicenseInformation::getLicenses)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
 
     @Override
