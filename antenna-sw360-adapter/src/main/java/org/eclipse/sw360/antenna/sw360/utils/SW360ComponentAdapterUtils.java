@@ -11,9 +11,7 @@
 package org.eclipse.sw360.antenna.sw360.utils;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
-import org.eclipse.sw360.antenna.model.artifact.facts.GenericArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
@@ -102,6 +100,7 @@ public class SW360ComponentAdapterUtils {
         String componentId = SW360HalResourceUtility.getLastIndexOfLinkObject(component.get_Links()).orElse("");
 
         SW360ComponentAdapterUtils.setVersion(release, artifact);
+        SW360ComponentAdapterUtils.setCPEId(release, artifact);
         release.setName(component.getName());
         release.setComponentId(componentId);
         release.setMainLicenseIds(sw360LicenseIds);
@@ -116,5 +115,10 @@ public class SW360ComponentAdapterUtils {
         if ((version != null) && (!version.isEmpty())) {
             release.setVersion(version);
         }
+    }
+
+    private static void setCPEId(SW360Release release, Artifact artifact) {
+        release.setCpeid(artifact.askForGet(ArtifactCPE.class)
+                .orElse("n/a"));
     }
 }

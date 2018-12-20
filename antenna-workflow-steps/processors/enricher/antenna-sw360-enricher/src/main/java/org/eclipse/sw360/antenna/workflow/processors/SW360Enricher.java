@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+ * Copyright (c) Bosch Software Innovations GmbH 2016-2018.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCPE;
 import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
@@ -67,6 +68,7 @@ public class SW360Enricher extends AbstractProcessor {
             if (release.isPresent()) {
                 updateLicenses(artifact, release.get());
                 addSourceUrlIfAvailable(artifact, release.get());
+                addCPEIdIfAvailable(artifact, release.get());
             } else {
                 warnAndReport(artifact, "No SW360 release found for artifact.");
             }
@@ -160,5 +162,14 @@ public class SW360Enricher extends AbstractProcessor {
 
         LOGGER.info("Artifact: '" + String.join("', '", artifactLicenseNames)
                 + "' <-> SW360: '" + String.join("', '", releaseLicenseNames) + "'");
+    }
+
+    private void addCPEIdIfAvailable(Artifact artifact, SW360Release release) {
+        final String CPE_PREFIX = "cpe:2.3:";
+        final String OLD_CPE_PREFIX = "cpe:/";
+        String cpeId = release.getCpeid();
+        if(cpeId != null && (cpeId.startsWith(CPE_PREFIX) || cpeId.startsWith(OLD_CPE_PREFIX))) {
+            artifact.addFact(new ArtifactCPE(cpeId));
+        }
     }
 }
