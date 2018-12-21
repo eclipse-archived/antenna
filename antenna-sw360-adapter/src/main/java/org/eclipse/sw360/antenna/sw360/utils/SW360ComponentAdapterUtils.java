@@ -109,7 +109,7 @@ public class SW360ComponentAdapterUtils {
     }
 
     private static void setCPEId(SW360Release release, Artifact artifact) {
-        release.setCpeid(artifact.askForGet(ArtifactCPE.class)
-                .orElse("n/a"));
+        artifact.askForGet(ArtifactCPE.class)
+                .ifPresent(release::setCpeid);
     }
 }
