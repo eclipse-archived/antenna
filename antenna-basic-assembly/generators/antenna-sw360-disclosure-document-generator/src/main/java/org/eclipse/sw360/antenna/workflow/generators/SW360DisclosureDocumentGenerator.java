@@ -42,7 +42,6 @@ import java.util.stream.Stream;
 public class SW360DisclosureDocumentGenerator extends AbstractGenerator {
 
     private static final String DISCLOSURE_DOC_FORMATS_KEY = "disclosure.doc.formats";
-    private static final String DISCLOSURE_DOC_BASEPATH_KEY = "disclosure.doc.basepath";
     private static final String IDENTIFIER_PREFIX = "disclosure-sw360-doc-";
     private static final String CLASSIFIER = "antenna-sw360-disclosure-doc";
 
