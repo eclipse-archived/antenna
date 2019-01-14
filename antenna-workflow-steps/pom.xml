@@ -26,6 +26,7 @@
         <module>analyzers/antenna-csv-analyzer</module>
         <module>analyzers/antenna-json-analyzer</module>
         <module>analyzers/antenna-mvn-dependency-tree-analyzer</module>
+        <module>analyzers/antenna-ort-result-analyzer</module>
         <!-- processors -->
         <module>processors/antenna-conf-processor</module>
         <module>processors/abstract-antenna-compliance-checker</module>
