@@ -171,6 +171,7 @@ class AntennaCLISettingsReader {
         readAntennaBooleanSetting(reader, "skip", false, toolConfigBuilder::setSkipAntennaExecution);
         readAntennaBooleanSetting(reader, "disableP2Resolving", true, toolConfigBuilder::setDisableP2Resolving);
         readAntennaBooleanSetting(reader, "showCopyrightStatements", false, toolConfigBuilder::setShowCopyrightStatements);
+        readAntennaBooleanSetting(reader, "isMavenInstalled", false, toolConfigBuilder::setMavenInstalled);
 
         // Other lists
         readStringListSetting(reader, "filesToAttach", toolConfigBuilder::setFilesToAttach);

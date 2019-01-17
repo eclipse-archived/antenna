@@ -15,10 +15,18 @@ import org.eclipse.sw360.antenna.frontend.testProjects.AbstractTestProjectWithEx
 
 import java.util.function.Supplier;
 
+import static org.junit.Assert.*;
+
 public class AntennaBasicMojoFrontendTest extends AbstractAntennaMojoFrontendTest {
 
     public AntennaBasicMojoFrontendTest(Supplier<AbstractTestProjectWithExpectations> testDataSupplier, String name) {
         super(testDataSupplier, name);
     }
 
+    @Override
+    public void checkBooleans() {
+        // maven is always used regardless of what the project specifies, so we shouldn't compare those
+        assertEquals(testData.getExpectedToolConfigurationAttachAll(), antennaContext.getToolConfiguration().isAttachAll());
+        assertEquals(testData.getExpectedToolConfigurationSkip(), antennaContext.getToolConfiguration().isSkipAntennaExecution());
+    }
 }

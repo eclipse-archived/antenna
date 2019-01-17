@@ -42,7 +42,6 @@
                     <version>3.4.0</version>
 
                     <attachAll>true</attachAll>
-                    <isMavenInstalled>false</isMavenInstalled>
 
                     <workflowDefinitionFile>${basedir}/src/workflow.xml</workflowDefinitionFile>
                 </configuration>
