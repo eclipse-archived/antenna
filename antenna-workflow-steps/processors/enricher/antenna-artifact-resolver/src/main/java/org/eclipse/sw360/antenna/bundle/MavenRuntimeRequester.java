@@ -43,7 +43,7 @@ public class MavenRuntimeRequester extends IArtifactRequester {
 
     @Override
     public File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource) throws IOException {
-        if(isSource) {
+        if (isSource) {
             return requestFile(coordinates, targetDirectory, "java-source");
         }
         return requestFile(coordinates, targetDirectory, "jar");
@@ -70,13 +70,13 @@ public class MavenRuntimeRequester extends IArtifactRequester {
             return null;
         }
         File artifactFile = mvnArtifact.getFile();
-        if(!artifactFile.exists()){
+        if (!artifactFile.exists()) {
             LOGGER.error("Fetching of File from repository was successful, but expected file=[" + artifactFile + "] does not exists");
             return null;
         }
         File targetFile = targetDirectory.resolve(artifactFile.getName()).toFile();
-        if(targetFile.exists()){
-            if(FileUtils.contentEquals(artifactFile, targetFile)) {
+        if (targetFile.exists()) {
+            if (FileUtils.contentEquals(artifactFile, targetFile)) {
                 LOGGER.info("File " + targetFile + " was already fetched previously");
                 return targetFile;
             }
@@ -92,6 +92,6 @@ public class MavenRuntimeRequester extends IArtifactRequester {
         final List<Artifact> missingArtifacts = result.getMissingArtifacts();
         return missingArtifacts == null ||
                 missingArtifacts.isEmpty() ||
-                ! missingArtifacts.contains(mvnArtifact);
+                !missingArtifacts.contains(mvnArtifact);
     }
 }

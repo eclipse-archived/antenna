@@ -11,7 +11,6 @@
 package org.eclipse.sw360.antenna.bundle;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.repository.ArtifactDoesNotExistException;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.exceptions.FailedToDownloadException;
@@ -82,7 +81,7 @@ public class HttpRequester extends IArtifactRequester {
     }
 
     @Override
-    public File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource) throws IOException, ArtifactDoesNotExistException {
+    public File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource) throws IOException, MavenArtifactDoesNotExistException {
         String jarBaseName = getExpectedJarBaseName(coordinates, isSource);
         File localJarFile = targetDirectory.resolve(jarBaseName).toFile();
 
@@ -96,7 +95,7 @@ public class HttpRequester extends IArtifactRequester {
         try {
             return httpHelper.downloadFile(jarUrl, targetDirectory, jarBaseName);
         } catch (FailedToDownloadException e) {
-            throw new ArtifactDoesNotExistException(e.getMessage());
+            throw new MavenArtifactDoesNotExistException(e.getMessage(), e);
         }
     }
 }
