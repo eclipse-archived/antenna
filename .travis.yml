@@ -70,6 +70,12 @@ jobs:
         - .travis/runCLI.sh example-projects/example-project
         - java -jar antenna-testing/antenna-frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject example-projects/example-project/target
 
+    # test Gradle
+    - name: gradleTest
+      script:
+        - cd example-projects/example-project
+        - gradle analyze
+        - java -jar ../../antenna-testing/antenna-frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject build
     # Test for license headers
     - name: test for license headers
       before_install: true
