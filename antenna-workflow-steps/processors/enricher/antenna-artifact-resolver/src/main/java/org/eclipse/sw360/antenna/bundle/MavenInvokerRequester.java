@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Requests jar files for artifacts by using Maven Invoker. Use of this class
  * requires Maven to be installed locally.
- *
  * See http://maven.apache.org/shared/maven-invoker/usage.html
  */
 public class MavenInvokerRequester extends IArtifactRequester {
@@ -53,7 +52,7 @@ public class MavenInvokerRequester extends IArtifactRequester {
         defaultInvoker = new DefaultInvoker();
     }
 
-    public MavenInvokerRequester(AntennaContext context, DefaultInvoker defaultInvoker){
+    public MavenInvokerRequester(AntennaContext context, DefaultInvoker defaultInvoker) {
         super(context);
         this.defaultInvoker = defaultInvoker;
     }
@@ -94,11 +93,11 @@ public class MavenInvokerRequester extends IArtifactRequester {
     }
 
     private void callMavenInvocationRequest(InvocationRequest request)
-            throws ArtifactDoesNotExistException, AntennaExecutionException {
+            throws MavenArtifactDoesNotExistException, AntennaExecutionException {
         try {
             InvocationResult result = defaultInvoker.execute(request);
             if (result.getExitCode() != 0) {
-                throw new ArtifactDoesNotExistException("Artifact not found in repo.");
+                throw new MavenArtifactDoesNotExistException("Artifact not found in repo.");
             }
         } catch (MavenInvocationException e) {
             throw new AntennaExecutionException("Error when getting jar: " + e);
@@ -108,11 +107,11 @@ public class MavenInvokerRequester extends IArtifactRequester {
 
     @Override
     public File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource)
-            throws ArtifactDoesNotExistException, AntennaExecutionException {
+            throws MavenArtifactDoesNotExistException, AntennaExecutionException {
 
         File expectedJarFile = getExpectedJarFile(coordinates, targetDirectory, isSource);
 
-        if(expectedJarFile.exists()){
+        if (expectedJarFile.exists()) {
             LOGGER.info("The file " + expectedJarFile + " already exists and won't be downloaded again");
             return expectedJarFile;
         }
@@ -121,8 +120,8 @@ public class MavenInvokerRequester extends IArtifactRequester {
         InvocationRequest request = buildInvocationRequest(mvnDownloadCmd);
         callMavenInvocationRequest(request);
 
-        if (! expectedJarFile.exists()) {
-            throw new ArtifactDoesNotExistException("Maven call succeeded but Artifact was not generated in the expected place.");
+        if (!expectedJarFile.exists()) {
+            throw new MavenArtifactDoesNotExistException("Maven call succeeded but Artifact was not generated in the expected place.");
         }
 
         return getExpectedJarFile(coordinates, targetDirectory, isSource);

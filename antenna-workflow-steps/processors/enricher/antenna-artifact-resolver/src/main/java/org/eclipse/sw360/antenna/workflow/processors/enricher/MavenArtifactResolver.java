@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.apache.maven.repository.ArtifactDoesNotExistException;
+import org.eclipse.sw360.antenna.bundle.MavenArtifactDoesNotExistException;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactJar;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactSourceJar;
@@ -97,7 +97,7 @@ public class MavenArtifactResolver extends AbstractProcessor {
             } else {
                 sourceExists = true;
             }
-        } catch (ArtifactDoesNotExistException e) {
+        } catch (MavenArtifactDoesNotExistException e) {
             LOGGER.warn("Failed to find source jar: ", e);
         } catch (IOException e) {
             throw new AntennaExecutionException("Downloading sources failed", e);
@@ -113,7 +113,7 @@ public class MavenArtifactResolver extends AbstractProcessor {
             } else {
                 jarExists = true;
             }
-        } catch (ArtifactDoesNotExistException e) {
+        } catch (MavenArtifactDoesNotExistException e) {
             LOGGER.warn("Failed to find jar: ", e);
         } catch (IOException e) {
             throw new AntennaExecutionException("Downloading jar failed", e);

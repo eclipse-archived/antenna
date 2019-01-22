@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.bundle;
 
-import org.apache.maven.repository.ArtifactDoesNotExistException;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
@@ -122,7 +121,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
         assertThat(goals).filteredOn(s -> s.contains(targetDirectory.toString())).hasSize(1);
     }
 
-    @Test(expected = ArtifactDoesNotExistException.class)
+    @Test(expected = MavenArtifactDoesNotExistException.class)
     public void requestFileTestThatRecognizeNonExistingArtifact() throws Exception {
         Path targetDirectory = temporaryFolder.newFolder("target").toPath();
         Mockito.when(defaultInvokerMock.execute(ArgumentMatchers.any(InvocationRequest.class)))
@@ -130,7 +129,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
         mir.requestFile(mavenCoordinates, targetDirectory, false);
     }
 
-    @Test(expected = ArtifactDoesNotExistException.class)
+    @Test(expected = MavenArtifactDoesNotExistException.class)
     public void requestFileTestThatHandlesReturnCodes() throws Exception {
         Path targetDirectory = temporaryFolder.newFolder("target").toPath();
 

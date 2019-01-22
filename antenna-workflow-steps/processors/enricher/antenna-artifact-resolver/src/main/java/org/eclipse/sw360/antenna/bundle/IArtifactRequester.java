@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.apache.maven.repository.ArtifactDoesNotExistException;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 
 
@@ -41,11 +40,11 @@ public abstract class IArtifactRequester {
      * @return The jar file, or null if the file couldn't be obtained.
      * @throws IOException
      *             If a problem occurs putting the file in place
-     * @throws ArtifactDoesNotExistException
+     * @throws MavenArtifactDoesNotExistException
      *             If the artifact cannot be found in the repository.
      */
     public abstract File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource)
-            throws IOException, ArtifactDoesNotExistException;
+            throws IOException, MavenArtifactDoesNotExistException;
 
     String getExpectedJarBaseName(MavenCoordinates coordinates, boolean isSource){
         String jarBaseName = coordinates.getArtifactId() + "-" + coordinates.getVersion();

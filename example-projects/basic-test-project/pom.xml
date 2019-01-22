@@ -55,7 +55,6 @@
                     <filesToAttach>
                         <param>sources-zip,zip,OSS-sources</param>
                     </filesToAttach>
-                    <isMavenInstalled>false</isMavenInstalled>
                     <skip>true</skip>
                     <!-- <sourcesRepositoryUrl>...</sourcesRepositoryUrl> -->
 

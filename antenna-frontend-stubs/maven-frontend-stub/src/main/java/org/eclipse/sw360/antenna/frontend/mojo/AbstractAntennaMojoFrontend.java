@@ -133,9 +133,6 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
     @Parameter(property = "filesToAttach")
     private List<String> filesToAttach;
 
-    @Parameter(property = "isMavenInstalled", defaultValue = "false")
-    private boolean isMavenInstalled;
-
     @Parameter(property = "sourcesRepositoryUrl")
     private String sourcesRepositoryUrl;
 
@@ -288,7 +285,7 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
                 .setProductName(productName).setProductFullName(productFullname)
                 .setVersion(version).setScanDir(scanDir)
                 .setDisableP2Resolving(disableP2Resolving).setSkipAntennaExecution(skip)
-                .setMavenInstalled(isMavenInstalled)
+                .setMavenInstalled(true)  // when using the maven plugin, maven is surely available
                 .setSourcesRepositoryUrl(sourcesRepositoryUrl).setCompanyName(companyName)
                 .setCopyrightHoldersName(copyrightHoldersName).setCopyrightNotice(copyrightNotice)
                 .setDisclosureDocumentNotes(disclosureDocumentNotes).setWorkflow(finalWorkflow)

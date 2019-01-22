@@ -24,10 +24,19 @@ import java.util.Optional;
  * Returns classes for requesting the jars of Artifacts.
  */
 public class ArtifactRequesterFactory {
-
     public static IArtifactRequester getArtifactRequester(AntennaContext context) {
         ToolConfiguration toolConfig = context.getToolConfiguration();
 
+        if (toolConfig.isMavenInstalled()) {
+            return useMavenIfRunning(context).orElse(new MavenInvokerRequester(context));
+        }
+        return new HttpRequester(context);
+    }
+
+    /*
+     * Must only be used if Maven installation can be found on system, will result in ClassNotFoundError otherwise
+     */
+    private static Optional<IArtifactRequester> useMavenIfRunning(AntennaContext context) {
         Optional<RepositorySystem> optionalRepositorySystem = context.getGeneric(RepositorySystem.class);
         Optional<MavenProject> optionalMavenProject = context.getGeneric(MavenProject.class);
         Optional<LegacySupport> optionalLegacySupport = context.getGeneric(LegacySupport.class);
@@ -38,14 +47,9 @@ public class ArtifactRequesterFactory {
             ArtifactRepository localRepository = optionalLegacySupport.get().getSession().getLocalRepository();
 
             if(localRepository != null) {
-                return new MavenRuntimeRequester(context, optionalRepositorySystem.get(), localRepository, remoteRepositories);
+                return Optional.of(new MavenRuntimeRequester(context, optionalRepositorySystem.get(), localRepository, remoteRepositories));
             }
         }
-
-        if (toolConfig.isMavenInstalled()) {
-            return new MavenInvokerRequester(context);
-        }
-
-        return new HttpRequester(context);
+        return Optional.empty();
     }
 }
