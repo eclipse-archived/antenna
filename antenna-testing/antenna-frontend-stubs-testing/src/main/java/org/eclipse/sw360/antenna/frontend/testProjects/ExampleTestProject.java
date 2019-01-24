@@ -31,7 +31,14 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<String> getOtherFilesToCopy() {
-        return Stream.of("src/reportData.json", "src/dependencies.csv").collect(Collectors.toList());
+        return Stream.of("src/reportData.json", "src/dependencies.csv")
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getOutOfProjectFilesToCopy() {
+        return Stream.of("../example-policies/rules/DummyRule.drl", "../example-policies/policies/policies.properties")
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -86,6 +93,11 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                     s.setConfiguration(StepConfiguration.fromMap(map));
                     s.setDeactivated(true);
                 });
+        // checkers
+        WorkflowStep checker1 = mkWorkflowStep("Drools Policy Engine", "org.eclipse.sw360.antenna.workflow.processors.checkers.AntennaDroolsChecker",
+                "base.dir", this.projectRoot.toString(),
+                "folder.path", "../example-policies");
+        processors.add(checker1);
         return processors;
     }
 

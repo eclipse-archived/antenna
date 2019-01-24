@@ -17,6 +17,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,7 @@ abstract public class AbstractTestProject {
 
     private static final String POM = "pom.xml";
 
+    public Path temporaryRoot;
     public Path projectRoot;
 
     List<String> defaultFilesToCopy = Stream.of(POM, "src/antennaconf.xml", "src/workflow.xml")
@@ -45,17 +47,36 @@ abstract public class AbstractTestProject {
         return Collections.emptyList();
     }
 
+    public List<String> getOutOfProjectFilesToCopy() {
+        return Collections.emptyList();
+    }
+
     private void init(String projectResourcesRoot) throws IOException {
-        this.projectRoot = Files.createTempDirectory(this.getClass().getName());
+        this.temporaryRoot = Files.createTempDirectory(this.getClass().getName());
+        this.projectRoot = Files.createDirectory(this.temporaryRoot.resolve(getExpectedProjectArtifactId()).normalize());
 
         copyFilesToProjectRoot(projectResourcesRoot, defaultFilesToCopy);
         copyFilesToProjectRoot(projectResourcesRoot, getOtherFilesToCopy());
+        copyFilesToTemporaryRoot(projectResourcesRoot, getOutOfProjectFilesToCopy());
+    }
+
+    private void copyFilesToTemporaryRoot(String projectResourcesRoot, List<String> filesToCopy) throws IOException {
+        for (String fileToCopy : filesToCopy) {
+            try (InputStream resource = AbstractTestProject.class.getResourceAsStream(
+                    Paths.get(projectResourcesRoot, fileToCopy).normalize().toString())) {
+                if (resource != null) {
+                    Path destination = projectRoot.resolve(fileToCopy).normalize();
+                    destination.getParent().toFile().mkdirs();
+                    Files.copy(resource, destination);
+                }
+            }
+        }
     }
 
     private void copyFilesToProjectRoot(String projectResourcesRoot, List<String> filesToCopy) throws IOException {
-        for(String fileToCopy : filesToCopy) {
-            try(InputStream resource = AbstractTestProject.class.getResourceAsStream(projectResourcesRoot + "/" + fileToCopy)) {
-                if(resource != null) {
+        for (String fileToCopy : filesToCopy) {
+            try (InputStream resource = AbstractTestProject.class.getResourceAsStream(projectResourcesRoot + "/" + fileToCopy)) {
+                if (resource != null) {
                     Path destination = projectRoot.resolve(fileToCopy);
                     destination.getParent().toFile().mkdirs();
                     Files.copy(resource, destination);
@@ -70,13 +91,13 @@ abstract public class AbstractTestProject {
 
     public void cleanUpTemporaryProjectFolder() throws IOException {
 
-        FileUtils.deleteDirectory(projectRoot.toFile());
+        FileUtils.deleteDirectory(temporaryRoot.toFile());
     }
 
 
     public void addAndOverwriteFile(InputStream inputStream, String targetFileName) throws IOException {
         try {
-        Files.copy(inputStream, getProjectRoot().resolve(targetFileName), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(inputStream, getProjectRoot().resolve(targetFileName), StandardCopyOption.REPLACE_EXISTING);
         } finally {
             inputStream.close();
         }
