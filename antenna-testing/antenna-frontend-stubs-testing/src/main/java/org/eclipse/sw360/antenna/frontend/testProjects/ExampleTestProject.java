@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.frontend.testProjects;
 
+import com.google.common.collect.ImmutableMap;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
@@ -87,15 +88,26 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
-        final List<WorkflowStep> processors = new BasicConfiguration().getProcessors();
-        processors.stream()
-                .filter(s -> "Source Validator".equals(s.getName()))
-                .forEach( s -> {
-                    final Map<String, String> map = s.getConfiguration().getAsMap();
-                    map.put("missingSourcesSeverity","FAIL");
-                    s.setConfiguration(StepConfiguration.fromMap(map));
-                    s.setDeactivated(true);
-                });
+        final List<WorkflowStep> processors = new BasicConfiguration().getProcessors()
+                .stream()
+                .map( s -> {
+                    if(!"Source Validator".equals(s.getName())) {
+                        return s;
+                    }
+                    final Map<String, String> map = Stream.of(s.getConfiguration().getAsMap(), Collections.singletonMap("missingSourcesSeverity", "FAIL"))
+                            .flatMap(m -> m.entrySet().stream())
+                            .collect(Collectors.toMap(
+                                    Map.Entry::getKey,
+                                    Map.Entry::getValue,
+                                    (v1, v2) -> v2));
+                    WorkflowStep newS = new WorkflowStep();
+                    newS.setName(s.getName());
+                    newS.setClassHint(s.getClassHint());
+                    newS.setConfiguration(StepConfiguration.fromMap(map));
+                    newS.setDeactivated(true);
+                    return newS;
+                })
+                .collect(Collectors.toList());
         // checkers
         WorkflowStep checker1 = mkWorkflowStep("Drools Policy Engine", "org.eclipse.sw360.antenna.workflow.processors.checkers.AntennaDroolsChecker",
                 "base.dir", this.projectRoot.toString(),
