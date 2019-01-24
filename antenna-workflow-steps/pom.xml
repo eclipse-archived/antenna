@@ -29,6 +29,7 @@
         <!-- processors -->
         <module>processors/antenna-conf-processor</module>
         <module>processors/abstract-antenna-compliance-checker</module>
+        <module>processors/checkers/antenna-drools-checker</module>
         <module>processors/enricher/antenna-artifact-resolver</module>
         <module>processors/enricher/antenna-child-jar-resolver</module>
         <module>processors/enricher/antenna-license-knowledgebase-resolver</module>

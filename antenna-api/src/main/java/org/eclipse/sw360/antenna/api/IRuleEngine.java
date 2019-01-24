@@ -12,7 +12,9 @@
 package org.eclipse.sw360.antenna.api;
 
 import java.util.Collection;
+import java.util.Optional;
 
+import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 /**
@@ -24,10 +26,10 @@ public interface IRuleEngine {
      *
      * @return Results of evaluation.
      */
-    IPolicyEvaluation evaluate(Collection<Artifact> artifacts);
+    IPolicyEvaluation evaluate(Collection<Artifact> artifacts) throws AntennaException;
 
     /**
      * @return The version of this rule set.
      */
-    String getRulesetVersion();
+    Optional<String> getRulesetVersion();
 }
