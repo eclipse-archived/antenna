@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.setVariableValueInObject;
 import static org.mockito.Mockito.*;
 
@@ -87,12 +89,13 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
         verify(httpHelperMock).downloadFile("http://test.repo/groupId/artifactId/version/" + filename, targetDirectory, filename);
     }
 
-    @Test(expected = IOException.class)
-    public void requestFilePassesThroughExceptions() throws Exception {
+    @Test
+    public void requestFileDealsWithExceptionReturningAnEmptyRequest() throws Exception {
         Path targetDirectory = toolConfigMock.getAntennaTargetDirectory();
         when(httpHelperMock.downloadFile(anyString(), eq(targetDirectory), anyString())).thenThrow(new IOException("Failed to download"));
 
-        hr.requestFile(mavenCoordinates, targetDirectory, isSource);
+        Optional<File> file = hr.requestFile(mavenCoordinates, targetDirectory, isSource);
+        assertThat(file).isEmpty();
     }
 
     @Test

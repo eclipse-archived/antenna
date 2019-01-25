@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+ * Copyright (c) Bosch Software Innovations GmbH 2016-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * Requests jar files for artifacts by making HTTP requests.
@@ -31,7 +32,7 @@ public class HttpRequester extends IArtifactRequester {
     public static final String GROUP_ID_PLACEHOLDER = "{groupId}";
     public static final String ARTIFACT_ID_PLACEHOLDER = "{artifactId}";
     public static final String VERSION_PLACEHOLDER = "{version}";
-    private static final String MAVEN_CENTRAL_URL = "http://repo2.maven.org/maven2/"+GROUP_ID_PLACEHOLDER+"/"+ARTIFACT_ID_PLACEHOLDER+"/"+VERSION_PLACEHOLDER+"/";
+    private static final String MAVEN_CENTRAL_URL = "http://repo2.maven.org/maven2/" + GROUP_ID_PLACEHOLDER + "/" + ARTIFACT_ID_PLACEHOLDER + "/" + VERSION_PLACEHOLDER + "/";
 
     private HttpHelper httpHelper;
 
@@ -40,28 +41,27 @@ public class HttpRequester extends IArtifactRequester {
         httpHelper = new HttpHelper(context);
     }
 
-    private boolean isValidJarUrlTemplate(String sourceRepoTemplate) {
-        return sourceRepoTemplate.contains(GROUP_ID_PLACEHOLDER)
-                && sourceRepoTemplate.contains(ARTIFACT_ID_PLACEHOLDER)
-                && sourceRepoTemplate.contains(VERSION_PLACEHOLDER);
-    }
+    @Override
+    public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource) {
+        String jarBaseName = getExpectedJarBaseName(coordinates, isSource);
+        File localJarFile = targetDirectory.resolve(jarBaseName).toFile();
 
-    private String getJarUrlTemplate() {
-        ToolConfiguration toolConfig = context.getToolConfiguration();
-        String repoTemplate = toolConfig.getSourcesRepositoryUrl();
-
-        if (StringUtils.isBlank(repoTemplate)) {
-            repoTemplate = MAVEN_CENTRAL_URL;
-        } else if (! isValidJarUrlTemplate(repoTemplate)) {
-            LOGGER.warn("The sourcesRepositoryUrl does not contain all the required placeholders: " +
-                    GROUP_ID_PLACEHOLDER + ", " + ARTIFACT_ID_PLACEHOLDER + ", " + VERSION_PLACEHOLDER +
-                    ". Falling back to using Maven Central.");
-            repoTemplate = MAVEN_CENTRAL_URL;
+        if (localJarFile.exists()) {
+            LOGGER.info("The file " + localJarFile + " already exists and won't be downloaded again");
+            return Optional.of(localJarFile);
         }
-        return repoTemplate;
+
+        String jarUrl = getJarUrl(coordinates, jarBaseName);
+
+        try {
+            return Optional.ofNullable(httpHelper.downloadFile(jarUrl, targetDirectory, jarBaseName));
+        } catch (FailedToDownloadException | IOException e) {
+            LOGGER.warn("Failed to find jar: " + e.getMessage(), e);
+            return Optional.empty();
+        }
     }
 
-    protected String getJarUrl(MavenCoordinates coordinates, String remoteFileName) {
+    private String getJarUrl(MavenCoordinates coordinates, String remoteFileName) {
         String repoTemplate = getJarUrlTemplate();
 
         // Construct URL (substitute in groupID, artifactID and version
@@ -80,22 +80,24 @@ public class HttpRequester extends IArtifactRequester {
         return repo + remoteFileName;
     }
 
-    @Override
-    public File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource) throws IOException, MavenArtifactDoesNotExistException {
-        String jarBaseName = getExpectedJarBaseName(coordinates, isSource);
-        File localJarFile = targetDirectory.resolve(jarBaseName).toFile();
+    private String getJarUrlTemplate() {
+        ToolConfiguration toolConfig = context.getToolConfiguration();
+        String repoTemplate = toolConfig.getSourcesRepositoryUrl();
 
-        if(localJarFile.exists()) {
-            LOGGER.info("The file " + localJarFile + " already exists and won't be downloaded again");
-            return localJarFile;
+        if (StringUtils.isBlank(repoTemplate)) {
+            repoTemplate = MAVEN_CENTRAL_URL;
+        } else if (!isValidJarUrlTemplate(repoTemplate)) {
+            LOGGER.warn("The sourcesRepositoryUrl does not contain all the required placeholders: " +
+                    GROUP_ID_PLACEHOLDER + ", " + ARTIFACT_ID_PLACEHOLDER + ", " + VERSION_PLACEHOLDER +
+                    ". Falling back to using Maven Central.");
+            repoTemplate = MAVEN_CENTRAL_URL;
         }
+        return repoTemplate;
+    }
 
-        String jarUrl = getJarUrl(coordinates, jarBaseName);
-
-        try {
-            return httpHelper.downloadFile(jarUrl, targetDirectory, jarBaseName);
-        } catch (FailedToDownloadException e) {
-            throw new MavenArtifactDoesNotExistException(e.getMessage(), e);
-        }
+    private boolean isValidJarUrlTemplate(String sourceRepoTemplate) {
+        return sourceRepoTemplate.contains(GROUP_ID_PLACEHOLDER)
+                && sourceRepoTemplate.contains(ARTIFACT_ID_PLACEHOLDER)
+                && sourceRepoTemplate.contains(VERSION_PLACEHOLDER);
     }
 }

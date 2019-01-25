@@ -11,11 +11,9 @@
 
 package org.eclipse.sw360.antenna.workflow.processors.enricher;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.bundle.ArtifactRequesterFactory;
 import org.eclipse.sw360.antenna.bundle.IArtifactRequester;
-import org.eclipse.sw360.antenna.bundle.MavenArtifactDoesNotExistException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactJar;
@@ -26,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
@@ -40,7 +37,7 @@ public class MavenArtifactResolver extends AbstractProcessor {
     private Path dependencyTargetDirectory;
     private List<ArtifactSelector> sourceResolvingBlacklist;
 
-    private boolean isIgnoredForSourceResolving(Artifact artifact){
+    private boolean isIgnoredForSourceResolving(Artifact artifact) {
         return sourceResolvingBlacklist.stream()
                 .anyMatch(artifactSelector -> artifactSelector.matches(artifact));
     }
@@ -48,8 +45,7 @@ public class MavenArtifactResolver extends AbstractProcessor {
     /**
      * Downloads the maven artifacts for the given lists, if possible.
      *
-     * @param artifacts
-     *            to be resolved
+     * @param artifacts to be resolved
      */
     private void resolveArtifacts(Collection<Artifact> artifacts) {
         // Check directory exists
@@ -60,7 +56,7 @@ public class MavenArtifactResolver extends AbstractProcessor {
 
         artifacts.stream()
                 .filter(getFilterPredicate())
-                .filter(artifact -> ! isIgnoredForSourceResolving(artifact))
+                .filter(artifact -> !isIgnoredForSourceResolving(artifact))
                 .forEach(artifact -> resolve(artifact, dependencyTargetDirectory));
     }
 
@@ -76,49 +72,24 @@ public class MavenArtifactResolver extends AbstractProcessor {
 
     private void resolve(Artifact artifact, Path dependencyTargetDirectory) {
         Optional<MavenCoordinates> oCoordinates = artifact.askFor(MavenCoordinates.class);
-        if(! oCoordinates.isPresent()) {
+        if (!oCoordinates.isPresent()) {
             return;
         }
         MavenCoordinates coordinates = oCoordinates.get();
 
         IArtifactRequester artifactRequester = ArtifactRequesterFactory.getArtifactRequester(context);
 
-        // Does artifact exist in repo?
-        boolean sourceExists = false, jarExists = false;
-
-        try {
-            if (! artifact.getSourceFile().isPresent()) {
-                File sourceJar = artifactRequester.requestFile(coordinates, dependencyTargetDirectory, true);
-                if(sourceJar != null) {
-                    artifact.addFact(new ArtifactSourceJar(sourceJar.toPath()));
-                    sourceExists = true;
-                }
-            } else {
-                sourceExists = true;
-            }
-        } catch (MavenArtifactDoesNotExistException e) {
-            LOGGER.warn("Failed to find source jar: ", e);
-        } catch (IOException e) {
-            throw new AntennaExecutionException("Downloading sources failed", e);
+        if (!artifact.getSourceFile().isPresent()) {
+            Optional<File> sourceJar = artifactRequester.requestFile(coordinates, dependencyTargetDirectory, true);
+            sourceJar.ifPresent(sourceJarFile -> artifact.addFact(new ArtifactSourceJar(sourceJarFile.toPath())));
         }
 
-        try {
-            if (! artifact.getFile().isPresent()) {
-                File jar = artifactRequester.requestFile(coordinates, dependencyTargetDirectory, false);
-                if(jar != null) {
-                    artifact.addFact(new ArtifactJar(jar.toPath()));
-                    jarExists = true;
-                }
-            } else {
-                jarExists = true;
-            }
-        } catch (MavenArtifactDoesNotExistException e) {
-            LOGGER.warn("Failed to find jar: ", e);
-        } catch (IOException e) {
-            throw new AntennaExecutionException("Downloading jar failed", e);
+        if (!artifact.getFile().isPresent()) {
+            Optional<File> jar = artifactRequester.requestFile(coordinates, dependencyTargetDirectory, false);
+            jar.ifPresent(jarFile -> artifact.addFact(new ArtifactJar(jarFile.toPath())));
         }
 
-        if (!sourceExists && !jarExists) {
+        if (!artifact.getSourceFile().isPresent() && !artifact.getFile().isPresent()) {
             reporter.add(artifact, MessageType.MISSING_SOURCES, "Maven Artifact Coordinates present but non resolvable sources (maybe sources are available using P2).");
         }
     }

@@ -42,11 +42,11 @@ public class ArtifactRequesterFactory {
         Optional<LegacySupport> optionalLegacySupport = context.getGeneric(LegacySupport.class);
         if (optionalRepositorySystem.isPresent() &&
                 optionalMavenProject.isPresent() &&
-                optionalLegacySupport.isPresent()){
+                optionalLegacySupport.isPresent()) {
             List<ArtifactRepository> remoteRepositories = optionalMavenProject.get().getRemoteArtifactRepositories();
             ArtifactRepository localRepository = optionalLegacySupport.get().getSession().getLocalRepository();
 
-            if(localRepository != null) {
+            if (localRepository != null) {
                 return Optional.of(new MavenRuntimeRequester(context, optionalRepositorySystem.get(), localRepository, remoteRepositories));
             }
         }
