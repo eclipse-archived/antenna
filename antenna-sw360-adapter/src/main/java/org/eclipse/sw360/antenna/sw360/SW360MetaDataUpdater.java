@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.sw360;
 
-import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
@@ -107,19 +106,19 @@ public class SW360MetaDataUpdater {
         }
     }
 
-    public void createProject(IProject project, Collection<SW360Release> releases) throws AntennaException, IOException {
+    public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) throws AntennaException, IOException {
         String id;
         HttpHeaders header = createHttpHeaders(userId, password);
         SW360User user = userClientAdapter.getUserById(userId, header);
 
-        Optional<String> projectId = projectClientAdapter.getProjectIdByNameAndVersion(project, header);
+        Optional<String> projectId = projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion, header);
 
         if (projectId.isPresent()) {
             // TODO: Needs endpoint on sw360 to update project on sw360
             LOGGER.debug("Could not update project " + projectId.get() + ", because the endpoint is not available.");
             id = projectId.get();
         } else {
-            id = projectClientAdapter.addProject(project, user, header);
+            id = projectClientAdapter.addProject(projectName, projectVersion, user, header);
         }
         projectClientAdapter.addSW360ReleasesToSW360Project(id, releases, header);
     }

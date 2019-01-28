@@ -22,9 +22,17 @@
                 <xsd:element name="setFinalLicenses" type="setFinalLicenses" minOccurs="0" />
                 <xsd:element name="sourceValidation" type="sourceValidation" minOccurs="0" />
                 <xsd:element name="securityIssues" type="securityIssues" minOccurs="0" />
+                <xsd:element name="SW360ProjectCoordinates" type="fromXmlSW360ProjectCoordinates" minOccurs="0" />
             </xsd:all>
         </xsd:complexType>
     </xsd:element>
+
+    <xsd:complexType name="fromXmlSW360ProjectCoordinates">
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string" minOccurs="0" />
+            <xsd:element name="version" type="xsd:string" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
 
     <xsd:complexType name="securityIssues">
         <xsd:sequence>

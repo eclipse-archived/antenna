@@ -73,6 +73,8 @@ public class ConfigurationTest {
         assertThat(configuration.isFailOnMissingSources()).isTrue();
         assertThat(configuration.isFailOnIncompleteSources()).isFalse();
         assertThat(configuration.getValidForIncompleteSources().size()).isEqualTo(2);
+        assertThat(configuration.getConfiguredSW360Project().getName()).isEqualTo("anyProjectName");
+        assertThat(configuration.getConfiguredSW360Project().getVersion()).isEqualTo("anyProjectVersion");
     }
 
     @Test

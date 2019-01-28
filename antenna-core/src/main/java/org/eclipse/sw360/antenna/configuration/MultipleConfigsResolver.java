@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.SW360ProjectCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
@@ -136,7 +137,22 @@ public class MultipleConfigsResolver {
         mergeFailOnMissingSources(configurations, mergedConfig);
         mergeSecurityIssues(configurations, mergedConfig);
         mergeSecurityIssueSuppresses(configurations, mergedConfig);
+        mergeWrappedConfiguredSW360Project(configurations, mergedConfig);
         return mergedConfig;
+    }
+
+    private void mergeWrappedConfiguredSW360Project(List<Configuration> configurations, Configuration mergedConfig) {
+        if (configurations.size() > 0) {
+            SW360ProjectCoordinates project = configurations.get(0).getConfiguredSW360Project();
+            configurations.stream()
+                    .skip(1)
+                    .map(Configuration::getConfiguredSW360Project)
+                    .filter(p -> !project.equals(p) && (p.getName() != null || p.getVersion() != null))
+                    .findAny()
+                    .ifPresent(c -> tempReporter.add(MessageType.CONFLICTING_CONFIGURATIONS,
+                            "Conflicting configurations in the \"configuredSW360Project\" section."));
+            mergedConfig.setConfiguredSW360Project(project);
+        }
     }
 
     private void mergeSecurityIssues(List<Configuration> configurations, Configuration mergedConfig) {
