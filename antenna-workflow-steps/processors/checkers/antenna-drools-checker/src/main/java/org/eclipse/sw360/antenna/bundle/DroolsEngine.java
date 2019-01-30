@@ -40,6 +40,7 @@ public class DroolsEngine implements IRuleEngine {
     private String rulesetPath = "";
     private static final String RULES_SUBFOLDER = "rules";
     private static final String POLICIES_PROPERTIES_FILENAME = "policies.properties";
+    private static final String POLICIES_FILENAME = "policies.xml";
     private static final String POLICIES_VERSION = "policies.version";
 
     public void setRulesetDirectory(String rulesetDirectory) {
@@ -105,12 +106,8 @@ public class DroolsEngine implements IRuleEngine {
         }
     }
 
-    // TODO Load evaluation result definitions from folder given by workflow step
-    private List<IEvaluationResult> getEvaluationResults() {
-        List<IEvaluationResult> results = new ArrayList<>();
-        results.add(new DroolsEvaluationResult("Dummy", "Dummy rule", IEvaluationResult.Severity.FAIL));
-        results.add(new DroolsEvaluationResult("multipleArtifacts", "EPL vs GPL rule", IEvaluationResult.Severity.FAIL));
-        return results;
+    private List<IEvaluationResult> getEvaluationResults() throws AntennaException {
+        return DroolsEvaluationResultReader.getEvaluationResult(Paths.get(rulesetDirectory, rulesetPath, POLICIES_FILENAME));
     }
 
     @Override
