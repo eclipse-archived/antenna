@@ -31,7 +31,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
     private IEvaluationResult.Severity failOn;
     protected static final String FAIL_ON_KEY = "failOn";
 
-    public abstract IPolicyEvaluation evaluate(Collection<Artifact> artifacts);
+    public abstract IPolicyEvaluation evaluate(Collection<Artifact> artifacts) throws AntennaException;
 
     public abstract String getRulesetDescription();
 

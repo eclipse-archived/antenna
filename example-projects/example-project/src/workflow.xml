@@ -48,6 +48,16 @@
             </configuration>
         </step>
     </generators>
+    <processors>
+        <step>
+            <name>Drools Policy Engine</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.checkers.AntennaDroolsChecker</classHint>
+            <configuration>
+                <entry key="base.dir" value="${project.basedir}"/>
+                <entry key="folder.path" value="../example-policies"/>
+            </configuration>
+        </step>
+    </processors>
     <outputHandlers>
         <step>
             <name>Add disclosure document to jar</name>
