@@ -78,10 +78,10 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         // Flag the build as failed if the report engine reports it as so.
         if (failCausingResults.size() > 0) {
             String messagePrefix = "Rule engine=[" + getRulesetDescription() + "] failed evaluation.";
-            reporter.add(MessageType.PROCESSING_FAILURE, messagePrefix);
             String fullMessage = makeStringForEvaluationResults(messagePrefix, failCausingResults);
+            reporter.add(MessageType.PROCESSING_FAILURE, fullMessage);
             LOGGER.info(fullMessage);
-            throw new AntennaComplianceException(fullMessage);
+            throw new AntennaComplianceException(messagePrefix);
         }
     }
 
