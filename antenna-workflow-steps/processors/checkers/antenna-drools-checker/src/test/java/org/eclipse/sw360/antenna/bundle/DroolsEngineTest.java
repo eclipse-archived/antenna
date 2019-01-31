@@ -18,13 +18,15 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.junit.Before;
 import org.junit.Test;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
+import org.eclipse.sw360.antenna.util.LicenseSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,7 +56,7 @@ public class DroolsEngineTest {
 
         IPolicyEvaluation evaluationResults = droolsEngine.evaluate(Arrays.asList(artifact1, artifact2));
 
-        List<Artifact> failedArtifacts = getAllFailedArtifacts(evaluationResults);
+        List<Artifact> failedArtifacts = getAllFailedArtifactsOfEvaluator(evaluationResults, "Dummy");
 
         assertThat(failedArtifacts).containsExactly(artifact2);
     }
@@ -79,4 +81,40 @@ public class DroolsEngineTest {
                     .collect(Collectors.toList());
     }
 
+    private List<Artifact> getAllFailedArtifactsOfEvaluator(IPolicyEvaluation evaluationResults, String evaluatorId) {
+        return evaluationResults.getEvaluationResults()
+                .stream()
+                .filter(er -> evaluatorId.equals(er.getId()))
+                .map(IEvaluationResult::getFailedArtifacts)
+                .flatMap(Set::stream)
+                .collect(Collectors.toList());
+    }
+
+    @Test
+    public void evaluateEPLvsGPLRule() throws AntennaException {
+        Artifact artifact1 = new Artifact();
+        artifact1.addFact(createDeclaredLicenseInformation("EPL 2.0"));
+
+        Artifact artifact2 = new Artifact();
+        artifact2.addFact(createDeclaredLicenseInformation("GPL 2.0"));
+
+        Artifact artifact3 = new Artifact();
+        artifact3.addFact(createDeclaredLicenseInformation("UNKNOWN"));
+
+        artifact1.askForGet(DeclaredLicenseInformation.class);
+
+        IPolicyEvaluation evaluationResults = droolsEngine.evaluate(Arrays.asList(artifact1, artifact2, artifact3));
+
+        List<Artifact> failedArtifacts = getAllFailedArtifactsOfEvaluator(evaluationResults, "multipleArtifacts");
+
+        assertThat(failedArtifacts).contains(artifact1);
+        assertThat(failedArtifacts).contains(artifact2);
+        assertThat(failedArtifacts).doesNotContain(artifact3);
+    }
+
+    private DeclaredLicenseInformation createDeclaredLicenseInformation(String license){
+        return new DeclaredLicenseInformation(
+                LicenseSupport.mapLicenses(new ArrayList<String>() {{add(license);}})
+        );
+    }
 }
