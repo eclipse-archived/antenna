@@ -265,7 +265,7 @@
     </jxb:bindings>
 
     <jxb:bindings schemaLocation="workflow.xsd">
-        <jxb:bindings node="//xsd:complexType[@name='workflow']">
+        <jxb:bindings node="//xsd:element[@name='workflow']">
             <!--<jxb:class ref="org.eclipse.sw360.antenna.model.Workflow"/>-->
         </jxb:bindings>
 

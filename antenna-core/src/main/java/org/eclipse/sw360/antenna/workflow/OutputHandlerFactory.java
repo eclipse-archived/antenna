@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class OutputHandlerFactory extends WorkflowItemFactory {
@@ -28,9 +29,9 @@ public class OutputHandlerFactory extends WorkflowItemFactory {
         List<WorkflowStep> outputHandlerRequested = workflow.getOutputHandlers().getStep();
 
         return outputHandlerRequested.stream().parallel()
-                .filter(rg -> !rg.isDeactivated())
+                .filter(rg -> !Optional.ofNullable(rg.isDeactivated()).orElse(false))
                 .map(rg -> {
-                    LOGGER.debug("Loading the {} generator", rg.getName());
+                    LOGGER.debug("Loading the {} output handler", rg.getName());
                     return WorkflowItemFactory.<AbstractOutputHandler>buildWorkflowItem(rg, rg.getConfiguration(), context);
                 }).collect(Collectors.toList());
     }

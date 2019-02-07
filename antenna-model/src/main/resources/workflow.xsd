@@ -12,45 +12,47 @@
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
-    <xsd:complexType name="workflow">
-        <xsd:all>
-            <xsd:element name="analyzers" minOccurs="0">
-                <xsd:complexType>
-                    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
-                        <xsd:element name="step" type="workflowStep"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-            <xsd:element name="processors" minOccurs="0">
-                <xsd:complexType>
-                    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
-                        <xsd:element name="step" type="workflowStep"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-            <xsd:element name="generators" minOccurs="0">
-                <xsd:complexType>
-                    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
-                        <xsd:element name="step" type="workflowStep"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-            <xsd:element name="outputHandlers" minOccurs="0">
-                <xsd:complexType>
-                    <xsd:sequence minOccurs="0" maxOccurs="unbounded">
-                        <xsd:element name="step" type="workflowStep"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-        </xsd:all>
-    </xsd:complexType>
+    <xsd:element name="workflow">
+        <xsd:complexType>
+            <xsd:all>
+                <xsd:element name="analyzers" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xsd:element name="step" type="workflowStep"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="processors" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xsd:element name="step" type="workflowStep"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="generators" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xsd:element name="step" type="workflowStep"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="outputHandlers" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xsd:element name="step" type="workflowStep"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:all>
+        </xsd:complexType>
+    </xsd:element>
 
     <xsd:complexType name="workflowStep">
         <xsd:sequence>
             <xsd:element name="name" type="xsd:string"/>
             <xsd:element name="classHint" type="xsd:string"/>
             <xsd:element name="configuration" type="stepConfiguration" minOccurs="0"/>
-            <xsd:element name="deactivated" type="xsd:boolean" default="false"/>
+            <xsd:element name="deactivated" type="xsd:boolean" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
 

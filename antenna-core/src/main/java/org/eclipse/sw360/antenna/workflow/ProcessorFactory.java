@@ -18,6 +18,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +42,7 @@ public class ProcessorFactory extends WorkflowItemFactory {
 
         // Go through the list of processors requests and instantiate each one.
         return processorsRequested.stream().parallel()
-                .filter(pr -> ! pr.isDeactivated())
+                .filter(pr -> !Optional.ofNullable(pr.isDeactivated()).orElse(false))
                 .map(pr -> {
                     LOGGER.debug("Loading the {} processor", pr.getName());
                     return WorkflowItemFactory.<AbstractProcessor>buildWorkflowItem(pr, pr.getConfiguration(), context);

@@ -14,6 +14,7 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
+import org.eclipse.sw360.antenna.xml.XMLValidator;
 import org.eclipse.sw360.antenna.util.TemplateRenderer;
 import org.eclipse.sw360.antenna.util.XmlSettingsReader;
 import org.xml.sax.SAXException;
@@ -35,6 +36,8 @@ public class WorkflowFileLoader {
             overrideWorkflow(workflow, workflowFromClasspath);
         }
         if(workflowOverride.isPresent()){
+            validateWorkflowByXSD(workflowOverride.get());
+
             String renderedWorkflowOverride = tr.renderTemplateFile(workflowOverride.get());
             Workflow workflowFromOverride = loadRenderedWorkflow(renderedWorkflowOverride);
             overrideWorkflow(workflow, workflowFromOverride);
@@ -111,7 +114,7 @@ public class WorkflowFileLoader {
         StepConfiguration overrideConfiguration = override.getConfiguration();
         StepConfiguration actualConfiguration = actual.getConfiguration();
         actual.setConfiguration(overrideItemConfiguration(actualConfiguration, overrideConfiguration));
-        actual.setDeactivated(override.isDeactivated());
+        actual.setDeactivated(Optional.ofNullable(override.isDeactivated()).orElse(false));
     }
 
     private static StepConfiguration overrideItemConfiguration(StepConfiguration actual, StepConfiguration override) {
@@ -124,5 +127,12 @@ public class WorkflowFileLoader {
 
         actual.getEntry().addAll(override.getEntry());
         return actual;
+    }
+
+    private static void validateWorkflowByXSD(File workflowOverride) throws AntennaConfigurationException {
+        new XMLValidator().
+                validateXML(workflowOverride, XmlSettingsReader.class.getClassLoader().
+                        getResource("workflow.xsd"));
+
     }
 }

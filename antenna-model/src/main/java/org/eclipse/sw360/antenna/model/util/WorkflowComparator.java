@@ -16,6 +16,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class WorkflowComparator {
@@ -45,7 +46,8 @@ public class WorkflowComparator {
                                 .filter(step2 -> step1.getName().equals(step2.getName()))
                                 .filter(step2 -> (step1.getClassHint() == null && step2.getClassHint() == null) ||
                                         step1.getClassHint() != null && step1.getClassHint().equals(step2.getClassHint()))
-                                .filter(step2 -> step1.isDeactivated() == step2.isDeactivated())
+                                .filter(step2 -> Optional.ofNullable(step1.isDeactivated()).orElse(false)
+                                        == Optional.ofNullable(step2.isDeactivated()).orElse(false))
                                 .filter(step2 -> areEqual(step2.getConfiguration(), step1.getConfiguration()))
                                 .count() == 1);
     }
