@@ -19,6 +19,8 @@ which can be build from the sourcecode on [SW360](https://github.com/eclipse/sw3
 
 After all dependencies are present, you can build Antenna and deploy it in your local repository via
 
+Please also note that some dependencies of SW360antenna are only available for Java 8. So you need to use Java 8 to build the project.
+
 <pre>
 $ <b>mvn install</b>
 </pre>
