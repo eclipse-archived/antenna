@@ -117,28 +117,41 @@ public class SW360Enricher extends AbstractProcessor {
         return !(releaseLicenseNames.containsAll(artifactLicenseNames) && artifactLicenseNames.containsAll(releaseLicenseNames));
     }
 
+    private License makeLicenseFromLicenseDetails(SW360License licenseDetails) {
+        License license = new License();
+        license.setName(licenseDetails.getShortName());
+        license.setLongName(licenseDetails.getFullName());
+        license.setText(licenseDetails.getText());
+        return license;
+    }
+
+    private Optional<License> enrichSparseLicenseFromSW360(SW360SparseLicense sparseLicense) throws AntennaException {
+        Optional<License> licenseDetails = connector.getLicenseDetails(sparseLicense)
+                .map(this::makeLicenseFromLicenseDetails);
+        if (!licenseDetails.isPresent()) {
+            LOGGER.warn("Could not get details for license " + sparseLicense.getFullName());
+        }
+        return licenseDetails;
+    }
+
+    private LicenseStatement appendToLicenseStatement(LicenseStatement licenseStatement, License license){
+        LicenseStatement newLicenseStatement = new LicenseStatement();
+        newLicenseStatement.setLeftStatement(licenseStatement);
+        newLicenseStatement.setOp(LicenseOperator.AND);
+        newLicenseStatement.setRightStatement(license);
+        return newLicenseStatement;
+    }
+
     private void setLicensesForArtifact(Artifact artifact, List<SW360SparseLicense> licenses) {
         LicenseStatement licenseStatement = new LicenseStatement();
         for (SW360SparseLicense sparseLicense : licenses) {
             try {
-                Optional<SW360License> licenseDetails = connector.getLicenseDetails(sparseLicense);
-                if (!licenseDetails.isPresent()) {
-                    LOGGER.warn("Could not get details for license " + sparseLicense.getFullName());
-                    continue;
+                Optional<License> license = enrichSparseLicenseFromSW360(sparseLicense);
+                if(license.isPresent()){
+                    licenseStatement = appendToLicenseStatement(licenseStatement, license.get());
                 }
-                License license = new License();
-                license.setName(licenseDetails.get().getShortName());
-                license.setLongName(licenseDetails.get().getFullName());
-                license.setText(licenseDetails.get().getText());
-
-                LicenseStatement newLicenseStatement = new LicenseStatement();
-                newLicenseStatement.setLeftStatement(licenseStatement);
-                newLicenseStatement.setOp(LicenseOperator.AND);
-                newLicenseStatement.setRightStatement(license);
-
-                licenseStatement = newLicenseStatement;
             } catch (AntennaException e) {
-                LOGGER.error("Exception while getting license details from SW360", e);
+                LOGGER.error("Exception while getting license details from SW360 for license: " + sparseLicense.getFullName() + "(" + sparseLicense.getShortName() + ")", e);
             }
         }
         artifact.addFact(new ConfiguredLicenseInformation(licenseStatement));
