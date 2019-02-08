@@ -9,7 +9,8 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
@@ -28,6 +29,11 @@
             <artifactId>slf4j-api</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
             <groupId>junit</groupId>
@@ -42,6 +48,24 @@
     </dependencies>
     <build>
         <plugins>
+            <!--Package as bundle to use in P2Resolver-->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <instructions>
+                            <Export-Package>org.eclipse.sw360.antenna.model</Export-Package>
+                            <Export-Package>org.eclipse.sw360.antenna.model.artifact</Export-Package>
+                            <Export-Package>org.eclipse.sw360.antenna.model.artifact.facts</Export-Package>
+                            <Export-Package>org.eclipse.sw360.antenna.model.artifact.facts.java</Export-Package>
+                            <Export-Package>org.eclipse.sw360.antenna.model.artifact.facts.dotnet</Export-Package>
+                            <Export-Package>org.eclipse.sw360.antenna.model.artifact.facts.javaScript</Export-Package>
+                        </instructions>
+                    </instructions>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
