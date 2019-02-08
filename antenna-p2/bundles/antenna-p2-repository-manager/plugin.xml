@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) Bosch Software Innovations GmbH 2019.
+  ~
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.eclipse.org/legal/epl-v20.html
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+<?eclipse version="3.6"?>
+<plugin>
+    <extension id="org.eclipse.sw360.antenna.p2.application" point="org.eclipse.core.runtime.applications">
+        <application
+                cardinality="singleton-global"
+                thread="main"
+                visible="true">
+            <run class="org.eclipse.sw360.antenna.p2.Application"/>
+        </application>
+    </extension>
+</plugin>
