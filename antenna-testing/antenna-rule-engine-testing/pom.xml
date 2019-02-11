@@ -35,22 +35,18 @@
         <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-api</artifactId>
-            <version>6.4.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-internal</artifactId>
-            <version>6.4.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-compiler</artifactId>
-            <version>6.4.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-core</artifactId>
-            <version>6.4.0.Final</version>
         </dependency>
         <!-- ################################ dependencies needed for test harness ################################ -->
         <dependency>

@@ -32,8 +32,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.sw360.antenna</groupId>
-			<artifactId>antenna-core</artifactId>
+			<artifactId>antenna-api</artifactId>
 			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<!-- ################################ testing dependencies ################################ -->
@@ -45,6 +50,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+			<scope>test</scope>
         </dependency>
     </dependencies>
 </project>

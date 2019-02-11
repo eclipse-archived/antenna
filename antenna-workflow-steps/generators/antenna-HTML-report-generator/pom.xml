@@ -35,6 +35,10 @@
 			<artifactId>antenna-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+		</dependency>
 		<!-- ################################ testing dependencies ################################ -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -50,11 +54,6 @@
 			<groupId>org.eclipse.sw360.antenna</groupId>
 			<artifactId>antenna-core-common-testing</artifactId>
 			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency> <!-- necessary for mocking -->
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

@@ -45,34 +45,30 @@
         <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-api</artifactId>
-            <version>6.4.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-internal</artifactId>
-            <version>6.4.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-compiler</artifactId>
-            <version>6.4.0.Final</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-core</artifactId>
-            <version>6.4.0.Final</version>
+            <scope>runtime</scope>
         </dependency>
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.11.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -32,8 +32,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.sw360.antenna</groupId>
-			<artifactId>antenna-core</artifactId>
+			<artifactId>antenna-model</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>compile</scope>
 		</dependency>
 		<!-- ################################ testing dependencies ################################ -->
 		<dependency>

@@ -32,7 +32,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.sw360.antenna</groupId>
-			<artifactId>antenna-core</artifactId>
+			<artifactId>antenna-model</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- ################################ testing dependencies ################################ -->

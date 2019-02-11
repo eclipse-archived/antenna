@@ -36,7 +36,17 @@
 			<version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>compile</scope>
+		</dependency>
 		<!-- ################################ testing dependencies ################################ -->
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-utils</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.eclipse.sw360.antenna</groupId>
 			<artifactId>antenna-core-common-testing</artifactId>
