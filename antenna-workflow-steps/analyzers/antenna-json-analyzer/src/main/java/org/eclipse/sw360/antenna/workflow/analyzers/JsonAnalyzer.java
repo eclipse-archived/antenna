@@ -14,6 +14,7 @@ package org.eclipse.sw360.antenna.workflow.analyzers;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.util.JsonReader;
 import org.json.simple.parser.JSONParser;

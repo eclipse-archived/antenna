@@ -17,6 +17,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
