@@ -12,9 +12,8 @@ package org.eclipse.sw360.antenna.knowledgebase;
 
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
-
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

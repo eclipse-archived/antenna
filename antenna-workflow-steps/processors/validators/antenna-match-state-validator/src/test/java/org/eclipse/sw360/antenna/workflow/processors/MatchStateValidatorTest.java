@@ -10,21 +10,20 @@
  */
 package org.eclipse.sw360.antenna.workflow.processors;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
+import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
+import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
-import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.junit.rules.TemporaryFolder;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MatchStateValidatorTest extends AntennaTestWithMockedContext {
 

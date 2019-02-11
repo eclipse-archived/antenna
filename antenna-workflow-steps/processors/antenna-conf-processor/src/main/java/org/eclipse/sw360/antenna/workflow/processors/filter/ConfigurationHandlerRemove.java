@@ -11,23 +11,18 @@
 
 package org.eclipse.sw360.antenna.workflow.processors.filter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.sw360.antenna.analysis.filter.BlacklistFilter;
 import org.eclipse.sw360.antenna.analysis.filter.ProprietaryArtifactFilter;
 import org.eclipse.sw360.antenna.api.IArtifactFilter;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.Configuration;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
+
+import java.util.*;
 
 /**
  * This class removes artifact from the list if artifact is proprietary or if it

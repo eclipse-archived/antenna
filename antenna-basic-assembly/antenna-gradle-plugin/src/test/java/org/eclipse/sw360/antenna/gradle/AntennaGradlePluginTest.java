@@ -10,20 +10,23 @@
  */
 package org.eclipse.sw360.antenna.gradle;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.frontend.gradle.AntennaImpl;
 import org.eclipse.sw360.antenna.frontend.testProjects.AbstractTestProject;
 import org.eclipse.sw360.antenna.frontend.testProjects.ExampleTestProject;
-import org.apache.commons.io.FileUtils;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.assumeToBeConnectedToTheInternet;
+import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 
 public class AntennaGradlePluginTest {
 

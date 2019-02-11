@@ -10,23 +10,13 @@
  */
 package org.eclipse.rulestesting;
 
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
-import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
+import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.bundle.DroolsEvaluationResult;
 import org.eclipse.sw360.antenna.droolstesting.AbstractDroolsValidatorTest;
-import org.junit.Test;
-
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.api.IEvaluationResult;
-
-import org.kie.api.KieServices;
-import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieSession;
-import org.kie.api.builder.KieFileSystem;
-import org.kie.api.builder.KieBuilder;
-import org.kie.api.builder.KieRepository;
-import org.kie.internal.io.ResourceFactory;
-import org.kie.api.io.ResourceType;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
+import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
+import org.junit.Test;
 
 public class RulesTests extends AbstractDroolsValidatorTest {
     @Test

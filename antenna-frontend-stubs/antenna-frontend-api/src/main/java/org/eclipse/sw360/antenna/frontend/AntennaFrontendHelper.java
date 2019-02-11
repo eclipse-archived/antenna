@@ -12,8 +12,8 @@ package org.eclipse.sw360.antenna.frontend;
 
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.IProject;
-import org.eclipse.sw360.antenna.api.configuration.ContextExtension;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.api.configuration.ContextExtension;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.configuration.MultipleConfigsResolver;

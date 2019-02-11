@@ -11,9 +11,11 @@
  */
 package org.eclipse.sw360.antenna.util;
 
+import org.junit.Test;
+
 import java.util.List;
 import java.util.Map;
-import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 public class XmlSettingsReaderTest {

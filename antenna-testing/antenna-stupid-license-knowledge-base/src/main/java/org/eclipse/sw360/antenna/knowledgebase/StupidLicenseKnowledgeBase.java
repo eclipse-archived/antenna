@@ -10,10 +10,10 @@
  */
 
 package org.eclipse.sw360.antenna.knowledgebase;
-import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
 
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
+import org.eclipse.sw360.antenna.api.IProcessingReporter;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
 
 import java.nio.charset.Charset;

@@ -12,13 +12,12 @@
 package org.eclipse.sw360.antenna.droolstesting;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.bundle.DroolsEvaluationResult;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.junit.Before;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Before;
 
 public class AbstractDroolsValidatorTest {
 

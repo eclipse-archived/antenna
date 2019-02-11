@@ -10,25 +10,24 @@
  */
 package org.eclipse.sw360.antenna.workflow.processors;
 
-import static org.eclipse.sw360.antenna.workflow.processors.LicenseValidator.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.eclipse.sw360.antenna.api.IEvaluationResult;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
+import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.sw360.antenna.api.IEvaluationResult;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
-import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.junit.rules.TemporaryFolder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.sw360.antenna.workflow.processors.LicenseValidator.*;
 
 public class LicenseValidatorTest extends AntennaTestWithMockedContext {
     private License allowedLicense;

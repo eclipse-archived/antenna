@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.model.util;
 
-import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 
 import java.util.Comparator;

@@ -12,7 +12,6 @@
 package org.eclipse.sw360.antenna.api;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.model.reporting.Report;
 import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
 
 import java.io.File;

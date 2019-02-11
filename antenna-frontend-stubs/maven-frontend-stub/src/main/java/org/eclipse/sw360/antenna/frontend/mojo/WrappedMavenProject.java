@@ -10,8 +10,8 @@
  */
 package org.eclipse.sw360.antenna.frontend.mojo;
 
-import org.eclipse.sw360.antenna.api.IProject;
 import org.apache.maven.project.MavenProject;
+import org.eclipse.sw360.antenna.api.IProject;
 
 import java.io.File;
 

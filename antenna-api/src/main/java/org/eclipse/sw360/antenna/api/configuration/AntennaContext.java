@@ -11,14 +11,11 @@
 
 package org.eclipse.sw360.antenna.api.configuration;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.IProject;
-import org.eclipse.sw360.antenna.api.IAttachable;
-
 import org.eclipse.sw360.antenna.model.Configuration;
+
+import java.util.Optional;
 
 /**
  * Maintains state regarding the current execution of Antenna.

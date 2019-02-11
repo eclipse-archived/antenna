@@ -11,17 +11,17 @@
 
 package org.eclipse.sw360.antenna.workflow.processors.filter;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.eclipse.sw360.antenna.analysis.filter.BlacklistFilter;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.Configuration;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
+
+import java.util.Collection;
+import java.util.List;
 
 public class ConfigurationHandlerOverride extends AbstractProcessor {
 

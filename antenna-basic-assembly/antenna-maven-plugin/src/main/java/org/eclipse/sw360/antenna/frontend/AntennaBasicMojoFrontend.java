@@ -11,8 +11,8 @@
 
 package org.eclipse.sw360.antenna.frontend;
 
-import org.eclipse.sw360.antenna.frontend.mojo.AbstractAntennaMojoFrontend;
 import org.apache.maven.plugins.annotations.Mojo;
+import org.eclipse.sw360.antenna.frontend.mojo.AbstractAntennaMojoFrontend;
 
 @Mojo(name = "analyze", requiresProject = true)
 public final class AntennaBasicMojoFrontend extends AbstractAntennaMojoFrontend {

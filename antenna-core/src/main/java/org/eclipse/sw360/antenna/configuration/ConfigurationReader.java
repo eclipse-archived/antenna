@@ -11,24 +11,23 @@
 
 package org.eclipse.sw360.antenna.configuration;
 
+import org.apache.commons.lang.Validate;
+import org.eclipse.sw360.antenna.api.IConfigReader;
+import org.eclipse.sw360.antenna.api.IXMLValidator;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.Configuration;
+import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
+import org.eclipse.sw360.antenna.xml.XMLResolverJaxB;
+import org.eclipse.sw360.antenna.xml.XMLValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
-
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.apache.commons.lang.Validate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.eclipse.sw360.antenna.api.IConfigReader;
-import org.eclipse.sw360.antenna.api.IXMLValidator;
-import org.eclipse.sw360.antenna.model.Configuration;
-import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
-import org.eclipse.sw360.antenna.xml.XMLResolverJaxB;
-import org.eclipse.sw360.antenna.xml.XMLValidator;
 
 /**
  * Reads and validates the configuration.xml and creates a Configuration with

@@ -11,8 +11,6 @@
 
 package org.eclipse.sw360.antenna.droolstesting;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.assertj.core.api.AbstractAssert;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;

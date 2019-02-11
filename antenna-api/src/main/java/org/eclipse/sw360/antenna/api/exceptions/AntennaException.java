@@ -10,8 +10,6 @@
  */
 package org.eclipse.sw360.antenna.api.exceptions;
 
-import java.util.function.Supplier;
-
 public class AntennaException extends Exception {
     private static final long serialVersionUID = -1326543066347264517L;
 

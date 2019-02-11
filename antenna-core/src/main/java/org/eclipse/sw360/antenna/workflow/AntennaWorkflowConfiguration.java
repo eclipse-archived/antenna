@@ -10,16 +10,18 @@
  */
 package org.eclipse.sw360.antenna.workflow;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.eclipse.sw360.antenna.api.workflow.*;
+import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.workflow.AbstractAnalyzer;
+import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
+import org.eclipse.sw360.antenna.api.workflow.AbstractOutputHandler;
+import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import java.util.Collection;
+import java.util.List;
 
 public class AntennaWorkflowConfiguration {
 

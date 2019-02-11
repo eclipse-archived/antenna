@@ -10,21 +10,17 @@
  */
 package org.eclipse.sw360.antenna.testing;
 
-import java.io.*;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-
+import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.eclipse.sw360.antenna.frontend.testProjects.AbstractTestProject;
 import org.eclipse.sw360.antenna.frontend.testProjects.FullTestProject;
-import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 
 import static org.eclipse.sw360.antenna.testing.SystemTestHelper.*;
 

@@ -10,14 +10,14 @@
  */
 
 package org.eclipse.sw360.antenna.knowledgebase;
-import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.spdx.rdfparser.InvalidSPDXAnalysisException;
-import org.spdx.rdfparser.license.*;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
 
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
+import org.eclipse.sw360.antenna.api.IProcessingReporter;
+import org.eclipse.sw360.antenna.model.reporting.MessageType;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
+import org.spdx.rdfparser.InvalidSPDXAnalysisException;
+import org.spdx.rdfparser.license.*;
 
 import java.nio.charset.Charset;
 import java.util.Optional;

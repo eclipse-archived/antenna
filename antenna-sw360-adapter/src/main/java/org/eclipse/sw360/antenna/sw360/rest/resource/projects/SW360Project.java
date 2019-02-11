@@ -12,7 +12,6 @@
 package org.eclipse.sw360.antenna.sw360.rest.resource.projects;
 
 import org.eclipse.sw360.antenna.api.IProject;
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Visibility;

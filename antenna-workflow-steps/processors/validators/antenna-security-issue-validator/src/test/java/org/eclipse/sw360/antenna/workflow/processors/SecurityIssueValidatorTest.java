@@ -11,10 +11,6 @@
 
 package org.eclipse.sw360.antenna.workflow.processors;
 
-import static org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -22,7 +18,9 @@ import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIssues;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.eclipse.sw360.antenna.model.xml.generated.*;
+import org.eclipse.sw360.antenna.model.xml.generated.Issue;
+import org.eclipse.sw360.antenna.model.xml.generated.Issues;
+import org.eclipse.sw360.antenna.model.xml.generated.SecurityIssueStatus;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
 import org.junit.Before;
@@ -30,6 +28,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator.*;
+import static org.mockito.Mockito.when;
 
 public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     private Issue openIssue;

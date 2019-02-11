@@ -13,13 +13,15 @@ package org.eclipse.sw360.antenna.xml;
 
 import org.eclipse.sw360.antenna.api.IXMLResolver;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.model.xml.generated.ObjectFactory;
 import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 /**

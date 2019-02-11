@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.model.test;
 
-import org.eclipse.sw360.antenna.model.artifact.*;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;

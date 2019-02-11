@@ -11,23 +11,24 @@
 
 package org.eclipse.sw360.antenna.workflow.processors.enricher;
 
-import java.util.*;
-
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.knowledgebase.LicenseKnowledgeBaseFactory;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactLicenseInformation;
+import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
-
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * This LicenseKnowledgeBaseResolver adds values of the specified

@@ -10,11 +10,9 @@
  */
 package org.eclipse.sw360.antenna.frontend.testProjects;
 
-import org.eclipse.sw360.antenna.model.xml.generated.ObjectFactory;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
-import javax.xml.bind.JAXBElement;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

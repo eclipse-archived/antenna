@@ -10,12 +10,12 @@
  */
 package org.eclipse.sw360.antenna.frontend;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.frontend.testProjects.*;
 import org.eclipse.sw360.antenna.model.util.WorkflowComparator;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
-import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,9 +33,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
-import static org.junit.Assume.assumeTrue;
 import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.assumeToBeConnectedToTheInternet;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 @RunWith(Parameterized.class)
 abstract public class AbstractAntennaFrontendTest {

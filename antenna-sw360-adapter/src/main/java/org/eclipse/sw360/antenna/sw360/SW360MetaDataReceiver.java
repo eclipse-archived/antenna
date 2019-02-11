@@ -13,7 +13,9 @@ package org.eclipse.sw360.antenna.sw360;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.sw360.adapter.*;
+import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
+import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.rest.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
@@ -22,9 +24,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.util.Optional;
 
 public class SW360MetaDataReceiver {

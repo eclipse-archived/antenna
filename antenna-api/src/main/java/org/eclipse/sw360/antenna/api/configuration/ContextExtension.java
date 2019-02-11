@@ -10,7 +10,9 @@
  */
 package org.eclipse.sw360.antenna.api.configuration;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
 
 public class ContextExtension {
 

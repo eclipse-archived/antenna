@@ -10,17 +10,16 @@
  */
 package org.eclipse.sw360.antenna.api.workflow;
 
+import org.eclipse.sw360.antenna.api.IProcessingReporter;
+import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 
 public abstract class ConfigurableWorkflowItem implements IWorkflowable {
 

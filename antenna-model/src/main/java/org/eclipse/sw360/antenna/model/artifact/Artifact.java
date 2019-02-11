@@ -16,8 +16,8 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 
-import java.util.Optional;
 import java.nio.file.Path;
+import java.util.Optional;
 
 /*
  * This class wraps ArtifactCore for convenience

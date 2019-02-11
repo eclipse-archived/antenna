@@ -10,13 +10,12 @@
  */
 package org.eclipse.sw360.antenna.workflow.analyzers;
 
+import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.workflow.AbstractAnalyzer;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Map;
-
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.workflow.AbstractAnalyzer;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 
 /**
  * Executes an analysis of the source code artifacts in a project manually.

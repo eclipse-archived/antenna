@@ -10,23 +10,17 @@
  */
 package org.eclipse.sw360.antenna.bundle;
 
+import org.apache.maven.shared.invoker.*;
+import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
-import org.apache.maven.repository.ArtifactDoesNotExistException;
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.InvocationResult;
-import org.apache.maven.shared.invoker.MavenInvocationException;
-
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Requests jar files for artifacts by using Maven Invoker. Use of this class
