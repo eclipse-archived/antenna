@@ -35,6 +35,7 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAntennaCLIFrontend.class);
     private final Map<String, IAttachable> output = new HashMap<>();
     private DefaultProject project;
+    protected String pluginDescendantArtifactIdName = "antenna-maven-plugin";
 
     public AbstractAntennaCLIFrontend(File pomFile) {
         Path buildDir = getBuildDirFromPomFile(pomFile);
@@ -56,7 +57,7 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend {
      */
     @Override
     public AntennaFrontendHelper init() throws AntennaConfigurationException {
-        ToolConfiguration toolConfiguration = new AntennaCLISettingsReader()
+        ToolConfiguration toolConfiguration = new AntennaCLISettingsReader(pluginDescendantArtifactIdName)
                 .readSettingsToToolConfiguration(project);
         
         // TODO: should be removed after P2ArtifactResolverOSGi works for AbstractAntennaCLIFrontend

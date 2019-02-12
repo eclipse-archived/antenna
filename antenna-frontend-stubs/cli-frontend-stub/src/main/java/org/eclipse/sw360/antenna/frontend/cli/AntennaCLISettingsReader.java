@@ -37,9 +37,17 @@ import java.util.stream.Collectors;
 class AntennaCLISettingsReader {
 
     private static final Logger log = LoggerFactory.getLogger(AntennaCLISettingsReader.class);
-    private static final String ANTENNA_CONF_XPATH = "descendant::plugin[artifactId='antenna-maven-plugin']/descendant-or-self::configuration";
-    
+    private String antennaConfXpath;
+
     private TemplateRenderer tr = new TemplateRenderer();
+
+    public AntennaCLISettingsReader(){
+        this("antenna-maven-plugin");
+    }
+
+    public AntennaCLISettingsReader(String pluginDescendantArtifactName){
+         antennaConfXpath = "descendant::plugin[artifactId='" + pluginDescendantArtifactName + "']/descendant-or-self::configuration";
+    }
 
     private void readProjectStringSetting(XmlSettingsReader reader, String name, Consumer<String> setter) {
         String value = reader.getStringProperty(name);
@@ -49,26 +57,26 @@ class AntennaCLISettingsReader {
     }
 
     private void readAntennaStringSetting(XmlSettingsReader reader, String name, Consumer<String> setter) {
-        String value = reader.getStringPropertyByXPath(ANTENNA_CONF_XPATH, name);
+        String value = reader.getStringPropertyByXPath(antennaConfXpath, name);
         if (value != null) {
             setter.accept(value);
         }
     }
 
     private void readAntennaStringSetting(XmlSettingsReader reader, String name, String defaultValue, Consumer<String> setter) {
-        String value = reader.getStringPropertyByXPath(ANTENNA_CONF_XPATH, name, defaultValue);
+        String value = reader.getStringPropertyByXPath(antennaConfXpath, name, defaultValue);
         if (value != null) {
             setter.accept(value);
         }
     }
 
     private void readAntennaIntSetting(XmlSettingsReader reader, String name, int defaultValue, Consumer<Integer> setter) {
-        int value = reader.getIntProperty(ANTENNA_CONF_XPATH, name, defaultValue);
+        int value = reader.getIntProperty(antennaConfXpath, name, defaultValue);
         setter.accept(value);
     }
 
     private void readAntennaBooleanSetting(XmlSettingsReader reader, String name, boolean defaultValue, Consumer<Boolean> setter) {
-        boolean value = reader.getBooleanProperty(ANTENNA_CONF_XPATH, name, defaultValue);
+        boolean value = reader.getBooleanProperty(antennaConfXpath, name, defaultValue);
         setter.accept(value);
     }
 
