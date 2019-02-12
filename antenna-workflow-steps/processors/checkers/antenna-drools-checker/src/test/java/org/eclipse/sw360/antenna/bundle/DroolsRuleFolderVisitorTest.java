@@ -48,8 +48,8 @@ public class DroolsRuleFolderVisitorTest {
         Files.walkFileTree(folderPath, collectRuleFiles);
         List<File> collectedFiles = collectRuleFiles.getRuleFiles();
 
-        assertThat(collectedFiles).hasSize(1);
-        assertThat(collectedFiles.get(0).getAbsolutePath()).endsWith("DummyRule.drl");
+        assertThat(collectedFiles).hasSize(2);
+        assertThat(collectedFiles.stream().map(File::getAbsolutePath).filter(s -> s.endsWith("DummyRule.drl"))).hasSize(1);
     }
 
     @Test

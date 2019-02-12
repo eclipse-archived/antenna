@@ -109,6 +109,7 @@ public class DroolsEngine implements IRuleEngine {
     private List<IEvaluationResult> getEvaluationResults() {
         List<IEvaluationResult> results = new ArrayList<>();
         results.add(new DroolsEvaluationResult("Dummy", "Dummy rule", IEvaluationResult.Severity.FAIL));
+        results.add(new DroolsEvaluationResult("multipleArtifacts", "EPL vs GPL rule", IEvaluationResult.Severity.FAIL));
         return results;
     }
 
