@@ -25,9 +25,10 @@
         <jackson.version>2.9.8</jackson.version>
         <javax.json.version>1.1.4</javax.json.version>
         <maven.version>3.6.0</maven.version>
+        <maven.shared.version>3.0.1</maven.shared.version>
         <mockito.version>2.24.0</mockito.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <spring.version>5.1.4.RELEASE</spring.version>
+        <spring.version>5.1.2.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -102,12 +103,12 @@
             <dependency>
                 <groupId>org.apache.maven.shared</groupId>
                 <artifactId>maven-invoker</artifactId>
-                <version>3.0.1</version>
+                <version>${maven.shared.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.shared</groupId>
                 <artifactId>maven-dependency-tree</artifactId>
-                <version>3.0.1</version>
+                <version>${maven.shared.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven.plugin-tools</groupId>
