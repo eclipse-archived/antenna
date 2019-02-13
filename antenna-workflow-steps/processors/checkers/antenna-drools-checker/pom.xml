@@ -34,6 +34,11 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>antenna-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>abstract-antenna-compliance-checker</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -77,4 +82,59 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>xjc</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <packageName>org.eclipse.sw360.antenna.drools.xml.generated</packageName>
+                    <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
+                    <locale>en</locale>
+                    <sources>
+                        <source>
+                            ${project.basedir}/src/main/resources/policy.xsd
+                        </source>
+                    </sources>
+                    <arguments>
+                        <argument>-Xequals</argument>
+                        <argument>-XhashCode</argument>
+                        <argument>-Xinject-code</argument>
+                    </arguments>
+                    <xjbSources>
+                        <xjbSource>
+                            ${project.basedir}/src/main/resources/bindings.xjb
+                        </xjbSource>
+                    </xjbSources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

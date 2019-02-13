@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DroolsEngineTest {
 
     private static final String RESOURCE_PATH = "../../../../../policies/policies.properties";
+    private static final String POLICIES_FILENAME = "policies.xml";
     private DroolsEngine droolsEngine;
 
     @Before
@@ -57,6 +58,11 @@ public class DroolsEngineTest {
         IPolicyEvaluation evaluationResults = droolsEngine.evaluate(Arrays.asList(artifact1, artifact2));
 
         List<Artifact> failedArtifacts = getAllFailedArtifactsOfEvaluator(evaluationResults, "Dummy");
+
+        assertThat(evaluationResults.getEvaluationResults().stream()
+                .map(IEvaluationResult::getId)
+                .anyMatch(s -> s.equals("Dummy")))
+                .isEqualTo(true);
 
         assertThat(failedArtifacts).containsExactly(artifact2);
     }

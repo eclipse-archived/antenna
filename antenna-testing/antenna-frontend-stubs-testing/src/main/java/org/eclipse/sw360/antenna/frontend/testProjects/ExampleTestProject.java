@@ -37,7 +37,10 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<String> getOutOfProjectFilesToCopy() {
-        return Stream.of("../example-policies/rules/DummyRule.drl", "../example-policies/policies/policies.properties")
+        return Stream.of(
+                "../example-policies/rules/DummyRule.drl",
+                "../example-policies/policies/policies.properties",
+                "../example-policies/policies.xml")
                 .collect(Collectors.toList());
     }
 

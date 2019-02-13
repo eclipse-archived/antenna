@@ -23,6 +23,8 @@ public class DroolsEvaluationResult implements IEvaluationResult {
     private String description;
     private Set<Artifact> failedArtifacts = new HashSet<>();
 
+    public DroolsEvaluationResult() {};
+
     public DroolsEvaluationResult(String id, String description, Severity severity) {
         this(id, description, severity, null);
     }
@@ -54,6 +56,18 @@ public class DroolsEvaluationResult implements IEvaluationResult {
     @Override
     public Set<Artifact> getFailedArtifacts() {
         return this.failedArtifacts;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setSeverity(Severity severity) {
+        this.severity = severity;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void addFailedArtifact(Artifact a) {
