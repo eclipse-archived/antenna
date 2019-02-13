@@ -26,6 +26,7 @@
         <module>antenna-core-common-testing</module>
         <module>antenna-frontend-stubs-testing</module>
         <module>antenna-stupid-license-knowledge-base</module>
+        <module>antenna-rule-engine-testing</module>
     </modules>
 
     <profiles>
