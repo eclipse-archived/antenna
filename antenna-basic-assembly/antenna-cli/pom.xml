@@ -56,6 +56,9 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
                     <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                            <resource>META-INF/kie.conf</resource>
+                        </transformer>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                     </transformers>
                     <filters>
