@@ -10,12 +10,12 @@
  */
 package org.eclipse.sw360.antenna.bundle;
 
+import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 
 
 public abstract class IArtifactRequester {

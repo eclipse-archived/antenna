@@ -15,11 +15,13 @@
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>antenna-api</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>antenna-core</artifactId>
-            <version>2.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

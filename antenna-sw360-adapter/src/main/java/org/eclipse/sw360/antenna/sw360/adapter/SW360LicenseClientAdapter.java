@@ -17,7 +17,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.springframework.http.HttpHeaders;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 

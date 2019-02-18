@@ -10,13 +10,11 @@
  */
 package org.eclipse.sw360.antenna.frontend;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.core.AntennaCore;
-import org.apache.maven.plugin.MojoExecutionException;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public interface AntennaFrontend {

@@ -11,12 +11,10 @@
 
 package org.eclipse.sw360.antenna.sw360.rest;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectListEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectType;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
+import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectType;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;

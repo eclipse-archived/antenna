@@ -10,11 +10,11 @@
  */
 package org.eclipse.sw360.antenna.xml;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.junit.Test;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class XMLValidatorTest {
     @Test

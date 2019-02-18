@@ -11,31 +11,24 @@
 
 package org.eclipse.sw360.antenna.knowledgebase;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import org.apache.commons.io.IOUtils;
+import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
+import org.eclipse.sw360.antenna.api.IProcessingReporter;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.model.reporting.MessageType;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.Consumer;
-
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import jdk.nashorn.internal.runtime.Context;
-import org.apache.commons.io.IOUtils;
-
-import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
-import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This CSVBasedLicenseKnowledgeBase delivers maps for the mapping of: alias

@@ -10,19 +10,20 @@
  */
 package org.eclipse.sw360.antenna.workflow;
 
-import java.io.*;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.model.xml.generated.*;
-import org.xml.sax.SAXException;
+import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
+import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
+import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 import org.eclipse.sw360.antenna.util.TemplateRenderer;
 import org.eclipse.sw360.antenna.util.XmlSettingsReader;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 public class WorkflowFileLoader {
 

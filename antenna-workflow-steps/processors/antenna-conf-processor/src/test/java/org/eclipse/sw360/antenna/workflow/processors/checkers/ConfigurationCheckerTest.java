@@ -10,7 +10,20 @@
  */
 package org.eclipse.sw360.antenna.workflow.processors.checkers;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.eclipse.sw360.antenna.model.Configuration;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorAndSet;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.reporting.MessageType;
+import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
+import org.eclipse.sw360.antenna.report.Reporter;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,21 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
-import org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorAndSet;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.Configuration;
-import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
-import org.eclipse.sw360.antenna.report.Reporter;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConfigurationCheckerTest {
 

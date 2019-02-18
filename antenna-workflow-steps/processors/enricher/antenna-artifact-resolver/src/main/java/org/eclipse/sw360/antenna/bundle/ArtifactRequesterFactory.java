@@ -10,12 +10,12 @@
  */
 package org.eclipse.sw360.antenna.bundle;
 
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.LegacySupport;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
-import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 
 import java.util.List;
 import java.util.Optional;

@@ -11,9 +11,6 @@
 
 package org.eclipse.sw360.antenna.bundle;
 
-import org.assertj.core.api.Assertions;
-import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,7 +20,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -10,16 +10,18 @@
  */
 package org.eclipse.sw360.antenna.workflow.analyzers;
 
+import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.frontend.mojo.WrappedDependencyNodes;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.apache.maven.shared.dependency.graph.DependencyNode;
 
 import java.util.List;
 import java.util.Optional;

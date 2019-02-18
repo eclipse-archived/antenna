@@ -14,10 +14,6 @@ import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.eclipse.sw360.antenna.frontend.testProjects.TestProjectUtils.mkWorkflowStep;
 
 public class MinimalTestProject extends AbstractTestProjectWithExpectations implements NonExecutableTestProject{
 

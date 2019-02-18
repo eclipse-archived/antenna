@@ -11,20 +11,22 @@
 
 package org.eclipse.sw360.antenna.workflow.processors;
 
-import java.util.*;
-
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
+import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractComplianceChecker;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvaluation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The Licenses validator can check if the licenses of a list of artifacts is

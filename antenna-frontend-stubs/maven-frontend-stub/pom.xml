@@ -28,18 +28,12 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-core</artifactId>
+            <artifactId>antenna-model</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>antenna-frontend-api</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>cli-frontend-stub</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -57,8 +51,23 @@
             <artifactId>maven-compat</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-dependency-tree</artifactId>
+        </dependency>
+        <!-- ################################ testing dependencies ################################ -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

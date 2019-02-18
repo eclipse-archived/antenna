@@ -15,7 +15,7 @@ import org.eclipse.sw360.antenna.frontend.testProjects.AbstractTestProjectWithEx
 
 import java.util.function.Supplier;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class AntennaBasicMojoFrontendTest extends AbstractAntennaMojoFrontendTest {
 

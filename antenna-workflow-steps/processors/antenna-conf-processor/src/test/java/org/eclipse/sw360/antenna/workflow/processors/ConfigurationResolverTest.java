@@ -10,8 +10,26 @@
  */
 package org.eclipse.sw360.antenna.workflow.processors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import org.apache.commons.io.FileUtils;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.Configuration;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorAndSet;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
+import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
+import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
+import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerAdd;
+import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerOverride;
+import org.eclipse.sw360.antenna.xml.XMLResolverJaxB;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,25 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.apache.commons.io.FileUtils;
-import org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorAndSet;
-import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.Configuration;
-import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
-import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
-import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerAdd;
-import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerOverride;
-import org.eclipse.sw360.antenna.xml.XMLResolverJaxB;
-import org.junit.rules.TemporaryFolder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 public class ConfigurationResolverTest extends AntennaTestWithMockedContext {
 

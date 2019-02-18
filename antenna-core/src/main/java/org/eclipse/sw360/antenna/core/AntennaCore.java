@@ -11,18 +11,17 @@
 
 package org.eclipse.sw360.antenna.core;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.sw360.antenna.api.IAttachable;
+import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.workflow.AntennaWorkflow;
+import org.eclipse.sw360.antenna.workflow.AntennaWorkflowConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.workflow.AntennaWorkflow;
-import org.eclipse.sw360.antenna.workflow.AntennaWorkflowConfiguration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Central class for Antenna functionality. Orchestrates the entire workflow

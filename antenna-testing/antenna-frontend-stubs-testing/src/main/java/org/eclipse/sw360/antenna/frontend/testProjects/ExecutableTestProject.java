@@ -10,11 +10,11 @@
  */
 package org.eclipse.sw360.antenna.frontend.testProjects;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.project.MavenProject;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.project.MavenProject;
 import org.junit.Assert;
 
 import java.io.File;

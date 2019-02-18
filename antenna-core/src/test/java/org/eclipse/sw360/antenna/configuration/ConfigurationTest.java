@@ -10,7 +10,22 @@
  */
 package org.eclipse.sw360.antenna.configuration;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.Configuration;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
+import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
+import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
+import org.eclipse.sw360.antenna.xml.XMLResolverJaxB;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -20,21 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
-import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.junit.Before;
-import org.junit.Test;
-
-import org.eclipse.sw360.antenna.model.Configuration;
-import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.xml.XMLResolverJaxB;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConfigurationTest {
 

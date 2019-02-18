@@ -11,24 +11,23 @@
 
 package org.eclipse.sw360.antenna.workflow.processors;
 
+import org.eclipse.sw360.antenna.api.IEvaluationResult;
+import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
+import org.eclipse.sw360.antenna.api.IProcessingReporter;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.reporting.MessageType;
+import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractComplianceChecker;
+import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvaluation;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import org.eclipse.sw360.antenna.api.IEvaluationResult;
-import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractComplianceChecker;
-import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvaluation;
-
-import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.reporting.MessageType;
 
 /**
  * Validates the sources of the given artifacts. An artifact is not valid if : -

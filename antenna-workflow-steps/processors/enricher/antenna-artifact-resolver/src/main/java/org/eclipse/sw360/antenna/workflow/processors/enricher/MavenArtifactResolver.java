@@ -11,6 +11,20 @@
 
 package org.eclipse.sw360.antenna.workflow.processors.enricher;
 
+import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
+import org.eclipse.sw360.antenna.bundle.ArtifactRequesterFactory;
+import org.eclipse.sw360.antenna.bundle.IArtifactRequester;
+import org.eclipse.sw360.antenna.bundle.MavenArtifactDoesNotExistException;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactJar;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactSourceJar;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.reporting.MessageType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -19,21 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-
-import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.eclipse.sw360.antenna.bundle.MavenArtifactDoesNotExistException;
-import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactJar;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactSourceJar;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
-import org.eclipse.sw360.antenna.bundle.ArtifactRequesterFactory;
-import org.eclipse.sw360.antenna.bundle.IArtifactRequester;
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.reporting.MessageType;
 
 public class MavenArtifactResolver extends AbstractProcessor {
 

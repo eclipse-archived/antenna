@@ -11,11 +11,11 @@
 
 package org.eclipse.sw360.antenna.api;
 
-import java.util.Collection;
-import java.util.Optional;
-
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Provide an API for calling Antenna Rule Engines.

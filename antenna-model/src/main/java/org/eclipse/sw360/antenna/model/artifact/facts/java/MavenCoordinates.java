@@ -16,11 +16,10 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-
 import java.util.Objects;
 import java.util.Optional;
 
-import static org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorHelper.*;
+import static org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorHelper.compareStringsAsWildcard;
 
 public class MavenCoordinates extends JavaCoordinates<MavenCoordinates> {
     protected final String artifactId;

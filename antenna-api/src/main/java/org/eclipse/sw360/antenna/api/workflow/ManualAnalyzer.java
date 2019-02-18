@@ -8,15 +8,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.workflow.analyzers;
+package org.eclipse.sw360.antenna.api.workflow;
+
+import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Map;
-
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.workflow.AbstractAnalyzer;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 
 /**
  * Executes an analysis of the source code artifacts in a project manually.

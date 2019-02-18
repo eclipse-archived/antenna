@@ -11,9 +11,9 @@
 package org.eclipse.sw360.antenna.sw360.utils;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCPE;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.JavaCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.util.ArtifactUtils;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;

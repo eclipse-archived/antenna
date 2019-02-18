@@ -11,20 +11,19 @@
 
 package org.eclipse.sw360.antenna.workflow.processors.enricher;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Maps the values of a LicenseDocument to the license attributes of the

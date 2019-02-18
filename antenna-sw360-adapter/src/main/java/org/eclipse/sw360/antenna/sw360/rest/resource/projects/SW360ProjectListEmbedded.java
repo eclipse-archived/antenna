@@ -11,11 +11,10 @@
 
 package org.eclipse.sw360.antenna.sw360.rest.resource.projects;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 
 import java.util.ArrayList;
 import java.util.List;

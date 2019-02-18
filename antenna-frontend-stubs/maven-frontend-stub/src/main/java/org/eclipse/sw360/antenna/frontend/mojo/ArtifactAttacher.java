@@ -11,15 +11,15 @@
 
 package org.eclipse.sw360.antenna.frontend.mojo;
 
-import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
+import org.eclipse.sw360.antenna.api.IAttachable;
+import org.eclipse.sw360.antenna.api.IProcessingReporter;
+import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.model.reporting.MessageType;
+import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

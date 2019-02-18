@@ -11,28 +11,33 @@
 
 package org.eclipse.sw360.antenna.workflow.processors.enricher;
 
-import java.io.*;
+import org.apache.commons.io.FileUtils;
+import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.reporting.MessageType;
+import org.eclipse.sw360.antenna.util.AntennaUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.apache.commons.io.FileUtils;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.util.AntennaUtils;
 
 /**
  * Class scans all filepaths of the artifacts, if a jar file is found and

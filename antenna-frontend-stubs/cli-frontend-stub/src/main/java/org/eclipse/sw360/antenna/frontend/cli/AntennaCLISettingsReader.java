@@ -10,15 +10,15 @@
  */
 package org.eclipse.sw360.antenna.frontend.cli;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.api.FrontendCommons;
+import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
-import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.eclipse.sw360.antenna.util.TemplateRenderer;
 import org.eclipse.sw360.antenna.util.XmlSettingsReader;
 import org.eclipse.sw360.antenna.workflow.WorkflowFileLoader;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;

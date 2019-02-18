@@ -12,13 +12,15 @@
 package org.eclipse.sw360.antenna.droolstesting;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
+import org.eclipse.sw360.antenna.bundle.DroolsEvaluationResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.eclipse.sw360.antenna.bundle.DroolsEvaluationResult;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 import static org.eclipse.sw360.antenna.droolstesting.AbstractDroolsValidatorTest.assertThat;
 

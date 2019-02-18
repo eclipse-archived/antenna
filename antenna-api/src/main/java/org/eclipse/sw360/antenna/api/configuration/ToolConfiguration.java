@@ -10,18 +10,18 @@
  */
 package org.eclipse.sw360.antenna.api.configuration;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-
-import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handles configuration properties that control Antenna's setup.

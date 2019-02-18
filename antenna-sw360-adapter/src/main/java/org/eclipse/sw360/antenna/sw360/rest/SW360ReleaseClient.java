@@ -11,7 +11,9 @@
 package org.eclipse.sw360.antenna.sw360.rest;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.*;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
@@ -19,7 +21,9 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SW360ReleaseClient {
     private static final String RELEASES_ENDPOINT = "/releases";

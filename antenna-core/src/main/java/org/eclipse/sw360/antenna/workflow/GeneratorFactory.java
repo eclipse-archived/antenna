@@ -10,16 +10,15 @@
  */
 package org.eclipse.sw360.antenna.workflow;
 
+import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
+import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
-import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 public class GeneratorFactory extends WorkflowItemFactory {
 

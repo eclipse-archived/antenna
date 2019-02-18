@@ -11,9 +11,6 @@
 
 package org.eclipse.sw360.antenna.model.reporting;
 
-import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

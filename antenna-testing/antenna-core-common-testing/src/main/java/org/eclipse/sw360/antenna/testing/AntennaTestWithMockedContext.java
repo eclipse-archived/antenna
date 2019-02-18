@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.testing;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
+import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +21,6 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.eclipse.sw360.antenna.model.Configuration;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.*;

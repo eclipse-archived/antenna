@@ -16,7 +16,6 @@ import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.SW360ProjectClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;

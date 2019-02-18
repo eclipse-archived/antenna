@@ -17,7 +17,6 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-
 import java.util.Objects;
 import java.util.Optional;
 

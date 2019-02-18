@@ -11,17 +11,20 @@
 
 package org.eclipse.sw360.antenna.workflow.analyzers;
 
-import java.io.*;
-
+import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
+import org.eclipse.sw360.antenna.util.JsonReader;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import java.nio.file.Path;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
-import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.util.JsonReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Path;
 
 public class JsonAnalyzer extends ManualAnalyzer {
     private void validate(ToolConfiguration toolConfig) throws AntennaException {

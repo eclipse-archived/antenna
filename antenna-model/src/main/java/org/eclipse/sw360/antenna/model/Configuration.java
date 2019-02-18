@@ -11,16 +11,16 @@
 
 package org.eclipse.sw360.antenna.model;
 
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.FromXmlArtifactBuilder;
+import org.eclipse.sw360.antenna.model.xml.generated.*;
+
 import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
-import org.eclipse.sw360.antenna.model.artifact.FromXmlArtifactBuilder;
-import org.eclipse.sw360.antenna.model.xml.generated.*;
 
 /**
  * Contains values of the configuration file.

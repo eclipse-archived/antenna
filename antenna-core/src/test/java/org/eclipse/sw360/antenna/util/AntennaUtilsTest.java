@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 import java.util.Iterator;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assume.*;
+import static org.junit.Assume.assumeTrue;
 
 public class AntennaUtilsTest {
 

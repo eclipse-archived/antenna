@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.eclipse.sw360.antenna.frontend.testProjects.TestProjectUtils.mkWorkflowStep;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class ExampleTestProject extends AbstractTestProjectWithExpectations implements ExecutableTestProject {
 

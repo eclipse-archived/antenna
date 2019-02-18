@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.bundle;
 
-import org.apache.http.client.methods.HttpGet;
 import org.codehaus.plexus.util.ReflectionUtils;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
