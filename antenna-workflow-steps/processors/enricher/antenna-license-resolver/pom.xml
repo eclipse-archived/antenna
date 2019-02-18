@@ -30,12 +30,6 @@
 			<artifactId>antenna-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-api</artifactId>
-			<version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>

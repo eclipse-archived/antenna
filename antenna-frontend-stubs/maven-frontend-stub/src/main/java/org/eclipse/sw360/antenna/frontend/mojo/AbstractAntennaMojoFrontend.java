@@ -64,7 +64,7 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAntennaMojoFrontend.class);
     private final Map<String, IAttachable> output = new HashMap<>();
 
-    @Component
+    @Parameter( defaultValue = "${project}", readonly = true )
     private MavenProject project;
 
     @Component
