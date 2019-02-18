@@ -35,6 +35,23 @@
          <modificationStatus>modified</modificationStatus>
       </artifact>
 
+      <artifact>
+         <filename>SomeBundle</filename>
+         <declaredLicense>
+            <license>
+               <name>EPL 2.0</name>
+            </license>
+         </declaredLicense>
+         <isProprietary>false</isProprietary>
+         <matchState>EXACT</matchState>
+         <copyrightStatement>Copyright 2019 Some Very Arbitrary Guy</copyrightStatement>
+         <bundleCoordinates>
+            <symbolicName>some_bundle</symbolicName>
+            <bundleVersion>0.0.1.201902181544</bundleVersion>
+         </bundleCoordinates>
+      </artifact>
+
+
 
       <!-- This is an entry that has a source code bundle in maven central which should appear in the sources.zip -->
       <artifact>

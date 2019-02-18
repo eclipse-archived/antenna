@@ -32,7 +32,16 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<String> getOtherFilesToCopy() {
-        return Stream.of("src/reportData.json", "src/dependencies.csv")
+        return Stream.of(
+                "src/reportData.json",
+                "src/dependencies.csv",
+                "additional_p2_resources/p2.index",
+                "additional_p2_resources/artifacts.jar",
+                "additional_p2_resources/artifacts.xml.xz",
+                "additional_p2_resources/content.jar",
+                "additional_p2_resources/content.xml.xz",
+                "additional_p2_resources/features/some_feature_0.0.1.201902181544.jar",
+                "additional_p2_resources/plugins/some_bundle_0.0.1.201902181544.jar")
                 .collect(Collectors.toList());
     }
 
@@ -113,6 +122,10 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                 "base.dir", this.projectRoot.toString(),
                 "folder.paths", "../example-policies");
         processors.add(checker1);
+        WorkflowStep enricher1 = mkWorkflowStep("P2 Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.P2Resolver",
+                "repositories", this.projectRoot.toString() + "/additional_p2_resources",
+                "filepath", this.projectRoot.toString() + "/target/antenna/dependencies");
+        processors.add(enricher1);
         return processors;
     }
 
@@ -182,6 +195,11 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     @Override
     public Collection<String> getExpectedDependencies() {
         return Stream.of("jackson-annotations-2.8.4", "jackson-core-2.8.4", "log4j-core-2.6.2").collect(Collectors.toSet());
+    }
+
+    @Override
+    public Collection<String> getExpectedP2Dependencies() {
+        return Stream.of("some_bundle_0.0.1.201902181544").collect(Collectors.toSet());
     }
 
     @Override
