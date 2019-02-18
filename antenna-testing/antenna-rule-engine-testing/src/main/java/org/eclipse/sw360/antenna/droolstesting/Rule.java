@@ -25,21 +25,23 @@ import org.kie.internal.io.ResourceFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class Rule {
-    private static final String RELATIVE_PATH_TO_RULES_FOLDER = "../../../policies/rules/";
-
     private final String name;
+    private final String pathToRule;
     private AbstractDroolsValidatorTest validatorTest;
     private List<Artifact> artifacts;
     private List<IEvaluationResult> evaluations;
 
-    Rule(AbstractDroolsValidatorTest test, String rule, List<Artifact> artifacts, List<IEvaluationResult> evaluations) {
+    Rule(AbstractDroolsValidatorTest test, String pathToRule, String rule, List<Artifact> artifacts, List<IEvaluationResult> evaluations) {
         this.validatorTest = test;
         this.artifacts = artifacts;
         this.evaluations = evaluations;
         this.name = rule;
+        this.pathToRule = pathToRule;
     }
 
     /**
@@ -52,7 +54,7 @@ public class Rule {
      * @throws FileNotFoundException if the rule file cannot be found in the resource folder
      */
     public RuleResults whenRunning() throws FileNotFoundException {
-        URL resource = getUrlToRuleFile(name);
+        URL resource = getUrlToRuleFile(pathToRule + "/" + name);
         KieServices kieServices = KieServices.Factory.get();
         KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
 
@@ -75,7 +77,7 @@ public class Rule {
     }
 
     private URL getUrlToRuleFile(String rule) throws FileNotFoundException {
-        URL resource = validatorTest.getClass().getResource(RELATIVE_PATH_TO_RULES_FOLDER + rule);
+        URL resource = validatorTest.getClass().getResource(rule);
 
         if (resource == null) {
             throw new FileNotFoundException("Could not find file for rule " + rule + ".");
