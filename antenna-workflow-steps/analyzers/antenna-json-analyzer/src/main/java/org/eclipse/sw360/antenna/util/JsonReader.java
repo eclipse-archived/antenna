@@ -11,6 +11,10 @@
 
 package org.eclipse.sw360.antenna.util;
 
+import com.github.cliftonlabs.json_simple.JsonArray;
+import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
@@ -18,7 +22,6 @@ import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.*;
-import org.json.simple.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +65,7 @@ public class JsonReader {
             }
             stream.close();
             return artifactList;
-        } catch (IOException | DeserializationException e) {
+        } catch (IOException | JsonException e) {
             throw new RuntimeException(e);
         }
     }
