@@ -18,6 +18,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class GeneratorFactory extends WorkflowItemFactory {
@@ -38,7 +39,7 @@ public class GeneratorFactory extends WorkflowItemFactory {
 
         // Go through the list of generators requests and instantiate each one.
         return generatorsRequested.stream().parallel()
-                .filter(rg -> !rg.isDeactivated())
+                .filter(rg -> !Optional.ofNullable(rg.isDeactivated()).orElse(false))
                 .map(rg -> {
                     LOGGER.debug("Loading the {} generator", rg.getName());
                     return WorkflowItemFactory.<AbstractGenerator>buildWorkflowItem(rg, rg.getConfiguration(), context);

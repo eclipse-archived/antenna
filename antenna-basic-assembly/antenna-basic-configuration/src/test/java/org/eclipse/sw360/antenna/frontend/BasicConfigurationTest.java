@@ -101,24 +101,24 @@ public class BasicConfigurationTest extends AntennaTestWithMockedContext {
         if (workflow.getAnalyzers() != null && workflow.getAnalyzers().getStep().size() > 0) {
             assertEquals(twc.getAnalyzers().size(), workflow.getAnalyzers().getStep()
                     .stream()
-                    .filter(s ->!s.isDeactivated())
+                    .filter(s -> !Optional.ofNullable(s.isDeactivated()).orElse(false))
                     .collect(Collectors.toList())
                     .size());
         }
         assertEquals(twc.getProcessors().size(), workflow.getProcessors().getStep()
                 .stream()
-                .filter(s ->!s.isDeactivated())
+                .filter(s -> !Optional.ofNullable(s.isDeactivated()).orElse(false))
                 .collect(Collectors.toList())
                 .size());
         assertEquals(twc.getGenerators().size(), workflow.getGenerators().getStep()
                 .stream()
-                .filter(s ->!s.isDeactivated())
+                .filter(s -> !Optional.ofNullable(s.isDeactivated()).orElse(false))
                 .collect(Collectors.toList())
                 .size());
         if (workflow.getOutputHandlers() != null && workflow.getOutputHandlers().getStep().size() > 0) {
             assertEquals(twc.getOutputHandlers().size(), workflow.getOutputHandlers().getStep()
                     .stream()
-                    .filter(s ->!s.isDeactivated())
+                    .filter(s -> !Optional.ofNullable(s.isDeactivated()).orElse(false))
                     .collect(Collectors.toList())
                     .size());
         }

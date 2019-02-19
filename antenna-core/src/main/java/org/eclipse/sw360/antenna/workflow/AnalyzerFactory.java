@@ -18,6 +18,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +39,7 @@ public class AnalyzerFactory extends WorkflowItemFactory {
 
         // Go through the list of analyzer requests and instantiate each one.
         return analyzersRequested.stream()
-                .filter(ar -> !ar.isDeactivated())
+                .filter(ar -> !Optional.ofNullable(ar.isDeactivated()).orElse(false))
                 .map(ar -> {
                     LOGGER.debug("Loading the {} analyzer", ar.getName());
                     return WorkflowItemFactory.<AbstractAnalyzer>buildWorkflowItem(ar, ar.getConfiguration(), context);
