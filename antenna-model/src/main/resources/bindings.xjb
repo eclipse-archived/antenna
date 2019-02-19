@@ -280,11 +280,11 @@
     }
 
     public java.util.Map<String,String> getAsMap() {
-        final java.util.Map<String, String> result = entry.stream()
-                .filter(java.util.Objects::nonNull)
-                .filter(e -> getKeyOfEntry(e) != null)
-                .collect(java.util.stream.Collectors.toMap(this::getKeyOfEntry, this::getValueOfEntry, (value1, value2) -> value2));
-        return result;
+        final java.util.Map<String, String> result = new java.util.HashMap<>();
+        entry.stream().filter(java.util.Objects::nonNull)
+            .filter(e -> getKeyOfEntry(e) != null)
+            .forEach(e -> result.put(getKeyOfEntry(e), getValueOfEntry(e)));
+        return java.util.Collections.unmodifiableMap(result);
     }
 
     public static StepConfiguration fromMap(java.util.Map<String,String> map) {
