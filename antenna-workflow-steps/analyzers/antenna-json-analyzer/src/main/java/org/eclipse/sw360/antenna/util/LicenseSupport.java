@@ -20,61 +20,24 @@ import java.util.Iterator;
 
 public class LicenseSupport {
     public static LicenseInformation mapLicenses(Collection<String> licenses) {
-        // The overall statement
-        LicenseStatement licenseStatement = new LicenseStatement();
-        // Indicator for each new statement
-        LicenseStatement temporaryLStatement = new LicenseStatement();
-                int c=0;
-                for (Iterator<String> i = licenses.iterator(); i.hasNext();) {
-                    String licenseName = i.next();
-                    License license = new License();
-                    license.setName(licenseName);
-                    if(i.hasNext()){
-                        ++c;
-                        temporaryLStatement = LicenseSupport.createStatement(licenseStatement, temporaryLStatement, license);
-                    }
-                    else if (c==0) {
-                        return license;
-                    }
-                    else if (c==1){
-                        licenseStatement.setRightStatement(license);
-                        return licenseStatement;
-                    }
-                    else {
-                        temporaryLStatement.setRightStatement(license);
-                        return licenseStatement;
-                    }
+        Iterator<String> iterator = licenses.iterator();
+        if (!iterator.hasNext()) {
+            return new LicenseStatement();
         }
-        return licenseStatement;
+
+        return computeRecursiveLicenseStatement(iterator, new LicenseStatement());
     }
 
+    private static LicenseInformation computeRecursiveLicenseStatement(Iterator<String> iterator, LicenseStatement leftLicense) {
+        License license = new License();
+        license.setName(iterator.next());
 
-    public static LicenseStatement createStatement(LicenseStatement licenseStatement, LicenseStatement temporaryLStatement, License license){
-        if(temporaryLStatement.getLeftStatement() == null) {
-            if (licenseStatement.getLeftStatement() == null) {
-                licenseStatement.setLeftStatement(license);
-                licenseStatement.setOp(LicenseOperator.AND);
-                return temporaryLStatement;
-            } else {
-                LicenseStatement newLicenseStatement = new LicenseStatement();
-                newLicenseStatement.setLeftStatement(license);
-                newLicenseStatement.setOp(LicenseOperator.AND);
-                licenseStatement.setRightStatement(newLicenseStatement);
-                return newLicenseStatement;
-            }
+        if (iterator.hasNext()) {
+            leftLicense.setLeftStatement(license);
+            leftLicense.setOp(LicenseOperator.AND);
+            leftLicense.setRightStatement(computeRecursiveLicenseStatement(iterator, new LicenseStatement()));
+            return leftLicense;
         }
-        else{
-            if (temporaryLStatement.getLeftStatement() == null) {
-                temporaryLStatement.setLeftStatement(license);
-                temporaryLStatement.setOp(LicenseOperator.AND);
-                return temporaryLStatement;
-            } else {
-                LicenseStatement newLicenseStatement = new LicenseStatement();
-                newLicenseStatement.setLeftStatement(license);
-                newLicenseStatement.setOp(LicenseOperator.AND);
-                temporaryLStatement.setRightStatement(newLicenseStatement);
-                return newLicenseStatement;
-            }
-        }
+        return license;
     }
 }
