@@ -121,7 +121,35 @@ public class JsonReader {
                 .addFact(new ArtifactIssues(mapSecurityIssues(securityDataObj)))
                 .setProprietary(mapProprietary(obj));
         mapCoordinates(obj).ifPresent(a::addFact);
+        potentiallyAddSpecialLicenseInformation(licenseDataObj, a);
         return a;
+    }
+
+    private void potentiallyAddSpecialLicenseInformation(JsonObject licenseDataObj, Artifact a) {
+        List<MissingLicenseReasons> missingLicenseReasons = new ArrayList<>();
+        missingLicenseReasons.addAll(extractSpecialLicenseDeclarations(a, "declaredLicenses", licenseDataObj));
+        missingLicenseReasons.addAll(extractSpecialLicenseDeclarations(a, "observedLicenses", licenseDataObj));
+        missingLicenseReasons.addAll(extractSpecialLicenseDeclarations(a, "overriddenLicenses", licenseDataObj));
+        if (!missingLicenseReasons.isEmpty()) {
+            a.addFact(new MissingLicenseInformation(missingLicenseReasons));
+        }
+    }
+
+    private List<MissingLicenseReasons> extractSpecialLicenseDeclarations(Artifact artifact, String identifier, JsonObject licenseDataObj) {
+        List<MissingLicenseReasons> missingLicenseReasons = new ArrayList<>();
+        if (null != licenseDataObj) {
+            JsonArray objs = (JsonArray) licenseDataObj.get(identifier);
+            if (null != objs) {
+                Spliterator<Object> tmp = objs.spliterator();
+                StreamSupport.stream(tmp, false)
+                        .map(obj -> (JsonObject) obj)
+                        .map(obj -> (String) obj.get("licenseId"))
+                        .filter(SpecialLicenseInformation.SPECIAL_INFORMATION::containsKey)
+                        .forEach(specialLicenseInformation -> missingLicenseReasons.add(SpecialLicenseInformation.SPECIAL_INFORMATION.get(specialLicenseInformation)));
+                return missingLicenseReasons;
+            }
+        }
+        return missingLicenseReasons;
     }
 
     private Issues mapSecurityIssues(JsonObject securityDataObj) {
@@ -164,6 +192,8 @@ public class JsonReader {
                 Collection<String> licenses = StreamSupport.stream(tmp, false)
                         .map(obj -> (JsonObject) obj)
                         .map(obj -> (String) obj.get("licenseId"))
+                        // We delete all special strings which can be used to convey information about missing licenses
+                        .filter(licenseId -> !SpecialLicenseInformation.SPECIAL_INFORMATION.containsKey(licenseId))
                         .collect(Collectors.toSet());
                 return LicenseSupport.mapLicenses(licenses);
             }
