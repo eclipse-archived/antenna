@@ -64,7 +64,6 @@ The plugin section of our pom should look like this:
             <version>1.0</version>
 
             <workflowDefinitionFile>${project.basedir}/src/workflow.xml</workflowDefinitionFile>
-            <disableP2Resolving>true</disableP2Resolving>
         </configuration>
     </plugin>
 </plugins>

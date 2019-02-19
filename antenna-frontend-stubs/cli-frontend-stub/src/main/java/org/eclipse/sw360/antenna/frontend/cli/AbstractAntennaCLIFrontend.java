@@ -53,18 +53,11 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend {
 
     /**
      * Assign the properties to the AntennaContext.
-     * @throws AntennaConfigurationException 
      */
     @Override
-    public AntennaFrontendHelper init() throws AntennaConfigurationException {
+    public AntennaFrontendHelper init() {
         ToolConfiguration toolConfiguration = new AntennaCLISettingsReader(pluginDescendantArtifactIdName)
                 .readSettingsToToolConfiguration(project);
-        
-        // TODO: should be removed after P2ArtifactResolverOSGi works for AbstractAntennaCLIFrontend
-        if (!toolConfiguration.isP2ResolvingDisabled()) {
-            throw new AntennaConfigurationException("Resolving p2 artifacts is currently not supported in the CLI " +
-                    "version of antenna. Please set disableP2Resolving to true.");
-        }
 
         return new AntennaFrontendHelper(project)
                 .setToolConfiguration(toolConfiguration);

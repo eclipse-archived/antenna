@@ -37,7 +37,6 @@ public class ToolConfiguration {
     private List<String> filesToAttach;
     private boolean attachAll;
     private boolean skipAntennaExecution;
-    private boolean disableP2Resolving;
     private List<File> configFiles;
     private List<URI> configFileUris;
     private String productName;
@@ -69,7 +68,6 @@ public class ToolConfiguration {
         this.filesToAttach = makeUnmodifiable(builder.filesToAttach);
         this.attachAll = builder.attachAll;
         this.skipAntennaExecution = builder.skipAntennaExecution;
-        this.disableP2Resolving = builder.disableP2Resolving;
         this.configFiles = makeUnmodifiable(builder.configFiles);
         this.configFileUris = makeUnmodifiable(builder.configFileUris);
         this.productName = builder.productName;
@@ -141,10 +139,6 @@ public class ToolConfiguration {
 
     public boolean isSkipAntennaExecution() { return this.skipAntennaExecution; }
 
-    public boolean isP2ResolvingDisabled() {
-        return this.disableP2Resolving;
-    }
-
     public boolean isMavenInstalled() {
         return isMavenInstalled;
     }
@@ -199,7 +193,6 @@ public class ToolConfiguration {
         private List<String> filesToAttach;
         private boolean attachAll;
         private boolean skipAntennaExecution;
-        private boolean disableP2Resolving;
         private List<File> configFiles;
         private List<URI> configFileUris;
         private String productName;
@@ -229,11 +222,6 @@ public class ToolConfiguration {
 
         private ConfigurationBuilder setAntennaTargetDirectory(Path antennaTargetDirectory) {
             this.antennaTargetDirectory = antennaTargetDirectory;
-            return this;
-        }
-
-        public ConfigurationBuilder setDisableP2Resolving(boolean disableP2Resolving) {
-            this.disableP2Resolving = disableP2Resolving;
             return this;
         }
 

@@ -26,7 +26,6 @@ public class BasicConfiguration {
         WorkflowStep confHandler = mkWorkflowStep("Processing of antenna configuration", "org.eclipse.sw360.antenna.workflow.processors.AntennaConfHandler");
         // enricher
         WorkflowStep enricher1 = mkWorkflowStep("Maven Artifact Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.MavenArtifactResolver");
-        WorkflowStep enricher2 = mkDeactivatedWorkflowStep("P2 Artifact Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.P2ArtifactResolverMetaStep");
         WorkflowStep enricher3 = mkWorkflowStep("Child Jar Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.ChildJarResolver");
         WorkflowStep enricher4 = mkWorkflowStep("Manifest Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.ManifestResolver");
         WorkflowStep enricher5 = mkWorkflowStep("License Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.LicenseResolver");
@@ -57,7 +56,7 @@ public class BasicConfiguration {
         WorkflowStep validator5 = mkWorkflowStep("Security Issue Validator", "org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator",
                 configMap);
         return Stream.of(confHandler,
-                enricher1, enricher2, enricher3, enricher4, enricher5, enricher6,
+                enricher1, enricher3, enricher4, enricher5, enricher6,
                 validator1, validator2, validator3, validator4, validator5).collect(Collectors.toList());
     }
 

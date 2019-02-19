@@ -136,7 +136,6 @@ public class AntennaCLISettingsReaderTest {
 
     private void fillMapsForToolConfiguration() throws IOException {
         putToMaps(booleanAnswers, booleanGetters, "attachAll", true, ToolConfiguration::isAttachAll);
-        putToMaps(booleanAnswers, booleanGetters, "disableP2Resolving", false, ToolConfiguration::isP2ResolvingDisabled);
         putToMaps(booleanAnswers, booleanGetters, "showCopyrightStatements", true, ToolConfiguration::isShowCopyrightStatements);
 
         putToMapsForPath(stringAnswers, stringGetters, "antennaTargetDirectory", ToolConfiguration::getAntennaTargetDirectory);

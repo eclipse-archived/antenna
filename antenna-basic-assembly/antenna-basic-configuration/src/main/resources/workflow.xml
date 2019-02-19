@@ -20,11 +20,6 @@
             <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.MavenArtifactResolver</classHint>
         </step>
         <step>
-            <name>P2 Artifact Resolver</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.P2ArtifactResolverMetaStep</classHint>
-            <deactivated>true</deactivated>
-        </step>
-        <step>
             <name>Child Jar Resolver</name>
             <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.ChildJarResolver</classHint>
         </step>

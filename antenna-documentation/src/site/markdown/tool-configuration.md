@@ -53,7 +53,6 @@ All parameters are required unless otherwise specified as optional.
 * `configFileUri`: *(optional)* URI to your config file.
 * `licenseValidation`: In this section a license can be defined as
 forbidden and parameter for the license Validation can be set.
-* `disableP2Resolving`: This element can be used to disable fetching of artifacts from P2 repositories. Default value is `false`.
 * `copyrightHoldersName`: *(optional)* The name of the copyright holder
 * `copyrightNotice`: *(optional)* Annotation to the copyright
 * `proxyHost`: *(optional)* Parameter to provide a proxy configuration
