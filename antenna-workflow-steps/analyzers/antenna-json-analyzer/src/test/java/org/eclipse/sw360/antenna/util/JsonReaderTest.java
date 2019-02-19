@@ -75,6 +75,7 @@ public class JsonReaderTest {
         issues.ifPresent(i -> {
             assertThat(i.stream().map(Issue::getStatus)).contains(SecurityIssueStatus.OPEN);
             assertThat(i.stream().map(Issue::getReference)).contains("CVE-2018-8014");
+            assertThat(i.stream().map(Issue::getSeverity)).contains(5.9);
         });
     }
 

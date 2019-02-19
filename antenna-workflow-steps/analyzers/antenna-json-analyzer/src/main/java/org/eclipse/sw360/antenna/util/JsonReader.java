@@ -18,9 +18,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.*;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
+import org.json.simple.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +34,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * Reads a JsonDocument and returns its JSONObjects.
+ * Reads a JsonDocument and returns its JsonObjects.
  */
 public class JsonReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonReader.class);
@@ -51,20 +49,20 @@ public class JsonReader {
         this.dependencyDir = dependencyDir;
     }
 
-    private List<JSONObject> readJsonObjects(InputStream stream) {
-        List<JSONObject> artifactList = new ArrayList<>();
+    private List<JsonObject> readJsonObjects(InputStream stream) {
+        List<JsonObject> artifactList = new ArrayList<>();
         try (InputStream recordingStream = new RecordingInputStream(stream, recordingFile);
              InputStreamReader reader = new InputStreamReader(recordingStream, encoding)) {
-            Object obj = JSONValue.parse(reader);
-            JSONObject temp = (JSONObject) obj;
-            JSONArray data = (JSONArray) temp.get(COMPONENTS);
+            Object obj = Jsoner.deserialize(reader);
+            JsonObject temp = (JsonObject) obj;
+            JsonArray data = (JsonArray) temp.get(COMPONENTS);
             for (Object aData : data) {
-                JSONObject jsonObject = (JSONObject) aData;
+                JsonObject jsonObject = (JsonObject) aData;
                 artifactList.add(jsonObject);
             }
             stream.close();
             return artifactList;
-        } catch (IOException e) {
+        } catch (IOException | DeserializationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -72,8 +70,8 @@ public class JsonReader {
     protected List<Artifact> createArtifactsList(InputStream stream, List<String> filterStrings) {
         LOGGER.debug("Create artifacts list from input stream.");
         List<Artifact> artifacts = new ArrayList<>();
-        List<JSONObject> objects = readJsonObjects(stream);
-        for (JSONObject obj : objects) {
+        List<JsonObject> objects = readJsonObjects(stream);
+        for (JsonObject obj : objects) {
             if (filterObject(obj, Optional.ofNullable(filterStrings))) {
                 continue;
             }
@@ -93,10 +91,10 @@ public class JsonReader {
         return createArtifactsList(is, null);
     }
 
-    private boolean filterObject(JSONObject object, Optional<List<String>> filterStrings) {
+    private boolean filterObject(JsonObject object, Optional<List<String>> filterStrings) {
         // Returns true if this object should be filtered (i.e. not included
         // in the results
-        JSONArray pathnames = (JSONArray) object.get("pathnames");
+        JsonArray pathnames = (JsonArray) object.get("pathnames");
         return pathnames != null &&
                 pathnames.size() > 0 &&
                 filterStrings.isPresent() &&
@@ -105,11 +103,11 @@ public class JsonReader {
     }
 
     /**
-     * Maps JSONObject to Antenna artifact.
+     * Maps JsonObject to Antenna artifact.
      */
-    private Artifact mapArtifact(JSONObject obj) {
-        JSONObject licenseDataObj = (JSONObject) obj.get("licenseData");
-        JSONObject securityDataObj = (JSONObject) obj.get("securityData");
+    private Artifact mapArtifact(JsonObject obj) {
+        JsonObject licenseDataObj = (JsonObject) obj.get("licenseData");
+        JsonObject securityDataObj = (JsonObject) obj.get("securityData");
         Artifact a = new Artifact("JSON")
                 .addFact(new ArtifactFilename(null, (String) obj.get("hash")))
                 .addFact(new ArtifactPathnames(mapPathNames(obj)))
@@ -123,13 +121,13 @@ public class JsonReader {
         return a;
     }
 
-    private Issues mapSecurityIssues(JSONObject securityDataObj) {
+    private Issues mapSecurityIssues(JsonObject securityDataObj) {
         Issues issues = new Issues();
-        if ( securityDataObj != null ) {
-            JSONArray securityIssueObjs = (JSONArray) securityDataObj.get("securityIssues");
+        if (securityDataObj != null) {
+            JsonArray securityIssueObjs = (JsonArray) securityDataObj.get("securityIssues");
             if (securityIssueObjs != null) {
                 for (Object securityIssueObj : securityIssueObjs) {
-                    JSONObject json = (JSONObject) securityIssueObj;
+                    JsonObject json = (JsonObject) securityIssueObj;
                     Issue issue = new Issue();
                     issue.setReference((String) json.get("reference"));
                     issue.setSeverity(parseSeverity(json));
@@ -143,21 +141,25 @@ public class JsonReader {
         return issues;
     }
 
-    private static double parseSeverity( JSONObject json ) {
-
-        Object o = json.get( "severity" );
-        if ( o instanceof Double ) {
-            return (Double) o;
+    private static double parseSeverity(JsonObject json) {
+        Object o = json.get("severity");
+        if (o == null) {
+            return 10.0;
         }
-        return 10.0;
+        try {
+            return Double.parseDouble(o.toString());
+        } catch (NumberFormatException ex) {
+            return 10.0;
+        }
     }
 
-    private LicenseInformation mapLicenses(String identifier, JSONObject licenseDataObj) {
+    private LicenseInformation mapLicenses(String identifier, JsonObject licenseDataObj) {
         if (null != licenseDataObj) {
-            JSONArray objs = (JSONArray) licenseDataObj.get(identifier);
+            JsonArray objs = (JsonArray) licenseDataObj.get(identifier);
             if (null != objs) {
-                Spliterator<JSONObject> tmp = objs.spliterator();
+                Spliterator<Object> tmp = objs.spliterator();
                 Collection<String> licenses = StreamSupport.stream(tmp, false)
+                        .map(obj -> (JsonObject) obj)
                         .map(obj -> (String) obj.get("licenseId"))
                         .collect(Collectors.toSet());
                 return LicenseSupport.mapLicenses(licenses);
@@ -166,13 +168,13 @@ public class JsonReader {
         return new LicenseStatement();
     }
 
-    private String[] mapPathNames(JSONObject obj) {
-        JSONArray jPathNames = (JSONArray) obj.get("pathnames");
+    private String[] mapPathNames(JsonObject obj) {
+        JsonArray jPathNames = (JsonArray) obj.get("pathnames");
         if (jPathNames == null) {
             return new String[]{};
         }
 
-        Stream<String> targetStream = StreamSupport.stream(jPathNames.spliterator(), false);
+        Stream<String> targetStream = StreamSupport.stream(jPathNames.spliterator(), false).map(Object::toString);
         return targetStream.map(path -> Paths.get(path)).map(path -> {
             if (!path.isAbsolute()) {
                 return dependencyDir.resolve(path).toString();
@@ -182,17 +184,17 @@ public class JsonReader {
         }).toArray(String[]::new);
     }
 
-    private boolean mapProprietary(JSONObject obj) {
+    private boolean mapProprietary(JsonObject obj) {
         Boolean ppObject = (Boolean) obj.get("proprietary");
         return (null != ppObject && ppObject);
     }
 
-    private MatchState mapMatchState(JSONObject obj) {
+    private MatchState mapMatchState(JsonObject obj) {
         String ms = (String) obj.get("matchState");
         return MatchState.valueOf(ms.toUpperCase());
     }
 
-    private Optional<ArtifactCoordinates> mapMavenCoordinates(JSONObject objCoordinates) {
+    private Optional<ArtifactCoordinates> mapMavenCoordinates(JsonObject objCoordinates) {
         if (null != objCoordinates) {
             MavenCoordinates.MavenCoordinatesBuilder c = new MavenCoordinates.MavenCoordinatesBuilder();
             c.setGroupId((String) objCoordinates.get("groupId"));
@@ -203,7 +205,7 @@ public class JsonReader {
         return Optional.empty();
     }
 
-    private Optional<ArtifactCoordinates> mapJavaScriptCoordinates(JSONObject objCoordinates) {
+    private Optional<ArtifactCoordinates> mapJavaScriptCoordinates(JsonObject objCoordinates) {
         if (objCoordinates != null) {
             JavaScriptCoordinates.JavaScriptCoordinatesBuilder c = new JavaScriptCoordinates.JavaScriptCoordinatesBuilder();
             c.setName((String) objCoordinates.get("name"));
@@ -214,7 +216,7 @@ public class JsonReader {
         return Optional.empty();
     }
 
-    private Optional<ArtifactCoordinates> mapDotNetCoordinates(JSONObject objCoordinates) {
+    private Optional<ArtifactCoordinates> mapDotNetCoordinates(JsonObject objCoordinates) {
         if (objCoordinates != null) {
             DotNetCoordinates.DotNetCoordinatesBuilder c = new DotNetCoordinates.DotNetCoordinatesBuilder();
             c.setPackageId((String) objCoordinates.get("packageId"));
@@ -225,14 +227,17 @@ public class JsonReader {
     }
 
 
-    private Optional<ArtifactCoordinates> mapCoordinates(JSONObject object) {
-        JSONObject objComponentIdentifier = (JSONObject) object.get("componentIdentifier");
+    private Optional<ArtifactCoordinates> mapCoordinates(JsonObject object) {
+        JsonObject objComponentIdentifier = (JsonObject) object.get("componentIdentifier");
         if (objComponentIdentifier != null) {
             String format = (String) objComponentIdentifier.get("format");
             switch (format) {
-                case "a-name": return mapJavaScriptCoordinates((JSONObject) objComponentIdentifier.get("coordinates"));
-                case "maven": return mapMavenCoordinates((JSONObject) objComponentIdentifier.get("coordinates"));
-                case "nuget": return mapDotNetCoordinates((JSONObject) objComponentIdentifier.get("coordinates"));
+                case "a-name":
+                    return mapJavaScriptCoordinates((JsonObject) objComponentIdentifier.get("coordinates"));
+                case "maven":
+                    return mapMavenCoordinates((JsonObject) objComponentIdentifier.get("coordinates"));
+                case "nuget":
+                    return mapDotNetCoordinates((JsonObject) objComponentIdentifier.get("coordinates"));
             }
         }
         return Optional.empty();
