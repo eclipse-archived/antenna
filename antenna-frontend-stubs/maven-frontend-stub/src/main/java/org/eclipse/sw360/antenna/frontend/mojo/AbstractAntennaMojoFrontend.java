@@ -286,7 +286,7 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
                 .setConfigFiles(configFiles).setConfigFileUris(configFileUris)
                 .setProductName(productName).setProductFullName(productFullname)
                 .setVersion(version).setScanDir(scanDir)
-                .setDisableP2Resolving(disableP2Resolving).setSkipAntennaExecution(skip)
+                .setSkipAntennaExecution(skip)
                 .setMavenInstalled(true)  // when using the maven plugin, maven is surely available
                 .setSourcesRepositoryUrl(sourcesRepositoryUrl).setCompanyName(companyName)
                 .setCopyrightHoldersName(copyrightHoldersName).setCopyrightNotice(copyrightNotice)

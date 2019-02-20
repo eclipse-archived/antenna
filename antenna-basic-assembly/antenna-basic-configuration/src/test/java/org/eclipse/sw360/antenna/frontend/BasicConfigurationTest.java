@@ -36,7 +36,6 @@ public class BasicConfigurationTest extends AntennaTestWithMockedContext {
         workflow = WorkflowFileLoader.loadWorkflowFromClassPath(Optional.empty(), tr);
 
         when(toolConfigMock.getWorkflow()).thenReturn(workflow);
-        when(antennaContextMock.getToolConfiguration().isP2ResolvingDisabled()).thenReturn(true);
         when(toolConfigMock.getAntennaTargetDirectory()).thenReturn(temporaryFolder.newFolder("target").toPath());
     }
 
@@ -48,9 +47,6 @@ public class BasicConfigurationTest extends AntennaTestWithMockedContext {
         verify(antennaContextMock, atLeast(0)).getConfiguration();
         verify(antennaContextMock, atLeast(0)).getProcessingReporter();
         verify(toolConfigMock, atLeast(0)).getWorkflow();
-
-        // p2
-        verify(toolConfigMock, atLeast(0)).isP2ResolvingDisabled();
 
         // antenna-source-validator
         verify(configMock, atLeast(0)).getValidForMissingSources();
