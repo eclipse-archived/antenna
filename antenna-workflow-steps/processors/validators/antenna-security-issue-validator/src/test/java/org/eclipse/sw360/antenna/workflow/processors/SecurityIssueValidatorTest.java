@@ -11,6 +11,19 @@
 
 package org.eclipse.sw360.antenna.workflow.processors;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator.FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY;
+import static org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator.FORBIDDEN_SECURITY_ISSUE_STATUS_SEVERITY_KEY;
+import static org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator.SECURITY_ISSUE_SEVERITY_LIMIT_KEY;
+import static org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator.SECURITY_ISSUE_SEVERITY_LIMIT_SEVERITY_KEY;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -26,12 +39,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator.*;
-import static org.mockito.Mockito.when;
 
 public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     private Issue openIssue;
@@ -156,7 +163,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
 
         configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, "5.5");
         configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_SEVERITY_KEY, "FAIL");
-        configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "");
+        configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "Open,Acknowledged,Confirmed");
         validator.configure(configMap);
 
         assertThat(validator.validate(artifact).size()).isEqualTo(2);
@@ -175,5 +182,33 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
         validator.configure(configMap);
 
         assertThat(validator.validate(artifact).size()).isEqualTo(0);
+    }
+
+    @Test
+    public void validateOnlyFindOpenIssues() throws Exception {
+        Artifact artifact = mkArtifact(Arrays.asList(notApplicableIssue, acknowledgedIssue, openIssue, confirmedIssue));
+
+        configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, "1.0");
+        configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_SEVERITY_KEY, "FAIL");
+        configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "Open");
+        validator.configure(configMap);
+
+        List<IEvaluationResult> list = validator.validate(artifact);
+        assertThat(list.size()).isEqualTo(1);
+        IEvaluationResult result = list.get(0);
+        assertThat(result.getDescription())
+                .isEqualTo("The artifact has a security issue [null] with forbidden status OPEN.");
+    }
+
+    @Test
+    public void validateOnlyFindOpenIssues2() throws Exception {
+        Artifact artifact = mkArtifact(Arrays.asList(notApplicableIssue, acknowledgedIssue, confirmedIssue));
+
+        configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, "1.0");
+        configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_SEVERITY_KEY, "FAIL");
+        configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "Open");
+        validator.configure(configMap);
+
+        assertThat(validator.validate(artifact)).isEmpty();
     }
 }

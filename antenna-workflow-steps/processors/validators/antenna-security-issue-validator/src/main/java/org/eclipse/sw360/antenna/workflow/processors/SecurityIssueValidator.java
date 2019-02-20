@@ -11,6 +11,17 @@
 
 package org.eclipse.sw360.antenna.workflow.processors;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
@@ -25,10 +36,6 @@ import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvalu
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class SecurityIssueValidator extends AbstractComplianceChecker {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityIssueValidator.class);
@@ -38,7 +45,6 @@ public class SecurityIssueValidator extends AbstractComplianceChecker {
     static final String SECURITY_ISSUE_SEVERITY_LIMIT_KEY = "securityIssueSeverityLimit";
     private static final String IGNORE_SECURITY_ISSUE_REFERENCES_KEY = "ignoreSecurityIssueReferences";
     private IEvaluationResult.Severity forbiddenSecurityIssueStatusSeverity = IEvaluationResult.Severity.FAIL;
-    private IEvaluationResult.Severity securityIssueSeverityLimitSeverity = IEvaluationResult.Severity.FAIL;
     private List<SecurityIssueStatus> forbiddenSecurityIssueStatusesList;
     private List<String> ignoreSecurityIssueReferences;
     private double securityIssueSeverityLimit;
@@ -69,11 +75,8 @@ public class SecurityIssueValidator extends AbstractComplianceChecker {
         List<IEvaluationResult> results = new ArrayList<>();
         for (Issue issue : issuesList) {
             if (ignoreSecurityIssueReferences.contains(issue.getReference())) {
-                LOGGER.debug("Do not validate security issue=[" + issue.getReference() + "], since it is ignored for validation");
-                continue;
-            }
-            if(SecurityIssueStatus.NOT_APPLICABLE.equals(issue.getStatus())) {
-                LOGGER.debug("Ignore not applicable issue=[" + issue.getReference() + "]");
+                LOGGER.debug("Do not validate security issue=[{}], since it is ignored for validation",
+                        issue.getReference());
                 continue;
             }
             if (suppressedSecurityIssues != null && suppressedSecurityIssues.containsKey(issue.getReference())) {
@@ -86,21 +89,13 @@ public class SecurityIssueValidator extends AbstractComplianceChecker {
                     continue;
                 }
             }
-            if (forbiddenSecurityIssueStatusesList.contains(issue.getStatus())) {
+            if (forbiddenSecurityIssueStatusesList.contains(issue.getStatus())
+                    && issue.getSeverity() >= securityIssueSeverityLimit) {
                 results.add(new DefaultPolicyEvaluation.DefaultEvaluationResult(
                         "SecurityIssueValidator::forbiddenSecurityIssueStatus",
                         "The artifact has a security issue [" + issue.getReference() +
                                 "] with forbidden status " + issue.getStatus() + ".",
                         forbiddenSecurityIssueStatusSeverity,
-                        artifact));
-            }
-            if (issue.getSeverity() >= securityIssueSeverityLimit) {
-                results.add(new DefaultPolicyEvaluation.DefaultEvaluationResult(
-                        "SecurityIssueValidator::securityIssueSeverityLimit",
-                        "The artifact has a security issue [" + issue.getReference() +
-                                "] with a severity " + issue.getSeverity() +
-                                ", which is above the limit " + securityIssueSeverityLimit + ".",
-                        securityIssueSeverityLimitSeverity,
                         artifact));
             }
         }
@@ -135,8 +130,8 @@ public class SecurityIssueValidator extends AbstractComplianceChecker {
                 .collect(Collectors.toList());
 
         forbiddenSecurityIssueStatusSeverity = getSeverityFromConfig(FORBIDDEN_SECURITY_ISSUE_STATUS_SEVERITY_KEY, configMap, IEvaluationResult.Severity.FAIL);
-        securityIssueSeverityLimitSeverity = getSeverityFromConfig(SECURITY_ISSUE_SEVERITY_LIMIT_SEVERITY_KEY, configMap, IEvaluationResult.Severity.FAIL);
-        securityIssueSeverityLimit = Double.valueOf(getConfigValue(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, configMap, String.valueOf(Double.MAX_VALUE)));
+        securityIssueSeverityLimit = Double
+                .valueOf(getConfigValue(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, configMap, "0.0"));
         ignoreSecurityIssueReferences = getCommaSeparatedConfigValue(IGNORE_SECURITY_ISSUE_REFERENCES_KEY, configMap);
     }
 }
