@@ -24,7 +24,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +48,7 @@ public class DroolsEngineTest {
 
         droolsEngine = new DroolsEngine();
         droolsEngine.setRulesetDirectory(resourcesFolderPath);
-        droolsEngine.setRulesetPath("policies");
+        droolsEngine.setRulesetPaths(Collections.singletonList("policies"));
     }
 
     @Test
@@ -75,15 +80,15 @@ public class DroolsEngineTest {
 
     @Test
     public void getVersionsCanReadPropertiesFile() {
-        assertThat(droolsEngine.getRulesetVersion()).contains("0.0.0");
+        assertThat(droolsEngine.getRulesetVersion().get()).contains("0.0.0");
     }
 
     private List<Artifact> getAllFailedArtifacts(IPolicyEvaluation evaluationResults) {
         return evaluationResults.getEvaluationResults()
-                    .stream()
-                    .map(IEvaluationResult::getFailedArtifacts)
-                    .flatMap(Set::stream)
-                    .collect(Collectors.toList());
+                .stream()
+                .map(IEvaluationResult::getFailedArtifacts)
+                .flatMap(Set::stream)
+                .collect(Collectors.toList());
     }
 
     private List<Artifact> getAllFailedArtifactsOfEvaluator(IPolicyEvaluation evaluationResults, String evaluatorId) {
@@ -117,9 +122,51 @@ public class DroolsEngineTest {
         assertThat(failedArtifacts).doesNotContain(artifact3);
     }
 
-    private DeclaredLicenseInformation createDeclaredLicenseInformation(String license){
+    private DeclaredLicenseInformation createDeclaredLicenseInformation(String license) {
         return new DeclaredLicenseInformation(
-                LicenseSupport.mapLicenses(new ArrayList<String>() {{add(license);}})
+                LicenseSupport.mapLicenses(new ArrayList<String>() {{
+                    add(license);
+                }})
         );
+    }
+
+    @Test
+    public void additionalPolicies() throws AntennaException {
+        droolsEngine.setRulesetPaths(Arrays.asList("policies", "policiesTheSecond"));
+
+        Artifact artifact1 = new Artifact();
+        artifact1.setProprietary(false);
+
+        Artifact artifact2 = new Artifact();
+        artifact2.setProprietary(true);
+
+        IPolicyEvaluation evaluationResults = droolsEngine.evaluate(Arrays.asList(artifact1, artifact2));
+
+        List<Artifact> failedArtifacts = getAllFailedArtifacts(evaluationResults);
+
+        assertThat(failedArtifacts).containsExactly(artifact2, artifact2);
+
+        assertThat(evaluationResults.getEvaluationResults().stream()
+                .map(IEvaluationResult::getId)
+                .collect(Collectors.toList()))
+                .hasSize(3);
+    }
+
+    @Test
+    public void getRulesetVersionMultiplePolicyFolders() {
+        droolsEngine.setRulesetPaths(Arrays.asList("policies", "policiesTheSecond"));
+
+        Optional<String> rulesetVersion = droolsEngine.getRulesetVersion();
+
+        assertThat(rulesetVersion.isPresent()).isTrue();
+        assertThat(rulesetVersion.get()).contains("policies:0.0.0;policiesTheSecond:0.0.0");
+    }
+
+    @Test
+    public void evaluateEmptyRulesetVersionWhenBadFolder() {
+        droolsEngine.setRulesetPaths(Collections.singletonList("noFolder"));
+
+        assertThat(droolsEngine.getRulesetVersion().isPresent()).isTrue();
+        assertThat(droolsEngine.getRulesetVersion().get()).contains("noFolder:no version string specified");
     }
 }

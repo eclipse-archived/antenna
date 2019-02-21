@@ -18,21 +18,27 @@ import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.bundle.DroolsEngine;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 public class AntennaDroolsChecker extends AbstractComplianceChecker {
     private final DroolsEngine droolsEngine = new DroolsEngine();
 
     private static final String BASEDIR_KEY = "base.dir";
-    private static final String POLICIES_FOLDER_PATH = "folder.path";
+    private static final String POLICIES_FOLDER_PATH = "folder.paths";
     private static final String NO_VERSION = "no version string specified";
 
     @Override
     public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
         super.configure(configMap);
         droolsEngine.setRulesetDirectory(getConfigValue(BASEDIR_KEY, configMap));
-        droolsEngine.setRulesetPath(getConfigValue(POLICIES_FOLDER_PATH, configMap));
+
+        StringTokenizer tokenizer = new StringTokenizer(getConfigValue(POLICIES_FOLDER_PATH, configMap), ";");
+        List<String> folderList = new ArrayList<>();
+        while(tokenizer.hasMoreTokens()) {
+            folderList.add(tokenizer.nextToken());
+        }
+
+        droolsEngine.setRulesetPaths(folderList);
     }
 
     @Override
