@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.workflow.analyzers;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
 import org.eclipse.sw360.antenna.model.artifact.facts.CopyrightStatement;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.ObservedLicenseInformation;
@@ -21,6 +22,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -59,6 +61,46 @@ public class OrtResultAnalyzerTest {
         assertThat(artifacts.get(0).askForGet(DeclaredLicenseInformation.class).get().evaluate()).isEqualTo("ISC");
 
         assertThat(artifacts.get(2).askForGet(DeclaredLicenseInformation.class).get().evaluate()).isEqualTo("( Apache License 2.0 AND ( LGPL 2.1 AND MPL 1.1 ) )");
+    }
+
+    @Test
+    public void testParseOrtDataWithoutAnalyzerResultsToArtifacts() throws URISyntaxException, IOException {
+        List<Artifact> artifacts = init("scan-result-nullAnalyzer.yml");
+
+        assertThat(artifacts.stream()
+        .map(artifact -> artifact.askForGet(ObservedLicenseInformation.class))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(LicenseInformation::evaluate))
+                .contains("CPL-1.0");
+
+        assertThat(artifacts.stream()
+                .map(artifact -> artifact.askForGet(CopyrightStatement.class))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .flatMap(s -> Stream.of(s.split("/n"))).collect(Collectors.toList()).toArray())
+                .contains("\"" + "Copyright (c) 2014-2017 Teist Peirson2 <teist.peirson@2.com>" + "\"");
+
+        assertThat(artifacts.stream()
+                .map(artifact -> artifact.askForGet(CopyrightStatement.class))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .flatMap(s -> Stream.of(s.split("/n"))).collect(Collectors.toList()).toArray())
+                .hasSize(1+1); //+1 since first element of array will be empty due to parsing
+
+        assertThat(artifacts.stream().
+                map(artifact -> artifact.askForGet(ArtifactSourceUrl.class)).
+                filter(Optional::isPresent).
+                map(Optional::get).
+                filter(s -> s != "").
+                collect(Collectors.toList())).hasSize(1);
+
+        assertThat(artifacts.stream().
+                map(artifact -> artifact.askForGet(ArtifactSourceUrl.class)).
+                filter(Optional::isPresent).
+                map(Optional::get).
+                filter(s -> s != "").
+                collect(Collectors.toList())).contains("https:/some.jar");
     }
 
     @Test
@@ -149,5 +191,12 @@ public class OrtResultAnalyzerTest {
                 .map(Optional::get)
                 .flatMap(s -> Stream.of(s.split("/n"))).collect(Collectors.toList()).toArray())
                 .hasSize(4 + 1); //+1 since first element of array will be empty due to parsing
+
+        assertThat(artifacts.stream().
+                map(artifact -> artifact.askForGet(ArtifactSourceUrl.class)).
+                filter(Optional::isPresent).
+                map(Optional::get).
+                filter(s -> s != "").
+                collect(Collectors.toList())).hasSize(0);
     }
 }

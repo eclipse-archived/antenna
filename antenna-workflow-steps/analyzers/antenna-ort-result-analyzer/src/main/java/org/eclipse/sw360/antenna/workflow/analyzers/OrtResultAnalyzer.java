@@ -120,72 +120,103 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
 
         List<Artifact> artifacts = new ArrayList<>();
 
-        JsonNode ortPackages = yamlContent.get("analyzer").get("result").get("packages");
+        boolean hasAnalyzerResults = !yamlContent.get("analyzer").isNull();
+        boolean hasScannerResults = !yamlContent.get("scanner").isNull();
 
-        if (ortPackages == null) {
+        if (hasAnalyzerResults) {
+            Optional<JsonNode> ortPackages = Optional.ofNullable(yamlContent.get("analyzer").get("result").get("packages"));
+            if (!ortPackages.isPresent()) {
+                if (hasScannerResults) {
+                    return getArtifactListFromScanResult(yamlContent.get("scanner").get("results").get("scan_results"));
+                }
+                return null;
+            }
+
+            Optional<JsonNode> scanResults = Optional.empty();
+            if (hasScannerResults) {
+                scanResults = Optional.ofNullable(yamlContent.get("scanner").get("results").get("scan_results"));
+            }
+            Iterator<JsonNode> ortPackageIterator = ortPackages.get().elements();
+            while (ortPackageIterator.hasNext()) {
+                Artifact artifact;
+                Optional<JsonNode> ortPackage = Optional.ofNullable(ortPackageIterator.next().get("package"));
+
+                Optional<JsonNode> scanResult = getScanResultWithId(ortPackage, scanResults);
+                artifact = mapArtifact(ortPackage, scanResult);
+                artifacts.add(artifact);
+            }
+            return artifacts;
+
+        } else if (hasScannerResults) {
+            return getArtifactListFromScanResult(yamlContent.get("scanner").get("results").get("scan_results"));
+        } else {
             return null;
         }
+    }
 
-        boolean hasScannerResults = yamlContent.get("scanner").elements().hasNext();
-        JsonNode scanResults = null;
-        if (hasScannerResults) {
-            scanResults = yamlContent.get("scanner").get("results").get("scan_results");
-        }
-        Iterator<JsonNode> ortPackageIterator = ortPackages.elements();
-        while (ortPackageIterator.hasNext()) {
-            Artifact artifact;
-            if (hasScannerResults) {
-                JsonNode ortPackage = ortPackageIterator.next().get("package");
-                Optional<JsonNode> scanResult = getScanResultWithId(ortPackage, scanResults);
-                if (scanResult.isPresent()) {
-                    artifact = mapArtifact(ortPackage, scanResult.get());
-                } else {
-                    artifact = mapArtifact(ortPackage);
-                }
-            } else {
-                artifact = mapArtifact(ortPackageIterator.next().get("package"));
-            }
-            artifacts.add(artifact);
+    private List<Artifact> getArtifactListFromScanResult(JsonNode scanResults) {
+        List<Artifact> artifacts = new ArrayList<>();
+        Iterator<JsonNode> scanResultsIterator = scanResults.elements();
+        while (scanResultsIterator.hasNext()) {
+            artifacts.add(mapArtifact(Optional.empty(), Optional.of(scanResultsIterator.next())));
         }
         return artifacts;
     }
 
-    private Artifact mapArtifact(JsonNode ortPackage) {
+    private Optional<JsonNode> getScanResultWithId(Optional<JsonNode> ortPackage, Optional<JsonNode> scanResult) {
+        Optional<JsonNode> pkgId = ortPackage.map(p -> p.get("id"));
+
+        return scanResult.flatMap(jsonNode -> StreamSupport.stream(jsonNode.spliterator(), false)
+                .filter(currentScanResult -> currentScanResult.get("id").equals(pkgId.get()))
+                .findFirst());
+    }
+
+    private Artifact mapArtifact(Optional<JsonNode> ortPackage, Optional<JsonNode> scanResult) {
+        Artifact a;
+        if (ortPackage.isPresent()) {
+            a = mapArtifactFromAnalyzerResult(ortPackage.get());
+        } else if (scanResult.isPresent()) {
+            a = mapArtifactFromScanResult(scanResult.get());
+        } else {
+            return new Artifact("OrtResult");
+        }
+
+        if (scanResult.isPresent()) {
+            LicensePair artifactLicenseCopyrightInfo = mapObservedLicense(scanResult.get());
+            a.addFact(new ObservedLicenseInformation(artifactLicenseCopyrightInfo.getLicenseInformation()))
+                    .addFact(artifactLicenseCopyrightInfo.getCopyrightStatement());
+        }
+
+        return a;
+    }
+
+    private Artifact mapArtifactFromAnalyzerResult(JsonNode ortPackage) {
         Artifact a = new Artifact("OrtResult")
                 .addFact(mapFileName(ortPackage))
                 .addFact(new DeclaredLicenseInformation(mapDeclaredLicenses("declared_licenses", ortPackage)))
                 .addFact(new ArtifactSourceUrl(mapSourceUrl(ortPackage)));
         mapCoordinates(ortPackage.get("id").textValue()).ifPresent(a::addFact);
-        return a;
 
-    }
-
-    private Artifact mapArtifact(JsonNode ortPackage, JsonNode scanResult) {
-        Artifact a = mapArtifact(ortPackage);
-        LicensePair artifactLicenseCopyrightInfo = mapObservedLicense(scanResult);
-        a.addFact(new ObservedLicenseInformation(artifactLicenseCopyrightInfo.getLicenseInformation()))
-                .addFact(artifactLicenseCopyrightInfo.getCopyrightStatement());
         return a;
     }
 
-    private Optional<JsonNode> getScanResultWithId(JsonNode ortPackage, JsonNode scanResult) {
-        JsonNode pkgId = ortPackage.get("id");
+    private Artifact mapArtifactFromScanResult(JsonNode scanResult) {
+        Artifact a = new Artifact("OrtResult")
+                .addFact(mapFileName(scanResult))
+                .addFact(new ArtifactSourceUrl(mapSourceUrl(scanResult.get("results"))));
+        mapCoordinates(scanResult.get("id").textValue()).ifPresent(a::addFact);
 
-        return StreamSupport.stream(scanResult.spliterator(), false)
-                .filter(currentScanResult -> currentScanResult.get("id").equals(pkgId))
-                .findFirst();
+        return a;
     }
 
     private LicenseInformation mapDeclaredLicenses(String identifier, JsonNode ortPackage) {
-        if (null != ortPackage) {
-            if (ortPackage.get(identifier).isArray()) {
-                Iterator<JsonNode> licenseIterator = ortPackage.get(identifier).elements();
-                Collection<String> licenses = new ArrayList<>();
-                while (licenseIterator.hasNext()) {
-                    licenses.add(licenseIterator.next().textValue());
-                }
-                return LicenseSupport.mapLicenses(licenses);
+        if (ortPackage.get(identifier).isArray()) {
+            Iterator<JsonNode> licenseIterator = ortPackage.get(identifier).elements();
+            Collection<String> licenses = new ArrayList<>();
+            while (licenseIterator.hasNext()) {
+                licenses.add(licenseIterator.next().textValue());
             }
+            return LicenseSupport.mapLicenses(licenses);
         }
         return new LicenseStatement();
     }
@@ -214,26 +245,53 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
         }
     }
 
-    private String mapSourceUrl(JsonNode ortPackage) {
-        return ortPackage.get("source_artifact").get("url").textValue();
+    private String mapSourceUrl(JsonNode ortItem) {
+        if (ortItem.has("source_artifact")) {
+            return ortItem.get("source_artifact").get("url").textValue();
+        } else {
+            Iterator<JsonNode> ortItemProvenanceIterator = ortItem.elements();
+            if (ortItemProvenanceIterator.hasNext()) {
+                JsonNode provenanceNode = ortItemProvenanceIterator.next().get("provenance");
+                if (provenanceNode.has("vcs_info")) {
+                    return provenanceNode.get("vcs_info").get("url").textValue();
+                } else if (provenanceNode.has("source_artifact")) {
+                    return provenanceNode.get("source_artifact").get("url").textValue();
+                } else if (provenanceNode.has("original_vcs_info")) {
+                    return provenanceNode.get("original_vcs_info").get("url").textValue();
+                } else {
+                    return "";
+                }
+            }
+            return "";
+        }
     }
 
-    private ArtifactFilename mapFileName(JsonNode ortPackage) {
-        JsonNode ortArtifact;
-        if (ortPackage.get("source_artifact") != null
-                && !ortPackage.get("source_artifact").get("url").textValue().equals("")) {
-            ortArtifact = ortPackage.get("source_artifact");
-        } else if (ortPackage.get("binary_artifact") != null
-                && !ortPackage.get("binary_artifact").get("url").textValue().equals("")) {
-            ortArtifact = ortPackage.get("binary_artifact");
-        } else {
-            return new ArtifactFilename(null);
-        }
-        String fileName = ortArtifact.get("url").textValue();
-        String hash = ortArtifact.get("hash").textValue();
-        String hashAlgorithm = ortArtifact.get("hash_algorithm").textValue();
+    private ArtifactFilename mapFileName(JsonNode ortItem) {
+        return getOrtArtifact(ortItem).map(ortArtifact -> {
+            String fileName = ortArtifact.get("url").textValue();
+            String hash = ortArtifact.get("hash").textValue();
+            String hashAlgorithm = ortArtifact.get("hash_algorithm").textValue();
+            return new ArtifactFilename(fileName, hash, hashAlgorithm);
+        }).orElse(new ArtifactFilename(null));
+    }
 
-        return new ArtifactFilename(fileName, hash, hashAlgorithm);
+    private Optional<JsonNode> getOrtArtifact(JsonNode ortItem) {
+        if (ortItem.get("source_artifact") != null
+                && !ortItem.get("source_artifact").get("url").textValue().equals("")) {
+            return Optional.ofNullable(ortItem.get("source_artifact"));
+        } else if (ortItem.get("binary_artifact") != null
+                && !ortItem.get("binary_artifact").get("url").textValue().equals("")) {
+            return Optional.ofNullable(ortItem.get("binary_artifact"));
+        } else if (ortItem.get("results") != null) {
+            Iterator<JsonNode> ortItemIterator = ortItem.get("results").elements();
+            while (ortItemIterator.hasNext()) {
+                JsonNode ortResult = ortItemIterator.next();
+                if (ortResult.get("provenance").has("source_artifact")) {
+                    return Optional.of(ortResult.get("provenance").get("source_artifact"));
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     private class LicensePair {
