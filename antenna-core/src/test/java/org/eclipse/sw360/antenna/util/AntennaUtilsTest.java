@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.util;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.junit.Test;
 
+import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -74,7 +75,7 @@ public class AntennaUtilsTest {
 
         final Path jarPath = AntennaUtils.getJarPath(filePath);
 
-        assertThat(jarPath).hasToString("/some/path/to/file.jar");
+        assertThat(jarPath).hasToString(toAbsolutePathname("/some/path/to/file.jar"));
     }
 
     @Test(expected = AntennaExecutionException.class)
@@ -90,7 +91,7 @@ public class AntennaUtilsTest {
 
         final Path jarPath = AntennaUtils.getJarPath(filePath);
 
-        assertThat(jarPath).hasToString("/some/path/to/file.jar");
+        assertThat(jarPath).hasToString(toAbsolutePathname("/some/path/to/file.jar"));
     }
 
     @Test
@@ -99,7 +100,7 @@ public class AntennaUtilsTest {
 
         final Path jarPath = AntennaUtils.getJarPath(filePath);
 
-        assertThat(jarPath).hasToString("/some/path/to/file.jar");
+        assertThat(jarPath).hasToString(toAbsolutePathname("/some/path/to/file.jar"));
     }
 
     @Test
@@ -111,13 +112,13 @@ public class AntennaUtilsTest {
         Path val;
         assertThat(iterator.hasNext()).isTrue();
         val = iterator.next();
-        assertThat(val).hasToString("/some/path/to/file.jar");
+        assertThat(val).hasToString(toAbsolutePathname("/some/path/to/file.jar"));
         assertThat(iterator.hasNext()).isTrue();
         val = iterator.next();
-        assertThat(val).hasToString("/child.war");
+        assertThat(val).hasToString(File.separator + "child.war");  // relative path
         assertThat(iterator.hasNext()).isTrue();
         val = iterator.next();
-        assertThat(val).hasToString("/subChild.jar");
+        assertThat(val).hasToString(File.separator + "subChild.jar");  // relative path
         assertThat(iterator.hasNext()).isFalse();
     }
 
@@ -127,7 +128,7 @@ public class AntennaUtilsTest {
 
         Path computed = AntennaUtils.computeInnerReplacementJarPath(filePath);
 
-        assertThat(computed).hasToString("/some/path/to/file_jar/child_war/subChild.jar");
+        assertThat(computed).hasToString(toAbsolutePathname("/some/path/to/file_jar/child_war/subChild.jar"));
     }
 
     @Test
@@ -142,12 +143,16 @@ public class AntennaUtilsTest {
     }
 
     @Test
-    public void computeJarPathFromURLWithExclemationMark() throws Exception {
+    public void computeJarPathFromURLWithExclamationMark() throws Exception {
         onlyForNonWindows();
         final URL url = new URL("jar:file://"+Paths.get("/some/path/to/file.jar").toAbsolutePath().toString()+"!/some/inner/thing.class");
 
         final Path jarPath = AntennaUtils.getJarPath(url);
 
         assertThat(jarPath).hasToString("/some/path/to/file.jar");
+    }
+
+    private String toAbsolutePathname(String path) {
+        return Paths.get(path).toAbsolutePath().toString();
     }
 }
