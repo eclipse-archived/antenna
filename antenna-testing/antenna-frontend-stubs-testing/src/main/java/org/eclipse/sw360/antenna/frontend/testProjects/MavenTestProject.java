@@ -79,38 +79,38 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationAnalyzers() {
-        WorkflowStep analyzer1 = mkWorkflowStep("JSON Analyzer","org.eclipse.sw360.antenna.workflow.analyzers.JsonAnalyzer",
+        WorkflowStep analyzer1 = mkWorkflowStep("JSON Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.JsonAnalyzer",
                 "base.dir", this.projectRoot.toString(),
-                "file.path", "src" + File.separator + "reportData.json");
-        WorkflowStep analyzer2 = mkWorkflowStep("CSV Analyzer","org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer",
+                "file.path", "src/reportData.json");
+        WorkflowStep analyzer2 = mkWorkflowStep("CSV Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer",
                 "base.dir", this.projectRoot.toString(),
-                "file.path", "src" + File.separator + "dependencies.csv");
-        WorkflowStep analyzer3 = mkWorkflowStep("Maven dependency analyzer","org.eclipse.sw360.antenna.workflow.analyzers.MvnDependencyTreeAnalyzer");
+                "file.path", "src/dependencies.csv");
+        WorkflowStep analyzer3 = mkWorkflowStep("Maven dependency analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.MvnDependencyTreeAnalyzer");
         return Stream.of(analyzer1, analyzer2, analyzer3).collect(Collectors.toList());
     }
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
         return new BasicConfiguration().getProcessors()
-               .stream()
-               .map( s -> {
-                   if(!"Source Validator".equals(s.getName())) {
-                       return s;
-                   }
-                   final Map<String, String> map = Stream.of(s.getConfiguration().getAsMap(), Collections.singletonMap("missingSourcesSeverity", "FAIL"))
-                           .flatMap(m -> m.entrySet().stream())
-                           .collect(Collectors.toMap(
-                                   Map.Entry::getKey,
-                                   Map.Entry::getValue,
-                                   (v1, v2) -> v2));
-                   WorkflowStep newS = new WorkflowStep();
-                   newS.setName(s.getName());
-                   newS.setClassHint(s.getClassHint());
-                   newS.setConfiguration(StepConfiguration.fromMap(map));
-                   newS.setDeactivated(true);
-                   return newS;
-               })
-               .collect(Collectors.toList());
+                .stream()
+                .map(s -> {
+                    if (!"Source Validator".equals(s.getName())) {
+                        return s;
+                    }
+                    final Map<String, String> map = Stream.of(s.getConfiguration().getAsMap(), Collections.singletonMap("missingSourcesSeverity", "FAIL"))
+                            .flatMap(m -> m.entrySet().stream())
+                            .collect(Collectors.toMap(
+                                    Map.Entry::getKey,
+                                    Map.Entry::getValue,
+                                    (v1, v2) -> v2));
+                    WorkflowStep newS = new WorkflowStep();
+                    newS.setName(s.getName());
+                    newS.setClassHint(s.getClassHint());
+                    newS.setConfiguration(StepConfiguration.fromMap(map));
+                    newS.setDeactivated(true);
+                    return newS;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -118,8 +118,7 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
         WorkflowStep generator1 = mkWorkflowStep("HTML Report Writer", "org.eclipse.sw360.antenna.workflow.generators.HTMLReportGenerator");
         WorkflowStep generator2 = mkWorkflowStep("CSV Report Writer", "org.eclipse.sw360.antenna.workflow.generators.CSVGenerator");
         WorkflowStep generator3 = mkWorkflowStep("SW360 Updater", "org.eclipse.sw360.antenna.workflow.generators.SW360Updater",
-                new HashMap<String, String>()
-                {{
+                new HashMap<String, String>() {{
                     put("rest.server.url", "http://localhost:8080/resource/api");
                     put("auth.server.url", "http://localhost:8080/authorization");
                     put("username", "admin@sw360.org");
@@ -131,7 +130,7 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
         result.addAll(new BasicConfiguration().getGenerators(projectRoot.toString()));
         result.stream()
                 .filter(g -> "SW360 Report Generator".equals(g.getName()))
-                .forEach(g -> g.setConfiguration(StepConfiguration.fromMap(Collections.singletonMap("disclosure.doc.formats","txt"))));
+                .forEach(g -> g.setConfiguration(StepConfiguration.fromMap(Collections.singletonMap("disclosure.doc.formats", "txt"))));
         return result;
     }
 
@@ -139,7 +138,7 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
     public List<WorkflowStep> getExpectedToolConfigurationOutputHandlers() {
         return Collections.singletonList(mkWorkflowStep(
                 "Add disclosure document to jar", "org.eclipse.sw360.antenna.workflow.outputHandlers.FileToArchiveWriter",
-                "instructions", "disclosure-sw360-doc-txt:"+projectRoot.toString()+"" + File.separator + "target" + File.separator + "mvn-test-project-1.0-SNAPSHOT.jar:" + File.separator + "legalnotice" + File.separator + "DisclosureDoc.txt"));
+                "instructions", "disclosure-sw360-doc-txt:" + projectRoot.toString() + File.separator + "target/mvn-test-project-1.0-SNAPSHOT.jar:/legalnotice/DisclosureDoc.txt"));
     }
 
     @Override
@@ -163,7 +162,9 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
     }
 
     @Override
-    public boolean getExpectedToolConfigurationSkip() { return false; }
+    public boolean getExpectedToolConfigurationSkip() {
+        return false;
+    }
 
     @Override
     public String getExpectedProjectArtifactId() {

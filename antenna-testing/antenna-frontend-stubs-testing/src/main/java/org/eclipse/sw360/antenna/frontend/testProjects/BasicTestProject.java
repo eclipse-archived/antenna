@@ -12,7 +12,9 @@ package org.eclipse.sw360.antenna.frontend.testProjects;
 
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
+import java.io.File;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +22,7 @@ import java.util.stream.Stream;
 
 import static org.eclipse.sw360.antenna.frontend.testProjects.TestProjectUtils.mkWorkflowStep;
 
-public class BasicTestProject extends AbstractTestProjectWithExpectations implements NonExecutableTestProject{
+public class BasicTestProject extends AbstractTestProjectWithExpectations implements NonExecutableTestProject {
 
     public BasicTestProject() {
         super();
@@ -82,7 +84,7 @@ public class BasicTestProject extends AbstractTestProjectWithExpectations implem
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
         final List<WorkflowStep> generators = new BasicConfiguration().getGenerators(projectRoot.toString());
-        WorkflowStep generator1 = mkWorkflowStep("First Generator","full.qualified.generator1.class.name",
+        WorkflowStep generator1 = mkWorkflowStep("First Generator", "full.qualified.generator1.class.name",
                 "configuration_key_1", "configuration_value_1");
         generators.add(generator1);
         WorkflowStep generator2 = mkWorkflowStep("Second Generator", "full.qualified.generator2.class.name");
@@ -125,11 +127,15 @@ public class BasicTestProject extends AbstractTestProjectWithExpectations implem
     }
 
     @Override
-    public boolean getExpectedToolConfigurationSkip() { return true; }
+    public boolean getExpectedToolConfigurationSkip() {
+        return true;
+    }
 
     @Override
     public List<String> getExpectedToolConfigurationConfigFilesEndings() {
-        return Stream.of("/src/antennaconf.xml", "/src/antennaconf2.xml").collect(Collectors.toList());
+        return Arrays.asList(
+                File.separator + "src" + File.separator + "antennaconf.xml",
+                File.separator + "src" + File.separator + "antennaconf2.xml");
     }
 
     @Override
