@@ -11,17 +11,6 @@
 
 package org.eclipse.sw360.antenna.workflow.processors;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
@@ -35,6 +24,10 @@ import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractCompliance
 import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvaluation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SecurityIssueValidator extends AbstractComplianceChecker {
 
