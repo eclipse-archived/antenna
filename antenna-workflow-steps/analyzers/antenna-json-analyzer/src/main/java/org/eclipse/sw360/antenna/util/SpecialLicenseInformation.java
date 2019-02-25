@@ -26,5 +26,6 @@ public class SpecialLicenseInformation {
         put("Not-Declared", MissingLicenseReasons.NOT_DECLARED);
         put("Not-Provided", MissingLicenseReasons.NOT_PROVIDED);
         put("Not-Supported", MissingLicenseReasons.NOT_SUPPORTED);
+        put("Non-Standard", MissingLicenseReasons.NON_STANDARD);
     }};
 }

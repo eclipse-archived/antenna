@@ -17,7 +17,8 @@ public enum MissingLicenseReasons {
     NO_SOURCES("No sources provided hence licenses cannot be found."),
     NO_LICENSE_IN_SOURCES("Sources are provided but do not contain license headers."),
     NOT_PROVIDED("No license was specified."),
-    NOT_SUPPORTED("Retrieving license information failed for this component");
+    NOT_SUPPORTED("Retrieving license information failed for this component"),
+    NON_STANDARD("Configured license is of non-standard threat-group");
 
     public final String prettyPrintReason;
 

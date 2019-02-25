@@ -87,3 +87,4 @@ There are number of special strings which can be used to convey failure messages
 * `No-Source-License`: Only within `observedLicenses`. Sources for the component are available, but license information in sources is missing or incomplete.
 * `Not-Provided`: Only within `declaredLicenses`. No license was provided by the project (via package managers for instance).
 * `Not-Supported`: Only within `observedLicenses`. This should only be used by scanning tools. It means that license information is not handled by the scanner and must be checked differently.
+* `Non-Standard`: A license is configured which is of non-standard license threat group.
