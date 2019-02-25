@@ -33,22 +33,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DroolsEngine implements IRuleEngine {
     private Logger logger = LoggerFactory.getLogger(DroolsEngine.class);
     private String rulesetDirectory = "";
-    private String rulesetPath = "";
+    private List<String> rulesetPaths = new ArrayList<>();
     private static final String RULES_SUBFOLDER = "rules";
     private static final String POLICIES_PROPERTIES_FILENAME = "policies.properties";
     private static final String POLICIES_FILENAME = "policies.xml";
     private static final String POLICIES_VERSION = "policies.version";
+    private static final String NO_VERSION = "no version string specified";
 
     public void setRulesetDirectory(String rulesetDirectory) {
         this.rulesetDirectory = rulesetDirectory;
     }
 
-    public void setRulesetPath(String rulesetPath) {
-        this.rulesetPath = rulesetPath;
+    public void setRulesetPaths(List<String> rulesetPath) {
+        this.rulesetPaths = rulesetPath;
     }
 
     @Override
@@ -74,10 +78,12 @@ public class DroolsEngine implements IRuleEngine {
     }
 
     private void addAllRules(KieFileSystem kieFileSystem) throws AntennaException {
-        List<File> ruleFiles = getAllRulesInConfiguredFolder();
+        List<File> ruleFiles = getAllRulesInConfiguredFolders();
         if (ruleFiles.isEmpty()) {
             throw new AntennaException("No rules provided. Please check whether the rules are installed at " +
-                    Paths.get(rulesetDirectory, rulesetPath).normalize().toString());
+                    rulesetPaths.stream()
+                            .map(path -> Paths.get(rulesetDirectory, path).normalize().toString() + ";")
+                            .collect(Collectors.joining(";")));
         }
 
         ruleFiles.forEach(ruleFile ->
@@ -94,8 +100,15 @@ public class DroolsEngine implements IRuleEngine {
         return kieContainer.newKieSession();
     }
 
-    private List<File> getAllRulesInConfiguredFolder() {
-        Path folderPath = Paths.get(rulesetDirectory, rulesetPath, RULES_SUBFOLDER).normalize();
+    private List<File> getAllRulesInConfiguredFolders() {
+        return rulesetPaths.stream()
+                .map(this::getAllRulesInConfiguredFolder)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
+
+    private List<File> getAllRulesInConfiguredFolder(String path) {
+        Path folderPath = Paths.get(rulesetDirectory, path, RULES_SUBFOLDER).normalize();
         try {
             DroolsRuleFolderVisitor collectRuleFiles = new DroolsRuleFolderVisitor();
             Files.walkFileTree(folderPath, collectRuleFiles);
@@ -107,21 +120,28 @@ public class DroolsEngine implements IRuleEngine {
     }
 
     private List<IEvaluationResult> getEvaluationResults() throws AntennaException {
-        return DroolsEvaluationResultReader.getEvaluationResult(Paths.get(rulesetDirectory, rulesetPath, POLICIES_FILENAME));
+        List<IEvaluationResult> resultList = new ArrayList<>();
+        for(String path : rulesetPaths) {
+            resultList.addAll(DroolsEvaluationResultReader.getEvaluationResult(Paths.get(rulesetDirectory, path, POLICIES_FILENAME)));
+        }
+        return resultList;
     }
 
     @Override
     public Optional<String> getRulesetVersion() {
-        Properties appProperties = new Properties();
-        Path policiesVersionPath = Paths.get(rulesetDirectory, rulesetPath, POLICIES_PROPERTIES_FILENAME).normalize();
-        try (FileInputStream policiesFile = new FileInputStream((policiesVersionPath.toFile()));
-             InputStream policiesStream = new DataInputStream(policiesFile)) {
-            appProperties.load(policiesStream);
-            return Optional.ofNullable(appProperties.getProperty(POLICIES_VERSION));
-        } catch (IOException ex) {
-            logger.warn("Could not find or read version file. Details: " + ex.getMessage());
-        }
-
-        return Optional.empty();
+        return Optional.of(rulesetPaths.stream()
+                .map(rulesetPath -> {
+                    Properties appProperties = new Properties();
+                    Path policiesVersionPath = Paths.get(rulesetDirectory, rulesetPath, POLICIES_PROPERTIES_FILENAME).normalize();
+                    try (FileInputStream policiesFile = new FileInputStream((policiesVersionPath.toFile()));
+                         InputStream policiesStream = new DataInputStream(policiesFile)) {
+                        appProperties.load(policiesStream);
+                        return rulesetPath + ":" + Optional.ofNullable(appProperties.getProperty(POLICIES_VERSION)).orElse(NO_VERSION);
+                    } catch (IOException ex) {
+                        logger.warn("Could not find or read version file. Details: " + ex.getMessage());
+                        return rulesetPath + ":" + NO_VERSION;
+                    }
+                })
+                .collect(Collectors.joining(";")));
     }
 }

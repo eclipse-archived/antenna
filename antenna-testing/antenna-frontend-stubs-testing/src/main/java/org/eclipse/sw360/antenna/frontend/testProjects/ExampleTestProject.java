@@ -111,7 +111,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
         // checkers
         WorkflowStep checker1 = mkWorkflowStep("Drools Policy Engine", "org.eclipse.sw360.antenna.workflow.processors.checkers.AntennaDroolsChecker",
                 "base.dir", this.projectRoot.toString(),
-                "folder.path", "../example-policies");
+                "folder.paths", "../example-policies");
         processors.add(checker1);
         return processors;
     }

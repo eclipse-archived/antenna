@@ -54,7 +54,7 @@
             <classHint>org.eclipse.sw360.antenna.workflow.processors.checkers.AntennaDroolsChecker</classHint>
             <configuration>
                 <entry key="base.dir" value="${project.basedir}"/>
-                <entry key="folder.path" value="../example-policies"/>
+                <entry key="folder.paths" value="../example-policies"/>
             </configuration>
         </step>
     </processors>
