@@ -54,6 +54,10 @@ public class FromXmlArtifactBuilder implements IArtifactBuilder {
             final LicenseInformation licenseInfo = declaredLicense.getLicenseInfo().getValue();
             artifact.addFact(new DeclaredLicenseInformation(licenseInfo));
         }
+        if(isProprietary != null) {
+            artifact.setProprietary(isProprietary);
+        }
+
         return artifact;
     }
 }
