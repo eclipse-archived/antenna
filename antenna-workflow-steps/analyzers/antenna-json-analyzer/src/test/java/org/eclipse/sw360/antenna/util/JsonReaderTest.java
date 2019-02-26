@@ -11,10 +11,10 @@
 package org.eclipse.sw360.antenna.util;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIssues;
-import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.MissingLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.Issue;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
@@ -38,7 +38,7 @@ public class JsonReaderTest {
     private List<Artifact> artifacts;
 
     @Test
-    public void testMapLicenses() throws URISyntaxException, IOException{
+    public void testMapLicenses() throws URISyntaxException, IOException {
         Path recordFilePath = Paths.get(".", "target", "foo");
         JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), Charset.forName("UTF-8"));
         URI uri = this.getClass().getClassLoader().getResource("data.json").toURI();
@@ -48,7 +48,20 @@ public class JsonReaderTest {
     }
 
     @Test
-    public void testParseData2() throws URISyntaxException, IOException{
+    public void testMappingAdditionalInformationForLicenses() throws URISyntaxException, IOException {
+        Path recordFilePath = Paths.get(".", "target", "foo");
+        JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), Charset.forName("UTF-8"));
+        URI uri = this.getClass().getClassLoader().getResource("data.json").toURI();
+        InputStream iStream = Files.newInputStream(Paths.get(uri));
+        artifacts = jsonReader.createArtifactsList(iStream);
+
+        assertThat(artifacts.get(0).askForGet(ObservedLicenseInformation.class)).isEmpty();
+        assertThat(artifacts.get(0).askFor(MissingLicenseInformation.class).get().getMissingLicenseReasons())
+                .containsExactlyInAnyOrder(MissingLicenseReasons.NO_LICENSE_IN_SOURCES);
+    }
+
+    @Test
+    public void testParseData2() throws URISyntaxException, IOException {
         Path recordFilePath = Paths.get(".", "target", "foo");
         JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), Charset.forName("UTF-8"));
         URI uri = this.getClass().getClassLoader().getResource("data2.json").toURI();
@@ -75,6 +88,7 @@ public class JsonReaderTest {
         issues.ifPresent(i -> {
             assertThat(i.stream().map(Issue::getStatus)).contains(SecurityIssueStatus.OPEN);
             assertThat(i.stream().map(Issue::getReference)).contains("CVE-2018-8014");
+            assertThat(i.stream().map(Issue::getSeverity)).contains(5.9);
         });
     }
 

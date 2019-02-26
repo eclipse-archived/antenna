@@ -11,14 +11,14 @@
 
 package org.eclipse.sw360.antenna.workflow.analyzers;
 
+import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.Jsoner;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.util.JsonReader;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,9 +36,9 @@ public class JsonAnalyzer extends ManualAnalyzer {
 
         // Check that JSON file contains valid JSON.
         try (FileInputStream fileInputStream = new FileInputStream(componentInfoFile);
-             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, toolConfig.getEncoding())){
-            new JSONParser().parse(inputStreamReader);
-        } catch (ParseException e) {
+             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, toolConfig.getEncoding())) {
+            Jsoner.deserialize(inputStreamReader);
+        } catch (JsonException e) {
             throw new AntennaException("Encountered a problem when trying to parse "
                     + componentInfoFile.getAbsolutePath() + ": " + e.getMessage());
         } catch (IOException e) {
