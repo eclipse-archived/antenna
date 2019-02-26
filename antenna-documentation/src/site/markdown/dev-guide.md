@@ -81,10 +81,12 @@ Antenna provides also some further means to debug. If you run e.g. the example p
 
 ## Build the documentation
 
-Just type in your command `$ mvn site:run` .
-The site starts up in the port 9000 
+Go into the `antenna-documentation` subfolder and call  `mvn site site:run`.
+This will build the documentation site and start it up in port 9000
 
 Open a browser and type the directory `http://localhost:9000`
+
+Once the site is run, it can also be started from the main folder via `mvn site:run`
 
 ## How to implement a custom worflow item
 
