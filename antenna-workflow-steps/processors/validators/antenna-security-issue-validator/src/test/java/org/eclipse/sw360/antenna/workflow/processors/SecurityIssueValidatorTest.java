@@ -156,7 +156,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
 
         configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, "5.5");
         configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_SEVERITY_KEY, "FAIL");
-        configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "");
+        configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "Open,Acknowledged,Confirmed");
         validator.configure(configMap);
 
         assertThat(validator.validate(artifact).size()).isEqualTo(2);
@@ -175,5 +175,53 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
         validator.configure(configMap);
 
         assertThat(validator.validate(artifact).size()).isEqualTo(0);
+    }
+
+    @Test
+    public void validateOnlyFindOpenIssues() throws Exception {
+        Artifact artifact = mkArtifact(Arrays.asList(notApplicableIssue, acknowledgedIssue, openIssue, confirmedIssue));
+
+        configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, "1.0");
+        configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_SEVERITY_KEY, "FAIL");
+        configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "Open");
+        validator.configure(configMap);
+
+        List<IEvaluationResult> list = validator.validate(artifact);
+        assertThat(list.size()).isEqualTo(1);
+        IEvaluationResult result = list.get(0);
+        assertThat(result.getDescription())
+                .isEqualTo("The artifact has a security issue [null] with forbidden status OPEN.");
+    }
+
+    @Test
+    public void validateDoesNotFindIssuesWithAllowedSecurityIssueStatus() throws Exception {
+        Artifact artifact = mkArtifact(Arrays.asList(notApplicableIssue, acknowledgedIssue, confirmedIssue));
+
+        configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, "1.0");
+        configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_SEVERITY_KEY, "FAIL");
+        configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "Open");
+        validator.configure(configMap);
+
+        assertThat(validator.validate(artifact)).isEmpty();
+    }
+
+    @Test
+    public void validateFindsOpenIssuesAccordingToSeverityConfiguration() throws Exception {
+        Issue issueWithLowSeverity = new Issue();
+        issueWithLowSeverity.setStatus(SecurityIssueStatus.OPEN);
+        issueWithLowSeverity.setSeverity(3.0);
+        issueWithLowSeverity.setReference("DO-NOT-FIND-ME");
+
+        Artifact ignoredArtifact = mkArtifact(Arrays.asList(issueWithLowSeverity));
+        Artifact artifact = mkArtifact(Arrays.asList(openIssue));
+
+        configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, "5.0");
+        configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_SEVERITY_KEY, "FAIL");
+        configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "Open");
+        validator.configure(configMap);
+
+        assertThat(validator.validate(ignoredArtifact)).isEmpty();
+        assertThat(validator.validate(artifact)).hasSize(1);
+
     }
 }
