@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.configuration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCore;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
@@ -33,6 +34,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,6 +78,16 @@ public class ConfigurationTest {
         assertThat(configuration.getValidForIncompleteSources().size()).isEqualTo(2);
         assertThat(configuration.getConfiguredSW360Project().getName()).isEqualTo("anyProjectName");
         assertThat(configuration.getConfiguredSW360Project().getVersion()).isEqualTo("anyProjectVersion");
+
+    }
+
+    @Test
+    public void testBuildArtifactFlags() {
+        String isProprietaryList = configuration.getAddArtifact().stream()
+                .map(ArtifactCore::prettyPrint)
+                .collect(Collectors.joining(";"));
+
+        assertThat(isProprietaryList).contains("Flags: [isProprietary: false]");
     }
 
     @Test
