@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.xml.generated.Issue;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
+import org.eclipse.sw360.antenna.util.LicenseSupport;
 
 import java.lang.reflect.Array;
 import java.util.*;
