@@ -57,10 +57,10 @@ Message type in processing report
 Possible solution
 : Add the license text to the knowledgebase.
 
-### Problem: Antenna fails because it does not find files for disclosure document
+### Problem: ${docNameCap} fails because it does not find files for disclosure document
  
 Possible solution
-: Have a look at your projects path. Unfortunately Antenna can't deal with 
+: Have a look at your projects path. Unfortunately ${docNameCap} can't deal with 
 spaces in pathnames.
 
 ### Problem: The build fails with the message "There are conflicting configurations....."
@@ -72,7 +72,7 @@ Possible solution
 : Check the processing report and resolve the problems in your 
 configuration files.
 
-### Problem: Antenna uses a sources jar artifact to create the sources.zip file which contains only references to the main jar file
+### Problem: ${docNameCap} uses a sources jar artifact to create the sources.zip file which contains only references to the main jar file
  
 Possible solution
 : Upload a custom sources jar artifact with the missing sources to nexus 
@@ -91,8 +91,8 @@ org.eclipse.sw360.antenna:antenna-maven-plugin:1.4.2:analyze are missing or inva
  
 Possible solution
 : You probably run the Maven job with the wrong pom that does not 
-contain the Antenna configuration - this can easily happen when you create 
-a Jenkins job for multi module project where the Antenna configuration is 
+contain the ${docNameCap} configuration - this can easily happen when you create 
+a Jenkins job for multi module project where the ${docNameCap} configuration is 
 not in the main pom that Jenkins uses by default. So, just check what 
 you've entered in the field "POM" of your Jenkins Maven Goals 
 configuration (which by default is hidden).

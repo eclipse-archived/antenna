@@ -1,7 +1,7 @@
-# JSON analyzer
-
+## JSON analyzer
 This analyzer investigates a given *json* file. The json file contains the components of the project. The component consists
-of a hash value, maven coordinates, path to the file, proprietary state and license data. An example declaration can be seen below.
+of a hash value, identifier, path to the file, proprietary state and license data. The identifier consists of a format and
+coordinates, which specifies the type of the component. An example declaration can be seen below.
 
 
 ```json
@@ -10,6 +10,7 @@ of a hash value, maven coordinates, path to the file, proprietary state and lice
     {
       "hash": "b2921b7862e7b26b43aa",
       "componentIdentifier": {
+        "format": "maven",
         "coordinates": {
           "artifactId": "commons-lang3",
           "groupId": "org.apache.commons",
@@ -42,14 +43,21 @@ of a hash value, maven coordinates, path to the file, proprietary state and lice
 ```
 
 #### Explanation of parameters
-
 * `components`: Array of different components.
 * `hash`: Describes the component with a unique hash value.
-* `componentIdentifier`: This object holds the **coordinates** object
-* `coordinates`: This object consists of the properties **artifactId**, **groupId** and **version**.
-* `artifactId`: Generally the name that the project is known by.
-* `groupId`: Generally unique name amongst an organization or project is known by.
-* `version`: The version number of the component
+* `componentIdentifier`: This object holds the **format** and **coordinates** object
+* `format`: Describes the type of the coordinates with "maven", "nuget" or "a-name".
+* `coordinates`: Depending on the format, it specifies the coordinates of the component.
+    - `maven`:
+        * `artifactId`: Generally the name that the project is known by.
+        * `groupId`: Generally unique name amongst an organization or project is known by.
+        * `version`: The version number of the component
+    - `nuget`:
+        * `packageId`: The name of the .NET package.
+        * `version`: The version number of the package.
+    - `a-name`:
+        * `name`: The name of the component.
+        * `version`: The version of the component.
 * `proprietary`: Is the component a non-free software or not.
 * `matchState`: Verify if the comparison of component to known components is or is not a match.
 * `pathnames`: Paths to the components binaries.
@@ -60,12 +68,12 @@ of a hash value, maven coordinates, path to the file, proprietary state and lice
 
 
 ### How to use
-Add this configuration to the workflow.xml
+Add the following step into the `<analyzers>` section of your workflow.xml
 
 ```xml
 <step>
     <name>JSON Analyzer</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.sources.analyzer.JsonAnalyzer</classHint>
+    <classHint>org.eclipse.sw360.antenna.workflow.analyzer.JsonAnalyzer</classHint>
     <analyzerConfiguration>
         <entry key="file.path" value="${basedir}/ClmReportData.json" />
         <entry key="base.dir" value="${project.build.directory}/sources" />
@@ -74,7 +82,6 @@ Add this configuration to the workflow.xml
 ```
 
 #### Explanation of parameters
-
 * `file.path`: Destination of a JSON file that matches the above format.
 * `base.path`: Destination to the the source files that the JSON report refers to.
 
