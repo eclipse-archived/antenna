@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -39,7 +41,7 @@ public class HttpHelper {
     }
 
     public File downloadFile(String url, Path targetDirectory) throws IOException, FailedToDownloadException {
-        String filename = Paths.get(url).getFileName().toString();
+        String filename = url.substring(url.lastIndexOf("/") + 1);  // We don't want to have the last slash in the name
         return downloadFile(url, targetDirectory, filename);
     }
 

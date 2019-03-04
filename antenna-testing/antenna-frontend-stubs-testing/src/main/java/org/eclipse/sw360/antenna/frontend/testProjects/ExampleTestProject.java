@@ -10,12 +10,12 @@
  */
 package org.eclipse.sw360.antenna.frontend.testProjects;
 
-import com.google.common.collect.ImmutableMap;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -77,10 +77,10 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationAnalyzers() {
-        WorkflowStep analyzer1 = mkWorkflowStep("JSON Analyzer","org.eclipse.sw360.antenna.workflow.analyzers.JsonAnalyzer",
+        WorkflowStep analyzer1 = mkWorkflowStep("JSON Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.JsonAnalyzer",
                 "base.dir", this.projectRoot.toString(),
                 "file.path", "src/reportData.json");
-        WorkflowStep analyzer2 = mkWorkflowStep("CSV Analyzer","org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer",
+        WorkflowStep analyzer2 = mkWorkflowStep("CSV Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer",
                 "base.dir", this.projectRoot.toString(),
                 "file.path", "src/dependencies.csv");
         return Stream.of(analyzer1, analyzer2).collect(Collectors.toList());
@@ -90,8 +90,8 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
         final List<WorkflowStep> processors = new BasicConfiguration().getProcessors()
                 .stream()
-                .map( s -> {
-                    if(!"Source Validator".equals(s.getName())) {
+                .map(s -> {
+                    if (!"Source Validator".equals(s.getName())) {
                         return s;
                     }
                     final Map<String, String> map = Stream.of(s.getConfiguration().getAsMap(), Collections.singletonMap("missingSourcesSeverity", "FAIL"))
@@ -121,8 +121,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
         WorkflowStep generator1 = mkWorkflowStep("HTML Report Writer", "org.eclipse.sw360.antenna.workflow.generators.HTMLReportGenerator");
         WorkflowStep generator2 = mkWorkflowStep("CSV Report Writer", "org.eclipse.sw360.antenna.workflow.generators.CSVGenerator");
         WorkflowStep generator3 = mkWorkflowStep("SW360 Updater", "org.eclipse.sw360.antenna.workflow.generators.SW360Updater",
-                new HashMap<String, String>()
-                {{
+                new HashMap<String, String>() {{
                     put("rest.server.url", "http://localhost:8080/resource/api");
                     put("auth.server.url", "http://localhost:8080/authorization");
                     put("username", "admin@sw360.org");
@@ -134,7 +133,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
         result.addAll(new BasicConfiguration().getGenerators(projectRoot.toString()));
         result.stream()
                 .filter(g -> "SW360 Report Generator".equals(g.getName()))
-                .forEach(g -> g.setConfiguration(StepConfiguration.fromMap(Collections.singletonMap("disclosure.doc.formats","txt"))));
+                .forEach(g -> g.setConfiguration(StepConfiguration.fromMap(Collections.singletonMap("disclosure.doc.formats", "txt"))));
         return result;
     }
 
@@ -142,7 +141,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     public List<WorkflowStep> getExpectedToolConfigurationOutputHandlers() {
         return Collections.singletonList(mkWorkflowStep(
                 "Add disclosure document to jar", "org.eclipse.sw360.antenna.workflow.outputHandlers.FileToArchiveWriter",
-                "instructions", "disclosure-sw360-doc-txt:"+projectRoot.toString()+"/target/example-project-1.0-SNAPSHOT.jar:/legalnotice/DisclosureDoc.txt"));
+                "instructions", "disclosure-sw360-doc-txt:" + projectRoot.toString() + File.separator + "target/example-project-1.0-SNAPSHOT.jar:/legalnotice/DisclosureDoc.txt"));
     }
 
     @Override
@@ -166,7 +165,9 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     }
 
     @Override
-    public boolean getExpectedToolConfigurationSkip() { return false; }
+    public boolean getExpectedToolConfigurationSkip() {
+        return false;
+    }
 
     @Override
     public String getExpectedProjectArtifactId() {
@@ -195,7 +196,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
         assertTrue(depsDir.toFile().exists());
         assertDependenciesExistence(depsDir);
 
-        if(buildArtifacts != null) {
+        if (buildArtifacts != null) {
             assertBuildArtifactsExistence(context.getProject(), buildArtifacts.entrySet());
             assertSourceZipContents(buildArtifacts.entrySet());
         }
@@ -213,7 +214,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<String> getExpectedToolConfigurationConfigFilesEndings() {
-        return Collections.singletonList("/src/antennaconf.xml");
+        return Collections.singletonList(File.separator + "src" + File.separator + "antennaconf.xml");
     }
 
     @Override
