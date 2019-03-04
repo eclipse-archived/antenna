@@ -80,6 +80,12 @@ jobs:
         - gradle analyze
         - java -jar ../../antenna-testing/antenna-frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject build
     
+    # test P2
+    - name: p2Test
+      script:
+        - .travis/p2e2etest.sh
+
+    # run site tests (for instance: all links work correctly)
     - name: siteTest
       script:
         - cd antenna-documentation
