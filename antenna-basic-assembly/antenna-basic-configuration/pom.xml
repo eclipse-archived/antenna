@@ -67,12 +67,6 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-sw360-disclosure-document-generator</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>antenna-artifact-resolver</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>

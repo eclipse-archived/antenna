@@ -76,7 +76,7 @@ public class AntennaGradlePluginTest {
         assertThat(result.task(":" + AntennaBasicGradlePlugin.TASK_NAME).getOutcome()).isEqualTo(SUCCESS);
 
         assertThat(projectRoot.resolve("build/antenna").toFile()).exists();
-        assertThat(projectRoot.resolve("build/antenna/AntennaDisclosureDocument.txt").toFile()).exists();
+        assertThat(projectRoot.resolve("build/antenna/3rdparty-licenses.html").toFile()).exists();
         assertThat(projectRoot.resolve("build/antenna/sources.zip").toFile()).exists();
     }
 }

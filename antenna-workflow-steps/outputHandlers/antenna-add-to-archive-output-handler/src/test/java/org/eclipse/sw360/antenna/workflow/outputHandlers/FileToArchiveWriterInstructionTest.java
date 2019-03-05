@@ -24,22 +24,22 @@ public class FileToArchiveWriterInstructionTest {
     @Test
     public void testConfiguringWithLinuxPaths() throws Exception {
         FileToArchiveWriterInstruction instruction = new FileToArchiveWriterInstruction(
-                "disclosure-sw360-doc-txt:/my/path/target/example-project-1.0-SNAPSHOT.jar:/legalnotice/DisclosureDoc.txt",
+                "disclosure-doc:/my/path/target/example-project-1.0-SNAPSHOT.jar:/legalnotice/DisclosureDoc.html",
                 Mockito.mock(IProcessingReporter.class));
 
-        assertThat(instruction.outputType).isEqualTo("disclosure-sw360-doc-txt");
-        assertThat(instruction.pathInArchive).endsWithRaw(Paths.get("/legalnotice/DisclosureDoc.txt"));
+        assertThat(instruction.outputType).isEqualTo("disclosure-doc");
+        assertThat(instruction.pathInArchive).endsWithRaw(Paths.get("/legalnotice/DisclosureDoc.html"));
         assertThat(instruction.zipFile).endsWithRaw(Paths.get("/my/path/target/example-project-1.0-SNAPSHOT.jar"));
     }
 
     @Test
     public void testConfiguringWithWindowsPaths() throws Exception {
         FileToArchiveWriterInstruction instruction = new FileToArchiveWriterInstruction(
-                "disclosure-sw360-doc-txt:C:\\Users\\target\\example-project-1.0-SNAPSHOT.jar:/legalnotice/DisclosureDoc.txt",
+                "disclosure-doc:C:\\Users\\target\\example-project-1.0-SNAPSHOT.jar:/legalnotice/DisclosureDoc.html",
                 Mockito.mock(IProcessingReporter.class));
 
-        assertThat(instruction.outputType).isEqualTo("disclosure-sw360-doc-txt");
-        assertThat(instruction.pathInArchive).endsWithRaw(Paths.get("/legalnotice/DisclosureDoc.txt"));
+        assertThat(instruction.outputType).isEqualTo("disclosure-doc");
+        assertThat(instruction.pathInArchive).endsWithRaw(Paths.get("/legalnotice/DisclosureDoc.html"));
         assertThat(instruction.zipFile).endsWithRaw(Paths.get("C:\\Users\\target\\example-project-1.0-SNAPSHOT.jar"));
     }
 }

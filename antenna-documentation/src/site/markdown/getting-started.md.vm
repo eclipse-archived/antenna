@@ -183,9 +183,6 @@ The hierarchy of it looks like this:
 ```
 antenna
 │   3rdparty-licenses.html
-│   AntennaDisclosureDocument.docx
-│   AntennaDisclosureDocument.html
-│   AntennaDisclosureDocument.txt
 │   Antenna_3rdPartyAnalysisReport.txt
 │   sources.zip
 │

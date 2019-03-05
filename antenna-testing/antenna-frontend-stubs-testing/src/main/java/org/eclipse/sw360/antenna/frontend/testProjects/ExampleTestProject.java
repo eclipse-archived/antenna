@@ -121,22 +121,16 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
-        WorkflowStep generator1 = mkWorkflowStep("HTML Report Writer", "org.eclipse.sw360.antenna.workflow.generators.HTMLReportGenerator");
-        WorkflowStep generator2 = mkWorkflowStep("CSV Report Writer", "org.eclipse.sw360.antenna.workflow.generators.CSVGenerator");
-        WorkflowStep generator3 = mkWorkflowStep("SW360 Updater", "org.eclipse.sw360.antenna.workflow.generators.SW360Updater",
+        List<WorkflowStep> result = BasicConfiguration.getGenerators(projectRoot.toString());
+        WorkflowStep generator = mkWorkflowStep("SW360 Updater", "org.eclipse.sw360.antenna.workflow.generators.SW360Updater",
                 new HashMap<String, String>() {{
                     put("rest.server.url", "http://localhost:8080/resource/api");
                     put("auth.server.url", "http://localhost:8080/authorization");
                     put("username", "admin@sw360.org");
                     put("password", "12345");
                 }});
-        generator3.setDeactivated(true);
-
-        List<WorkflowStep> result = Stream.of(generator1, generator2, generator3).collect(Collectors.toList());
-        result.addAll(BasicConfiguration.getGenerators(projectRoot.toString()));
-        result.stream()
-                .filter(g -> "SW360 Report Generator".equals(g.getName()))
-                .forEach(g -> g.setConfiguration(StepConfiguration.fromMap(Collections.singletonMap("disclosure.doc.formats", "txt"))));
+        generator.setDeactivated(true);
+        result.add(generator);
         return result;
     }
 
@@ -144,7 +138,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     public List<WorkflowStep> getExpectedToolConfigurationOutputHandlers() {
         return Collections.singletonList(mkWorkflowStep(
                 "Add disclosure document to jar", "org.eclipse.sw360.antenna.workflow.outputHandlers.FileToArchiveWriter",
-                "instructions", "disclosure-sw360-doc-txt:" + projectRoot.toString() + File.separator + "target/example-project-1.0-SNAPSHOT.jar:/legalnotice/DisclosureDoc.txt"));
+                "instructions", "disclosure-doc:" + projectRoot.toString() + File.separator + "target/example-project-1.0-SNAPSHOT.jar:/legalnotice/DisclosureDoc.html"));
     }
 
     @Override
@@ -179,7 +173,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public Collection<String> getExpectedBuildArtifacts() {
-        return Stream.of("artifact-information", "disclosure-doc", "disclosure-sw360-doc-txt", "sources-zip", "antenna-report").collect(Collectors.toSet());
+        return Stream.of("artifact-information", "disclosure-doc", "sources-zip", "antenna-report").collect(Collectors.toSet());
     }
 
     @Override

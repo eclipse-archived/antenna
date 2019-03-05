@@ -69,9 +69,9 @@ public final class BasicConfiguration {
     }
 
     public static List<WorkflowStep> getGenerators(String projectRoot) {
-        WorkflowStep generator1 = mkWorkflowStep("SW360 Report Generator", "org.eclipse.sw360.antenna.workflow.generators.SW360DisclosureDocumentGenerator",
-                "disclosure.doc.formats", "docx,txt,html");
-        WorkflowStep generator2 = mkWorkflowStep("Source Zip Writer", "org.eclipse.sw360.antenna.workflow.generators.SourceZipWriter");
-        return Stream.of(generator1, generator2).collect(Collectors.toList());
+        WorkflowStep generator1 = mkWorkflowStep("HTML Report Writer", "org.eclipse.sw360.antenna.workflow.generators.HTMLReportGenerator");
+        WorkflowStep generator2 = mkWorkflowStep("CSV Report Writer", "org.eclipse.sw360.antenna.workflow.generators.CSVGenerator");
+        WorkflowStep generator3 = mkWorkflowStep("Source Zip Writer", "org.eclipse.sw360.antenna.workflow.generators.SourceZipWriter");
+        return Stream.of(generator1, generator2, generator3).collect(Collectors.toList());
     }
 }
