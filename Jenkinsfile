@@ -45,7 +45,7 @@ spec:
         stage('build antenna without the assembly') {
             steps {
                 container('maven') {
-                    sh 'mvn —B package -P \'!build-assembly\''
+                    sh 'mvn -B package -P \'!build-assembly\''
                 }
             }
         }
