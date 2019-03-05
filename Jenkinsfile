@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,29 +10,42 @@
  */
 
 pipeline {
-    agent any
-
+    agent {
+        kubernetes {
+            label 'antenna-build-pod'
+                        yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  restartPolicy: Never
+  volumes:
+  - name: maven-p2
+    emptyDir: {}
+  containers:
+  - name: maven
+    image: maven:3.6.0-jdk-8-alpine
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: maven-p2
+      mountPath: /root/.m2
+    resources:
+        requests:
+            memory: "4096Mi"
+        limits:
+            memory: "4096Mi"
+"""
+        }
+    }
+    environment {
+        MAVEN_OPTS = '-Xms4G -Xmx4G'
+    }
     stages {
-        stage('Build') {
+        stage('build antenna without the assembly') {
             steps {
-                withMaven() {
-                    sh 'mvn -B -DskipTests package'
-                }
-            }
-        }
-        
-        stage('Test') {
-            steps {
-                withMaven() {
-                    sh 'mvn test'
-                }
-            }
-        }
-
-        stage('Install') {
-            steps {
-                withMaven() {
-                    sh 'mvn -B -DskipTests install'
+                container('maven') {
+                    sh 'mvn —B package -P \'!build-assembly\''
                 }
             }
         }
