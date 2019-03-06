@@ -132,7 +132,6 @@ class AntennaCLISettingsReader {
         HashMap<String, Object> contextMap = new HashMap<>();
         contextMap.put("project", project);
         contextMap.put("basedir", parent.toString());
-        // propagate proxy related properties
         System.getProperties()
                 .entrySet()
                 .stream()
