@@ -66,7 +66,7 @@ spec:
                     sh 'mvn -B package eclipse-jarsigner:sign deploy -P \'!build-assembly\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
                 }
                 sh 'ls repository/org/eclipse/sw360/antenna/'
-                sh ' find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \;'
+                sh ' find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
                 // sshagent ( ['project-storage.eclipse.org-bot-ssh']) {
                 //     sh '''
                 //       ssh genie.projectname@projects-storage.eclipse.org rm -rf /home/data/httpd/download.eclipse.org/antenna/snapshots
