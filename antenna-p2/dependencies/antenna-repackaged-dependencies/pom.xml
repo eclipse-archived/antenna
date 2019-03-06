@@ -37,8 +37,8 @@
                         </goals>
                         <configuration>
                             <artifacts>
-                                <artifact><id>org.assertj:assertj-core:3.11.1</id><source>true</source></artifact>
-                                <artifact><id>org.mockito:mockito-core:2.24.0</id><source>true</source></artifact>
+                                <p2Artifact><id>org.assertj:assertj-core:3.11.1</id><source>true</source></p2Artifact>
+                                <p2Artifact><id>org.mockito:mockito-core:2.24.0</id><source>true</source></p2Artifact>
                             </artifacts>
                         </configuration>
                     </execution>

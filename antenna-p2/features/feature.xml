@@ -15,8 +15,8 @@
         version="1.0.0.qualifier"
         provider-name="%providerName"
         plugin="some_plugin"
-        os="linux,win32"
-        ws="gtk,win32"
+        os="linux,win32,macosx"
+        ws="gtk,win32,cocoa"
         arch="x86_64">
 
     <description>
