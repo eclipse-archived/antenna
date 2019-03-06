@@ -34,23 +34,16 @@ public class SW360ProjectAdapterUtils {
         }
     }
 
-    public static void setBusinessUnit(SW360Project project, String department) {
-        if ((department != null) && (!department.isEmpty())) {
-            project.setBusinessUnit(department);
-        }
-    }
-
     public static void setClearingTeam(SW360Project project, String clearingTeam) {
         if ((clearingTeam != null) && (!clearingTeam.isEmpty())) {
             project.setClearingTeam(clearingTeam);
         }
     }
 
-    public static void prepareProject(SW360Project sw360Project, String projectName, String projectVersion, SW360User user) {
+    public static void prepareProject(SW360Project sw360Project, String projectName, String projectVersion) {
         SW360ProjectAdapterUtils.setName(sw360Project, projectName);
         SW360ProjectAdapterUtils.setVersion(sw360Project, projectVersion);
         SW360ProjectAdapterUtils.setDescription(sw360Project, projectName + " " + projectVersion);
-        SW360ProjectAdapterUtils.setBusinessUnit(sw360Project, user.getDepartment());
         sw360Project.setProjectType(SW360ProjectType.PRODUCT);
         sw360Project.setVisibility(SW360Visibility.BUISNESSUNIT_AND_MODERATORS);
     }
