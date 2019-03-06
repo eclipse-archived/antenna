@@ -15,4 +15,9 @@
     <feature id="org.eclipse.equinox.p2.core.feature"/>
     <feature id="org.eclipse.rcp"/>
     <bundle id="org.junit"/>
+
+    <!-- Sources-->
+    <feature id="org.eclipse.rcp.source"/>
+    <feature id="org.eclipse.equinox.p2.core.feature.source"/>
+    <bundle id="org.junit.source"/>
 </site>

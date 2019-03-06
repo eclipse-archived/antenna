@@ -26,6 +26,5 @@
 
     <properties>
         <tycho.version>1.3.0</tycho.version>
-        <eclipse-platform.version>[4.10,4.11)</eclipse-platform.version>
     </properties>
 </project>

@@ -15,8 +15,8 @@
         version="1.0.0.qualifier"
         provider-name="%providerName"
         plugin="some_plugin"
-        os="linux,win32"
-        ws="gtk,win32"
+        os="linux,win32,macosx"
+        ws="gtk,win32,cocoa"
         arch="x86_64">
 
     <description>
@@ -28,10 +28,10 @@
     </copyright>
 
     <requires>
-        <import feature="org.eclipse.equinox.executable" version="3.8.200" match="greaterOrEqual"/>
-        <import feature="org.eclipse.equinox.p2.core.feature" version="1.6.0" match="greaterOrEqual"/>
-        <import feature="org.eclipse.equinox.core.feature" version="1.7.0" match="greaterOrEqual"/>
-        <import feature="org.eclipse.rcp" version="4.10.0" match="greaterOrEqual"/>
+        <import feature="org.eclipse.equinox.executable" version="3.8.0" match="greaterOrEqual"/>
+        <import feature="org.eclipse.equinox.p2.core.feature" version="1.5.0" match="greaterOrEqual"/>
+        <import feature="org.eclipse.equinox.core.feature" version="1.5.0" match="greaterOrEqual"/>
+        <import feature="org.eclipse.rcp" version="4.8.0" match="greaterOrEqual"/>
     </requires>
 
     <plugin
