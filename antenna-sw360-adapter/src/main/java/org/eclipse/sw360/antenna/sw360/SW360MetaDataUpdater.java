@@ -109,7 +109,6 @@ public class SW360MetaDataUpdater {
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) throws AntennaException, IOException {
         String id;
         HttpHeaders header = createHttpHeaders(userId, password);
-        SW360User user = userClientAdapter.getUserById(userId, header);
 
         Optional<String> projectId = projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion, header);
 
@@ -118,7 +117,7 @@ public class SW360MetaDataUpdater {
             LOGGER.debug("Could not update project " + projectId.get() + ", because the endpoint is not available.");
             id = projectId.get();
         } else {
-            id = projectClientAdapter.addProject(projectName, projectVersion, user, header);
+            id = projectClientAdapter.addProject(projectName, projectVersion, header);
         }
         projectClientAdapter.addSW360ReleasesToSW360Project(id, releases, header);
     }

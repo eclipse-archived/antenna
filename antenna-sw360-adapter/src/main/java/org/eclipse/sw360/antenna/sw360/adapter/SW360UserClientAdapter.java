@@ -23,7 +23,7 @@ public class SW360UserClientAdapter {
         restUrl = backendURL;
     }
 
-    public SW360User getUserById(String userId, HttpHeaders header) throws AntennaException {
+    public SW360User getUserByEmail(String userId, HttpHeaders header) throws AntennaException {
         SW360UserClient userClient = new SW360UserClient(restUrl);
             return userClient.getUserByEmail(userId, header);
     }
