@@ -50,8 +50,10 @@ spec:
     stages {
         stage('build antenna without the assembly') {
             when {
-                expression { params.REQUESTED_ACTION == 'build' }
-                expression { params.REQUESTED_ACTION == 'build_and_deploy_snapshot' }
+                anyOf {
+                    expression { params.REQUESTED_ACTION == 'build' }
+                    expression { params.REQUESTED_ACTION == 'build_and_deploy_snapshot' }
+                }
             }
             steps {
                 container('maven') {
@@ -61,8 +63,10 @@ spec:
         }
         stage ('deploy snapshot') {
             when {
-                expression { params.REQUESTED_ACTION == 'build_and_deploy_snapshot' }
-                expression { params.REQUESTED_ACTION == 'deploy_snapshot' }
+                anyOf {
+                    expression { params.REQUESTED_ACTION == 'build_and_deploy_snapshot' }
+                    expression { params.REQUESTED_ACTION == 'deploy_snapshot' }
+                }
             }
             steps {
                 sh 'rm -rf repository'
