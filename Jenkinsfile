@@ -43,12 +43,16 @@ spec:
     }
     parameters {
         choice(
-            choices: ['build' , 'build_and_deploy_snapshot'],
+            choices: ['build' , 'build_and_deploy_snapshot', 'deploy_snapshot'],
             description: '',
             name: 'REQUESTED_ACTION')
     }
     stages {
         stage('build antenna without the assembly') {
+            when {
+                expression { params.REQUESTED_ACTION == 'build' }
+                expression { params.REQUESTED_ACTION == 'build_and_deploy_snapshot' }
+            }
             steps {
                 container('maven') {
                     sh 'mvn -B package -P \'!build-assembly\''
@@ -58,12 +62,13 @@ spec:
         stage ('deploy snapshot') {
             when {
                 expression { params.REQUESTED_ACTION == 'build_and_deploy_snapshot' }
+                expression { params.REQUESTED_ACTION == 'deploy_snapshot' }
             }
             steps {
                 sh 'rm -rf repository'
                 sh 'mkdir -p repository'
                 container('maven') {
-                    sh 'mvn -B package eclipse-jarsigner:sign deploy -P \'!build-assembly\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
+                    sh 'mvn -B package eclipse-jarsigner:sign deploy -P \'!build-assembly\' -pl \'!antenna-testing,!antenna-testing/antenna-core-common-testing,!antenna-testing/antenna-frontend-stubs-testing,!antenna-testing/antenna-rule-engine-testing\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
                 }
                 sh 'ls repository/org/eclipse/sw360/antenna/'
                 sh ' find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
