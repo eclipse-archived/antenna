@@ -74,7 +74,6 @@ spec:
                         sh 'rm -rf repository'
                         sh 'mkdir -p repository'
                         container('maven') {
-                            sh 'mvn -B install -DskipTests -P \'!build-assembly\''
                             sh 'mvn -B deploy -DskipTests -P \'!build-assembly\' -pl \'!antenna-testing,!antenna-testing/antenna-core-common-testing,!antenna-testing/antenna-frontend-stubs-testing,!antenna-testing/antenna-rule-engine-testing\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
                         }
                     }
@@ -82,7 +81,9 @@ spec:
                 stage ('verify local repository') {
                     steps {
                         sh 'ls repository/org/eclipse/sw360/antenna/'
-                        sh ' find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
+                        container('maven') {
+                            sh 'find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
+                        }
                     }
                 }
                 // stage ('push local repository') {
