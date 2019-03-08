@@ -43,7 +43,7 @@ spec:
     }
     parameters {
         choice(
-            choices: ['build' , 'build_and_deploy_snapshot', 'deploy_snapshot'],
+            choices: ['build' , 'build_and_deploy_snapshot'],
             description: '',
             name: 'REQUESTED_ACTION')
     }
@@ -57,7 +57,7 @@ spec:
             }
             steps {
                 container('maven') {
-                    sh 'mvn -B package -P \'!build-assembly\''
+                    sh 'mvn -B install -P \'!build-assembly\''
                 }
             }
         }
@@ -65,7 +65,6 @@ spec:
             when {
                 anyOf {
                     expression { params.REQUESTED_ACTION == 'build_and_deploy_snapshot' }
-                    expression { params.REQUESTED_ACTION == 'deploy_snapshot' }
                 }
             }
             stages {
