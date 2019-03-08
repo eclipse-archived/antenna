@@ -68,21 +68,33 @@ spec:
                     expression { params.REQUESTED_ACTION == 'deploy_snapshot' }
                 }
             }
-            steps {
-                sh 'rm -rf repository'
-                sh 'mkdir -p repository'
-                container('maven') {
-                    sh 'mvn -B package -DskipTests -P \'!build-assembly\''
-                    sh 'mvn -B deploy -DskipTests -P \'!build-assembly\' -pl \'!antenna-testing,!antenna-testing/antenna-core-common-testing,!antenna-testing/antenna-frontend-stubs-testing,!antenna-testing/antenna-rule-engine-testing\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
+            stages {
+                stage ('create local repository') {
+                    steps {
+                        sh 'rm -rf repository'
+                        sh 'mkdir -p repository'
+                        container('maven') {
+                            sh 'mvn -B install -DskipTests -P \'!build-assembly\''
+                            sh 'mvn -B deploy -DskipTests -P \'!build-assembly\' -pl \'!antenna-testing,!antenna-testing/antenna-core-common-testing,!antenna-testing/antenna-frontend-stubs-testing,!antenna-testing/antenna-rule-engine-testing\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
+                        }
+                    }
                 }
-                sh 'ls repository/org/eclipse/sw360/antenna/'
-                sh ' find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
-                // sshagent ( ['project-storage.eclipse.org-bot-ssh']) {
-                //     sh '''
-                //       ssh genie.projectname@projects-storage.eclipse.org rm -rf /home/data/httpd/download.eclipse.org/antenna/snapshots
-                //       ssh genie.projectname@projects-storage.eclipse.org mkdir -p /home/data/httpd/download.eclipse.org/antenna/snapshots
-                //       scp -r ./repository/* genie.projectname@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/antenna/snapshots
-                //     '''
+                stage ('verify local repository') {
+                    steps {
+                        sh 'ls repository/org/eclipse/sw360/antenna/'
+                        sh ' find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
+                    }
+                }
+                // stage ('push local repository') {
+                //     steps {
+                //         sshagent ( ['project-storage.eclipse.org-bot-ssh']) {
+                //             sh '''
+                //               ssh genie.projectname@projects-storage.eclipse.org rm -rf /home/data/httpd/download.eclipse.org/antenna/snapshots
+                //               ssh genie.projectname@projects-storage.eclipse.org mkdir -p /home/data/httpd/download.eclipse.org/antenna/snapshots
+                //               scp -r ./repository/* genie.projectname@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/antenna/snapshots
+                //             '''
+                //         }
+                //     }
                 // }
             }
         }
