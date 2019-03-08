@@ -48,7 +48,7 @@ spec:
             name: 'REQUESTED_ACTION')
     }
     stages {
-        stage('build antenna without the assembly') {
+        stage('build') {
             when {
                 anyOf {
                     expression { params.REQUESTED_ACTION == 'build' }
@@ -72,7 +72,7 @@ spec:
                 sh 'rm -rf repository'
                 sh 'mkdir -p repository'
                 container('maven') {
-                    sh 'mvn -B package eclipse-jarsigner:sign deploy -DskipTests -P \'!build-assembly\' -pl \'!antenna-testing,!antenna-testing/antenna-core-common-testing,!antenna-testing/antenna-frontend-stubs-testing,!antenna-testing/antenna-rule-engine-testing\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
+                    sh 'mvn -B deploy -DskipTests -P \'!build-assembly\' -pl \'!antenna-testing,!antenna-testing/antenna-core-common-testing,!antenna-testing/antenna-frontend-stubs-testing,!antenna-testing/antenna-rule-engine-testing\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
                 }
                 sh 'ls repository/org/eclipse/sw360/antenna/'
                 sh ' find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
