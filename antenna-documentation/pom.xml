@@ -9,7 +9,8 @@
   ~
   ~ SPDX-License-Identifier: EPL-2.0
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>antenna-management</artifactId>
         <groupId>org.eclipse.sw360.antenna</groupId>
@@ -25,7 +26,35 @@
         <copied.site.files.path>${generated.source.path}/markdown</copied.site.files.path>
         <docName>antenna</docName>
         <docNameCap>Antenna</docNameCap>
+        <skip.tests>true</skip.tests>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>site-tests</id>
+            <activation>
+                <property>
+                    <name>site-tests</name>
+                </property>
+            </activation>
+            <properties>
+                <skip.tests>false</skip.tests>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
@@ -105,6 +134,37 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <executions>
+                    <execution>
+                        <id>site-tests</id>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
+                <executions>
+                    <execution>
+                        <id>site-tests</id>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skipTests>${skip.tests}</skipTests>
+                </configuration>
             </plugin>
         </plugins>
 
