@@ -20,6 +20,16 @@ pipeline {
                 }
             }
         }
+        
+        stage('Dependency download') {
+            steps {
+                withMaven() {
+		            dir("antenna-p2/dependencies") {
+                        sh 'mvn -B -DskipTests package'
+                    }
+                }
+            }
+        }
 
         stage('Build') {
             steps {
@@ -28,7 +38,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Test') {
             steps {
                 withMaven() {
@@ -36,7 +46,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Install') {
             steps {
                 withMaven() {
