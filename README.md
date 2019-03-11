@@ -35,7 +35,7 @@ Antenna can be used as a Maven plugin or standalone executable. As a
 maven plugin, Antenna's behaviour is configured by adding a `<plugin>` to your
 project's `pom.xml` file and adding settings to the `<configuration>`
 section. As a standalone executable is configured as an executable jar in the command line. 
-Find out how to configure Antenna by reading [How to configure Antenna](antenna-documentation/src/site/markdown/how-to-configure-antenna.md). 
+Find out how to configure Antenna by reading [How to configure Antenna](antenna-documentation/src/site/markdown/how-to-configure.md). 
 
 #### Configure Antenna for Java 9 or newer
 Antenna can be used with Java versions 9 or newer.

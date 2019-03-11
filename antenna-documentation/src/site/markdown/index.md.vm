@@ -15,7 +15,7 @@ their licenses
 
 ### <span style="color:#73ffdb">Phase 1</span>
 
-This phase is done by the [Maven Dependency Tree Analyzer](mvn-dep-tree-analyzer-step.html) or/and an external tool. The tool scans your project and determines which dependencies
+This phase is done by the [Maven Dependency Tree Analyzer](analyzers/mvn-dep-tree-analyzer-step.html) or/and an external tool. The tool scans your project and determines which dependencies
 and licenses are being used by it. Usually this results in an scan report which contains the findings. ${docNameCap} is able to trigger this phase for you
 [(see Workflow Configuration)](workflow-configuration.html).
 
