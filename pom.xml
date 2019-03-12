@@ -9,16 +9,31 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.eclipse.sw360.antenna</groupId>
     <artifactId>antenna-management</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${revision}${qualifier}</version>
     <packaging>pom</packaging>
     <name>Antenna</name>
 
     <properties>
+        <!-- >This is the main version applied throughout the project. Change this to increase all versions<-->
+        <revision>1.0.0</revision>
+        <!-- >The qualifier can be set to any value and will set the corresponding qualifier in all projects except antenna-p2<-->
+        <qualifier>-SNAPSHOT</qualifier>
+        <!-- >
+        The antenna-p2 qualifier must be -SNAPSHOT or numeric.
+        Changing this qualifier changes all OSGI related versions in antenna-p2 (except for the independent dependencies project.
+        Changing this qualifier to a numeric version requires changing the "version" property from having ".qualifier"
+        to mirroring the content of the p2qualifier in the following files
+        - antenna-p2/bundles/antenna-p2-repository-manager/META-INF/MANIFEST.MF
+        - antenna-p2/tests/antenna-p2-repository-manager-tests/META-INF/MANIFEST.MF
+        - antenna-p2/features/feature.xml (only the version in the <feature> tag must change)
+        <-->
+        <p2qualifier>-SNAPSHOT</p2qualifier>
         <drools.version>7.17.0.Final</drools.version>
         <gradle.version>4.1</gradle.version>
         <jackson.version>2.9.8</jackson.version>
@@ -247,9 +262,9 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
-              <groupId>org.spdx</groupId>
-              <artifactId>spdx-tools</artifactId>
-              <version>2.1.15</version>
+                <groupId>org.spdx</groupId>
+                <artifactId>spdx-tools</artifactId>
+                <version>2.1.15</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -372,7 +387,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
@@ -441,6 +456,31 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
