@@ -33,6 +33,7 @@
         <module>antenna-spdx-license-knowledge-base</module>
         <!-- workflow steps -->
         <module>generators/antenna-sw360-disclosure-document-generator</module>
+        <module>antenna-basic-rules</module>
     </modules>
 
 </project>

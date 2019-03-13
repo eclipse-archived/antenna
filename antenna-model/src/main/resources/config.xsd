@@ -233,6 +233,7 @@
             <xsd:enumeration value="HIGH_RISK" />
             <xsd:enumeration value="FREEWARE" />
             <xsd:enumeration value="NON_STANDARD" />
+            <xsd:enumeration value="NON_VERBATIM" />
         </xsd:restriction>
     </xsd:simpleType>
 

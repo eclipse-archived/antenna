@@ -55,11 +55,12 @@ public class AbstractDroolsValidatorTest {
      *
      * assertThat(rule("MyCustomRule.drl").whenRunning())...
      *
+     * @param path of the rule (e.g. "policies/rules")
      * @param filename of the rule (e.g. "MyCustomRule.drl") in the rules project
      * @return a Rule object
      */
-    public Rule rule(String filename) {
-        return new Rule(this, filename, artifacts, evaluations);
+    public Rule rule(String path, String filename) {
+        return new Rule(this, path, filename, artifacts, evaluations);
     }
 
     /**
