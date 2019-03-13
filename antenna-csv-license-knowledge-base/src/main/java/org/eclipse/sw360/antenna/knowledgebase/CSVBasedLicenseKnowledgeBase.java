@@ -11,9 +11,9 @@
 
 package org.eclipse.sw360.antenna.knowledgebase;
 
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
@@ -29,6 +29,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * This CSVBasedLicenseKnowledgeBase delivers maps for the mapping of: alias
@@ -40,17 +41,16 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
 
     private static final String licensesCSV = "Licenses.csv";
 
-    // number of columns in the license table
-    private static final int NUMCOLS = 9;
-    private static final int KEY_IDENT = 0;
-    private static final int KEY_ALIAS = 1;
-    private static final int KEY_NAME = 2;
-    private static final int KEY_URL = 3;
-    private static final int KEY_OSS = 4;
-    private static final int KEY_DELIVER_SRC = 5;
-    private static final int KEY_DELIVER_LICENSE = 6;
-    private static final int KEY_CLASSIFICATION = 7;
-    private static final int KEY_THREAT_GROUP = 8;
+    private static final String KEY_IDENT = "Identifier";
+    private static final String KEY_ALIAS = "Aliases";
+    private static final String KEY_NAME = "Name";
+    private static final String KEY_URL = "LicenseURL";
+    private static final String KEY_OSS = "OpenSource";
+    private static final String KEY_DELIVER_SRC = "DeliverSources";
+    private static final String KEY_DELIVER_LICENSE = "DeliverLicense";
+    private static final String KEY_CLASSIFICATION = "CoveredByINSTStandardProcess";
+    private static final String KEY_THREAT_GROUP = "ThreatGroup";
+    private static final Collection<String> KEY_LIST = Arrays.asList(KEY_IDENT, KEY_ALIAS, KEY_NAME, KEY_URL, KEY_OSS, KEY_DELIVER_SRC, KEY_DELIVER_LICENSE, KEY_CLASSIFICATION, KEY_THREAT_GROUP);
 
     private final Map<String, String> aliasIdMap = new HashMap<>();
     private final Map<String, String> idLicenseMap = new HashMap<>();
@@ -58,7 +58,7 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
     private final Map<String, LicenseThreatGroup> idThreatGroupMap = new HashMap<>();
     private final Map<String, LicenseClassification> idClassificationMap = new HashMap<>();
 
-    private final List<Consumer<String[]>> mapperFunctions = new ArrayList<>();
+    private final List<Consumer<CSVRecord>> mapperFunctions = new ArrayList<>();
 
     private IProcessingReporter reporter;
     private Charset encoding;
@@ -72,12 +72,12 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
         this.reporter = reporter;
         this.encoding = encoding;
 
-        checkThatCSVIsOnClasspath(licensesCSV);
+        checkThatCSVIsOnClasspath();
         initMapperFunctions();
-        initMaps(licensesCSV);
+        initMaps();
     }
 
-    private void checkThatCSVIsOnClasspath(String licensesCSV) {
+    private void checkThatCSVIsOnClasspath() {
         final URL resource = CSVBasedLicenseKnowledgeBase.class.getClassLoader().getResource(licensesCSV);
         if(resource == null) {
             throw new RuntimeException("The required file " + licensesCSV + " was not found on the classpath");
@@ -87,9 +87,9 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
     private void initMapperFunctions() {
         // alias mapper function
         mapperFunctions.add(row -> {
-            final String licenseId = row[KEY_IDENT];
-            final String licenseName = row[KEY_NAME];
-            final String licenseAliases = row[KEY_ALIAS];
+            final String licenseId = row.get(KEY_IDENT);
+            final String licenseName = row.get(KEY_NAME);
+            final String licenseAliases = row.get(KEY_ALIAS);
             if (!licenseAliases.equals("")) {
                 String[] aliases = licenseAliases.split(",");
                 Arrays.stream(aliases)
@@ -101,81 +101,75 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
         });
 
         // id mapper function
-        mapperFunctions.add(row -> this.idLicenseMap.put(row[KEY_IDENT], row[KEY_NAME]));
+        mapperFunctions.add(row -> this.idLicenseMap.put(row.get(KEY_IDENT), row.get(KEY_NAME)));
 
         // threat group mapper
         mapperFunctions.add(row -> {
             LicenseThreatGroup threatGroup = LicenseThreatGroup.UNKNOWN;
 
-            String threadGroupString = row[KEY_THREAT_GROUP];
+            String threadGroupString = row.get(KEY_THREAT_GROUP);
             if(threadGroupString != null && threadGroupString.length() > 0) {
                 try {
                     threatGroup = LicenseThreatGroup.fromValue(threadGroupString);
                 } catch (IllegalArgumentException e) {
                     String errMsg = String.format(
                             "Illegal threat group [%s] for license [%s]. Falling back to UNKNOWN",
-                            threadGroupString, row[KEY_IDENT]);
+                            threadGroupString, row.get(KEY_IDENT));
                     LOGGER.warn(errMsg);
-                    reporter.add(row[KEY_IDENT], MessageType.PROCESSING_FAILURE, errMsg);
+                    reporter.add(row.get(KEY_IDENT), MessageType.PROCESSING_FAILURE, errMsg);
                 }
             }
 
-            this.idThreatGroupMap.put(row[KEY_IDENT], threatGroup);
+            this.idThreatGroupMap.put(row.get(KEY_IDENT), threatGroup);
         });
 
         // classification mapper
         mapperFunctions.add(row -> {
             LicenseClassification lc;
             try {
-                lc = LicenseClassification.fromValue(row[KEY_CLASSIFICATION]);
+                lc = LicenseClassification.fromValue(row.get(KEY_CLASSIFICATION));
             } catch (IllegalArgumentException e) {
                 String errMsg = String.format(
                         "Illegal classifier %s for licenses %s. Falling back to NOT_CLASSIFIED",
-                        row[KEY_CLASSIFICATION], row[KEY_IDENT]);
+                        row.get(KEY_CLASSIFICATION), row.get(KEY_IDENT));
                 LOGGER.warn(errMsg);
-                reporter.add(row[KEY_IDENT], MessageType.PROCESSING_FAILURE, errMsg);
+                reporter.add(row.get(KEY_IDENT), MessageType.PROCESSING_FAILURE, errMsg);
                 lc = LicenseClassification.NOT_CLASSIFIED;
             }
-            this.idClassificationMap.put(row[KEY_IDENT], lc);
+            this.idClassificationMap.put(row.get(KEY_IDENT), lc);
         });
     }
 
     /**
      * Prepare Map idClassificationMap with license identifier as key and
      * classification as value
-     * @param licensesCSV
      */
-    private void initMaps(String licensesCSV) {
+    private void initMaps() {
+        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader().withDelimiter(';').withQuote('"');
+
+
         ClassLoader classLoader = this.getClass().getClassLoader();
-        try (InputStream iStream = classLoader.getResourceAsStream(licensesCSV);
-             Reader iReader = new InputStreamReader(iStream, encoding)) {
-            CSVParserBuilder parserBuilder = new CSVParserBuilder()
-                    .withQuoteChar('"')
-                    .withSeparator(';');
-            CSVReaderBuilder readerBuilder = new CSVReaderBuilder(iReader)
-                    .withSkipLines(0)
-                    .withCSVParser(parserBuilder.build());
-            CSVReader reader = readerBuilder.build();
-
-            String[] headers = reader.readNext();
-            if (headers.length != NUMCOLS) {
-                String errMsg = String.format("License knowledgebase malformed. %d facts expected but %d found.", NUMCOLS, headers.length);
-                LOGGER.error(errMsg);
-                LOGGER.error("Found headers {}", String.join("; ", headers));
-                throw new AntennaExecutionException(errMsg);
-            }
-
-            String[] cols;
-            while (null != (cols = reader.readNext())) {
-                // init maps for current license
-                final String[] row = cols;
+        try (InputStream iStream = Optional.ofNullable(classLoader.getResourceAsStream(licensesCSV)).orElseThrow(() -> new AntennaExecutionException("Knowledgebase not found"));
+             Reader iReader = new InputStreamReader(iStream, encoding);
+             CSVParser csvParser = new CSVParser(iReader, csvFormat)) {
+            validateHeader(csvParser);
+            for (CSVRecord row : csvParser) {
                 mapperFunctions.stream()
                         .parallel()
                         .forEach(f -> f.accept(row));
             }
-
         } catch (IOException e) {
             throw new AntennaExecutionException("Could not initialize knowledgebase maps", e);
+        }
+    }
+
+    private void validateHeader(CSVParser csvParser) {
+        Collection<String> headers = csvParser.getHeaderMap().keySet();
+        List<String> missingHeaders = KEY_LIST.stream().filter(key -> !headers.contains(key)).collect(Collectors.toList());
+        if (missingHeaders.size() > 0) {
+            String errMsg = String.format("License knowledgebase malformed. Missing headers: %s", String.join(";", missingHeaders));
+            LOGGER.error(errMsg);
+            throw new AntennaExecutionException(errMsg);
         }
     }
 
