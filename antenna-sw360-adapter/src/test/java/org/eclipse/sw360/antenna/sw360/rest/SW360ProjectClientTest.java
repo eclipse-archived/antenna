@@ -12,6 +12,8 @@
 package org.eclipse.sw360.antenna.sw360.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.cliftonlabs.json_simple.JsonArray;
+import com.github.cliftonlabs.json_simple.JsonObject;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectType;
@@ -28,9 +30,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -74,7 +75,7 @@ public class SW360ProjectClientTest {
     private static final String PROJECT_EMAIL_VALUE_2 = "testemail2@any.com";
 
 
-    SW360ProjectClient client = new SW360ProjectClient(REST_URL);
+    private SW360ProjectClient client = new SW360ProjectClient(REST_URL);
 
     private MockRestServiceServer mockedServer;
 
@@ -87,30 +88,31 @@ public class SW360ProjectClientTest {
 
 
     @Test
-    public void testSearchProjectsByNameWithSuccess() throws AntennaException, JsonProcessingException {
+    public void testSearchProjectsByNameWithSuccess() throws AntennaException {
         // project 1
-        JsonObjectBuilder projectJsonObj1 = Json.createObjectBuilder()
-                .add(PROJECT_NAME_KEY, PROJECT_NAME_VALUE_1)
-                .add(PROJECT_PROJECT_TYPE_KEY, PROJECT_PROJECT_TYPE_VALUE_1)
-                .add(PROJECT_VERSION_KEY, PROJECT_VERSION_VALUE_1);
+        JsonObject projectJsonObj1 = new JsonObject(new HashMap<String, String>() {{
+            put(PROJECT_NAME_KEY, PROJECT_NAME_VALUE_1);
+            put(PROJECT_PROJECT_TYPE_KEY, PROJECT_PROJECT_TYPE_VALUE_1);
+            put(PROJECT_VERSION_KEY, PROJECT_VERSION_VALUE_1);
+        }});
 
         // project 2
-        JsonObjectBuilder projectJsonObj2 = Json.createObjectBuilder()
-                .add(PROJECT_NAME_KEY, PROJECT_NAME_VALUE_2)
-                .add(PROJECT_PROJECT_TYPE_KEY, PROJECT_PROJECT_TYPE_VALUE_2)
-                .add(PROJECT_VERSION_KEY, PROJECT_VERSION_VALUE_2);
+        JsonObject projectJsonObj2 = new JsonObject(new HashMap<String, String>() {{
+            put(PROJECT_NAME_KEY, PROJECT_NAME_VALUE_2);
+            put(PROJECT_PROJECT_TYPE_KEY, PROJECT_PROJECT_TYPE_VALUE_2);
+            put(PROJECT_VERSION_KEY, PROJECT_VERSION_VALUE_2);
+        }});
 
         // projects array
-        JsonArrayBuilder projectsJsonArray = Json.createArrayBuilder()
-                .add(projectJsonObj1)
-                .add(projectJsonObj2);
-        JsonObjectBuilder sw360ProjectsList = Json.createObjectBuilder()
-                .add(SW360_PROJECTS_KEY, projectsJsonArray);
+        JsonArray projectsJsonArray = new JsonArray(Arrays.asList(projectJsonObj1, projectJsonObj2));
 
-        String expectedResponseBody = Json.createObjectBuilder()
-                .add(EMBEDDED_KEY, sw360ProjectsList)
-                .build()
-                .toString();
+        JsonObject sw360ProjectsList = new JsonObject(new HashMap<String, JsonArray>() {{
+            put(SW360_PROJECTS_KEY, projectsJsonArray);
+        }});
+
+        String expectedResponseBody = new JsonObject(new HashMap<String, JsonObject>() {{
+            put(EMBEDDED_KEY, sw360ProjectsList);
+        }}).toJson();
 
         String searchName = "test";
         String requestUrl = SEARCH_BY_NAME_ENDPOINT + searchName;
@@ -144,7 +146,7 @@ public class SW360ProjectClientTest {
     }
 
     @Test( expected = RestClientException.class )
-    public void testSearchProjectsByNameWithNotParseableRespond() throws AntennaException, JsonProcessingException {
+    public void testSearchProjectsByNameWithNotParseableRespond() throws AntennaException {
         String expectedResponseBody = "NotParseableJsonString";
         String searchName = "test";
         String requestUrl = SEARCH_BY_NAME_ENDPOINT + searchName;
@@ -155,7 +157,7 @@ public class SW360ProjectClientTest {
     }
 
     @Test( expected = HttpClientErrorException.class )
-    public void testSearchProjectsByNameWithBadStatusCode() throws AntennaException, JsonProcessingException {
+    public void testSearchProjectsByNameWithBadStatusCode() throws AntennaException {
         String searchName = "test";
         String requestUrl = SEARCH_BY_NAME_ENDPOINT + searchName;
         mockedServer.expect(requestTo(requestUrl))
@@ -175,31 +177,35 @@ public class SW360ProjectClientTest {
                 .setVersion(PROJECT_VERSION_VALUE_1);
 
         // _links property
-        JsonObjectBuilder selfContent = Json.createObjectBuilder()
-                .add(HREF_KEY, newHref);
-        JsonObjectBuilder linksObj = Json.createObjectBuilder()
-                .add(SELF_KEY, selfContent);
-
+        JsonObject selfContent = new JsonObject(new HashMap<String, String>() {{
+            put(HREF_KEY, newHref);
+        }});
+        JsonObject linksObj = new JsonObject(new HashMap<String, JsonObject>() {{
+            put(SELF_KEY, selfContent);
+        }});
 
         // _embedded property
-        JsonObjectBuilder createdBySelfContent = Json.createObjectBuilder()
-                .add(HREF_KEY, USERS_ENDPOINT + "/12345");
-        JsonObjectBuilder createdByLinksObj = Json.createObjectBuilder()
-                .add(SELF_KEY, createdBySelfContent);
-        JsonObjectBuilder createdByContent = Json.createObjectBuilder()
-                .add(PROJECT_EMAIL_KEY, PROJECT_EMAIL_VALUE_1)
-                .add(LINKS_KEY, createdByLinksObj);
-        JsonObjectBuilder createdByObj = Json.createObjectBuilder()
-                .add(PROJECT_CREATED_BY_KEY, createdByContent);
+        JsonObject createdBySelfContent = new JsonObject(new HashMap<String, String>() {{
+            put(HREF_KEY, USERS_ENDPOINT + "/12345");
+        }});
+        JsonObject createdByLinksObj = new JsonObject(new HashMap<String, JsonObject>() {{
+            put(SELF_KEY, createdBySelfContent);
+        }});
+        JsonObject createdByContent = new JsonObject(new HashMap<String, Object>() {{
+            put(PROJECT_EMAIL_KEY, PROJECT_EMAIL_VALUE_1);
+            put(LINKS_KEY, createdByLinksObj);
+        }});
+        JsonObject createdByObj = new JsonObject(new HashMap<String, JsonObject>() {{
+            put(PROJECT_CREATED_BY_KEY, createdByContent);
+        }});
 
-        String expectedResponseBody = Json.createObjectBuilder()
-                .add(PROJECT_NAME_KEY, PROJECT_NAME_VALUE_1)
-                .add(PROJECT_PROJECT_TYPE_KEY, PROJECT_PROJECT_TYPE_VALUE_1)
-                .add(PROJECT_VERSION_KEY, PROJECT_VERSION_VALUE_1)
-                .add(LINKS_KEY, linksObj)
-                .add(EMBEDDED_KEY, createdByObj)
-                .build()
-                .toString();
+        String expectedResponseBody = new JsonObject(new HashMap<String, Object>() {{
+            put(PROJECT_NAME_KEY, PROJECT_NAME_VALUE_1);
+            put(PROJECT_PROJECT_TYPE_KEY, PROJECT_PROJECT_TYPE_VALUE_1);
+            put(PROJECT_VERSION_KEY, PROJECT_VERSION_VALUE_1);
+            put(LINKS_KEY, linksObj);
+            put(EMBEDDED_KEY, createdByObj);
+        }}).toJson();
 
         mockedServer.expect(requestTo(PROJECTS_ENDPOINT))
                 .andExpect(method(HttpMethod.POST))
@@ -225,7 +231,7 @@ public class SW360ProjectClientTest {
     }
 
     @Test( expected = HttpClientErrorException.class )
-    public void testCreateProjectWithBadStatusCode() throws AntennaException, JsonProcessingException {
+    public void testCreateProjectWithBadStatusCode() throws AntennaException {
         mockedServer.expect(requestTo(PROJECTS_ENDPOINT))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withBadRequest());
@@ -233,15 +239,14 @@ public class SW360ProjectClientTest {
     }
 
     @Test
-    public void testGetProjectWithSuccess() throws AntennaException, JsonProcessingException {
+    public void testGetProjectWithSuccess() throws AntennaException {
         String projectId = "anyId";
         String requestUrl = PROJECTS_ENDPOINT + "/" + projectId;
-        String expectedResponseBody = Json.createObjectBuilder()
-                .add(PROJECT_NAME_KEY, PROJECT_NAME_VALUE_1)
-                .add(PROJECT_VERSION_KEY, PROJECT_VERSION_VALUE_1)
-                .add(PROJECT_PROJECT_TYPE_KEY, PROJECT_PROJECT_TYPE_VALUE_1)
-                .build()
-                .toString();
+        String expectedResponseBody = new JsonObject(new HashMap<String, String>() {{
+            put(PROJECT_NAME_KEY, PROJECT_NAME_VALUE_1);
+            put(PROJECT_VERSION_KEY, PROJECT_VERSION_VALUE_1);
+            put(PROJECT_PROJECT_TYPE_KEY, PROJECT_PROJECT_TYPE_VALUE_1);
+        }}).toJson();
 
         mockedServer.expect(requestTo(requestUrl))
                 .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
@@ -256,7 +261,7 @@ public class SW360ProjectClientTest {
     }
 
     @Test( expected = HttpClientErrorException.class )
-    public void testGetProjectWithBadStatusCode() throws AntennaException, JsonProcessingException {
+    public void testGetProjectWithBadStatusCode() throws AntennaException {
         String projectId = "anyId";
         String requestUrl = PROJECTS_ENDPOINT + "/" + projectId;
         mockedServer.expect(requestTo(requestUrl))
