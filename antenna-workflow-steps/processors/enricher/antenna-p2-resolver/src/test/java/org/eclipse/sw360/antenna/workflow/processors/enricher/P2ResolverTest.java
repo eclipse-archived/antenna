@@ -16,6 +16,7 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
@@ -33,6 +34,8 @@ public class P2ResolverTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+    // TODO: Test cannot run on Jenkins due to missing proxy information
+    @Ignore
     @Test
     public void testProductInstallation() throws AntennaException, IOException {
         Artifact artifact = new Artifact();
