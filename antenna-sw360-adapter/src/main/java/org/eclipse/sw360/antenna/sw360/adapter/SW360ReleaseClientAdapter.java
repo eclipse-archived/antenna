@@ -12,9 +12,8 @@ package org.eclipse.sw360.antenna.sw360.adapter;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.sw360.comparator.ArtifactCommons;
-import org.eclipse.sw360.antenna.sw360.comparator.ArtifactSW360ComponentComparator;
-import org.eclipse.sw360.antenna.sw360.comparator.SW360ComponentCommons;
+import org.eclipse.sw360.antenna.sw360.adapter.commonComparisonProperties.ArtifactCommons;
+import org.eclipse.sw360.antenna.sw360.adapter.commonComparisonProperties.SW360ComponentCommons;
 import org.eclipse.sw360.antenna.sw360.rest.SW360ReleaseClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
@@ -52,7 +51,7 @@ public class SW360ReleaseClientAdapter {
     public boolean isArtifactAvailableAsRelease(Artifact artifact, SW360Component sw360Component, HttpHeaders header) {
         ArtifactCommons artifactCommons = new ArtifactCommons(artifact);
         SW360ComponentCommons componentCommons = new SW360ComponentCommons(sw360Component);
-        return ArtifactSW360ComponentComparator.compare(artifactCommons, componentCommons);
+        return artifactCommons.matchesOnComparisonProperties(componentCommons);
     }
 
     public Optional<SW360Release> getReleaseByArtifact(SW360Component component, Artifact artifact, HttpHeaders header) throws AntennaException {
