@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.util;
 
-import org.eclipse.sw360.antenna.model.artifact.facts.MissingLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.MissingLicenseReasons;
 
 import java.util.HashMap;
