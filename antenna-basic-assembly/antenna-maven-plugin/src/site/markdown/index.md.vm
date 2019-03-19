@@ -1,7 +1,7 @@
 # How to use ${docNameCap} as a Maven plugin
 
 Using ${docNameCap} as a Maven plugin is made possible by following the steps in
-the configuration instructions (see [Configuration guide](../how-to-configure-antenna.html)). Adding
+the configuration instructions (see [Configuration guide](../how-to-configure.html)). Adding
 antenna-maven-plugin to your project's list of plugins enables the ${docNameCap} 
 Maven commands.
 

@@ -13,6 +13,14 @@ pipeline {
     agent any
 
     stages {
+        stage('Clean') {
+            steps {
+                withMaven() {
+                    sh 'mvn clean'
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 withMaven() {
@@ -33,6 +41,16 @@ pipeline {
             steps {
                 withMaven() {
                     sh 'mvn -B -DskipTests install'
+                }
+            }
+        }
+        
+        stage('Test-Site') {
+            steps {
+                dir("antenna-documentation") {
+                    withMaven() {
+                        sh 'mvn clean site -Psite-tests'
+                    }
                 }
             }
         }

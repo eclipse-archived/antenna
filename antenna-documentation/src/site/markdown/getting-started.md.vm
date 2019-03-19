@@ -38,7 +38,7 @@ example_project
         └───java
 ```
 
-Now we're going to add ${docNameCap} to our project. Therefor we have to edit the pom.xml to our needs. We add the `antenna-maven-plugin` as a plugin.
+Now we're going to add ${docNameCap} to our project. Therefore we have to edit the pom.xml to our needs. We add the `antenna-maven-plugin` as a plugin.
 
 The plugin section of our pom should look like this:
 
@@ -197,7 +197,6 @@ antenna
 Congratulations you created your first disclosure document!
 
 [workflow]: workflow-configuration.html
-[jsonanalyzer]: json-analyzer-step.html
-[mavenplugin]: external/${docName}-maven-plugin/index.html
+[jsonanalyzer]: analyzers/json-analyzer-step.html
 [toolconfig]: tool-configuration.html
-[csvanalyzer]: csv-analyzer-step.html
+[csvanalyzer]: analyzers/csv-analyzer-step.html
