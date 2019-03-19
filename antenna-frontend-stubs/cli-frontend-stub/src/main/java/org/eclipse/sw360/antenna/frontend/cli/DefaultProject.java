@@ -17,13 +17,16 @@ import java.io.File;
 public class DefaultProject implements IProject {
     private final File configFile;
     private final String buildDir;
+    private final Build build;
 
     private String projectId = "project";
     private String projectVersion = "1.0";
+    private String artifactId = projectId + ":" + projectVersion;
 
     public DefaultProject(File configFile, String buildDir) {
         this.configFile = configFile;
         this.buildDir = buildDir;
+        this.build = new Build(buildDir, buildDir + "/classes");
     }
 
     @Override
@@ -44,6 +47,10 @@ public class DefaultProject implements IProject {
         this.projectVersion = projectVersion;
     }
 
+    public String getArtifactId() {
+        return artifactId;
+    }
+
     @Override
     public File getConfigFile() {
         return configFile;
@@ -52,5 +59,28 @@ public class DefaultProject implements IProject {
     @Override
     public String getBuildDirectory() {
         return buildDir;
+    }
+
+    public Build getBuild() {
+        return build;
+    }
+
+    public class Build {
+        private final String directory;
+        private final String outputDirectory;
+
+        public Build(String directory, String outputDirectory) {
+            this.directory = directory;
+            this.outputDirectory = outputDirectory;
+        }
+
+        public String getDirectory() {
+            return directory;
+        }
+
+        public String getOutputDirectory() {
+            return outputDirectory;
+        }
+
     }
 }
