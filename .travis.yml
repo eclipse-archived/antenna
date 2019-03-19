@@ -24,6 +24,9 @@ before_install:
   - wget -N -O /tmp/install-jdk.sh https://raw.githubusercontent.com/sormuras/bach/ab648ed36892439f49a827cdf18c25e17c8095db/install-jdk.sh
   - chmod +x /tmp/install-jdk.sh
 install:
+  - cd antenna-p2/dependencies
+  - mvn package -DskipTests=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+  - cd ../..
   - mvn install -DskipTests=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
 jobs:
