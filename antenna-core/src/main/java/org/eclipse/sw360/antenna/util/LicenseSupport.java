@@ -20,22 +20,27 @@ import java.util.Iterator;
 
 public class LicenseSupport {
     public static LicenseInformation mapLicenses(Collection<String> licenses) {
+        return mapLicenses(licenses, LicenseOperator.AND);
+    }
+
+    public static LicenseInformation mapLicenses(Collection<String> licenses, LicenseOperator operator) {
         Iterator<String> iterator = licenses.iterator();
         if (!iterator.hasNext()) {
             return new LicenseStatement();
         }
 
-        return computeRecursiveLicenseStatement(iterator, new LicenseStatement());
+        return computeRecursiveLicenseStatement(iterator, new LicenseStatement(), operator);
     }
 
-    private static LicenseInformation computeRecursiveLicenseStatement(Iterator<String> iterator, LicenseStatement leftLicense) {
+    private static LicenseInformation computeRecursiveLicenseStatement(
+            Iterator<String> iterator, LicenseStatement leftLicense, LicenseOperator operator) {
         License license = new License();
         license.setName(iterator.next());
 
         if (iterator.hasNext()) {
             leftLicense.setLeftStatement(license);
-            leftLicense.setOp(LicenseOperator.AND);
-            leftLicense.setRightStatement(computeRecursiveLicenseStatement(iterator, new LicenseStatement()));
+            leftLicense.setOp(operator);
+            leftLicense.setRightStatement(computeRecursiveLicenseStatement(iterator, new LicenseStatement(), operator));
             return leftLicense;
         }
         return license;

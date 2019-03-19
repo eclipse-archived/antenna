@@ -12,23 +12,16 @@
 package org.eclipse.sw360.antenna.droolstesting;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class RuleResults {
-    private List<IEvaluationResult> evaluations;
-    private String name;
-
-    RuleResults(String name, List<IEvaluationResult> evaluations) {
-        this.evaluations = evaluations;
-        this.name = name;
-    }
-
-    List<IEvaluationResult> getEvaluations() {
-        return evaluations;
-    }
-
-    String getName() {
-        return name;
-    }
+public class ScenarioState {
+    Map<String, Artifact> artifacts = new HashMap<>();
+    List<IEvaluationResult> evaluations = new ArrayList<>();
+    URL rule_resource;
 }

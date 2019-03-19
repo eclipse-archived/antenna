@@ -31,7 +31,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-json-analyzer</artifactId>
+            <artifactId>antenna-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
