@@ -32,20 +32,24 @@ spec:
       mountPath: /root/.m2
     resources:
         requests:
-            memory: "4096Mi"
+            memory: "8192Mi"
         limits:
-            memory: "4096Mi"
+            memory: "8192Mi"
 """
         }
     }
     environment {
-        MAVEN_OPTS = '-Xms4G -Xmx4G'
+        MAVEN_OPTS = '-Xms8G -Xmx8G'
     }
     parameters {
         choice(
             choices: ['build' , 'build_and_deploy_snapshot'],
             description: '',
             name: 'REQUESTED_ACTION')
+        // string(
+        //     defaultValue: 'HEAD',
+        //     description: '',
+        //     name: 'TAG_TO_BUILD')
     }
     stages {
         stage('build') {
@@ -73,7 +77,8 @@ spec:
                         sh 'rm -rf repository'
                         sh 'mkdir -p repository'
                         container('maven') {
-                            sh 'mvn -B deploy -DskipTests -P \'!build-assembly\' -pl \'!antenna-testing,!antenna-testing/antenna-core-common-testing,!antenna-testing/antenna-frontend-stubs-testing,!antenna-testing/antenna-rule-engine-testing\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
+                            // sign jars and deploy them to the repository `./repository`
+                            sh 'mvn -B package eclipse-jarsigner:sign deploy -P \'!build-assembly\' -pl \'!antenna-testing,!antenna-testing/antenna-core-common-testing,!antenna-testing/antenna-frontend-stubs-testing,!antenna-testing/antenna-rule-engine-testing\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
                         }
                     }
                 }
