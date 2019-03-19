@@ -13,6 +13,16 @@ pipeline {
     agent any
 
     stages {
+        stage('Dependency download') {
+            steps {
+                withMaven() {
+		            dir("antenna-p2/dependencies") {
+                        sh 'mvn -B clean package'
+                    }
+                }
+            }
+        }
+
         stage('Clean') {
             steps {
                 withMaven() {
@@ -20,7 +30,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Build') {
             steps {
                 withMaven() {
@@ -28,7 +38,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Test') {
             steps {
                 withMaven() {
@@ -36,7 +46,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Install') {
             steps {
                 withMaven() {
