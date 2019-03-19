@@ -28,6 +28,7 @@ import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +85,11 @@ public class SW360Enricher extends AbstractProcessor {
 
     private void updateLicenses(Artifact artifact, SW360Release release) {
         List<License> artifactLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
-        List<SW360SparseLicense> releaseLicenses = release.get_Embedded().getLicenses();
+        final SW360ReleaseEmbedded embedded = release.get_Embedded();
+        if(embedded == null) {
+            return;
+        }
+        List<SW360SparseLicense> releaseLicenses = embedded.getLicenses();
 
         if (!artifactLicenses.isEmpty()) {
             if (releaseLicenses.isEmpty()) {
