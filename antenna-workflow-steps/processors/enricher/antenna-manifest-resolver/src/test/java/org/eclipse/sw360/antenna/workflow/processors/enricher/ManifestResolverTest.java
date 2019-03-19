@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.workflow.processors.enricher;
 
+import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
@@ -20,6 +21,7 @@ import org.eclipse.sw360.antenna.testing.util.JarCreator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -29,10 +31,15 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ManifestResolverTest extends AntennaTestWithMockedContext {
+
+    @Mock
+    private IProject iProject = mock(IProject.class);
 
     private JarCreator jarCreator;
     private ManifestResolver resolver;
@@ -42,13 +49,14 @@ public class ManifestResolverTest extends AntennaTestWithMockedContext {
         this.jarCreator = new JarCreator();
         resolver = new ManifestResolver();
         resolver.setAntennaContext(antennaContextMock);
-        when(toolConfigMock.getAntennaTargetDirectory()).thenReturn(temporaryFolder.newFolder("target").toPath());
+        when(antennaContextMock.getProject()).thenReturn(iProject);
+        when(antennaContextMock.getProject().getBasedir()).thenReturn(temporaryFolder.newFolder("project-basedir"));
     }
 
     @After
     public void tearDown() {
         this.jarCreator.cleanUp();
-        verify(toolConfigMock).getAntennaTargetDirectory();
+        verify(antennaContextMock, atLeast(0)).getProject();
     }
 
     private List<Artifact> makeArtifacts(Path path) {

@@ -68,7 +68,7 @@ public class ManifestResolver extends AbstractProcessor {
 
     private void resolveManifest(String pathname, Artifact artifact){
         LOGGER.debug("Resolving {}", pathname);
-        Path jarPath = context.getToolConfiguration().getAntennaTargetDirectory().resolve(pathname);
+        Path jarPath = context.getProject().getBasedir().toPath().resolve(pathname);
 
         try {
             final Path jar = resolveJarFile(jarPath);
