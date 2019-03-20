@@ -72,12 +72,11 @@ spec:
                 }
             }
             stages {
-                stage ('create local repository') {
+                stage ('create local repository with signed jars') {
                     steps {
                         sh 'rm -rf repository'
                         sh 'mkdir -p repository'
                         container('maven') {
-                            // sign jars and deploy them to the repository `./repository`
                             sh 'mvn -B package eclipse-jarsigner:sign deploy -P \'!build-assembly\' -pl \'!antenna-testing,!antenna-testing/antenna-core-common-testing,!antenna-testing/antenna-frontend-stubs-testing,!antenna-testing/antenna-rule-engine-testing\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
                         }
                     }
@@ -90,17 +89,22 @@ spec:
                         }
                     }
                 }
-                // stage ('push local repository') {
-                //     steps {
-                //         sshagent ( ['project-storage.eclipse.org-bot-ssh']) {
-                //             sh '''
-                //               ssh genie.projectname@projects-storage.eclipse.org rm -rf /home/data/httpd/download.eclipse.org/antenna/snapshots
-                //               ssh genie.projectname@projects-storage.eclipse.org mkdir -p /home/data/httpd/download.eclipse.org/antenna/snapshots
-                //               scp -r ./repository/* genie.projectname@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/antenna/snapshots
-                //             '''
-                //         }
-                //     }
-                // }
+                stage ('push local repository') {
+                    steps {
+                        sshagent ( ['project-storage.eclipse.org-bot-ssh']) {
+                            sh '''
+                              ssh genie.projectname@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org
+                              ssh genie.projectname@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org/antenna
+                              ssh genie.projectname@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org/antenna/snapshots
+                            '''
+                            // sh '''
+                            //   ssh genie.projectname@projects-storage.eclipse.org rm -rf /home/data/httpd/download.eclipse.org/antenna/snapshots
+                            //   ssh genie.projectname@projects-storage.eclipse.org mkdir -p /home/data/httpd/download.eclipse.org/antenna/snapshots
+                            //   scp -r ./repository/* genie.projectname@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/antenna/snapshots
+                            // '''
+                        }
+                    }
+                }
             }
         }
     }
