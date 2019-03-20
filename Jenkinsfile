@@ -29,7 +29,7 @@ spec:
     tty: true
     volumeMounts:
     - name: maven-p2
-      mountPath: /root/.m2
+      mountPath: /home/jenkins/.m2
     resources:
         requests:
             memory: "4096Mi"
@@ -52,6 +52,17 @@ spec:
         //     name: 'TAG_TO_BUILD')
     }
     stages {
+        stage ('ls remote repository') {
+            steps {
+                sshagent ( ['project-storage.eclipse.org-bot-ssh']) {
+                    sh '''
+                         ssh genie.antenna@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org
+                         ssh genie.antenna@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org/antenna
+                         ssh genie.antenna@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org/antenna/snapshots
+                       '''
+                }
+            }
+        }
         stage('build') {
             when {
                 anyOf {
@@ -72,17 +83,6 @@ spec:
                 }
             }
             stages {
-                stage ('ls remote repository') {
-                    steps {
-                        sshagent ( ['project-storage.eclipse.org-bot-ssh']) {
-                            sh '''
-                              ssh genie.projectname@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org
-                              ssh genie.projectname@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org/antenna
-                              ssh genie.projectname@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org/antenna/snapshots
-                            '''
-                        }
-                    }
-                }
                 stage ('create local repository with signed jars') {
                     steps {
                         sh 'rm -rf repository'
@@ -104,9 +104,9 @@ spec:
                 //     steps {
                 //         sshagent ( ['project-storage.eclipse.org-bot-ssh']) {
                 //             // sh '''
-                //             //   ssh genie.projectname@projects-storage.eclipse.org rm -rf /home/data/httpd/download.eclipse.org/antenna/snapshots
-                //             //   ssh genie.projectname@projects-storage.eclipse.org mkdir -p /home/data/httpd/download.eclipse.org/antenna/snapshots
-                //             //   scp -r ./repository/* genie.projectname@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/antenna/snapshots
+                //             //   ssh genie.antenna@projects-storage.eclipse.org rm -rf /home/data/httpd/download.eclipse.org/antenna/snapshots
+                //             //   ssh genie.antenna@projects-storage.eclipse.org mkdir -p /home/data/httpd/download.eclipse.org/antenna/snapshots
+                //             //   scp -r ./repository/* genie.antenna@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/antenna/snapshots
                 //             // '''
                 //         }
                 //     }
