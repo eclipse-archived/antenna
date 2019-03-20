@@ -11,6 +11,7 @@
 
 package org.eclipse.sw360.antenna.bundle;
 
+import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 
@@ -20,6 +21,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.eclipse.sw360.antenna.bundle.OperatingSystemSpecifics.prepareEclipseExecutable;
 
 /**
  * For P2 resolution, we rely on an eclipse project.
@@ -31,14 +34,12 @@ import java.util.stream.Collectors;
  * is defined here. The counterpart (receiver) is defined in ProjectArgumentExtractor in the antenna-p2-repository-manager
  */
 public class EclipseProcessBuilder {
-    private static final String LAUNCHER = "eclipse";
     private static final String DOWNLOAD_AREA = "-download-area";
     private static final String REPOSITORIES = "-repositories";
     private static final String ARTIFACTS = "-coordinates";
 
-    public static ProcessBuilder setupEclipseProcess(File productInstallationArea, File artifactDownloadArea, Collection<Artifact> artifacts, List<String> repositories) {
-        File eclipse_executable = productInstallationArea.toPath().resolve(LAUNCHER).normalize().toFile();
-        eclipse_executable.setExecutable(true);
+    public static ProcessBuilder setupEclipseProcess(File productInstallationArea, File artifactDownloadArea, Collection<Artifact> artifacts, List<String> repositories) throws AntennaException {
+        File eclipse_executable = prepareEclipseExecutable(productInstallationArea);
 
         return new ProcessBuilder(
                 eclipse_executable.toPath().toString(),

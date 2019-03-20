@@ -25,12 +25,11 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import static org.eclipse.sw360.antenna.bundle.OperatingSystemSpecifics.getProductNameForOS;
+
 public final class P2RepositoryExtractor {
     private static final Logger LOGGER = LoggerFactory.getLogger(P2RepositoryExtractor.class);
     private static final String ANTENNA = "org.eclipse.sw360.antenna.p2.app.product";
-    private static final String LINUX_X86_64 = ANTENNA + "-linux.gtk.x86_64.zip";
-    private static final String WIN32_X86_64 = ANTENNA + "-win32.win32.x86_64.zip";
-    private static final String MAC_X86_64 = ANTENNA + "-macosx.cocoa.x86_64.zip";
 
     private P2RepositoryExtractor() {
         // Utility class
@@ -56,19 +55,6 @@ public final class P2RepositoryExtractor {
             throw new AntennaException("Could not extract product from file system at " + location, ex);
         }
     }
-
-    private static String getProductNameForOS() throws AntennaException {
-        String operatingSystem = System.getProperty("os.name").toLowerCase();
-        if (operatingSystem.contains("win")) {
-            return WIN32_X86_64;
-        } else if (operatingSystem.contains("nix") || operatingSystem.contains("nux")) {
-            return LINUX_X86_64;
-        } else if (operatingSystem.contains("mac")) {
-            return MAC_X86_64;
-        }
-        throw new AntennaException("Operating system not supported for workflow step P2 Resolver");
-    }
-
     private static void extractZip(String extractionLocation, JarFile jar, JarEntry file) throws IOException {
         LOGGER.info("Extracting product to interact with p2 repositories: Starting");
         File zipFile = new File(extractionLocation + File.separator + file.getName());

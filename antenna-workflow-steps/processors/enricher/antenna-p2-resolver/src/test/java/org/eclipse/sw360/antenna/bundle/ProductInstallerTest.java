@@ -32,6 +32,7 @@ public class ProductInstallerTest {
         productInstaller.installEclipseProductForP2Resolution(extractionPath.toString());
 
         // The product contains an eclipse launcher file which is just "eclipse"
-        assertThat(new File(extractionPath.toPath().resolve("eclipse").normalize().toString())).exists();
+        assertThat(OperatingSystemSpecifics.getEclipseExecutable(extractionPath)).exists();
     }
+
 }
