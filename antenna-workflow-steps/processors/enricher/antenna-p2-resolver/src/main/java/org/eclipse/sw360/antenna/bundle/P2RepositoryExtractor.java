@@ -34,45 +34,28 @@ public final class P2RepositoryExtractor {
         // Utility class
     }
 
-    public static void extractProductFromJar(String extractionLocation, String jarPath) throws IOException, AntennaException {
-        try (JarFile jar = new JarFile(jarPath)) {
-            Enumeration enumEntries = jar.entries();
-            while (enumEntries.hasMoreElements()) {
-                JarEntry file = (JarEntry) enumEntries.nextElement();
-                if (file.getName().equals(getProductNameForOS())) {
-                    extractZip(extractionLocation, jar, file);
-                }
-            }
-        }
+    public static void extractProductFromJar(String extractionLocation, String jarPath) throws AntennaException {
+        String extractedFolder = extractionLocation + File.separator + "extracted";
+        new File(extractedFolder).mkdir();
+        LOGGER.info("Extracting jar file containing products.");
+        unzipFile(new File(jarPath), extractedFolder);
+        LOGGER.info("Extracting jar file complete.");
+        extractProductFromFilesystem(extractionLocation, extractedFolder);
     }
 
     public static void extractProductFromFilesystem(String extractionLocation, String location) throws AntennaException {
-        try {
-            File zipFile = new File(location + File.separator + getProductNameForOS());
-            unzipFile(zipFile, extractionLocation);
-        } catch (IOException ex) {
-            throw new AntennaException("Could not extract product from file system at " + location, ex);
-        }
-    }
-    private static void extractZip(String extractionLocation, JarFile jar, JarEntry file) throws IOException {
-        LOGGER.info("Extracting product to interact with p2 repositories: Starting");
-        File zipFile = new File(extractionLocation + File.separator + file.getName());
-        try (InputStream is = jar.getInputStream(file); FileOutputStream fos = new FileOutputStream(zipFile)) {
-            while (is.available() > 0) {
-                fos.write(is.read());
-            }
-        }
+        File zipFile = new File(location + File.separator + getProductNameForOS());
+        LOGGER.info("Extracting zip file of product.");
         unzipFile(zipFile, extractionLocation);
+        LOGGER.info("Extracted product at: " + extractionLocation);
     }
 
-    private static void unzipFile(File zipFile, String extractionLocation) throws IOException {
+    private static void unzipFile(File zipFile, String extractionLocation) throws AntennaException {
         try {
-            LOGGER.info("Extracting zip file of product.");
             ZipFile zip = new ZipFile(zipFile);
             zip.extractAll(extractionLocation);
-            LOGGER.info("Extracted product at: " + extractionLocation);
         } catch (ZipException e) {
-            throw new IOException("Unzipping file failed: ", e);
+            throw new AntennaException("Unzipping file " + zipFile.toString() + " failed. Reason: ", e);
         }
     }
 }
