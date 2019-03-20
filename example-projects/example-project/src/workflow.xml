@@ -54,7 +54,6 @@
             <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.P2Resolver</classHint>
             <configuration>
                 <entry key="repositories" value="${project.basedir}/additional_p2_resources"/>
-                <entry key="filepath" value="${project.basedir}/target/antenna/dependencies"/>
             </configuration>
         </step>
         <step>

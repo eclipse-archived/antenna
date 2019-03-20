@@ -123,8 +123,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                 "folder.paths", "../example-policies");
         processors.add(checker1);
         WorkflowStep enricher1 = mkWorkflowStep("P2 Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.P2Resolver",
-                "repositories", this.projectRoot.toString() + "/additional_p2_resources",
-                "filepath", this.projectRoot.toString() + "/target/antenna/dependencies");
+                "repositories", this.projectRoot.toString() + "/additional_p2_resources");
         processors.add(enricher1);
         return processors;
     }
