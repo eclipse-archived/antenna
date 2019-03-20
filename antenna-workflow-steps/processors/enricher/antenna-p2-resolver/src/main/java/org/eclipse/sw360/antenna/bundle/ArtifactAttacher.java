@@ -21,15 +21,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
 
 
 public class ArtifactAttacher {
     private static final Logger LOGGER = LoggerFactory.getLogger(ArtifactAttacher.class);
 
-    private String targetDirectory;
+    private Path targetDirectory;
 
-    public ArtifactAttacher(String targetDirectory) {
+    public ArtifactAttacher(Path targetDirectory) {
         this.targetDirectory = targetDirectory;
     }
 
@@ -51,7 +52,7 @@ public class ArtifactAttacher {
         String bundleSourceName = bundleCoordinates.getSymbolicName() + ".source_" + bundleCoordinates.getVersion() + ".jar";
         File sourceFile = new File(artifactDownloadArea.toURI().resolve(bundleSourceName));
         if (!artifact.getSourceFile().isPresent() && sourceFile.exists()) {
-            File artifactSource = new File(targetDirectory + File.separator + bundleSourceName);
+            File artifactSource = new File(targetDirectory.toString() + File.separator + bundleSourceName);
             FileUtils.copyFile(sourceFile, artifactSource);
             artifact.addFact(new ArtifactSourceFile(artifactSource.toPath()));
             LOGGER.info("Attached source artifact for " + artifact + ".");
@@ -62,7 +63,7 @@ public class ArtifactAttacher {
         String bundleJarName = bundleCoordinates.getSymbolicName() + "_" + bundleCoordinates.getVersion() + ".jar";
         File jarFile = new File(artifactDownloadArea.toURI().resolve(bundleJarName));
         if (!artifact.getFile().isPresent() && jarFile.exists()) {
-            File artifactFile = new File(targetDirectory + File.separator + bundleJarName);
+            File artifactFile = new File(targetDirectory.toString() + File.separator + bundleJarName);
             FileUtils.copyFile(jarFile, artifactFile);
             artifact.addFact(new ArtifactFile(artifactFile.toPath()));
             LOGGER.info("Attached artifact for " + artifact + ".");

@@ -29,7 +29,6 @@ import static org.eclipse.sw360.antenna.bundle.OperatingSystemSpecifics.getProdu
 
 public final class P2RepositoryExtractor {
     private static final Logger LOGGER = LoggerFactory.getLogger(P2RepositoryExtractor.class);
-    private static final String ANTENNA = "org.eclipse.sw360.antenna.p2.app.product";
 
     private P2RepositoryExtractor() {
         // Utility class

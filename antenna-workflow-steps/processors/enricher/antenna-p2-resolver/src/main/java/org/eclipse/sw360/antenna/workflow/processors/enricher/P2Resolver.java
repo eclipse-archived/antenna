@@ -35,16 +35,13 @@ public class P2Resolver extends AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(P2Resolver.class);
 
     private static final String DEPENDENCY_REPOSITORY = "repositories";
-    private static final String TARGET_DIRECTORY = "filepath";
     private static final String ANTENNA_ECLIPSE_APP = "org.eclipse.sw360.antenna.p2.app";
 
     private List<String> repositories;
-    private String targetDirectory;
 
     @Override
     public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
         repositories = Arrays.asList(getConfigValue(DEPENDENCY_REPOSITORY, configMap).split(";"));
-        targetDirectory = getConfigValue(TARGET_DIRECTORY, configMap);
     }
 
     @Override
@@ -84,7 +81,7 @@ public class P2Resolver extends AbstractProcessor {
 
     private void attachArtifacts(File artifactDownloadArea, List<Artifact> actionableIntermediates) throws AntennaException {
         try {
-            ArtifactAttacher attacher = new ArtifactAttacher(targetDirectory);
+            ArtifactAttacher attacher = new ArtifactAttacher(context.getToolConfiguration().getDependenciesDirectory());
 
             attacher.copyDependencies(artifactDownloadArea, actionableIntermediates);
         } catch (IOException e) {

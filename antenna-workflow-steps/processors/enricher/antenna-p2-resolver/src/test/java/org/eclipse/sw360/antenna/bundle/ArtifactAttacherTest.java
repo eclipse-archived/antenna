@@ -49,7 +49,7 @@ public class ArtifactAttacherTest {
         createJarFileInDownloadFolder(jarName);
         createJarFileInDownloadFolder(sourceName);
 
-        ArtifactAttacher attacher = new ArtifactAttacher(targetFolder.toString());
+        ArtifactAttacher attacher = new ArtifactAttacher(targetFolder.toPath());
 
         attacher.copyDependencies(downloadFolder, Collections.singletonList(artifact));
 
@@ -66,7 +66,7 @@ public class ArtifactAttacherTest {
         Artifact artifact = createArtifactWithBundleCoordinates(jarName);
         createJarFileInDownloadFolder(sourceName);
 
-        ArtifactAttacher attacher = new ArtifactAttacher(targetFolder.toString());
+        ArtifactAttacher attacher = new ArtifactAttacher(targetFolder.toPath());
 
         attacher.copyDependencies(downloadFolder, Collections.singletonList(artifact));
 
@@ -85,7 +85,7 @@ public class ArtifactAttacherTest {
         createJarFileInDownloadFolder(jarName);
         createJarFileInDownloadFolder(sourceName);
 
-        ArtifactAttacher attacher = new ArtifactAttacher(targetFolder.toString());
+        ArtifactAttacher attacher = new ArtifactAttacher(targetFolder.toPath());
 
         attacher.copyDependencies(downloadFolder, Collections.singletonList(artifact));
 
