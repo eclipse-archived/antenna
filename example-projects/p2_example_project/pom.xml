@@ -168,7 +168,7 @@
                                 <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.P2Resolver</classHint>
                                 <configuration>
                                     <entry>
-                                        <entryKey>repository</entryKey>
+                                        <entryKey>repositories</entryKey>
                                         <entryValue>
                                             ${user.dir}/dependency_project/basic-test-dependencies/target/repository/
                                         </entryValue>
