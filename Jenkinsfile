@@ -68,9 +68,7 @@ spec:
         }
         stage ('deploy snapshot') {
             when {
-                anyOf {
-                    expression { params.REQUESTED_ACTION == 'build_and_deploy_snapshot' }
-                }
+                expression { params.REQUESTED_ACTION == 'build_and_deploy_snapshot' }
             }
             stages {
                 stage ('create local repository with signed jars') {
@@ -78,7 +76,7 @@ spec:
                         sh 'rm -rf repository'
                         sh 'mkdir -p repository'
                         container('maven') {
-                            sh 'mvn -B package eclipse-jarsigner:sign deploy -P \'!build-assembly\' -pl \'!antenna-testing,!antenna-testing/antenna-core-common-testing,!antenna-testing/antenna-frontend-stubs-testing,!antenna-testing/antenna-rule-engine-testing\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
+                            sh 'mvn -B package eclipse-jarsigner:sign deploy -DskipTests -P \'!build-assembly\' -pl \'!antenna-testing,!antenna-testing/antenna-core-common-testing,!antenna-testing/antenna-frontend-stubs-testing,!antenna-testing/antenna-rule-engine-testing\' -DaltDeploymentRepository=snapshot-repo::default::file:$(readlink -f ./repository)'
                         }
                     }
                 }

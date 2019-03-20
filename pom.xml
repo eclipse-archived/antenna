@@ -19,7 +19,6 @@
     <name>Antenna</name>
 
     <properties>
-        <skip.eclipse.jarsigner>true</skip.eclipse.jarsigner>
         <drools.version>7.17.0.Final</drools.version>
         <gradle.version>4.1</gradle.version>
         <jackson.version>2.9.8</jackson.version>
