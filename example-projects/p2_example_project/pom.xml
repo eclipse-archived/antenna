@@ -173,10 +173,6 @@
                                             ${user.dir}/dependency_project/basic-test-dependencies/target/repository/
                                         </entryValue>
                                     </entry>
-                                    <entry>
-                                        <entryKey>filepath</entryKey>
-                                        <entryValue>${project.build.directory}/antenna/dependencies/</entryValue>
-                                    </entry>
                                 </configuration>
                             </step>
                         </processors>
