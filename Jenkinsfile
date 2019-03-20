@@ -72,6 +72,17 @@ spec:
                 }
             }
             stages {
+                stage ('ls remote repository') {
+                    steps {
+                        sshagent ( ['project-storage.eclipse.org-bot-ssh']) {
+                            sh '''
+                              ssh genie.projectname@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org
+                              ssh genie.projectname@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org/antenna
+                              ssh genie.projectname@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org/antenna/snapshots
+                            '''
+                        }
+                    }
+                }
                 stage ('create local repository with signed jars') {
                     steps {
                         sh 'rm -rf repository'
@@ -89,22 +100,17 @@ spec:
                         }
                     }
                 }
-                stage ('push local repository') {
-                    steps {
-                        sshagent ( ['project-storage.eclipse.org-bot-ssh']) {
-                            sh '''
-                              ssh genie.projectname@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org
-                              ssh genie.projectname@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org/antenna
-                              ssh genie.projectname@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org/antenna/snapshots
-                            '''
-                            // sh '''
-                            //   ssh genie.projectname@projects-storage.eclipse.org rm -rf /home/data/httpd/download.eclipse.org/antenna/snapshots
-                            //   ssh genie.projectname@projects-storage.eclipse.org mkdir -p /home/data/httpd/download.eclipse.org/antenna/snapshots
-                            //   scp -r ./repository/* genie.projectname@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/antenna/snapshots
-                            // '''
-                        }
-                    }
-                }
+                // stage ('push local repository') {
+                //     steps {
+                //         sshagent ( ['project-storage.eclipse.org-bot-ssh']) {
+                //             // sh '''
+                //             //   ssh genie.projectname@projects-storage.eclipse.org rm -rf /home/data/httpd/download.eclipse.org/antenna/snapshots
+                //             //   ssh genie.projectname@projects-storage.eclipse.org mkdir -p /home/data/httpd/download.eclipse.org/antenna/snapshots
+                //             //   scp -r ./repository/* genie.projectname@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/antenna/snapshots
+                //             // '''
+                //         }
+                //     }
+                // }
             }
         }
     }
