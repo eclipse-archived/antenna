@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.junit.Test;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -47,7 +48,7 @@ public class EclipseProcessBuilderTest {
     }
 
     @Test
-    public void testEclipseProcessBuilderCommandPrepensFileToUriIfItDoesNotHaveAScheme() throws AntennaException {
+    public void testEclipseProcessBuilderCommandPrependsFileToUriIfItDoesNotHaveAScheme() throws AntennaException {
         Artifact artifact = new Artifact();
         artifact.addFact(new BundleCoordinates("TestBundle", "1.0.0"));
         File installArea = new File("test_file1");
@@ -56,7 +57,9 @@ public class EclipseProcessBuilderTest {
         ProcessBuilder processBuilder = EclipseProcessBuilder.setupEclipseProcess(
                 installArea, downloadArea, Collections.singletonList(artifact), Collections.singletonList("/home/somebody/repository"));
 
-        assertThat(processBuilder.command()).contains("-repositories file:///home/somebody/repository");
+        String repositoryString = Paths.get("/home/somebody/repository").normalize().toUri().toString();
+        assertThat(repositoryString).startsWith("file:/");
+        assertThat(processBuilder.command()).contains("-repositories " + repositoryString);
     }
 
     @Test
