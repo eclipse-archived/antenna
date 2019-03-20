@@ -53,15 +53,16 @@ spec:
     }
     stages {
         stage('build') {
-            when {
-                anyOf {
-                    expression { params.REQUESTED_ACTION == 'build' }
-                    expression { params.REQUESTED_ACTION == 'build_and_deploy_snapshot' }
-                }
-            }
             steps {
                 container('maven') {
-                    sh 'mvn -B install -P \'!build-assembly\''
+                    sh 'mvn -B install -DskipTests -P \'!build-assembly\''
+                }
+            }
+        }
+        stage('test') {
+            steps {
+                container('maven') {
+                    sh 'mvn -B test -P \'!build-assembly\''
                 }
             }
         }
