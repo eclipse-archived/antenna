@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.comparator;
+package org.eclipse.sw360.antenna.sw360.adapter.commonComparisonProperties;
 
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
