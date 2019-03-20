@@ -32,14 +32,14 @@ spec:
       mountPath: /root/.m2
     resources:
         requests:
-            memory: "8192Mi"
+            memory: "4096Mi"
         limits:
-            memory: "8192Mi"
+            memory: "4096Mi"
 """
         }
     }
     environment {
-        MAVEN_OPTS = '-Xms8G -Xmx8G'
+        MAVEN_OPTS = '-Xms4G -Xmx4G'
     }
     parameters {
         choice(
