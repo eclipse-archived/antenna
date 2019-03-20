@@ -52,17 +52,6 @@ spec:
         //     name: 'TAG_TO_BUILD')
     }
     stages {
-        stage ('ls remote repository') {
-            steps {
-                sshagent ( ['project-storage.eclipse.org-bot-ssh']) {
-                    sh '''
-                         ssh genie.antenna@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org
-                         ssh genie.antenna@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org/antenna
-                         ssh genie.antenna@projects-storage.eclipse.org ls -alF /home/data/httpd/download.eclipse.org/antenna/snapshots
-                       '''
-                }
-            }
-        }
         stage('build') {
             when {
                 anyOf {
