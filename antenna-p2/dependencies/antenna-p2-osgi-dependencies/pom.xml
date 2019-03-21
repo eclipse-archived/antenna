@@ -25,7 +25,7 @@
     <repositories>
         <repository>
             <id>photon</id>
-            <url>http://download.eclipse.org/releases/photon/</url>
+            <url>https://download.eclipse.org/eclipse/updates/4.10/R-4.10-201812060815</url>
             <layout>p2</layout>
         </repository>
     </repositories>
