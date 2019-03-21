@@ -15,12 +15,12 @@
 	<parent>
 		<groupId>org.eclipse.sw360.antenna</groupId>
 		<artifactId>antenna-workflow-steps</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.0-RC1</version>
 		<relativePath>../../..</relativePath>
 	</parent>
 
 	<artifactId>antenna-sw360-enricher</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0-RC1</version>
 
 	<packaging>jar</packaging>
 
