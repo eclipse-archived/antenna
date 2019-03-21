@@ -13,11 +13,11 @@ cd "$(dirname $0)/.."
 failure=false
 
 while read file ; do
-    if !head -15 $file | grep -q 'Copyright (c)'; then
+    if ! head -15 $file | grep -q 'Copyright (c)'; then
         echo "ERROR: No copyright remark found in $file"
         failure=true
     fi
-    if !head -15 $file | grep -q 'SPDX-License-Identifier:' then
+    if ! head -15 $file | grep -q 'SPDX-License-Identifier:'; then
         echo "ERROR: no 'SPDX-License-Identifier' in $file"
         failure=true
     fi
@@ -25,7 +25,7 @@ while read file ; do
         echo "ERROR: $file might be licensed proprietarily"
         failure=true
     fi
-    if !head -15 $file | grep -q 'http://www.eclipse.org/legal/epl-v20.html'; then
+    if ! head -15 $file | grep -q 'http://www.eclipse.org/legal/epl-v20.html'; then
         echo "ERROR: epl-2.0 header is not found in $file"
         failure=true
     fi
