@@ -32,14 +32,14 @@ spec:
       mountPath: /home/jenkins/.m2
     resources:
         requests:
-            memory: "4096Mi"
+            memory: "2048Mi"
         limits:
-            memory: "4096Mi"
+            memory: "2048Mi"
 """
         }
     }
     environment {
-        MAVEN_OPTS = '-Xms4G -Xmx4G'
+        MAVEN_OPTS = '-Xms2G -Xmx2G'
     }
     parameters {
         choice(
