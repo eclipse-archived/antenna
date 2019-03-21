@@ -13,20 +13,10 @@ pipeline {
     agent any
 
     stages {
-        stage('Dependency download') {
-            steps {
-                withMaven() {
-		            dir("antenna-p2/dependencies") {
-                        sh 'mvn -B clean package'
-                    }
-                }
-            }
-        }
-
         stage('Clean') {
             steps {
                 withMaven() {
-                    sh 'mvn clean'
+                    sh 'mvn clean -P !with-p2'
                 }
             }
         }
@@ -34,7 +24,7 @@ pipeline {
         stage('Build') {
             steps {
                 withMaven() {
-                    sh 'mvn -B -DskipTests package'
+                    sh 'mvn -B -DskipTests package -P !with-p2'
                 }
             }
         }
@@ -42,7 +32,7 @@ pipeline {
         stage('Test') {
             steps {
                 withMaven() {
-                    sh 'mvn test'
+                    sh 'mvn test -P !with-p2'
                 }
             }
         }
@@ -50,7 +40,7 @@ pipeline {
         stage('Install') {
             steps {
                 withMaven() {
-                    sh 'mvn -B -DskipTests install'
+                    sh 'mvn -B -DskipTests install -P !with-p2'
                 }
             }
         }
