@@ -29,6 +29,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>repository_manager</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <scope>compile</scope>

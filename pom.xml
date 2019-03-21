@@ -41,7 +41,6 @@
     <modules>
         <module>antenna-api</module>
         <module>antenna-model</module>
-        <module>antenna-p2</module>
         <module>antenna-testing</module>
         <module>antenna-core</module>
         <module>antenna-csv-license-knowledge-base</module>
@@ -52,6 +51,15 @@
     </modules>
 
     <profiles>
+        <profile>
+            <id>with-p2</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>antenna-p2</module>
+            </modules>
+        </profile>
         <profile>
             <id>build-assembly</id>
             <activation>
