@@ -30,7 +30,7 @@ while read file ; do
         failure=true
     fi
 done <<< "$(git ls-files \
-    | grep -Ev '\.(csv|rdf|ent|dtd|png|gitignore|gitattributes|md|bat|jar|json|couch|view)' \
+    | grep -Ev '\.(csv|rdf|ent|dtd|png|gitignore|gitattributes|md|bat|jar|json|couch|view|MF|xz|index)' \
     | grep -Ev '(gradlew|build.gradle|settings.gradle|gradle.properties|gradle/wrapper)' \
     | grep -Ev '(LICENSE|NOTICE|README)' \
     | grep -v 'antenna-testing/antenna-system-test/src/test/resources/analyzer')"

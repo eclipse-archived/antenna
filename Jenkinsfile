@@ -16,31 +16,31 @@ pipeline {
         stage('Clean') {
             steps {
                 withMaven() {
-                    sh 'mvn clean'
-                }
-            }
-        }
-
-        stage('Build') {
-            steps {
-                withMaven() {
-                    sh 'mvn -B -DskipTests package'
+                    sh 'mvn clean -P !with-p2'
                 }
             }
         }
         
-        stage('Test') {
+        stage('Build') {
             steps {
                 withMaven() {
-                    sh 'mvn test'
+                    sh 'mvn -B -DskipTests package -P !with-p2'
                 }
             }
         }
 
+        stage('Test') {
+            steps {
+                withMaven() {
+                    sh 'mvn test -P !with-p2'
+                }
+            }
+        }
+        
         stage('Install') {
             steps {
                 withMaven() {
-                    sh 'mvn -B -DskipTests install'
+                    sh 'mvn -B -DskipTests install -P !with-p2'
                 }
             }
         }

@@ -10,6 +10,7 @@ specific attributes of the artifacts.
 * [License resolver](./license-resolver.html)
 * [Manifest resolver](manifest-resolver.html)
 * [SW360 Enricher](./sw360-enricher.html)
+* [P2 Resolver](./p2-resolver.html)
 
 ### Validators
 * [Coordinates validator](./coordinates-validator.html)
