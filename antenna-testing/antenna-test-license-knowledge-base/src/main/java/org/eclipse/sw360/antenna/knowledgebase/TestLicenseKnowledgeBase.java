@@ -18,7 +18,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
 
 import java.nio.charset.Charset;
 
-public class StupidLicenseKnowledgeBase implements ILicenseManagementKnowledgeBase {
+public class TestLicenseKnowledgeBase implements ILicenseManagementKnowledgeBase {
 
     @Override
     public void init(IProcessingReporter reporter, Charset encoding){
