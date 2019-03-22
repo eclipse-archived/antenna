@@ -12,11 +12,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>antenna-management</artifactId>
-        <groupId>org.eclipse.sw360.antenna</groupId>
-        <version>${revision}${qualifier}</version>
-    </parent>
+    <groupId>org.eclipse.sw360.antenna</groupId>
     <artifactId>antenna-p2</artifactId>
     <version>${revision}${p2qualifier}</version>
     <modelVersion>4.0.0</modelVersion>
@@ -33,16 +29,18 @@
             <id>local-dependencies</id>
             <name>antenna-p2-osgi-dependencies</name>
             <layout>p2</layout>
-            <url>file:${user.dir}/antenna-p2/dependencies/antenna-p2-osgi-dependencies/target/repository</url>
+            <url>file:${user.dir}/dependencies/antenna-p2-osgi-dependencies/target/repository</url>
         </repository>
         <repository>
             <id>local-repackaged-dependencies</id>
             <name>antenna-repackaged-dependencies</name>
             <layout>p2</layout>
-            <url>file:${user.dir}/antenna-p2/dependencies/antenna-repackaged-dependencies/target/repository</url>
+            <url>file:${user.dir}/dependencies/antenna-repackaged-dependencies/target/repository</url>
         </repository>
     </repositories>
     <properties>
+        <revision>1.0.0</revision>
+        <p2qualifier>-SNAPSHOT</p2qualifier>
         <tycho.version>1.3.0</tycho.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
