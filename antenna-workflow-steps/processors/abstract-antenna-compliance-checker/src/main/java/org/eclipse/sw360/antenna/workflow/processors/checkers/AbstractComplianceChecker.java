@@ -64,10 +64,10 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
 
         /*
          * The severity is ordered: INFO < WARN < FAIL If the user specified
-         * <failOn>INFO</failOn> the build will fail on INFO, WARN and FAIL If
-         * the user specified <failOn>WARN</failOn> the build will fail on WARN
-         * and FAIL If the user specified <failOn>FAIL</failOn> the build will
-         * only fail on FAIL
+         * <entry key="failOn" value="INFO"/> the build will fail on INFO, WARN and FAIL If
+         * the user specified <entry key="failOn" value="WARN"/> the build will fail on WARN
+         * and FAIL If the user specified <entry key="failOn" value="WARN"/> the build will
+         * only fail on FAIL (this is the default)
          */
         switch (failOn.value()) {
             case "INFO": failCausingResults.addAll(infoResults);

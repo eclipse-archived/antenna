@@ -30,7 +30,6 @@
         <!-- processors -->
         <module>processors/antenna-conf-processor</module>
         <module>processors/abstract-antenna-compliance-checker</module>
-        <module>processors/checkers/antenna-drools-checker</module>
         <module>processors/enricher/antenna-artifact-resolver</module>
         <module>processors/enricher/antenna-child-jar-resolver</module>
         <module>processors/enricher/antenna-license-knowledgebase-resolver</module>
@@ -43,6 +42,7 @@
         <module>processors/validators/antenna-security-issue-validator</module>
         <module>processors/validators/antenna-license-validator</module>
         <module>processors/validators/antenna-match-state-validator</module>
+        <module>processors/validators/antenna-drools-checker</module>
         <!-- generators -->
         <module>generators/antenna-csv-generator</module>
         <module>generators/antenna-HTML-report-generator</module>

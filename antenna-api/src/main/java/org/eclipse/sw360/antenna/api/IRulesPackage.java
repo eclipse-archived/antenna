@@ -11,14 +11,8 @@
 
 package org.eclipse.sw360.antenna.api;
 
-import java.io.IOException;
-
 public interface IRulesPackage {
     String getRulesPackageName();
 
     String getRulesetFolder();
-
-    String getPoliciesAsString() throws IOException;
-
-    String getVersion() throws IOException;
 }

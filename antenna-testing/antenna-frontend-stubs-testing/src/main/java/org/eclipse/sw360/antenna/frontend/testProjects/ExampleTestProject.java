@@ -108,11 +108,13 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                     return newS;
                 })
                 .collect(Collectors.toList());
-        // checkers
-        WorkflowStep checker1 = mkWorkflowStep("Drools Policy Engine", "org.eclipse.sw360.antenna.workflow.processors.checkers.AntennaDroolsChecker",
-                "base.dir", this.projectRoot.toString(),
-                "folder.paths", "../example-policies");
-        processors.add(checker1);
+        Map<String, String> droolsConfig = new HashMap<String, String>() {{
+            put("base.dir", projectRoot.toString());
+            put("folder.paths", "../example-policies");
+            put("failOn", "WARN");
+        }};
+        WorkflowStep checker1 = mkWorkflowStep("Drools Policy Engine", "org.eclipse.sw360.antenna.workflow.processors.AntennaDroolsChecker", droolsConfig);
+                processors.add(checker1);
         return processors;
     }
 
