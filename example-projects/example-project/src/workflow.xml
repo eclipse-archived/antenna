@@ -51,10 +51,11 @@
     <processors>
         <step>
             <name>Drools Policy Engine</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.checkers.AntennaDroolsChecker</classHint>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.AntennaDroolsChecker</classHint>
             <configuration>
                 <entry key="base.dir" value="${project.basedir}"/>
                 <entry key="folder.paths" value="../example-policies"/>
+                <entry key="failOn" value="WARN"/>
             </configuration>
         </step>
     </processors>
