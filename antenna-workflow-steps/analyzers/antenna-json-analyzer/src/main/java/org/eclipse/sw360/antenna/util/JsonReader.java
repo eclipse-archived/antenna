@@ -112,7 +112,7 @@ public class JsonReader {
         JsonObject licenseDataObj = (JsonObject) obj.get("licenseData");
         JsonObject securityDataObj = (JsonObject) obj.get("securityData");
         Artifact a = new Artifact("JSON")
-                .addFact(new ArtifactFilename(null, (String) obj.get("hash")))
+                .addFact(mapFilename(obj))
                 .addFact(new ArtifactPathnames(mapPathNames(obj)))
                 .addFact(new ArtifactMatchingMetadata(mapMatchState(obj)))
                 .addFact(new DeclaredLicenseInformation(mapLicenses("declaredLicenses", licenseDataObj)))
@@ -182,6 +182,18 @@ public class JsonReader {
         } catch (NumberFormatException ex) {
             return 10.0;
         }
+    }
+
+    private ArtifactFilename mapFilename(JsonObject obj) {
+        final String hash = (String) obj.get("hash");
+        if(obj.containsKey("pathnames")) {
+            final JsonArray pathnames = (JsonArray) obj.get("pathnames");
+            if (pathnames.size() == 1) {
+                String filename = Paths.get(pathnames.getString(0)).getFileName().toString();
+                return new ArtifactFilename(filename, hash);
+            }
+        }
+        return new ArtifactFilename(null, hash);
     }
 
     private LicenseInformation mapLicenses(String identifier, JsonObject licenseDataObj) {
@@ -258,7 +270,6 @@ public class JsonReader {
         }
         return Optional.empty();
     }
-
 
     private Optional<ArtifactCoordinates> mapCoordinates(JsonObject object) {
         JsonObject objComponentIdentifier = (JsonObject) object.get("componentIdentifier");
