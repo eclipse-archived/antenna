@@ -21,6 +21,11 @@ dependencies {
 }
 
 jar {
+    from('src/site/markdown') {
+        include '**/*.md'
+        include '**/*.md.vm'
+        include 'images/*'
+    }
 	manifest {
 		attributes 'Implementation-Version': (version ? version : 'unknown')
 	}

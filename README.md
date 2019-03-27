@@ -8,24 +8,20 @@ their licenses,
 * a sources.zip containing all sources of the dependencies, and
 * a processing report.
 
-Learn more about Antenna in [What Antenna Does](antenna-documentation/src/site/markdown/what-antenna-does.md.vm).
+Learn more about Antenna in [What Antenna Does](antenna-documentation/src/site/markdown/what-antenna-does.md).
 
-### Install and Build Antenna
-
-##### Prerequisites
-In order to be able to build antenna, you need to provide some dependencies, which are not currently on maven central:
+### Install and build Antenna
+You need to provide some dependencies, which are not now on maven central, e.g.
 - org.eclipse.sw360:datahandler:3.1.0
 - org.eclipse.sw360:src-licenseinfo:3.1.0
 
-Those dependencies can be build from the sourcecode of the project on [SW360](https://github.com/eclipse/sw360).
+which can be build from the sourcecode on [SW360](https://github.com/eclipse/sw360).
 
-Please also note that some dependencies of SW360antenna are only available for Java 8. Hence, you will need to use Java 8 to build the project.
+After all dependencies are present, you can build Antenna and deploy it in your local repository via
 
-##### Main Install and Build
+Please also note that some dependencies of SW360antenna are only available for Java 8. So you need to use Java 8 to build the project.
 
-After all dependencies are present, you can build and deploy Antenna in your local repository via
-
-If you want to build antenna withouth the p2 parts, use
+If you want to build antenna without the p2 parts, use
 
 <pre>
 $ <b>mvn install</b>
@@ -59,4 +55,4 @@ Find out how to configure Antenna by reading: [How to configure Antenna](antenna
 Antenna can be used with Java versions 9 or newer.
 However, it requires some additional configuration described in [Tool Configuration](antenna-documentation/src/site/markdown/tool-configuration.md.vm/#additional-configuration-for-java-9-or-newer).
 
- *To find answers in the most frequent questions/problems go to [Troubleshooting](antenna-documentation/src/site/markdown/troubleshooting.md.vm).*
+ *To find answers in the most frequent questions/problems go to [Troubleshooting](antenna-documentation/src/site/markdown/troubleshooting.md).*

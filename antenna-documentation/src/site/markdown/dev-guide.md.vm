@@ -20,6 +20,7 @@ ${docNameCap} is a tool to automate your open source license compliance processe
  However, currently it is like:
  frontends:
  - ```antenna-cli```
+ - ```antenna-gradle-plugin```
  - ```antenna-maven-plugin```
  
  ```antenna-assembly``` builds the jar for the cli version of antenna.

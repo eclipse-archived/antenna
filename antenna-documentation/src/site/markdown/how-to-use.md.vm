@@ -5,5 +5,6 @@ use ${docNameCap} in a different way.
 
 Documentation on how to use each front-end can be found here:
 
-- [Maven Plugin](./${docName}-maven-plugin/index.html)
 - [Command Line Interface](./${docName}-cli/index.html)
+- [Gradle Plugin](./${docName}-gradle-plugin/index.html)
+- [Maven Plugin](./${docName}-maven-plugin/index.html)

@@ -23,17 +23,14 @@
 
     <body>
         <menu name="Overview" inherit="top">
-            <item name="About" href="index.html" />
-            <item name="Getting started" href="getting-started.html" />
+            <item name="About" href="index.html"/>
+            <item name="Getting started" href="getting-started.html"/>
             <item name="How to use Antenna" href="how-to-use.html">
-                <item name="Maven Plugin" href="antenna-maven-plugin/index.html" />
-                <item name="Command Line Interface" href="antenna-cli/index.html" />
-                <!---
-                    Add Gradle Documentation after it becomes available. Also add link in how-to-use-antenna.html.
-                    <item name="Gradle Plugin" href="antenna-gradle-plugin/index.html" />
-                   -->
+                <item name="Command Line Interface" href="antenna-cli/index.html"/>
+                <item name="Gradle Plugin" href="antenna-gradle-plugin/index.html" />
+                <item name="Maven" href="antenna-maven-plugin/index.html"/>
             </item>
-            <item name="Troubleshooting" href="troubleshooting.html" />
+            <item name="Troubleshooting" href="troubleshooting.html"/>
         </menu>
         <menu name="Development" inherit="top">
             <item name="How to configure Antenna" href="how-to-configure.html">
@@ -46,7 +43,7 @@
                     <item name="Output Handlers" href="outputHandlers/outputHandlers.html" />
                 </item>
             </item>
-            <item name="Development Guide" href="dev-guide.html" />
+            <item name="Development Guide" href="dev-guide.html"/>
         </menu>
     </body>
 </project>
