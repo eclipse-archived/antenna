@@ -26,6 +26,7 @@ import org.junit.runners.Parameterized;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -51,6 +52,17 @@ abstract public class AbstractAntennaFrontendTest {
 
     @Parameterized.Parameters(name = "{index}: Test data = {1}")
     public static Collection<Object[]> data() {
+        if (Paths.get(
+                AbstractAntennaFrontendTest.class.getProtectionDomain().getCodeSource().getLocation().getPath(),
+                "../../../../antenna-p2/repository_manager/target/products").normalize().toFile().exists()) {
+            return Arrays.asList(new Object[][]{
+                    {(Supplier<AbstractTestProjectWithExpectations>) MinimalTestProject::new, "minimal configuration"},
+                    {(Supplier<AbstractTestProjectWithExpectations>) BasicTestProject::new, "basic configuration"},
+                    {(Supplier<AbstractTestProjectWithExpectations>) ExampleTestProject::new, "example configuration"},
+                    {(Supplier<AbstractTestProjectWithExpectations>) MavenTestProject::new, "maven configuration"},
+                    {(Supplier<AbstractTestProjectWithExpectations>) P2TestProject::new, "p2 configuration"},
+            });
+        }
         return Arrays.asList(new Object[][]{
                 {(Supplier<AbstractTestProjectWithExpectations>) MinimalTestProject::new, "minimal configuration"},
                 {(Supplier<AbstractTestProjectWithExpectations>) BasicTestProject::new, "basic configuration"},

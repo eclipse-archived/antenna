@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) Bosch Software Innovations GmbH 2017-2018.
+  ~
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.eclipse.org/legal/epl-v20.html
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.eclipse.sw360.antenna</groupId>
+    <artifactId>p2-example-project</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>org.eclipse.sw360.antenna.test.example</name>
+
+    <properties>
+        <org.eclipse.sw360.antenna.version>1.0.0-SNAPSHOT</org.eclipse.sw360.antenna.version>
+        <!-- configures the version of the project that is to be scanned -->
+        <version_to_scan>${project.version}</version_to_scan>
+    </properties>
+
+
+    <description>
+        Example project to show how to configure antenna with p2
+    </description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/sources/</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.sw360.antenna</groupId>
+                <artifactId>antenna-maven-plugin</artifactId>
+                <version>${org.eclipse.sw360.antenna.version}</version>
+                <configuration>
+                    <!-- The short name of the application -->
+                    <productName>Antenna EP2</productName>
+
+                    <!-- The full name of the application -->
+                    <productFullname>Antenna Example P2 Project</productFullname>
+
+                    <version>${version_to_scan}</version>
+
+                    <!-- Attach all build artifacts -->
+                    <attachAll>true</attachAll>
+
+                    <!-- Here you configure the path on which Antenna will find the configuration files -->
+                    <configFiles>
+                        <param>${project.basedir}/src/antennaconf.xml</param>
+                    </configFiles>
+                    <workflowDefinitionFile>${project.basedir}/src/workflow.xml</workflowDefinitionFile>
+
+                    <copyrightHoldersName>Antenna Company</copyrightHoldersName>
+                    <copyrightNotice>All rights reserved</copyrightNotice>
+
+                    <skip>false</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>analyze</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <!-- The antenna mojo requires the kbase to fetch the license information -->
+                    <dependency>
+                        <groupId>org.eclipse.sw360.antenna</groupId>
+                        <artifactId>antenna-spdx-license-knowledge-base</artifactId>
+                        <version>${org.eclipse.sw360.antenna.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.3.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.glassfish.jaxb</groupId>
+                        <artifactId>jaxb-runtime</artifactId>
+                        <version>2.3.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>activation</artifactId>
+                        <version>1.1.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

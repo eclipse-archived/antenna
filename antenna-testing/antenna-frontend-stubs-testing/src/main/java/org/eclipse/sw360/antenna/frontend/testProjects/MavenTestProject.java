@@ -177,6 +177,11 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
     }
 
     @Override
+    public Collection<String> getExpectedP2Dependencies() {
+        return Collections.emptyList();
+    }
+    
+    @Override
     public Collection<String> getExpectedDependencies() {
         return Stream.of("jackson-annotations-2.8.4", "jackson-core-2.8.4", "log4j-core-2.6.2").collect(Collectors.toSet());
     }
