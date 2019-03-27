@@ -1,23 +1,19 @@
 # Tool Configuration
 
 ${docNameCap} can be used as plugin for different build systems. 
-Currently, the configuration is almost the same for all three types (maven, gradle, cli). It is based on the structure of the Maven pom configuration.
-In what follows the configuration is described and some hints are given if special means have to be taken into account for certain build systems.
+Currently, the configuration is almost the same for all three types (maven, gradle, cli).
+It is based on the structure of a Maven pom configuration.
+In what follows, the configuration is described and some hints are given if special means have to be taken into account for certain build systems.
 
-For maven the configuration can look like the following file. For other build systems you would create a file with the same xml content but you can omit the maven coordinates.
+For maven, a possible configuration is:
 
 ```xml
 <plugin>
-    <groupId>org.eclipse.sw360.antenna</groupId>
-    <artifactId>antenna-maven-plugin</artifactId>
+    <groupId>${antennaMavenGroupId}</groupId>
+    <artifactId>${antennaMavenPluginName}</artifactId>
     <version>x.y.z</version> <!-- enter current/desired version here ;-) -->
 
     <configuration>
-        <configFiles>
-            <param> ${basedir}/config.xml </param>
-            <param> ${basedir}/config2.xml </param>
-        </configFiles>
-
         <!--Properties for Disclosure Document -->
         <productName>Modeler</productName>
         <productFullname>Visual Rules - Modeler</productFullname>
@@ -31,6 +27,11 @@ For maven the configuration can look like the following file. For other build sy
         <isMavenInstalled>false</isMavenInstalled>
         <sourcesRepositoryUrl>...</sourcesRepositoryUrl>
 
+        <configFiles>
+            <param> ${basedir}/config.xml </param>
+            <param> ${basedir}/config2.xml </param>
+        </configFiles>
+
         <workflowDefinitionFile>${basedir}/workflow.xml</workflowDefinitionFile>
 
         <proxyHost>${proxyHost}</proxyHost>
@@ -39,11 +40,11 @@ For maven the configuration can look like the following file. For other build sy
     </configuration>
 </plugin>
 ```
+For other build systems you would create a file with the same xml content but you can omit the maven coordinates.
 
+#[[###]]# Explanation of parameters
 
-#### Explanation of parameters
-
-All parameters are required unless otherwise specified as optional.
+All parameters are required unless specified as optional.
 
 
 * `productName`: *(deprecated)* Name of the product (e.g. Modeler).
@@ -62,7 +63,7 @@ This allows certain workflow-steps to run or retrieve more information.
 For Gradle and CLI in addition the `M2_HOME` variable needs to be set to the Maven executable.
 Defaults is false for Gradle and CLI.
 For Maven it the variable is ignored.
-* `antennaTargetDirectory`: *(optional)* The folder where the documents created by ${docNameCap} are stored.
+* `${docName}TargetDirectory`: *(optional)* The folder where the documents created by ${docNameCap} are stored.
 Defaults to a folder called ${docNameCap} inside the build folder of the project.
 * `sourcesRepositoryUrl`: *(deprecated)* Is already ignored by the project.
 
@@ -73,11 +74,11 @@ the current build. Defaults to `false`. The default properties are:
 
 | File                | Identifier       | Type | Classifier           |
 |---------------------|------------------|------|----------------------|
-|sources.zip          |sources-zip       |zip   |antenna-sources-zip      |
-|processing report    |antenna-sources-zip  |txt   |antenna-processing-report|
-|disclosure document  |disclosure-doc    |pdf   |antenna-disclosure-doc   |
-|clm report           |clm-report        |json  |antenna-clm-report       |
-|artifacts information|artifact-information|csv |antenna-artifact-info    |
+|sources.zip          |sources-zip       |zip   |${docName}-sources-zip      |
+|processing report    |${docName}-sources-zip  |txt   |${docName}-processing-report|
+|disclosure document  |disclosure-doc    |pdf   |${docName}-disclosure-doc   |
+|clm report           |clm-report        |json  |${docName}-clm-report       |
+|artifacts information|artifact-information|csv |${docName}-artifact-info    |
 |clm report pdf       |clm-report-pdf    |pdf   |clm-report-pdf        |
 
 * `filesToAttach`: *(optional)* If you want to attach single files or
@@ -90,26 +91,26 @@ to overwrite default values, use this parameter (identifier from table):
 </filesToAttach>
 ```
 
-### Definition of the Workflow inside the tool configuration
+#[[###]]# Definition of the Workflow inside the tool configuration
 
 Inside the plugin definition, you can also add a fully fledged workflow definition.
-As an example consider the following plugin definition for antenna:
+As an example consider the following plugin definition for ${docNameCap}:
 ```xml
     <build>
         <plugins>
             <plugin>
-                <groupId>org.eclipse.sw360.antenna</groupId>
-                <artifactId>antenna-maven-plugin</artifactId>
+                <groupId>${antennaMavenGroupId}</groupId>
+                <artifactId>${antennaMavenPluginName}</artifactId>
                 <version>${org.eclipse.sw360.antenna.version}</version>
                 <configuration>
-                    <productName>Antenna EP</productName>
+                    <productName>${docNameCap} EP</productName>
 
-                    <productFullname>Antenna Example Project</productFullname>
+                    <productFullname>${docNameCap} Example Project</productFullname>
 
                     <version>${version_to_scan}</version>
 
                     <configFiles>
-                        <param>${project.basedir}/src/antennaconf.xml</param>
+                        <param>${project.basedir}/src/${docName}conf.xml</param>
                     </configFiles>
                     <workflowDefinitionFile>${project.basedir}/src/workflow.xml</workflowDefinitionFile>
                     <workflow>
@@ -138,12 +139,14 @@ As an example consider the following plugin definition for antenna:
                         </generators>
                     </workflow>
 
-                    <copyrightHoldersName>Antenna Company</copyrightHoldersName>
+                    <copyrightHoldersName>${docNameCap} Company</copyrightHoldersName>
                     <copyrightNotice>All rights reserved</copyrightNotice>
 
                     <skip>false</skip>
                 </configuration>
             </plugin>
+         </plugins>
+    </build>
 ```
 
 You can define the workflow as described in the [Workflow configuration](./workflow-configuration.html) and you can even
@@ -157,14 +160,14 @@ If a workflow is present in the pom, it will get merged with any `workflow.xml` 
 * Properties of existing steps will be changed.
 * New steps are added at the end of the list of steps in the same segment (analyzers, processors, generators and output handlers).
 
-### Additional configuration for Java 9 or newer
+#[[###]]# Additional configuration for Java 9 or newer
 Since some Java EE dependencies like JAXB have been removed from the standard installation 
 one has to manually add these dependencies when configuring the plugin.
 
 ```xml
 <plugin>
-    <groupId>org.eclipse.sw360.antenna</groupId>
-    <artifactId>antenna-maven-plugin</artifactId>
+    <groupId>${antennaMavenGroupId}</groupId>
+    <artifactId>${antennaMavenPluginName}</artifactId>
     <version>x.y.z</version>
     <configuration>
         <!-- ... -->

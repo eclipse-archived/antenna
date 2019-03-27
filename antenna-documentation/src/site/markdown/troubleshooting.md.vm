@@ -1,13 +1,13 @@
 # Troubleshooting
 
-## Configuration Problems
+#[[##]]# Configuration Problems
 
 Here is a list of known problems that can be solved with the help of a
 configuration file. If you have solved another problem, which could be 
 interesting for others, feel free to append it to the list, maybe
 someone will be deeply grateful for your help.
 
-### Problem: The source of an artifact is not added to the source jar
+#[[###]]# Problem: The source of an artifact is not added to the source jar
 
 Message type in processing report
 : `MISSING_COORDINATES`, `MISSING_SOURCES`
@@ -32,12 +32,12 @@ Possible solution
 config file. The Match State of the artifact is declared as UNKNOWN or 
 SIMILAR by the scan source. Override it with EXACT in the override section.
 
-### Problem: An artifact does not appear at all
+#[[###]]# Problem: An artifact does not appear at all
  
 Possible solution
 : Add it in the addArtifact section to the artifacts list.
 
-### Problem: The license of an artifact is missing
+#[[###]]# Problem: The license of an artifact is missing
 
 Message type in processing report
 : `MISSING_LICENSE_INFORMATION`
@@ -47,9 +47,9 @@ Possible solution
 artifact.
 
 
-## Other problems
+#[[##]]# Other problems
 
-### Problem: Missing license text
+#[[###]]# Problem: Missing license text
 
 Message type in processing report
 : MISSING_LICENSE_TEXT
@@ -57,13 +57,13 @@ Message type in processing report
 Possible solution
 : Add the license text to the knowledgebase.
 
-### Problem: ${docNameCap} fails because it does not find files for disclosure document
+#[[###]]# Problem: ${docNameCap} fails because it does not find files for disclosure document
  
 Possible solution
 : Have a look at your projects path. Unfortunately ${docNameCap} can't deal with 
 spaces in pathnames.
 
-### Problem: The build fails with the message "There are conflicting configurations....."
+#[[###]]# Problem: The build fails with the message "There are conflicting configurations....."
 
 Message type in processing report
 : `CONFLICTING_CONFIGURATIONS`
@@ -72,21 +72,21 @@ Possible solution
 : Check the processing report and resolve the problems in your 
 configuration files.
 
-### Problem: ${docNameCap} uses a sources jar artifact to create the sources.zip file which contains only references to the main jar file
+#[[###]]# Problem: ${docNameCap} uses a sources jar artifact to create the sources.zip file which contains only references to the main jar file
  
 Possible solution
 : Upload a custom sources jar artifact with the missing sources to nexus 
 and wipe the local maven repo.
 
-### Problem: The build fails with missing parameters message
+#[[###]]# Problem: The build fails with missing parameters message
 
 The build fails with:
 
 ```
 [ERROR] Failed to execute goal 
-org.eclipse.sw360.antenna:antenna-maven-plugin:1.4.2:analyze (default-cli) on project 
+${antennaMavenGroupId}:${antennaMavenPluginName}:1.4.2:analyze (default-cli) on project
 wfs-project: The parameters 'applicationId' for goal 
-org.eclipse.sw360.antenna:antenna-maven-plugin:1.4.2:analyze are missing or invalid
+${antennaMavenGroupId}:${antennaMavenPluginName}:1.4.2:analyze are missing or invalid
 ```
  
 Possible solution

@@ -1,4 +1,4 @@
-### Create config.xml
+#[[###]]# Create config.xml
 
 The `config.xml` file configures ${docNameCap}'s behaviour when it handles licenses, sources and artifacts.
 
@@ -30,7 +30,7 @@ default value for those parameters is `false`).
 
 If `failOnMissingSources` or `failOnIncompleteSources` is defined as `true` and an Exception occurs during source validation your build will fail.
 
-#### Overview of parameters
+#[[####]]# Overview of parameters
 
 
 * `overrides`: This section can be used to override values of an
@@ -47,7 +47,7 @@ validation can be set.
 will occure in the disclosure document) can be defined.
 
 
-#### How to create a config.xml file
+#[[####]]# How to create a config.xml file
 
 Overview:
 

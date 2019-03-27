@@ -13,7 +13,7 @@ ${docNameCap} is a tool to automate your open source license compliance processe
  
  
  
-### Project structure
+#[[###]]# Project structure
  
  Currently, the project is restructured. So this is WIP.
  
@@ -44,7 +44,7 @@ ${docNameCap} is a tool to automate your open source license compliance processe
 
 # Development Guide
 
-## Setup
+#[[##]]# Setup
 
 Required tools:
 
@@ -52,7 +52,7 @@ Required tools:
 
 If your machine is located behind a proxy keep in mind to configure your proxy settings accordingly. For maven this can be done in `~/.m2/settings.xml`. Gradle needs a `gradle.properties` file in `~/.gradle`.
 
-## How to build
+#[[##]]# How to build
 
 If you don't want to build the p2 parts of antenna, just use
 ```
@@ -79,18 +79,18 @@ This
 To run the application you can have a look into the example project, which shows in its pom xml how to properly configure the antenna-maven-frontend.
 
 
-## How to debug
+#[[##]]# How to debug
 To debug ${docNameCap} it is advisable to use the debug option of maven. For that run your example project with
 ```
 mvnDebug clean package
 ```
 and configure a remote debugger that hooks to the running vm of the example project. For Intelij Idea this is described here https://www.jetbrains.com/help/idea/run-debug-configuration-remote-debug.html
 
-### ${docNameCap} Debug mode 
+#[[###]]# ${docNameCap} Debug mode
 
 ${docNameCap} provides also some further means to debug. If you run e.g. the example project with the with the parameter  `-Ddebug` ${docNameCap} will not delete any intermediate results so that they will be available for later inspection. 
 
-## Build the documentation
+#[[##]]# Build the documentation
 
 Go into the `antenna-documentation` subfolder and call  `mvn site site:run`.
 This will build the documentation site and start it up in port 9000
@@ -99,7 +99,7 @@ Open a browser and type the directory `http://localhost:9000`
 
 Once the site is run, it can also be started from the main folder via `mvn site:run`
 
-## How to implement a custom worflow item
+#[[##]]# How to implement a custom worflow item
 
 ${docNameCap} uses a pipeline workflow. The **sources** yield **Artifact**s that are
 processed by the **processors**. After processing the **sinks** produce an

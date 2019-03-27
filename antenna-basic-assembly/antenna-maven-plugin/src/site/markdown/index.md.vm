@@ -1,14 +1,13 @@
 # How to use ${docNameCap} as a Maven plugin
 
 Using ${docNameCap} as a Maven plugin is made possible by following the steps in
-the configuration instructions (see [Configuration guide](../how-to-configure.html)). Adding
-antenna-maven-plugin to your project's list of plugins enables the ${docNameCap} 
-Maven commands.
+the configuration instructions (see [Configuration guide](../how-to-configure.html)).
+Adding ${antennaMavenPluginName} to your project's list of plugins enables the ${docNameCap} Maven commands.
 
 ```xml
 <plugin>
-    <groupId>org.eclipse.sw360.antenna</groupId>
-    <artifactId>antenna-maven-plugin</artifactId>
+    <groupId>${antennaMavenGroupId}</groupId>
+    <artifactId>${antennaMavenPluginName}</artifactId>
     <version>x.y.z</version> <!-- enter desired version here -->
 
     <configuration>
@@ -19,7 +18,9 @@ Maven commands.
 
 You can execute the plugin either with the command line call:
 
-`mvn antenna:analyze`
+```
+mvn antenna:analyze
+```
 
 Or bind the analyze goal to a phase:
 
@@ -34,7 +35,7 @@ Or bind the analyze goal to a phase:
 </executions>
 ```
 
-## Customizing the disclosure document
+#[[##]]# Customizing the disclosure document
 
 ${docNameCap} provides a built-in disclosure document template that works out of 
 the box. However, you can install jar files that apply a different theme 
@@ -45,12 +46,12 @@ install the ${docNameCap} plugin, something like this:
 
 ```xml
 <dependency>
-    <groupId>org.eclipse.sw360.antenna</groupId>
-    <artifactId>antenna-disclosure-document-bosch</artifactId>
+    <groupId>${antennaMavenGroupId}</groupId>
+    <artifactId>${antennaDisclosureDocumentName}</artifactId>
 </dependency>
 ```
 
-## Adding a rules engine
+#[[##]]# Adding a rules engine
 
 If you want to use a rule engine to validate your artifacts, you can
 install a rule engine module by adding a dependency to your project's 

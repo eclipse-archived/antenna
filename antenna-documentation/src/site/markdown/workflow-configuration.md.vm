@@ -1,6 +1,6 @@
 # Workflow configuration
 
-The way ${docNameCap} works is configured in a workflow configuration that comprises the configuration of:
+The steps ${docNameCap} executes are configured in a workflow configuration that comprises of:
 
 * used analyzers
 * optional processors
@@ -8,15 +8,16 @@ The way ${docNameCap} works is configured in a workflow configuration that compr
 * optional output handlers.
 
 The configuration is located either in a separate workflow.xml file or directly in the tool configuration (e.g. pom.xml).
-Both ways use the same syntax with on minor difference. In case the tool configuration is used you have specify the configuration entries with:
+Both ways use the same syntax, with one minor difference:
+In case the tool configuration is used you have specify the configuration entries with
 
 ```xml
 <project>
     <build>
         <plugins>
             <plugin>
-                <groupId>org.eclipse.sw360.antenna</groupId>
-                <artifactId>antenna-maven-plugin</artifactId>
+                <groupId>${antennaMavenGroupId}</groupId>
+                <artifactId>${antennaMavenPluginName}</artifactId>
                 <version>${org.eclipse.sw360.antenna.version}</version>
                 <configuration>
                     ...
@@ -56,7 +57,8 @@ Both ways use the same syntax with on minor difference. In case the tool configu
 
 The file can contain variables that are replaced with values that are configured in the tool configuration (e.g. pom.xml).
 
-Each workflow element is defined with a name and a class hint so ${docNameCap} can load it from the CLASSPATH. Additional configuration parameters can be passed to the single workflow items via configuration subsections.
+Each workflow element is defined with a name and a class hint so ${docNameCap} can load it from the CLASSPATH.
+Additional configuration parameters can be passed to the single workflow steps via a configuration subsection.
 
 The following example shows a workflow with one analyzer, one additional processor and two generators.
 
@@ -98,16 +100,18 @@ The following example shows a workflow with one analyzer, one additional process
 </workflow>
 ```
 
-### Configuring default workflow steps
-${docNameCap} core is prepackaged with 3 analyzers and 4 generators:
+#[[##]]# Configuring default workflow steps
 
-* JSON Analyzer
-* CSV Analyzer
-* Maven Dependency Tree Analyzer
-* PDF Generator
-* HTML Generator
-* CSV Generator
-* Source Zip Generator
+${docNameCap} core is prepackaged with 3 analyzers and 5 generators:
+
+* [JSON Analyzer](./analyzers/json-analyzer-step.html)
+* [CSV analyzer](./analyzers/csv-analyzer-step.html)
+* [Maven Dependency Tree analyzer](./analyzers/mvn-dep-tree-analyzer-step.html)
+* [HTML generator](./generators/HTML-report-generator-step.html)
+* [CSV generator](./generators/csv-generator-step.html)
+* [Source Zip Generator](./generators/source-zip-generator-step.html)
+* [SW360 report generator](./generators/sw360-disclosure-document-generator-step.html)
+- [SW360 update generator](./generators/sw360-update-generator-step.html)
 
 However, it is quite likely that the default configuration that is provided at your organization already contains a lot more workflow steps.
 
@@ -155,7 +159,17 @@ The effective workflow will then consist of the entries of the default workflow 
 If you want to add custom workflow steps you need to have the implementation of the workflow step on the classpath. For that 
 you can use standard maven means. By configuring an additional dependency for the ${docNameCap} maven plugin you can provide any further workflow steps that are available as maven dependency.
 
-### Configuring the workflow in the pom.xml
+#[[##]]# Configuring the workflow in the pom.xml
 
 It is also possible to configure additional steps to a `workflow.xml` directly in the tool configuration.
 For further information, see the [Tool configuration](./tool-configuration.html).
+
+#[[##]]# Usage of POM properties in the workflow.xml
+
+For technical reasons Maven variables / properties will in general not be rendered correctly in the workflow.xml. This means that
+
+* No Maven variables can be used (except for the Maven build and base directory, since they have been added to the context).
+
+* No properties declared in the Maven POM can be used, since they will not be rendered correctly.
+  Instead of rendering `${system.password}` to `password1234` as declared in the pom.xml, the literal `"${system.password}"` will be used.
+  If those properties are used, they will most likely cause build, authentication or access issues or errors.
