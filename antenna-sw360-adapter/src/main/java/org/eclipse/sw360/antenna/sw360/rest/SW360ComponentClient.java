@@ -19,6 +19,7 @@ import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -104,11 +105,17 @@ public class SW360ComponentClient {
     public SW360Component createComponent(SW360Component sw360Component, HttpHeaders header) throws AntennaException {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Component, header);
 
-        ResponseEntity<Resource<SW360Component>> response = this.restTemplate
-                .exchange(this.componentsRestUrl,
-                        HttpMethod.POST,
-                        httpEntity,
-                        new ParameterizedTypeReference<Resource<SW360Component>>() {});
+        ResponseEntity<Resource<SW360Component>> response;
+        try {
+            response = this.restTemplate
+                    .exchange(this.componentsRestUrl,
+                            HttpMethod.POST,
+                            httpEntity,
+                            new ParameterizedTypeReference<Resource<SW360Component>>() {});
+        } catch(HttpServerErrorException e) {
+            throw new AntennaException("Request to create component " + sw360Component.getName() + " failed with "
+                    + e.getStatusCode());
+        }
 
         if (response.getStatusCode() == HttpStatus.CREATED) {
             return response.getBody().getContent();

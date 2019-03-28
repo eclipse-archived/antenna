@@ -89,15 +89,15 @@ public class SW360AuthenticationClient {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, AUTHORIZATION_BASIC_VALUE + base64ClientCredentials);
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON_UTF8));
         return headers;
     }
 
     public HttpHeaders getHeadersWithBearerToken(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, AUTHORIZATION_BEARER_VALUE + accessToken);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON_UTF8));
         return headers;
     }
 }

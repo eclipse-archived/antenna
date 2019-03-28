@@ -18,6 +18,7 @@ import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -75,12 +76,16 @@ public class SW360LicenseClient {
 
     public SW360License createLicense(SW360License sw360License, HttpHeaders header) throws AntennaException {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360License, header);
-
-        ResponseEntity<Resource<SW360License>> response =
-                this.restTemplate.exchange(this.licensesRestUrl,
-                        HttpMethod.POST,
-                        httpEntity,
-                        new ParameterizedTypeReference<Resource<SW360License>>() {});
+        ResponseEntity<Resource<SW360License>> response;
+        try {
+            response = this.restTemplate.exchange(this.licensesRestUrl,
+                            HttpMethod.POST,
+                            httpEntity,
+                            new ParameterizedTypeReference<Resource<SW360License>>() {});
+        } catch (HttpClientErrorException e) {
+            throw new AntennaException("Request to create license " + sw360License.getFullName() + " failed with "
+                    + e.getStatusCode());
+        }
 
         if (response.getStatusCode() == HttpStatus.CREATED) {
             return response.getBody().getContent();
