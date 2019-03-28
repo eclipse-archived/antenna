@@ -28,6 +28,12 @@
                     <exclude>**/target/*</exclude>
                 </excludes>
             </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${project.build.directory}/generated-resources</directory>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -109,6 +115,15 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <!-- ################################ compliance dependency ########################### -->
+        <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>antenna-license-provider</artifactId>
+            <version>1</version>
+            <classifier>licenseinfo</classifier>
+            <type>zip</type>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

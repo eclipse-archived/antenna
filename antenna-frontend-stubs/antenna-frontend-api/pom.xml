@@ -37,5 +37,14 @@
             <artifactId>maven-plugin-api</artifactId>
             <scope>compile</scope>
         </dependency>
+        <!-- ################################ compliance dependency ########################### -->
+        <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>antenna-license-provider</artifactId>
+            <version>1</version>
+            <classifier>licenseinfo</classifier>
+            <type>zip</type>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
