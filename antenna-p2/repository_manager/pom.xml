@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
         <artifactId>antenna-p2</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>${revision}${p2qualifier}</version>
     </parent>
     <artifactId>repository_manager</artifactId>
     <packaging>eclipse-repository</packaging>
