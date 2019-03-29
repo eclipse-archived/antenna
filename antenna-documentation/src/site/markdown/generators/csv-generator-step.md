@@ -27,3 +27,7 @@ artifactName;artifactId;groupId;mavenVersion;bundleVersion;license
 ArbitraryCopiedCode;;;;;Creative Commons Attribution Share Alike 3.0 Unported 
 ;system;a.test.project;1.0.0;;htmlArea-1.0 
 ```
+
+### Magic string for output handlers
+
+When configuring output handlers, the output of the CSV report generator can be referred to by `artifact-information`.

@@ -4,7 +4,8 @@ The way ${docNameCap} works is configured in a workflow configuration that compr
 
 * used analyzers
 * optional processors
-* used generators.
+* used generators
+* optional output handlers.
 
 The configuration is located either in a separate workflow.xml file or directly in the tool configuration (e.g. pom.xml).
 Both ways use the same syntax with on minor difference. In case the tool configuration is used you have specify the configuration entries with:
