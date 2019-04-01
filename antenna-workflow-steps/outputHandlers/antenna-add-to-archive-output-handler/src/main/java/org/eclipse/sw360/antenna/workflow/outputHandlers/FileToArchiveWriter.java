@@ -50,7 +50,7 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
         String[] rawWriteToArchiveInstructions = getConfigValue(INSTRUCTIONS_KEY, configMap)
                 .split(";");
         for(String rawInstruction : rawWriteToArchiveInstructions){
-            writeToArchiveInstructions.add(new FileToArchiveWriterInstruction(rawInstruction));
+            writeToArchiveInstructions.add(new FileToArchiveWriterInstruction(rawInstruction, reporter));
         }
     }
 
@@ -108,30 +108,4 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
             Files.copy(sourcePath, zipFilePath, StandardCopyOption.REPLACE_EXISTING);
         }
     }
-
-    private class FileToArchiveWriterInstruction {
-        final Path zipFile;
-        final String outputType;
-        final Path pathInArchive;
-
-        private FileToArchiveWriterInstruction(String instruction) throws AntennaConfigurationException {
-            if (! instruction.contains(":")) {
-                String msg = "unable to attach File related to instruction=[" + instruction + "], invalid due to missing \":\"";
-                reporter.add(MessageType.PROCESSING_FAILURE, msg);
-                throw new AntennaConfigurationException(msg);
-            }
-
-            String[] parts = instruction.split(":", 3);
-            if (parts.length != 3) {
-                String msg = "unable to attach File related to instruction=[" + instruction + "], has less then three parts";
-                reporter.add(MessageType.PROCESSING_FAILURE, msg);
-                throw new AntennaConfigurationException(msg);
-            }
-
-            zipFile = Paths.get(parts[1]);
-            outputType = parts[0];
-            pathInArchive = Paths.get(parts[2]);
-        }
-    }
-
 }
