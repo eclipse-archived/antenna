@@ -14,22 +14,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.eclipse.sw360.antenna.testproject</groupId>
-        <artifactId>antenna-p2-test-project</artifactId>
+        <artifactId>bundles</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>some_tycho_feature</artifactId>
-    <packaging>eclipse-feature</packaging>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.eclipse.sw360.antenna</groupId>
-                <artifactId>antenna-maven-plugin</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <artifactId>some_tycho_bundle</artifactId>
+    <packaging>eclipse-plugin</packaging>
 </project>

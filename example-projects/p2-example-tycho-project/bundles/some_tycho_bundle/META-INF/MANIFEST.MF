@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Some Bundle
-Bundle-SymbolicName: some_bundle;singleton:=true
+Bundle-SymbolicName: some_tycho_bundle;singleton:=true
 Bundle-Version: 0.0.1.qualifier
 Bundle-Vendor: Some Company
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle:  org.eclipse.equinox.launcher
-Export-Package:  org.eclipse.sw360.antenna.package
+Require-Bundle:  some_bundle
+Export-Package:  org.eclipse.sw360.antenna.newpackage

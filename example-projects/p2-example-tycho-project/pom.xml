@@ -26,7 +26,7 @@
             <id>local-dependencies</id>
             <name>basic-test-dependencies</name>
             <layout>p2</layout>
-            <url>file:${user.dir}/dependency_project/basic-test-dependencies/target/repository</url>
+            <url>file:${user.dir}/dependency_project</url>
         </repository>
     </repositories>
     <properties>
@@ -170,7 +170,7 @@
                                     <entry>
                                         <entryKey>repositories</entryKey>
                                         <entryValue>
-                                            ${user.dir}/dependency_project/basic-test-dependencies/target/repository/
+                                            ${user.dir}/dependency_project/
                                         </entryValue>
                                     </entry>
                                 </configuration>

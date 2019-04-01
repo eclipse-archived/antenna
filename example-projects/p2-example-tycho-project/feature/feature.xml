@@ -10,7 +10,7 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 <feature
-        id="some_feature"
+        id="some_tycho_feature"
         label="%featureName"
         version="0.0.1.qualifier"
         provider-name="%providerName"
@@ -28,18 +28,18 @@
     </copyright>
 
     <requires>
-        <import plugin="org.eclipse.equinox.launcher" version="1.1.0" match="greaterOrEqual"/>
+        <import plugin="some_bundle" version="0.0.1" match="greaterOrEqual"/>
     </requires>
 
     <plugin
-            id="some_bundle"
+            id="some_tycho_bundle"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="org.eclipse.equinox.launcher"
+            id="some_bundle"
             download-size="0"
             install-size="0"
             version="0.0.0"
