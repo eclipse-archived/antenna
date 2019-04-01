@@ -56,7 +56,9 @@
         <profile>
             <id>with-p2</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <file>
+                    <exists>../antenna-p2/repository_manager/target/products</exists>
+                </file>
             </activation>
             <modules>
                 <module>processors/enricher/antenna-p2-resolver</module>

@@ -24,16 +24,6 @@
         <revision>1.0.0</revision>
         <!-- >The qualifier can be set to any value and will set the corresponding qualifier in all projects except antenna-p2<-->
         <qualifier>-SNAPSHOT</qualifier>
-        <!-- >
-        The antenna-p2 qualifier must be -SNAPSHOT or numeric.
-        Changing this qualifier changes all OSGI related versions in antenna-p2 (except for the independent dependencies project.
-        Changing this qualifier to a numeric version requires changing the "version" property from having ".qualifier"
-        to mirroring the content of the p2qualifier in the following files
-        - antenna-p2/bundles/antenna-p2-repository-manager/META-INF/MANIFEST.MF
-        - antenna-p2/tests/antenna-p2-repository-manager-tests/META-INF/MANIFEST.MF
-        - antenna-p2/features/feature.xml (only the version in the <feature> tag must change)
-        <-->
-        <p2qualifier>-SNAPSHOT</p2qualifier>
         <drools.version>7.17.0.Final</drools.version>
         <gradle.version>4.1</gradle.version>
         <jackson.version>2.9.8</jackson.version>
@@ -66,15 +56,6 @@
     </modules>
 
     <profiles>
-        <profile>
-            <id>with-p2</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>antenna-p2</module>
-            </modules>
-        </profile>
         <profile>
             <id>build-assembly</id>
             <activation>
@@ -461,6 +442,7 @@
                 <artifactId>flatten-maven-plugin</artifactId>
                 <version>1.1.0</version>
                 <configuration>
+                    <embedBuildProfileDependencies>true</embedBuildProfileDependencies>
                     <updatePomFile>true</updatePomFile>
                     <outputDirectory>${project.build.directory}</outputDirectory>
                 </configuration>

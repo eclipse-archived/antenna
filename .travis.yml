@@ -26,7 +26,9 @@ before_install:
 install:
   - cd antenna-p2/dependencies
   - mvn package -DskipTests=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-  - cd ../..
+  - cd ..
+  - mvn package -DskipTests=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+  - cd ..
   - mvn install -DskipTests=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
 jobs:
@@ -80,6 +82,12 @@ jobs:
         - gradle analyze
         - java -jar ../../antenna-testing/antenna-frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject build
     
+    # test P2
+    - name: p2Test
+      script:
+        - .travis/p2e2etest.sh
+
+    # run site tests (for instance: all links work correctly)
     - name: siteTest
       script:
         - cd antenna-documentation

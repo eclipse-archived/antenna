@@ -185,6 +185,11 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     }
 
     @Override
+    public Collection<String> getExpectedP2Dependencies() {
+        return Collections.emptyList();
+    }
+
+    @Override
     public void assertExecutionResult(Path pathToTarget, Map<String, IAttachable> buildArtifacts, AntennaContext context) throws Exception {
         final Path antennaOutDir = pathToTarget.resolve("antenna");
         assertTrue(antennaOutDir.toFile().exists());

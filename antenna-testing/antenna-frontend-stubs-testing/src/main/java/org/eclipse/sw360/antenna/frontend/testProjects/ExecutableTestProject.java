@@ -36,6 +36,8 @@ public interface ExecutableTestProject {
 
     Collection<String> getExpectedDependencies();
 
+    Collection<String> getExpectedP2Dependencies();
+
     default void assertBuildArtifactsExistence(IProject project, Set<Map.Entry<String, IAttachable>> buildArtifacts) {
         //#############################################################################################################
         // asserts for build artifacts at `context.getBuildArtifacts()`
@@ -93,6 +95,11 @@ public interface ExecutableTestProject {
             File srcJar = depsDir.resolve(dep + "-sources.jar").toFile();
             assertTrue(srcJar.toString() + "should exist", srcJar.exists());
             assertTrue(srcJar.length() > 1000);
+        });
+
+        getExpectedP2Dependencies().forEach(dep -> {
+            File jar = depsDir.resolve(dep + ".jar").toFile();
+            assertTrue(jar.toString() + " should exist", jar.exists());
         });
     }
 

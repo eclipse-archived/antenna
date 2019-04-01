@@ -21,9 +21,23 @@ After all dependencies are present, you can build Antenna and deploy it in your 
 
 Please also note that some dependencies of SW360antenna are only available for Java 8. So you need to use Java 8 to build the project.
 
+If you want to build antenna withouth the p2 parts, use
+
 <pre>
 $ <b>mvn install</b>
 </pre>
+
+Otherwise, you have to use the following steps:
+
+<pre>
+$ <b>cd antenna-p2/dependencies</b>
+$ <b>mvn package</b>
+$ <b>cd ..</b>
+$ <b>mvn package</b>
+$ <b>cd ..</b>
+$ <b>mvn install</b>
+</pre>
+
 
 You can activate the following optional profiles (`build-assembly` is active by default):
 - `-P build-assembly,ci`: activates also the optional profile for continious integration and includes the system tests. 
