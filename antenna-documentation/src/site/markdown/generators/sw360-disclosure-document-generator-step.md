@@ -25,3 +25,11 @@ Add this configuration to the workflow.xml
   - `docx`
   - `txt`
   - `html`
+
+### Magic string for output handlers
+
+When configuring output handlers, the output of the CSV report generator can be referred to by
+
+- `disclosure-sw360-doc-txt` for the txt file (if configured)
+- `disclosure-sw360-doc-docx` for the docx file (if configured)
+- `disclosure-sw360-doc-html` for the html file (if configured)

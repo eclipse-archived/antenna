@@ -43,6 +43,7 @@
                     <item name="Analyzers" href="analyzers/analyzers.html" />
                     <item name="Processors" href="processors/processors.html" />
                     <item name="Generators" href="generators/generators.html" />
+                    <item name="Output Handlers" href="outputHandlers/outputHandlers.html" />
                 </item>
             </item>
             <item name="Development Guide" href="dev-guide.html" />

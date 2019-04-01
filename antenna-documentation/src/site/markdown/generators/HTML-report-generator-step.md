@@ -14,3 +14,7 @@ Add this configuration to the workflow.xml
     </generators>
 </workflow>
 ```
+
+### Magic string for output handlers
+
+When configuring output handlers, the output of the HTML report generator can be referred to by `disclosure-doc`.
