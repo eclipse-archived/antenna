@@ -45,7 +45,6 @@ public class ToolConfiguration {
     private String version;
     private Path scanDir;
     private boolean isMavenInstalled;
-    private String sourcesRepositoryUrl;
     private String companyName;
     private String copyrightHoldersName;
     private String copyrightNotice;
@@ -76,7 +75,6 @@ public class ToolConfiguration {
         this.version = builder.version;
         this.scanDir = builder.scanDir;
         this.isMavenInstalled = builder.isMavenInstalled;
-        this.sourcesRepositoryUrl = builder.sourcesRepositoryUrl;
         this.companyName = builder.companyName;
         this.copyrightHoldersName = builder.copyrightHoldersName;
         this.copyrightNotice = builder.copyrightNotice;
@@ -144,10 +142,6 @@ public class ToolConfiguration {
         return isMavenInstalled;
     }
 
-    public String getSourcesRepositoryUrl() {
-        return sourcesRepositoryUrl;
-    }
-
     public String getCompanyName() {
         return companyName;
     }
@@ -201,7 +195,6 @@ public class ToolConfiguration {
         private String version;
         private Path scanDir;
         private boolean isMavenInstalled;
-        private String sourcesRepositoryUrl;
         private String companyName;
         private String copyrightHoldersName;
         private String copyrightNotice;
@@ -275,11 +268,6 @@ public class ToolConfiguration {
 
         public ConfigurationBuilder setMavenInstalled(boolean mavenInstalled) {
             this.isMavenInstalled = mavenInstalled;
-            return this;
-        }
-
-        public ConfigurationBuilder setSourcesRepositoryUrl(String sourcesRepositoryUrl) {
-            this.sourcesRepositoryUrl = sourcesRepositoryUrl;
             return this;
         }
 

@@ -16,19 +16,29 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 
-import java.util.List;
+import java.net.URL;
 import java.util.Optional;
 
 /**
  * Returns classes for requesting the jars of Artifacts.
  */
 public class ArtifactRequesterFactory {
-    public static IArtifactRequester getArtifactRequester(AntennaContext context) {
+    public static IArtifactRequester getArtifactRequester(AntennaContext context, URL sourcesRepositoryUrl) throws AntennaException {
         ToolConfiguration toolConfig = context.getToolConfiguration();
 
         if (toolConfig.isMavenInstalled()) {
-            return useMavenIfRunning(context).orElse(new MavenInvokerRequester(context));
+            return useMavenIfRunning(context, Optional.of(sourcesRepositoryUrl)).orElse(new MavenInvokerRequester(context, sourcesRepositoryUrl));
+        }
+        return new HttpRequester(context, sourcesRepositoryUrl);
+    }
+
+    public static IArtifactRequester getArtifactRequester(AntennaContext context) throws AntennaException {
+        ToolConfiguration toolConfig = context.getToolConfiguration();
+
+        if (toolConfig.isMavenInstalled()) {
+            return useMavenIfRunning(context, Optional.empty()).orElse(new MavenInvokerRequester(context));
         }
         return new HttpRequester(context);
     }
@@ -36,18 +46,16 @@ public class ArtifactRequesterFactory {
     /*
      * Must only be used if Maven installation can be found on system, will result in ClassNotFoundError otherwise
      */
-    private static Optional<IArtifactRequester> useMavenIfRunning(AntennaContext context) {
+    private static Optional<IArtifactRequester> useMavenIfRunning(AntennaContext context, Optional<URL> sourcesRepositoryUrl) {
         Optional<RepositorySystem> optionalRepositorySystem = context.getGeneric(RepositorySystem.class);
         Optional<MavenProject> optionalMavenProject = context.getGeneric(MavenProject.class);
         Optional<LegacySupport> optionalLegacySupport = context.getGeneric(LegacySupport.class);
         if (optionalRepositorySystem.isPresent() &&
                 optionalMavenProject.isPresent() &&
                 optionalLegacySupport.isPresent()) {
-            List<ArtifactRepository> remoteRepositories = optionalMavenProject.get().getRemoteArtifactRepositories();
             ArtifactRepository localRepository = optionalLegacySupport.get().getSession().getLocalRepository();
-
             if (localRepository != null) {
-                return Optional.of(new MavenRuntimeRequester(context, optionalRepositorySystem.get(), localRepository, remoteRepositories));
+                return Optional.of(new MavenRuntimeRequester(context, optionalRepositorySystem.get(), localRepository, optionalMavenProject.get().getRemoteArtifactRepositories(), sourcesRepositoryUrl));
             }
         }
         return Optional.empty();

@@ -13,6 +13,10 @@ package org.eclipse.sw360.antenna.bundle;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
+import org.apache.maven.artifact.repository.MavenArtifactRepository;
+import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.repository.RepositorySystem;
@@ -24,9 +28,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MavenRuntimeRequester extends IArtifactRequester {
 
@@ -36,39 +43,49 @@ public class MavenRuntimeRequester extends IArtifactRequester {
     private final ArtifactRepository localRepository;
     private final List<ArtifactRepository> remoteRepositories;
 
-    public MavenRuntimeRequester(AntennaContext context, RepositorySystem repositorySystem, ArtifactRepository localRepository, List<ArtifactRepository> remoteRepositories) {
+    public MavenRuntimeRequester(AntennaContext context, RepositorySystem repositorySystem, ArtifactRepository localRepository, List<ArtifactRepository> remoteRepositories, Optional<URL> sourcesRepositoryUrl) {
         super(context);
+        if (sourcesRepositoryUrl.isPresent()) {
+            List<ArtifactRepository> repositories = new ArrayList<>();
+            ArtifactRepository droolsRepo = new MavenArtifactRepository(
+                    "userRepo",
+                    sourcesRepositoryUrl.get().toString(),
+                    new DefaultRepositoryLayout(),
+                    new ArtifactRepositoryPolicy(),
+                    new ArtifactRepositoryPolicy());
+            repositories.add(droolsRepo);
+            repositories.addAll(remoteRepositories);
+            this.remoteRepositories = repositories;
+        } else {
+            this.remoteRepositories = remoteRepositories;
+        }
         this.repositorySystem = repositorySystem;
         this.localRepository = localRepository;
-        this.remoteRepositories = remoteRepositories;
+        LOGGER.debug("Maven is running, using the MavenRuntimeRequester for artifact resolution");
     }
 
     @Override
-    public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource) {
-        if (isSource) {
-            return requestFile(coordinates, targetDirectory, "java-source");
+    public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation) {
+        if (classifierInformation.isSource) {
+            return requestFile(coordinates, targetDirectory, "java-source", classifierInformation);
         }
-        return requestFile(coordinates, targetDirectory, "jar");
+        return requestFile(coordinates, targetDirectory, "jar", classifierInformation);
     }
 
-    private ArtifactResolutionResult doArtifactRequest(org.apache.maven.artifact.Artifact mvnArtifact) {
-        ArtifactResolutionRequest artifactRequest = new ArtifactResolutionRequest();
-        artifactRequest.setArtifact(mvnArtifact);
-        artifactRequest.setRemoteRepositories(this.remoteRepositories);
-        artifactRequest.setLocalRepository(this.localRepository);
-        return repositorySystem.resolve(artifactRequest);
-    }
-
-    private Optional<File> requestFile(MavenCoordinates mavenCoordinates, Path targetDirectory, String type) {
+    private Optional<File> requestFile(MavenCoordinates mavenCoordinates, Path targetDirectory, String type, ClassifierInformation classifier) {
         String groupId = mavenCoordinates.getGroupId();
         String artifactId = mavenCoordinates.getArtifactId();
         String version = mavenCoordinates.getVersion();
 
-        org.apache.maven.artifact.Artifact mvnArtifact = repositorySystem.createArtifact(groupId, artifactId, version, type);
+        org.apache.maven.artifact.Artifact mvnArtifact = classifier.classifier.isEmpty()
+                ? repositorySystem.createArtifact(groupId, artifactId, version, type)
+                : repositorySystem.createArtifactWithClassifier(groupId, artifactId, version, type, classifier.classifier);
+
         ArtifactResolutionResult result = doArtifactRequest(mvnArtifact);
 
+        String classifierExtension = classifier.classifier.isEmpty() ? "" : "-" + classifier.classifier;
         if (!wasSuccessful(result, mvnArtifact)) {
-            LOGGER.error("Could not successfully fetch " + type + " for artifact=[" + groupId + ":" + artifactId + ":" + version + "]");
+            LOGGER.error("Could not successfully fetch " + type + " for artifact=[" + groupId + ":" + artifactId + ":" + version + classifierExtension + "]");
             return Optional.empty();
         }
         File artifactFile = mvnArtifact.getFile();
@@ -86,8 +103,28 @@ public class MavenRuntimeRequester extends IArtifactRequester {
             return Optional.of(artifactFile);
         }
         copyFile(artifactFile, targetFile);
-        LOGGER.debug("successfully fetched " + type + " for artifact=[" + groupId + ":" + artifactId + ":" + version + "]");
+        LOGGER.debug("successfully fetched " + type + " for artifact=[" + groupId + ":" + artifactId + ":" + version + classifierExtension + "]");
         return Optional.of(targetFile);
+    }
+
+    private ArtifactResolutionResult doArtifactRequest(Artifact mvnArtifact) {
+        LOGGER.debug("Resolving maven artifact " + mvnArtifact.getArtifactId() + " in repositories "
+                + remoteRepositories.stream().map(ArtifactRepository::getUrl).collect(Collectors.joining(", ")));
+
+        ArtifactResolutionRequest artifactRequest = new ArtifactResolutionRequest();
+        artifactRequest.setArtifact(mvnArtifact);
+        artifactRequest.setResolveTransitively(false);  // We only want the specific artifact, its dependencies will be handled separately
+        artifactRequest.setRemoteRepositories(this.remoteRepositories);
+        artifactRequest.setLocalRepository(this.localRepository);
+        return repositorySystem.resolve(artifactRequest);
+    }
+
+    private boolean wasSuccessful(ArtifactResolutionResult result, org.apache.maven.artifact.Artifact mvnArtifact) {
+        final List<ArtifactResolutionException> resolutionErrors = result.getErrorArtifactExceptions();
+        final List<Artifact> missingArtifacts = result.getMissingArtifacts();
+        return resolutionErrors.isEmpty() && (missingArtifacts == null ||
+                missingArtifacts.isEmpty() ||
+                !missingArtifacts.contains(mvnArtifact));
     }
 
     private boolean contentEquals(File artifactFile, File targetFile) {
@@ -104,12 +141,5 @@ public class MavenRuntimeRequester extends IArtifactRequester {
         } catch (IOException e) {
             throw new AntennaExecutionException("File could not be copied: " + e.getMessage(), e);
         }
-    }
-
-    private boolean wasSuccessful(ArtifactResolutionResult result, org.apache.maven.artifact.Artifact mvnArtifact) {
-        final List<Artifact> missingArtifacts = result.getMissingArtifacts();
-        return missingArtifacts == null ||
-                missingArtifacts.isEmpty() ||
-                !missingArtifacts.contains(mvnArtifact);
     }
 }

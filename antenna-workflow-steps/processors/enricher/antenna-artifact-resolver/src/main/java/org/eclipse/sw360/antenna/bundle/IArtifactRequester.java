@@ -21,7 +21,6 @@ import java.util.Optional;
 public abstract class IArtifactRequester {
 
     public static final String JAR_EXTENSION = ".jar";
-    public static final String SOURCES_JAR_EXTENSION = "-sources" + JAR_EXTENSION;
     protected AntennaContext context;
 
     public IArtifactRequester(AntennaContext context) {
@@ -31,16 +30,16 @@ public abstract class IArtifactRequester {
     /**
      * Requests a jar file from a repository.
      *
-     * @param coordinates     Identifies the artifact for which the jar is requested.
-     * @param targetDirectory Where the jar file will be stored.
-     * @param isSource        Whether the request should retrieve the sources.
+     * @param coordinates           Identifies the artifact for which the jar is requested.
+     * @param targetDirectory       Where the jar file will be stored.
+     * @param classifierInformation Information on the classifier (source or not and name).
      * @return The jar file, or null if the file couldn't be obtained.
      */
-    public abstract Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource);
+    public abstract Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation);
 
-    String getExpectedJarBaseName(MavenCoordinates coordinates, boolean isSource) {
+    String getExpectedJarBaseName(MavenCoordinates coordinates, ClassifierInformation classifierInformation) {
         return coordinates.getArtifactId() + "-" + coordinates.getVersion()
-                + (isSource ? SOURCES_JAR_EXTENSION : JAR_EXTENSION);
+                + (classifierInformation.classifier.isEmpty() ? JAR_EXTENSION : "-" + classifierInformation.classifier + JAR_EXTENSION);
     }
 
 }

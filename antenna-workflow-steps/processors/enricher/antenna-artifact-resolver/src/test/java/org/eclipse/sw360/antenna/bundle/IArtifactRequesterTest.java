@@ -25,7 +25,7 @@ public class IArtifactRequesterTest extends AntennaTestWithMockedContext {
 
     private IArtifactRequester artifactRequester = new IArtifactRequester(antennaContextMock) {
         @Override
-        public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource) {
+        public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation) {
             return Optional.empty();
         }
     };
@@ -38,7 +38,7 @@ public class IArtifactRequesterTest extends AntennaTestWithMockedContext {
 
     @Test
     public void getExpectedJarBaseNameTest() {
-        final String expectedJarBaseName = artifactRequester.getExpectedJarBaseName(mavenCoordinates, false);
+        final String expectedJarBaseName = artifactRequester.getExpectedJarBaseName(mavenCoordinates, ClassifierInformation.DEFAULT_JAR);
         assertThat(expectedJarBaseName).endsWith(MavenInvokerRequester.JAR_EXTENSION);
         assertThat(expectedJarBaseName).contains(mavenCoordinates.getArtifactId());
         assertThat(expectedJarBaseName).contains(mavenCoordinates.getVersion());
@@ -47,8 +47,8 @@ public class IArtifactRequesterTest extends AntennaTestWithMockedContext {
 
     @Test
     public void getExpectedJarBaseNameTestSource() {
-        final String expectedJarBaseName = artifactRequester.getExpectedJarBaseName(mavenCoordinates, true);
-        assertThat(expectedJarBaseName).endsWith(MavenInvokerRequester.SOURCES_JAR_EXTENSION);
+        final String expectedJarBaseName = artifactRequester.getExpectedJarBaseName(mavenCoordinates, ClassifierInformation.DEFAULT_SOURCE_JAR);
+        assertThat(expectedJarBaseName).endsWith("-sources" + MavenInvokerRequester.JAR_EXTENSION);
         assertThat(expectedJarBaseName).contains(mavenCoordinates.getArtifactId());
         assertThat(expectedJarBaseName).contains(mavenCoordinates.getVersion());
         assertThat(expectedJarBaseName).doesNotContain("/");
