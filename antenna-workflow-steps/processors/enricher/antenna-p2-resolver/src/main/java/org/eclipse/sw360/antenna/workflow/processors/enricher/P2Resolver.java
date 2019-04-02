@@ -15,8 +15,8 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.eclipse.sw360.antenna.bundle.ArtifactAttacher;
-import org.eclipse.sw360.antenna.bundle.ProductInstaller;
+import org.eclipse.sw360.antenna.p2resolver.ArtifactAttacher;
+import org.eclipse.sw360.antenna.p2resolver.ProductInstaller;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.slf4j.Logger;
@@ -29,13 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.eclipse.sw360.antenna.bundle.EclipseProcessBuilder.setupEclipseProcess;
+import static org.eclipse.sw360.antenna.p2resolver.EclipseProcessBuilder.setupEclipseProcess;
 
 public class P2Resolver extends AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(P2Resolver.class);
 
     private static final String DEPENDENCY_REPOSITORY = "repositories";
     private static final String ANTENNA_ECLIPSE_APP = "org.eclipse.sw360.antenna.p2.app";
+    private static final String ECLIPSE_PRODUCT_DIR = "eclipseProduct";
 
     private List<String> repositories;
 
@@ -46,7 +47,12 @@ public class P2Resolver extends AbstractProcessor {
 
     @Override
     public Collection<Artifact> process(Collection<Artifact> intermediates) throws AntennaException {
-        File productInstallationArea = createTempDirectory();
+        File productInstallationArea = context
+                .getToolConfiguration()
+                .getAntennaTargetDirectory()
+                .resolve(ECLIPSE_PRODUCT_DIR)
+                .toFile();
+        productInstallationArea.mkdirs();
         File artifactDownloadArea = createTempDirectory();
 
         List<Artifact> actionableIntermediates = intermediates.stream()
@@ -133,7 +139,7 @@ public class P2Resolver extends AbstractProcessor {
         }
     }
 
-    private static void deleteTemporaryDirectory(File temporaryDirectory) throws AntennaException {
+    private static void deleteTemporaryDirectory(File temporaryDirectory) {
         try {
             FileUtils.forceDelete(temporaryDirectory);
         } catch (IOException e) {

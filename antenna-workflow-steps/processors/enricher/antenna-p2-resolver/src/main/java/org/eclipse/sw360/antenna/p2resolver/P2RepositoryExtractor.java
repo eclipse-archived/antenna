@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.bundle;
+package org.eclipse.sw360.antenna.p2resolver;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-import static org.eclipse.sw360.antenna.bundle.OperatingSystemSpecifics.getProductNameForOS;
+import static org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics.getProductNameForOS;
 
 public final class P2RepositoryExtractor {
     private static final Logger LOGGER = LoggerFactory.getLogger(P2RepositoryExtractor.class);

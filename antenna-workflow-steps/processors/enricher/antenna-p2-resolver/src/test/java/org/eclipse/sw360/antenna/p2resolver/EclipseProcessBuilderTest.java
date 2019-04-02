@@ -9,11 +9,13 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.bundle;
+package org.eclipse.sw360.antenna.p2resolver;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.p2resolver.EclipseProcessBuilder;
+import org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics;
 import org.junit.Test;
 
 import java.io.File;

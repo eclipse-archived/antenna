@@ -10,7 +10,7 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 <site>
-    <feature id="some_feature" version="0.0.1.qualifier">
+    <feature id="some_tycho_feature" version="0.0.1.qualifier">
         <category name="my_plugin_repo"/>
     </feature>
     <category-def name="my_plugin_repo" label="None">

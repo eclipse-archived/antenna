@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.bundle;
+package org.eclipse.sw360.antenna.p2resolver;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.eclipse.sw360.antenna.bundle.OperatingSystemSpecifics.prepareEclipseExecutable;
+import static org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics.prepareEclipseExecutable;
 
 /**
  * For P2 resolution, we rely on an eclipse project.

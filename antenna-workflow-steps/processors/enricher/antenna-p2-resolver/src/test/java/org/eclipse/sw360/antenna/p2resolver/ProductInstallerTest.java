@@ -9,9 +9,11 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.bundle;
+package org.eclipse.sw360.antenna.p2resolver;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics;
+import org.eclipse.sw360.antenna.p2resolver.ProductInstaller;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;

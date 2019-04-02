@@ -19,7 +19,7 @@
   <artifactId>bundles</artifactId>
   <packaging>pom</packaging>
   <modules>
-    <module>some_bundle</module>
+    <module>some_tycho_bundle</module>
   </modules>
 
   <build>
