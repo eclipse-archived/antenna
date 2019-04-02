@@ -56,6 +56,15 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
         </dependency>
+        <!-- ################################ compliance dependency ########################### -->
+        <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>antenna-license-provider</artifactId>
+            <version>1</version>
+            <classifier>licenseinfo</classifier>
+            <type>zip</type>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <repositories>
