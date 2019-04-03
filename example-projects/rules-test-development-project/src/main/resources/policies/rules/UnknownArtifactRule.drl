@@ -9,11 +9,11 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package com.bosch.tina.rules.drools
+package org.eclipse.sw360.antenna.rulestesting
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.eclipse.sw360.antenna.bundle.DroolsEvaluationResult;
+import org.eclipse.sw360.antenna.drools.DroolsEvaluationResult;
 
 import java.util.List;
 

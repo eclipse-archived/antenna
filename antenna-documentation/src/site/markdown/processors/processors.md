@@ -9,8 +9,8 @@ specific attributes of the artifacts.
 * [License Knowledgebase resolver](./license-knowledgebase-resolver.html)
 * [License resolver](./license-resolver.html)
 * [Manifest resolver](manifest-resolver.html)
-* [SW360 Enricher](./sw360-enricher.html)
 * [P2 Resolver](./p2-resolver.html)
+* [SW360 Enricher](./sw360-enricher.html)
 
 ### Validators
 * [Coordinates validator](./coordinates-validator.html)
@@ -18,3 +18,4 @@ specific attributes of the artifacts.
 * [License Validator](./license-validator.html)
 * [Match State Validator](./match-state-validator.html)
 * [Security Issue Validator](./security-issue-validator.html)
+* [Rule Engine](./rule-engine.html)

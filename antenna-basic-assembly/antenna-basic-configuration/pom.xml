@@ -27,6 +27,11 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>antenna-basic-rules</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>antenna-conf-processor</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>

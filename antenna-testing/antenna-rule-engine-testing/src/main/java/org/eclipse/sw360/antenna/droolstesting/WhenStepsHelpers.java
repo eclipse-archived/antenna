@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.droolstesting;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.bundle.DroolsEvaluationResultReader;
+import org.eclipse.sw360.antenna.drools.DroolsEvaluationResultReader;
 
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
