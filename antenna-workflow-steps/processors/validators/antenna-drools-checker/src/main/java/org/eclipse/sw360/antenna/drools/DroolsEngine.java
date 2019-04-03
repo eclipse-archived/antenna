@@ -110,12 +110,17 @@ public class DroolsEngine implements IRuleEngine {
     private List<Path> extractInbuiltRuleFolders() throws AntennaException {
         List<Path> policiesFolders = new ArrayList<>();
         for (IRulesPackage rulesPackage : ServiceLoader.load(IRulesPackage.class, getClass().getClassLoader())) {
+            Path rulePath = Paths.get(rulesPackage.getRulesetFolder());
+            if (rulePath.toFile().isDirectory()) {
+                LOGGER.error("Path to ruleset folder should be inside a jar. Your rulefolder is probably not packed.");
+                continue;
+            }
             try {
                 if (temporaryDirectory == null) {
                     temporaryDirectory = Files.createTempDirectory("temporaryDirectory");
                 }
                 Path internalRulesPath = temporaryDirectory.resolve("rules" + rulesPackage.hashCode());
-                InternalRulesPackage rules = InternalRulesExtractor.extractRules(Paths.get(rulesPackage.getRulesetFolder()), internalRulesPath);
+                InternalRulesPackage rules = InternalRulesExtractor.extractRules(rulePath, internalRulesPath);
                 internalRules.add(rules);
                 policiesFolders.add(internalRulesPath.resolve(POLICIES_FOLDER_NAME));
             } catch (IOException e) {
