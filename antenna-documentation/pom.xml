@@ -9,7 +9,8 @@
   ~
   ~ SPDX-License-Identifier: EPL-2.0
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>antenna-management</artifactId>
         <groupId>org.eclipse.sw360.antenna</groupId>
@@ -138,6 +139,15 @@
                                     <outputDirectory>${copied.site.files.path}/antenna-maven-plugin</outputDirectory>
                                     <includes>**/*.md,**/*.md.vm</includes>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.sw360.antenna</groupId>
+                                    <artifactId>antenna-gradle-plugin</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${copied.site.files.path}/antenna-gradle-plugin</outputDirectory>
+                                    <includes>**/*.md,**/*.md.vm</includes>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
@@ -185,7 +195,6 @@
                     <include>**/*.md.vm</include>
                 </includes>
             </resource>
-
             <resource>
                 <!-- include all readme files into artifact -->
                 <directory>${project.basedir}/src/site/resources</directory>

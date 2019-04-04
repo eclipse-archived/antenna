@@ -1,0 +1,41 @@
+# How to use in Gradle
+
+For Gradle, ${docNameCap} is configured in an external configuration file, which is expected to have the same format as the plugin configuration of the `antenna-maven-plugin`.
+Please refer to the documentation of [the antenna-maven-plugin](../${docName}-maven-plugin/index.html).
+
+The plugin itself is configured in your `build.gradle` file by adding the following configuration.
+
+```groovy
+buildscript{
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.eclipse.sw360.antenna:antenna-gradle-plugin:VERSION'
+    }
+}
+
+apply plugin: org.eclipse.sw360.antenna.gradle.AntennaBasicGradlePlugin
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+AntennaConfiguration{
+    pomPath 'pom.xml'
+    debugEnabled = false
+}
+```
+
+Note:
+For Gradle, Maven is optional.
+Should you choose to run ${docNameCap} without having the maven environment variable `M2_HOME` set, the mvn dependency tree plugin will not work.
+The result could possibly not include some information that could have been useful.
+If you choose to run ${docNameCap} with Maven, you need to set the maven environment variable (`M2_HOME` should be set to the maven executable) and add
+```xml
+<isMavenInstalled>true</isMavenInstalled>
+```
+to the ${docNameCap} configuration in the pom.xml.
