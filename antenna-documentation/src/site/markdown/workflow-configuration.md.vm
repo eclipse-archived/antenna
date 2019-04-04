@@ -154,3 +154,8 @@ The effective workflow will then consist of the entries of the default workflow 
 
 If you want to add custom workflow steps you need to have the implementation of the workflow step on the classpath. For that 
 you can use standard maven means. By configuring an additional dependency for the ${docNameCap} maven plugin you can provide any further workflow steps that are available as maven dependency.
+
+### Configuring the workflow in the pom.xml
+
+It is also possible to configure additional steps to a `workflow.xml` directly in the tool configuration.
+For further information, see the [Tool configuration](./tool-configuration.html).

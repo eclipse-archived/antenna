@@ -4,7 +4,7 @@ ${docNameCap} can be used as plugin for different build systems.
 Currently, the configuration is almost the same for all three types (maven, gradle, cli). It is based on the structure of the Maven pom configuration.
 In what follows the configuration is described and some hints are given if special means have to be taken into account for certain build systems.
 
-For maven the configuration looks like what follows. For other build systems you would create a file with the same xml content but you can omit the maven coordinates.
+For maven the configuration can look like the following file. For other build systems you would create a file with the same xml content but you can omit the maven coordinates.
 
 ```xml
 <plugin>
@@ -57,7 +57,14 @@ forbidden and parameter for the license Validation can be set.
 * `copyrightNotice`: *(optional)* Annotation to the copyright
 * `proxyHost`: *(optional)* Parameter to provide a proxy configuration
 * `proxyPort`: *(optional)* Port to the provided proxy server
-
+* `isMavenInstalled`: If set to true, tells ${docNameCap} that Maven is installed on this machine.
+This allows certain workflow-steps to run or retrieve more information.
+For Gradle and CLI in addition the `M2_HOME` variable needs to be set to the Maven executable.
+Defaults is false for Gradle and CLI.
+For Maven it the variable is ignored.
+* `antennaTargetDirectory`: *(optional)* The folder where the documents created by ${docNameCap} are stored.
+Defaults to a folder called ${docNameCap} inside the build folder of the project.
+* `sourcesRepositoryUrl`: *(deprecated)* Is already ignored by the project.
 
 **Related to attaching artifacts**
 
@@ -82,39 +89,73 @@ to overwrite default values, use this parameter (identifier from table):
      <param>sources-zip,zip,OSS-sources</param>
 </filesToAttach>
 ```
-### The following configuration options are special to the CLI Frontend
 
-* `isMavenInstalled`: If set to false, tells ${docNameCap} that Maven is not
-installed on this machine.
-* `sourcesRepositoryUrl`: By default, artifacts will be downloaded
-from Maven Central. However, you can optionally set your own remote
-repository address (e.g. if you use a Nexus repository). It must be in
-the format:
-`http(s)://example.com/path/to/root/`
+### Definition of the Workflow inside the tool configuration
 
-**Other**
-
-* `antennaTargetDirectory`: The folder where the documents created by ${docNameCap}
-are stored.
-
-**License Validation**
-
-It can be defined if the license validation will fail on forbidden licenses, missing license information or missing license text. The default value for all parameters is `false`.
-
-Furthermore you can define a license as forbidden.
-
+Inside the plugin definition, you can also add a fully fledged workflow definition.
+As an example consider the following plugin definition for antenna:
 ```xml
-<licenseValidation> 
-    <failOnForbiddenLicenses>true</failOnForbiddenLicenses>
-    <failOnMissingLicenseInformation>false</failOnMissingLicenseInformation>
-    <failOnMissingLicenseText>false</failOnMissingLicenseText>
-    <forbidden>
-        <license>
-            <name>GPL</name>
-        </license>
-    </forbidden>
-</licenseValidation>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.sw360.antenna</groupId>
+                <artifactId>antenna-maven-plugin</artifactId>
+                <version>${org.eclipse.sw360.antenna.version}</version>
+                <configuration>
+                    <productName>Antenna EP</productName>
+
+                    <productFullname>Antenna Example Project</productFullname>
+
+                    <version>${version_to_scan}</version>
+
+                    <configFiles>
+                        <param>${project.basedir}/src/antennaconf.xml</param>
+                    </configFiles>
+                    <workflowDefinitionFile>${project.basedir}/src/workflow.xml</workflowDefinitionFile>
+                    <workflow>
+                        <processors>
+                            <step>
+                                <name>Source Validator</name>
+                                <classHint>org.eclipse.sw360.antenna.workflow.processors.SourceValidator</classHint>
+                                <configuration>
+                                    <entry>
+                                        <entryKey>missingSourcesSeverity</entryKey>
+                                        <entryValue>FAIL</entryValue>
+                                    </entry>
+                                    <entry>
+                                        <entryKey>incompleteSourcesSeverity</entryKey>
+                                        <entryValue>WARN</entryValue>
+                                    </entry>
+                                </configuration>
+                                <deactivated>true</deactivated>
+                            </step>
+                        </processors>
+                        <generators>
+                            <step>
+                                <name>CSV Report Writer</name>
+                                <classHint>org.eclipse.sw360.antenna.workflow.generators.CSVGenerator</classHint>
+                            </step>
+                        </generators>
+                    </workflow>
+
+                    <copyrightHoldersName>Antenna Company</copyrightHoldersName>
+                    <copyrightNotice>All rights reserved</copyrightNotice>
+
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
 ```
+
+You can define the workflow as described in the [Workflow configuration](./workflow-configuration.html) and you can even
+augment your workflow definition file by adding some steps in the maven `pom.xml`.
+The only difference is that in the `pom.xml` you cannot use the notation `<entry key="somekey" value="somevalue">`, you have to use the long form.
+
+For Maven, this has the advantage that properties are fully resolved in the `pom.xml` and can therefore be used in the step configuration.
+
+If a workflow is present in the pom, it will get merged with any `workflow.xml` provided by you or by the assembly.
+
+* Properties of existing steps will be changed.
+* New steps are added at the end of the list of steps in the same segment (analyzers, processors, generators and output handlers).
 
 ### Additional configuration for Java 9 or newer
 Since some Java EE dependencies like JAXB have been removed from the standard installation 
