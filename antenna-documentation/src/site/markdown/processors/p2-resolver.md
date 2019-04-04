@@ -37,5 +37,6 @@ The dependencies can currently be provided in two ways:
 
 ### Known limitations
 
-Currently, the resolver will unpack artifacts into a temporary folder and execute them.
-If executing files in temporary folders is prohibited by your OS, using the P2 Resolver is currently not possible.
+* The P2 executable uses a headless eclipse application under the hood.
+Its Linux launcher is linked against glibc, hence it will not work on Linux systems which are not shipped with glibc.
+The most prominent example of such a system is probably Alpine Linux commonly used for docker images.
