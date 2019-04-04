@@ -11,13 +11,14 @@
 
 package org.eclipse.sw360.antenna.p2resolver;
 
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.util.ZipExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.jar.JarFile;
 
 import static org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics.getProductNameForOS;
 
@@ -26,6 +27,18 @@ public final class P2RepositoryExtractor {
 
     private P2RepositoryExtractor() {
         // Utility class
+    }
+
+    public static void installEclipseProductForP2Resolution(String extractionLocation) throws AntennaException {
+        String location = P2RepositoryExtractor.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        try (JarFile jar = new JarFile(location)) {
+            P2RepositoryExtractor.extractProductFromJar(extractionLocation, location);
+        } catch (IOException e) {
+            LOGGER.warn("Jar could not be extracted. " +
+                    "Trying to extract from filesystem, but this will only work in tests." +
+                    "If this message pops up during normal execution, the installation of eclipse failed.");
+            P2RepositoryExtractor.extractProductFromFilesystem(extractionLocation, location);
+        }
     }
 
     public static void extractProductFromJar(String extractionLocation, String jarPath) throws AntennaException {
@@ -46,9 +59,8 @@ public final class P2RepositoryExtractor {
 
     private static void unzipFile(File zipFile, String extractionLocation) throws AntennaException {
         try {
-            ZipFile zip = new ZipFile(zipFile);
-            zip.extractAll(extractionLocation);
-        } catch (ZipException e) {
+            ZipExtractor.extractAll(zipFile, new File(extractionLocation));
+        } catch (IOException e) {
             throw new AntennaException("Unzipping file " + zipFile.toString() + " failed. Reason: ", e);
         }
     }

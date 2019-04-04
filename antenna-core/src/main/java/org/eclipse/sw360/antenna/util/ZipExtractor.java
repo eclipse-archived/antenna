@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.drools;
+package org.eclipse.sw360.antenna.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +20,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class ZipExtractor {
-    public static void extractAll(Path zipFile, File destination) throws IOException {
+    public static void extractAll(File zipFile, File destination) throws IOException {
         try (FileInputStream fs = new FileInputStream(zipFile.toString());
              ZipInputStream zipInputStream = new ZipInputStream(fs)) {
 
