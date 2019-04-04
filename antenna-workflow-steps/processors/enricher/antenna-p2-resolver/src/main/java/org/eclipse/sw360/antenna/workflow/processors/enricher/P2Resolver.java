@@ -16,6 +16,7 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.p2resolver.ArtifactAttacher;
+import org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics;
 import org.eclipse.sw360.antenna.p2resolver.ProductInstaller;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
@@ -97,11 +98,18 @@ public class P2Resolver extends AbstractProcessor {
 
     private void runEclipseProduct(File productInstallationArea, File artifactDownloadArea, List<Artifact> actionableIntermediates) throws AntennaException {
         try {
-            Process process = setupEclipseProcess(
-                    productInstallationArea, artifactDownloadArea, actionableIntermediates, repositories).start();
+            Process process =
+                    setupEclipseProcess(productInstallationArea, artifactDownloadArea, actionableIntermediates, repositories)
+                            .start();
 
             loggingResolverLogOutput(process);
         } catch (IOException e) {
+            if (e.getMessage().contains("No such file or directory") && OperatingSystemSpecifics.isLinux()) {
+                throw new AntennaException("The product could not be started. " +
+                        "This could be due to a problem with the launcher: The executable is explicitly linked against glibc. " +
+                        "Some operating systems such as Alpine Linux commonly used for Docker or BSD Unix systems do not ship a glibc. " +
+                        "This is a known limitation for the P2 workflow step. Error was: ", e);
+            }
             throw new AntennaException("Error while using external product " + ANTENNA_ECLIPSE_APP, e);
         }
     }
