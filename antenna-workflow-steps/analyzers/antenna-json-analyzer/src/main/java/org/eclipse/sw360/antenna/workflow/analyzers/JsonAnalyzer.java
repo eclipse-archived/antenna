@@ -18,7 +18,7 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
-import org.eclipse.sw360.antenna.util.JsonReader;
+import org.eclipse.sw360.antenna.jsonreader.JsonReader;
 
 import java.io.FileInputStream;
 import java.io.IOException;

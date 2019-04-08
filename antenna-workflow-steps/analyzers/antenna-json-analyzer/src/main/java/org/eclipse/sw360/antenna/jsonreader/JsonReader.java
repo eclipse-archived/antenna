@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.util;
+package org.eclipse.sw360.antenna.jsonreader;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
@@ -22,6 +22,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.*;
+import org.eclipse.sw360.antenna.util.LicenseSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
