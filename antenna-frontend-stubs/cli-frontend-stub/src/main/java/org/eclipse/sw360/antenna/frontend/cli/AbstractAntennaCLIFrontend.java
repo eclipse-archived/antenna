@@ -39,7 +39,13 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend {
 
     public AbstractAntennaCLIFrontend(File pomFile) {
         Path buildDir = getBuildDirFromPomFile(pomFile);
-        project = new DefaultProject(pomFile, buildDir.toString());
+        Path sourceDir = getSourceDirFromPomFile(pomFile);
+        project = new DefaultProject(pomFile, buildDir.toString(), sourceDir.toString());
+    }
+
+    private Path getSourceDirFromPomFile(File pomFile) {
+        Path parent = pomFile.toPath().getParent();
+        return parent.resolve("src");
     }
 
     private Path getBuildDirFromPomFile(File pomFile) {

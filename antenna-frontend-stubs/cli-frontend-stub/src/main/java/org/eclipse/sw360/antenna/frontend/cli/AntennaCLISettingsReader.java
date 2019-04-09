@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -41,17 +42,17 @@ class AntennaCLISettingsReader {
 
     private TemplateRenderer tr = new TemplateRenderer();
 
-    public AntennaCLISettingsReader(){
+    public AntennaCLISettingsReader() {
         this("antenna-maven-plugin");
     }
 
-    public AntennaCLISettingsReader(String pluginDescendantArtifactName){
-         antennaConfXpath = "descendant::plugin[artifactId='" + pluginDescendantArtifactName + "']/descendant-or-self::configuration";
+    public AntennaCLISettingsReader(String pluginDescendantArtifactName) {
+        antennaConfXpath = "descendant::plugin[artifactId='" + pluginDescendantArtifactName + "']/descendant-or-self::configuration";
     }
 
     private void readProjectStringSetting(XmlSettingsReader reader, String name, Consumer<String> setter) {
         String value = reader.getStringProperty(name);
-        if(value != null){
+        if (value != null) {
             setter.accept(value);
         }
     }
@@ -82,7 +83,7 @@ class AntennaCLISettingsReader {
 
     private void readStringListSetting(XmlSettingsReader reader, String name, Consumer<List<String>> setter) {
         List<String> value = reader.getStringListProperty(name);
-        if(value != null){
+        if (value != null) {
             setter.accept(value);
         }
     }
@@ -101,20 +102,13 @@ class AntennaCLISettingsReader {
         return readSettingsToToolConfiguration(reader, project);
     }
 
-    private void readAntennaWorkflowSetting(XmlSettingsReader reader, String name, Consumer<Workflow> setter) {
-        Workflow workflow = reader.getComplexType("workflow", Workflow.class);
-        if (workflow != null) {
-            setter.accept(workflow);
-        }
-    }
-
     private void setVersionFromPom(DefaultProject project) {
         File pomFile = project.getConfigFile();
         try {
-            String pom = FileUtils.readFileToString(pomFile);
+            String pom = FileUtils.readFileToString(pomFile, StandardCharsets.UTF_8);
             XmlSettingsReader reader = new XmlSettingsReader(pom);
             String version = reader.getStringPropertyByXPath("project", "version");
-            if(version != null && !"".equals(version)){
+            if (version != null && !"".equals(version)) {
                 project.setVersion(version);
                 return;
             }
@@ -124,7 +118,7 @@ class AntennaCLISettingsReader {
         project.setVersion("1.0");
     }
 
-    private XmlSettingsReader getSettingsReader(DefaultProject project){
+    private XmlSettingsReader getSettingsReader(DefaultProject project) {
         File pomFile = project.getConfigFile();
         Path parent = pomFile.toPath().getParent();
 

@@ -13,9 +13,11 @@ package org.eclipse.sw360.antenna.frontend.cli;
 import org.eclipse.sw360.antenna.api.IProject;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 public class DefaultProject implements IProject {
     private final File configFile;
+    private final String baseUri;
     private final String buildDir;
     private final Build build;
 
@@ -23,10 +25,11 @@ public class DefaultProject implements IProject {
     private String projectVersion = "1.0";
     private String artifactId = projectId + ":" + projectVersion;
 
-    public DefaultProject(File configFile, String buildDir) {
+    public DefaultProject(File configFile, String buildDir, String sourceDir) {
         this.configFile = configFile;
         this.buildDir = buildDir;
-        this.build = new Build(buildDir, buildDir + "/classes");
+        this.baseUri = configFile.toPath().getParent().toUri().toString();
+        this.build = new Build(buildDir, sourceDir);
     }
 
     @Override
@@ -65,13 +68,26 @@ public class DefaultProject implements IProject {
         return build;
     }
 
+    @Override
+    public File getBasedir() {
+        return configFile.getParentFile();
+    }
+
+    public String getBaseUri() {
+        return baseUri;
+    }
+
     public class Build {
         private final String directory;
         private final String outputDirectory;
+        private final String sourceDirectory;
+        private final String testSourceDirectory;
 
-        public Build(String directory, String outputDirectory) {
-            this.directory = directory;
-            this.outputDirectory = outputDirectory;
+        public Build(String buildDirectory, String sourceDirectory) {
+            this.directory = buildDirectory;
+            this.outputDirectory = buildDirectory + File.separator + "classes";
+            this.sourceDirectory = Paths.get(sourceDirectory, "main", "java").toString();
+            this.testSourceDirectory = Paths.get(sourceDirectory, "test", "java").toString();
         }
 
         public String getDirectory() {
@@ -82,5 +98,12 @@ public class DefaultProject implements IProject {
             return outputDirectory;
         }
 
+        public String getSourceDirectory() {
+            return sourceDirectory;
+        }
+
+        public String getTestSourceDirectory() {
+            return testSourceDirectory;
+        }
     }
 }
