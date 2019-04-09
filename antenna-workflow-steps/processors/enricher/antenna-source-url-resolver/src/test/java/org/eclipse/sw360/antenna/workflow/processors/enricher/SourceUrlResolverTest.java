@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.workflow.processors.enricher;
 
-import org.codehaus.plexus.util.ReflectionUtils;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
@@ -27,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.setVariableValueInObject;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -41,7 +41,7 @@ public class SourceUrlResolverTest {
     @Before
     public void setUp() throws Exception {
         resolver = new SourceUrlResolver();
-        ReflectionUtils.setVariableValueInObject(resolver, "httpHelper", httpHelper);
+        setVariableValueInObject(resolver, "httpHelper", httpHelper);
     }
 
     @Test

@@ -16,7 +16,6 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.codehaus.plexus.util.ReflectionUtils;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.exceptions.FailedToDownloadException;
@@ -36,6 +35,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.setVariableValueInObject;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -67,7 +67,7 @@ public class HttpHelperTest {
                 .thenReturn(toolConfigMock);
 
         httpHelper = new HttpHelper(antennaContextMock);
-        ReflectionUtils.setVariableValueInObject(httpHelper, "httpClient", httpClientMock);
+        setVariableValueInObject(httpHelper, "httpClient", httpClientMock);
     }
 
     @Test

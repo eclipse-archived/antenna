@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.bundle;
 
-import org.codehaus.plexus.util.ReflectionUtils;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
@@ -30,6 +29,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.setVariableValueInObject;
 import static org.mockito.Mockito.*;
 
 @RunWith(Parameterized.class)
@@ -55,6 +55,7 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
         this.isSource = isSource;
     }
 
+
     @Before
     public void before() throws Exception {
         String sourceRepositoryUrl = "http://test.repo" 
@@ -73,7 +74,7 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
                 .thenReturn(toolConfigMock);
 
         hr = new HttpRequester(antennaContextMock);
-        ReflectionUtils.setVariableValueInObject(hr, "httpHelper", httpHelperMock);
+        setVariableValueInObject(hr, "httpHelper", httpHelperMock);
     }
         
     @Test

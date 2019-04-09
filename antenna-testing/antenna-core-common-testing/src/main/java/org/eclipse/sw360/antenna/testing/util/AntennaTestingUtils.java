@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.testing.util;
 
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
@@ -44,5 +45,25 @@ public class AntennaTestingUtils {
     public static void assumeToBeConnectedToTheInternet() {
         checkInternetConnection(testUrl)
                 .ifPresent(e -> assumeTrue("Can not reach the internet (due to " + e.getClass().getSimpleName() + ")", false));
+    }
+
+    public static void setVariableValueInObject(Object object, String variable, Object value) throws IllegalAccessException {
+        Field field = getFieldIncludingSuperclasses(variable, object.getClass());
+        field.setAccessible(true);
+        field.set(object, value);
+    }
+
+    private static Field getFieldIncludingSuperclasses(String fieldName, Class<?> clazz) {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException var5) {
+            Class<?> superclass = clazz.getSuperclass();
+            if (superclass != null) {
+                return getFieldIncludingSuperclasses(fieldName, superclass);
+            } else {
+                // This is only a testing util, so it's okay to throw a runtime exception here.
+                throw new RuntimeException("Could not find field " + fieldName);
+            }
+        }
     }
 }
