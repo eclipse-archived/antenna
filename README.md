@@ -8,7 +8,7 @@ their licenses,
 * a sources.zip containing all sources of the dependencies, and
 * a processing report.
 
-Learn more about Antenna in [What Antenna Does](antenna-documentation/src/site/markdown/what-antenna-does.md).
+Learn more about Antenna in [What Antenna Does](antenna-documentation/src/site/markdown/index.md.vm).
 
 ### Install and build Antenna
 You need to provide some dependencies, which are not now on maven central, e.g.
@@ -55,4 +55,4 @@ Find out how to configure Antenna by reading: [How to configure Antenna](antenna
 Antenna can be used with Java versions 9 or newer.
 However, it requires some additional configuration described in [Tool Configuration](antenna-documentation/src/site/markdown/tool-configuration.md.vm/#additional-configuration-for-java-9-or-newer).
 
- *To find answers in the most frequent questions/problems go to [Troubleshooting](antenna-documentation/src/site/markdown/troubleshooting.md).*
+ *To find answers in the most frequent questions/problems go to [Troubleshooting](antenna-documentation/src/site/markdown/troubleshooting.md.vm).*
