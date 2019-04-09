@@ -11,7 +11,7 @@
 <jxb:bindings version="1.0"
               xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
               xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-              xmlns:ci="http://jaxb.dev.java.net/plugin/code-injector">
+>
 
     <jxb:bindings schemaLocation="policy.xsd">
         <jxb:bindings node="//xsd:complexType[@name='policy']">

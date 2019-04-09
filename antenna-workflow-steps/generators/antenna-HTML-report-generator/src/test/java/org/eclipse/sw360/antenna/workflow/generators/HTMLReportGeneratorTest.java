@@ -22,6 +22,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Set;
@@ -38,7 +39,7 @@ public class HTMLReportGeneratorTest extends AntennaTestWithMockedContext {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private HTMLReportGenerator htmlReportGenerator;
-    private Charset charset = Charset.forName("UTF-8");
+    private Charset charset = StandardCharsets.UTF_8;
 
     public final String licenseName1 = "LicenseName1";
     public final String licenseText1 = "Some Super Long LicenseText1";

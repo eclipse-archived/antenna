@@ -16,7 +16,7 @@ public enum SW360ProjectType {
 
     private final int value;
 
-    private SW360ProjectType(int value) {
+    SW360ProjectType(int value) {
         this.value = value;
     }
 

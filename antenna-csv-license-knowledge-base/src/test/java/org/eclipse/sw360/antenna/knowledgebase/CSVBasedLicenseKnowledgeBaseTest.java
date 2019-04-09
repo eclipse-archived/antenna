@@ -14,7 +14,7 @@ import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,7 +25,7 @@ public class CSVBasedLicenseKnowledgeBaseTest {
     @Test
     public void test() {
         CSVBasedLicenseKnowledgeBase knowledgeBase = new CSVBasedLicenseKnowledgeBase();
-        knowledgeBase.init(iProcessingReporter, Charset.forName("UTF-8"));
+        knowledgeBase.init(iProcessingReporter, StandardCharsets.UTF_8);
         String licenseNameForId = knowledgeBase.getLicenseNameForId("AFL-1.1");
         assertThat(licenseNameForId).isEqualTo("Academic Free License v1.1");
         assertThat(knowledgeBase.getLicenseIdForAlias("AFL1")).isEqualTo("AFL-1.1");

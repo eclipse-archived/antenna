@@ -34,7 +34,7 @@ public final class DroolsEvaluationResultReader {
                 String policyXml = Files.lines(policesPath).map(String::trim).collect(Collectors.joining());
                 XmlSettingsReader policyReader = new XmlSettingsReader(policyXml);
                 List<IEvaluationResult> result = new ArrayList<>();
-                policyReader.getComplexType("policies", Policies.class).getPolicy().forEach(result::add);
+                result.addAll(policyReader.getComplexType("policies", Policies.class).getPolicy());
                 return result;
             } catch (Exception e) {
                 throw new AntennaException("Could not read the policies. Details: " + e.getMessage());

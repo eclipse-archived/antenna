@@ -28,7 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +61,7 @@ public class MultipleConfigsResolverTest {
         configs.add(compareConfig);
 
         when(toolConfigMock.getConfigFiles()).thenReturn(configs);
-        when(toolConfigMock.getEncoding()).thenReturn(Charset.forName("UTF-8"));
+        when(toolConfigMock.getEncoding()).thenReturn(StandardCharsets.UTF_8);
         when(toolConfigMock.getAntennaTargetDirectory()).thenReturn(temporaryFolder.newFolder("target").toPath());
 
         // TODO: the tests currently fail

@@ -31,10 +31,9 @@ import org.junit.Test;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +45,7 @@ public class ConfigurationTest {
     @Before
     public void resolveConfiguration() throws URISyntaxException, AntennaConfigurationException {
         URL xmlUrl = ConfigurationTest.class.getResource("/antennaconf.xml");
-        XMLResolverJaxB resolver = new XMLResolverJaxB(Charset.forName("UTF-8"));
+        XMLResolverJaxB resolver = new XMLResolverJaxB(StandardCharsets.UTF_8);
         AntennaConfig config = resolver.resolveXML(new File(xmlUrl.toURI()));
         this.configuration = new Configuration(config);
     }

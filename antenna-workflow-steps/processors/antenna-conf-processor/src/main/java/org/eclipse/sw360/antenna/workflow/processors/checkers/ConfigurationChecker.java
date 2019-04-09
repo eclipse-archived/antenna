@@ -102,8 +102,7 @@ public class ConfigurationChecker extends AbstractProcessor {
     }
 
     private void checkSecIssues(Collection<Artifact> artifacts, Map<ArtifactSelector, Issues> securityIssues, String type) {
-        List<ArtifactSelector> extractedSelectors = securityIssues.entrySet().stream()
-                .map(Map.Entry::getKey)
+        List<ArtifactSelector> extractedSelectors = securityIssues.keySet().stream()
                 .collect(Collectors.toList());
         check(artifacts, extractedSelectors, type);
     }

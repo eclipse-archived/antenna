@@ -200,7 +200,7 @@ public class ArtifactSelectorTest {
     private Artifact createArtifact(String hash, String artifactId, String groupId, String version,
                                     String bundleVersion, String symbolicName) {
         Artifact artifact = new Artifact();
-        artifact.addFact(new ArtifactFilename(defaultFileName.toString(), hash));
+        artifact.addFact(new ArtifactFilename(defaultFileName, hash));
         artifact.addFact(new MavenCoordinates(artifactId, groupId, version));
         artifact.addFact(new BundleCoordinates(symbolicName, bundleVersion));
         return artifact;

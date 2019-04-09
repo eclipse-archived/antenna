@@ -25,7 +25,7 @@ public enum SW360ReleaseRelationship {
 
     private final int value;
 
-    private SW360ReleaseRelationship(int value) {
+    SW360ReleaseRelationship(int value) {
         this.value = value;
     }
 

@@ -120,7 +120,7 @@ public class P2Resolver extends AbstractProcessor {
                 BufferedReader errorBufferedReader = new BufferedReader(errorReader);
                 InputStream outputIs = process.getInputStream();
                 InputStreamReader outputReader = new InputStreamReader(outputIs);
-                BufferedReader outputBufferedReader = new BufferedReader(outputReader);
+                BufferedReader outputBufferedReader = new BufferedReader(outputReader)
         ) {
 
             String line;

@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.drools;
 
-import org.eclipse.sw360.antenna.drools.DroolsRulesUtils;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;

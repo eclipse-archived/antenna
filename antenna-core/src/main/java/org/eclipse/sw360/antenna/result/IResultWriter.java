@@ -15,5 +15,5 @@ package org.eclipse.sw360.antenna.result;
  */
 public interface IResultWriter {
 
-    public void execute();
+    void execute();
 }

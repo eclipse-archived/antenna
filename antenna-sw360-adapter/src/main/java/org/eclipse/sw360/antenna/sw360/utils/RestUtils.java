@@ -58,7 +58,7 @@ public class RestUtils {
     }
 
     public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Release sw360Release, HttpHeaders header) throws AntennaException {
-        String componentId = "";
+        String componentId;
         if ((sw360Release.get_Links() != null) && (sw360Release.get_Links().getSelfComponent() != null)) {
             componentId = SW360HalResourceUtility.getLastIndexOfLinkObject(sw360Release.get_Links().getSelfComponent()).orElse("");
         } else if ((sw360Release.getComponentId() != null) && (!sw360Release.getComponentId().isEmpty())) {

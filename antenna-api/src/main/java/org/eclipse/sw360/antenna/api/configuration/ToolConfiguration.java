@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -85,7 +86,7 @@ public class ToolConfiguration {
         if(builder.encodingCharSet != null) {
             this.encodingCharSet = builder.encodingCharSet;
         }else{
-            this.encodingCharSet = Charset.forName("UTF-8");
+            this.encodingCharSet = StandardCharsets.UTF_8;
         }
         this.proxyHost = builder.proxyHost;
         this.proxyPort = builder.proxyPort;

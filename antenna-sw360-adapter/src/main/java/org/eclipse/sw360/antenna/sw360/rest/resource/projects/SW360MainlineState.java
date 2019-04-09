@@ -20,7 +20,7 @@ public enum SW360MainlineState {
 
     private final int value;
 
-    private SW360MainlineState(int value) {
+    SW360MainlineState(int value) {
         this.value = value;
     }
 

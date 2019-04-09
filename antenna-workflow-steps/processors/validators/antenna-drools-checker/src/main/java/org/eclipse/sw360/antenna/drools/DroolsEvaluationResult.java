@@ -23,7 +23,7 @@ public class DroolsEvaluationResult implements IEvaluationResult {
     private String description;
     private Set<Artifact> failedArtifacts = new HashSet<>();
 
-    public DroolsEvaluationResult() {};
+    public DroolsEvaluationResult() {}
 
     public DroolsEvaluationResult(String id, String description, Severity severity) {
         this(id, description, severity, null);

@@ -16,7 +16,7 @@ public enum SW360UserGroup {
 
     private final int value;
 
-    private SW360UserGroup(int value) {
+    SW360UserGroup(int value) {
         this.value = value;
     }
 

@@ -14,7 +14,6 @@ package org.eclipse.sw360.antenna.p2resolver;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
-import org.eclipse.sw360.antenna.p2resolver.ArtifactAttacher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

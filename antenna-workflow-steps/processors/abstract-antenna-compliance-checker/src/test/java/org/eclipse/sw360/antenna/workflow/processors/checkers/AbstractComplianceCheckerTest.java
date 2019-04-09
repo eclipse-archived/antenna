@@ -28,8 +28,7 @@ import org.mockito.Mockito;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -121,7 +120,7 @@ public class AbstractComplianceCheckerTest extends AntennaTestWithMockedContext 
             } catch (AntennaException e) {
                 return; // success
             }
-            assertTrue("this should not be reached", false);
+            fail("this should not be reached");
         } else {
             complianceChecker.execute(evaluation);
             verify(reporterMock, atMost(0))

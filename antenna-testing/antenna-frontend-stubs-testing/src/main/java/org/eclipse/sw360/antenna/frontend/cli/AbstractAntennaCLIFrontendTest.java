@@ -27,9 +27,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 
 public abstract class AbstractAntennaCLIFrontendTest extends AbstractAntennaFrontendTest {

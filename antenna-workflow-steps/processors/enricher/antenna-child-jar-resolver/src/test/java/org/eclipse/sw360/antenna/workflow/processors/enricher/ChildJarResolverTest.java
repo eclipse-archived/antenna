@@ -67,7 +67,7 @@ public class ChildJarResolverTest extends AntennaTestWithMockedContext {
         Arrays.stream(paths).forEach(
                 path -> {
                     Artifact artifact = new Artifact();
-                    artifact.addFact(new ArtifactPathnames(new String[] { path.toString() }));
+                    artifact.addFact(new ArtifactPathnames(path.toString()));
                     artifact.addFact(new ArtifactFilename(path.getFileName().toString()));
                     artifacts.add(artifact);
                 });
