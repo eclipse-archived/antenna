@@ -15,7 +15,6 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.ConfigurationChecker;
-import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerAdd;
 import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerOverride;
 import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerRemove;
 
@@ -34,10 +33,9 @@ public class AntennaConfHandler extends AbstractProcessor {
         localProcessors.add(confCheck);
 
         //initFilters
-        ConfigurationHandlerAdd configurationHandlerAdd = new ConfigurationHandlerAdd(context);
         ConfigurationHandlerOverride configurationHandlerOverride = new ConfigurationHandlerOverride(context);
         ConfigurationHandlerRemove configurationHandlerRemove = new ConfigurationHandlerRemove(context);
-        localProcessors.addAll(Arrays.asList(configurationHandlerAdd, configurationHandlerOverride, configurationHandlerRemove));
+        localProcessors.addAll(Arrays.asList(configurationHandlerOverride, configurationHandlerRemove));
     }
 
     @Override

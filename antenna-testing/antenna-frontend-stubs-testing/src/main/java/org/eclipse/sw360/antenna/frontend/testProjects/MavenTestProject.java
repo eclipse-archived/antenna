@@ -79,19 +79,20 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationAnalyzers() {
-        WorkflowStep analyzer1 = mkWorkflowStep("JSON Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.JsonAnalyzer",
+        List<WorkflowStep> analyzers = BasicConfiguration.getAnalyzers();
+        analyzers.add(mkWorkflowStep("JSON Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.JsonAnalyzer",
                 "base.dir", this.projectRoot.toString(),
-                "file.path", "src/reportData.json");
-        WorkflowStep analyzer2 = mkWorkflowStep("CSV Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer",
+                "file.path", "src/reportData.json"));
+        analyzers.add(mkWorkflowStep("CSV Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer",
                 "base.dir", this.projectRoot.toString(),
-                "file.path", "src/dependencies.csv");
-        WorkflowStep analyzer3 = mkWorkflowStep("Maven dependency analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.MvnDependencyTreeAnalyzer");
-        return Stream.of(analyzer1, analyzer2, analyzer3).collect(Collectors.toList());
+                "file.path", "src/dependencies.csv"));
+        analyzers.add(mkWorkflowStep("Maven dependency analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.MvnDependencyTreeAnalyzer"));
+        return analyzers;
     }
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
-        return new BasicConfiguration().getProcessors()
+        return BasicConfiguration.getProcessors()
                 .stream()
                 .map(s -> {
                     if (!"Source Validator".equals(s.getName())) {
@@ -127,7 +128,7 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
         generator3.setDeactivated(true);
 
         List<WorkflowStep> result = Stream.of(generator1, generator2, generator3).collect(Collectors.toList());
-        result.addAll(new BasicConfiguration().getGenerators(projectRoot.toString()));
+        result.addAll(BasicConfiguration.getGenerators(projectRoot.toString()));
         result.stream()
                 .filter(g -> "SW360 Report Generator".equals(g.getName()))
                 .forEach(g -> g.setConfiguration(StepConfiguration.fromMap(Collections.singletonMap("disclosure.doc.formats", "txt"))));

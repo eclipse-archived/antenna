@@ -18,12 +18,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.eclipse.sw360.antenna.frontend.testProjects.TestProjectUtils.mkDeactivatedWorkflowStep;
 import static org.eclipse.sw360.antenna.frontend.testProjects.TestProjectUtils.mkWorkflowStep;
 
-public class BasicConfiguration {
-    public List<WorkflowStep> getProcessors() {
-        WorkflowStep confHandler = mkWorkflowStep("Processing of antenna configuration", "org.eclipse.sw360.antenna.workflow.processors.AntennaConfHandler");
+public final class BasicConfiguration {
+    private BasicConfiguration() {
+        // Utility class
+    }
+
+    public static List<WorkflowStep> getAnalyzers() {
+        WorkflowStep confAnalyzer = mkWorkflowStep("Analyzing of Antenna configuration", "org.eclipse.sw360.antenna.workflow.analyzers.ConfigurationAnalyzer");
+        return Stream.of(confAnalyzer).collect(Collectors.toList());
+    }
+
+    public static List<WorkflowStep> getProcessors() {
+        WorkflowStep confHandler = mkWorkflowStep("Processing of Antenna configuration", "org.eclipse.sw360.antenna.workflow.processors.AntennaConfHandler");
         // enricher
         WorkflowStep enricher1 = mkWorkflowStep("Maven Artifact Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.MavenArtifactResolver");
         WorkflowStep enricher3 = mkWorkflowStep("Child Jar Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.ChildJarResolver");
@@ -60,7 +68,7 @@ public class BasicConfiguration {
                 validator1, validator2, validator3, validator4, validator5).collect(Collectors.toList());
     }
 
-    public List<WorkflowStep> getGenerators(String projectRoot) {
+    public static List<WorkflowStep> getGenerators(String projectRoot) {
         WorkflowStep generator1 = mkWorkflowStep("SW360 Report Generator", "org.eclipse.sw360.antenna.workflow.generators.SW360DisclosureDocumentGenerator",
                 "disclosure.doc.formats", "docx,txt,html");
         WorkflowStep generator2 = mkWorkflowStep("Source Zip Writer", "org.eclipse.sw360.antenna.workflow.generators.SourceZipWriter");

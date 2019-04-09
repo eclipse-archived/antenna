@@ -8,45 +8,64 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.workflow.processors.filter;
+package org.eclipse.sw360.antenna.workflow.analyzers;
 
+import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
+import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
-public class ConfigurationHandlerAddTest extends CommonConfigurationHandlerTest {
+public class ConfigurationAnalyzerTest extends AntennaTestWithMockedContext {
+    private final MatchState artifactMatchState;
+    private static final String FILENAME = "some/path";
 
     @Parameterized.Parameters(name = "{index}: artifact={0}")
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][] {{null}, {MatchState.SIMILAR}, {MatchState.EXACT}});
     }
 
-    public ConfigurationHandlerAddTest(MatchState artifactMatchState) {
-        super(artifactMatchState);
+    public ConfigurationAnalyzerTest(MatchState artifactMatchState) {
+        this.artifactMatchState = artifactMatchState;
     }
 
-    @Test
-    public void testAddArtifact() {
-        List<Artifact> artifactsToAdd = Arrays.asList(specialArtifact, generateDummyArtifact("otherArtifactToAdd"));
+    @Before
+    public void setupMock() {
+        Artifact specialArtifact = new Artifact();
+        specialArtifact.addFact(new ArtifactFilename(FILENAME));
+
+        Artifact otherArtifact = new Artifact();
+        otherArtifact.addFact(new BundleCoordinates("otherArtifact", "1.2"));
+        otherArtifact.addFact(new ArtifactFilename("otherArtifact"));
+
+        if(artifactMatchState != null){
+            specialArtifact.addFact(new ArtifactMatchingMetadata(artifactMatchState));
+        }
+
+        List<Artifact> artifactsToAdd = Arrays.asList(specialArtifact, otherArtifact);
 
         when(configMock.getAddArtifact())
                 .thenReturn(artifactsToAdd);
+    }
 
-        ConfigurationHandlerAdd handler = new ConfigurationHandlerAdd(antennaContextMock);
-        handler.process(artifacts);
+    @Test
+    public void testAddArtifact() throws AntennaException {
+        ConfigurationAnalyzer handler = new ConfigurationAnalyzer();
+        handler.setAntennaContext(antennaContextMock);
+
+        Set<Artifact> artifacts = handler.yield().getArtifacts();
 
         assertThat(artifacts.size()).isEqualTo(5);
         Artifact processedArtifact = artifacts.stream()

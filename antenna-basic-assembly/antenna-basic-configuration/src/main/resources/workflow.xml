@@ -9,9 +9,15 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 <workflow>
+    <analyzers>
+        <step>
+            <name>Analyzing of Antenna configuration</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.analyzers.ConfigurationAnalyzer</classHint>
+        </step>
+    </analyzers>
     <processors>
         <step>
-            <name>Processing of antenna configuration</name>
+            <name>Processing of Antenna configuration</name>
             <classHint>org.eclipse.sw360.antenna.workflow.processors.AntennaConfHandler</classHint>
         </step>
         <!-- enricher -->
