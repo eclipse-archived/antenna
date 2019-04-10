@@ -26,6 +26,7 @@ public abstract class ConfigurableWorkflowItem implements IWorkflowable {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurableWorkflowItem.class);
     protected IProcessingReporter reporter;
     protected AntennaContext context;
+    protected short workflowStepOrder = 1000;
 
     public void setAntennaContext(AntennaContext context) {
         this.context = context;
@@ -34,6 +35,10 @@ public abstract class ConfigurableWorkflowItem implements IWorkflowable {
 
     public void configure() throws AntennaConfigurationException {
         configure(Collections.emptyMap());
+    }
+
+    public short getWorkflowStepOrder() {
+        return workflowStepOrder;
     }
 
     public void configure(Map<String, String> configMap) throws AntennaConfigurationException {

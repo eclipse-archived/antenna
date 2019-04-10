@@ -53,6 +53,10 @@ public class SW360DisclosureDocumentGenerator extends AbstractGenerator {
     private static final Set<String> outputFormats = Stream.of(DOCX_KEY, TXT_KEY, HTML_KEY).collect(Collectors.toSet());
     private Set<String> selectedOutputFormats;
 
+    public SW360DisclosureDocumentGenerator() {
+        this.workflowStepOrder = 1500;
+    }
+
     @Override
     public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
         if(configMap.containsKey(DISCLOSURE_DOC_FORMATS_KEY)){

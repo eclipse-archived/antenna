@@ -12,15 +12,14 @@ package org.eclipse.sw360.antenna.workflow;
 
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.workflow.AbstractAnalyzer;
-import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
-import org.eclipse.sw360.antenna.api.workflow.AbstractOutputHandler;
-import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
+import org.eclipse.sw360.antenna.api.workflow.*;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class AntennaWorkflowConfiguration {
@@ -45,20 +44,28 @@ public class AntennaWorkflowConfiguration {
         if (analyzers.isEmpty()) {
             LOGGER.warn("No analyzers found. You might want to check your configuration.");
         }
+        analyzers.sort(Comparator.comparingInt(ConfigurableWorkflowItem::getWorkflowStepOrder));
+        warnOnDuplicateOrders(analyzers);
 
         // initialize processors
         processors = ProcessorFactory.getProcessors(workflow, context);
         if (processors.isEmpty()) {
             LOGGER.warn("No processors found. You might want to check your configuration.");
         }
+        processors.sort(Comparator.comparingInt(ConfigurableWorkflowItem::getWorkflowStepOrder));
+        warnOnDuplicateOrders(processors);
 
         // initialize generators
         generators = GeneratorFactory.getGenerators(workflow, context);
         if (generators.isEmpty()) {
             LOGGER.warn("No generators found. You might want to check your configuration.");
         }
+        generators.sort(Comparator.comparingInt(ConfigurableWorkflowItem::getWorkflowStepOrder));
+        warnOnDuplicateOrders(generators);
 
         outputHandlers = OutputHandlerFactory.getOutputHandlers(workflow, context);
+        outputHandlers.sort(Comparator.comparingInt(ConfigurableWorkflowItem::getWorkflowStepOrder));
+        warnOnDuplicateOrders(outputHandlers);
 
         LOGGER.info("Initializing workflow configuration done");
     }
@@ -77,5 +84,13 @@ public class AntennaWorkflowConfiguration {
 
     public List<AbstractOutputHandler> getOutputHandlers() {
         return outputHandlers;
+    }
+
+    private void warnOnDuplicateOrders(List<? extends ConfigurableWorkflowItem> items) {
+        for (int i = 0; i < items.size() - 1; i++) {
+            if (items.get(i).getWorkflowStepOrder() == items.get(i + 1).getWorkflowStepOrder()) {
+                LOGGER.warn("Workflow steps " + items.get(i).getWorkflowItemName() + " and " + items.get(i + 1).getWorkflowItemName() + " have the same step order. The former will be executed before the latter.");
+            }
+        }
     }
 }

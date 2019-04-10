@@ -49,6 +49,10 @@ public class SW360Enricher extends AbstractProcessor {
 
     private SW360MetaDataReceiver connector;
 
+    public SW360Enricher() {
+        this.workflowStepOrder = 1300;
+    }
+
     @Override
     public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
         super.configure(configMap);

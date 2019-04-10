@@ -24,6 +24,10 @@ public class AntennaConfHandler extends AbstractProcessor {
 
     private final List<AbstractProcessor> localProcessors = new ArrayList<>();
 
+    public AntennaConfHandler() {
+        this.workflowStepOrder = 0;
+    }
+
     @Override
     public void configure(Map<String, String> configMap) {
         IProcessingReporter processingReporter = context.getProcessingReporter();

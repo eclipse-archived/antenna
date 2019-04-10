@@ -49,6 +49,10 @@ import java.util.zip.ZipInputStream;
 public class ManifestResolver extends AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ManifestResolver.class);
 
+    public ManifestResolver() {
+        this.workflowStepOrder = 900;
+    }
+
     /**
      * Scans all file paths of the artifacts, if a jar file is found and
      * contains a Manifest file with bundle coordinates this coordinates are

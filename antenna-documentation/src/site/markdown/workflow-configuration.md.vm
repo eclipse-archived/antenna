@@ -99,6 +99,15 @@ The following example shows a workflow with one analyzer, one additional process
       </processors>
 </workflow>
 ```
+### Workflow order
+The order of workflow steps does not correspond to the order of definition in the workflow.
+Instead, each workflow step has a number assigned (`workflowStepOrder`), which determines their execution:
+Lower numbers will get executed first.
+
+The `workflowStepOrder` is a java short value. By default, a configurable workflow step will have a `workflowStepOrder` of 1000.
+A validator inheriting from `abstract-antenna-compliance-checker` will have a default `workflowStepOrder` of 10000 to ensure that validators run after enrichers.
+
+Warnings will be issued if two workflow steps have the same priority. In that case, the workflow steps will be executed in the order they were introduced in the workflow.
 
 #[[##]]# Configuring default workflow steps
 

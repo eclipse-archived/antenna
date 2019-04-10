@@ -29,6 +29,10 @@ public class CoordinatesValidator extends AbstractComplianceChecker {
 
     private IEvaluationResult.Severity missingCoordinatesSeverity;
 
+    public CoordinatesValidator() {
+        this.workflowStepOrder = 10100;
+    }
+
     @Override
     public IPolicyEvaluation evaluate(Collection<Artifact> artifacts) {
         DefaultPolicyEvaluation policyEvaluation = new DefaultPolicyEvaluation();

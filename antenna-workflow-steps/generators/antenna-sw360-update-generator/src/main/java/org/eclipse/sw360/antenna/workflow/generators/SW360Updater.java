@@ -38,6 +38,10 @@ public class SW360Updater extends AbstractGenerator {
     private String projectName;
     private String projectVersion;
 
+    public SW360Updater() {
+        this.workflowStepOrder = 1100;
+    }
+
     @Override
     public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
         SW360ProjectCoordinates configuredSW360Project = context.getConfiguration().getConfiguredSW360Project();

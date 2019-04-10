@@ -29,6 +29,10 @@ import java.util.stream.Collectors;
  */
 public class ConfigurationAnalyzer extends AbstractAnalyzer {
 
+    public ConfigurationAnalyzer() {
+        this.workflowStepOrder = 100;
+    }
+
     private List<Artifact> getConfiguredArtifacts(Configuration configuration, IProcessingReporter reporter) {
         return configuration.getAddArtifact()
                 .stream()

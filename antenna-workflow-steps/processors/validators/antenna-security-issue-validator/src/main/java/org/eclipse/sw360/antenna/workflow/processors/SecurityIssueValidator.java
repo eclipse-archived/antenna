@@ -44,6 +44,10 @@ public class SecurityIssueValidator extends AbstractComplianceChecker {
     private Map<ArtifactSelector, Issues> configuredSecurityIssues;
     private Map<String, Map<ArtifactSelector, GregorianCalendar>> suppressedSecurityIssues;
 
+    public SecurityIssueValidator() {
+        this.workflowStepOrder = 10400;
+    }
+
     public List<IEvaluationResult> validate(Artifact artifact) {
         List<Issue> configuredIssueList = configuredSecurityIssues.entrySet().stream()
                 .filter(entry -> entry.getKey().matches(artifact))

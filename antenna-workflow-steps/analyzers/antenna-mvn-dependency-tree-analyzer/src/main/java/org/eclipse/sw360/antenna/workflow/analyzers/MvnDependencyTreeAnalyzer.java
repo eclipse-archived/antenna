@@ -29,6 +29,10 @@ import java.util.stream.Collectors;
 
 public class MvnDependencyTreeAnalyzer extends AbstractAnalyzer {
 
+    public MvnDependencyTreeAnalyzer() {
+        this.workflowStepOrder = 400;
+    }
+
     @Override
     public WorkflowStepResult yield() {
 
