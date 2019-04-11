@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.util;
+package org.eclipse.sw360.antenna.jsonreader;
 
 import org.apache.commons.io.output.NullOutputStream;
 
