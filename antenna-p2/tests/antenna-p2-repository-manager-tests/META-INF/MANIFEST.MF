@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Antenna P2 Resolver Tests
 Bundle-SymbolicName: antenna-p2-repository-manager-tests;singleton:=true
 Bundle-Vendor: Eclipse Foundation
-Bundle-Version: 1.0.0.RC2
+Bundle-Version: 1.0.0.qualifier
 Eclipse-LazyStart: true
 Require-Bundle: antenna-p2-repository-manager;bundle-version="[1.0,2)",
  org.junit;bundle-version="4.12.0",
