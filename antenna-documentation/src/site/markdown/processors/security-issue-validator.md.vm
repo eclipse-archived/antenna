@@ -27,3 +27,8 @@ Add the following step into the `<processors>` section of your workflow.xml
 The possible statuses are **Open**, **Acknowledged**, **Not Applicable** and **Confirmed**.
 * `securityIssueSeverityLimit`: The limit for the validation of security issues with a given severity. All issues below the value will not be validated.
 * `ignoreSecurityIssueReferences`: A comma separated String with security issue references, which will be ignored during validation.
+
+### Suppressing Security Issues
+If you want individual security issues to be suppressed there is an option to add them to the `${docName}conf.xml`.
+There you can specify individual artifacts and one or more corresponding security issue to be suppressed by including a `suppress` block to the `securityIssues` block.  
+For more information on how to suppress artifacts with security issues see the **securityIssues** paragraph in the [`config.xml` configuration](../config-configuration.html) description. 
