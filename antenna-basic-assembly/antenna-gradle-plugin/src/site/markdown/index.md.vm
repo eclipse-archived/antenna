@@ -1,7 +1,7 @@
-# How to use in Gradle
+# How to use ${docNameCap} as a Gradle plugin
 
-For Gradle, ${docNameCap} is configured in an external configuration file, which is expected to have the same format as the plugin configuration of the `antenna-maven-plugin`.
-Please refer to the documentation of [the antenna-maven-plugin](../${docName}-maven-plugin/index.html).
+For Gradle, ${docNameCap} is configured in an external configuration file, which is expected to have the same format as the plugin configuration of the `${antennaMavenPluginName}`.
+Please refer to the documentation of [the ${antennaMavenPluginName}](../${docName}-maven-plugin/index.html).
 
 The plugin itself is configured in your `build.gradle` file by adding the following configuration.
 
@@ -10,32 +10,44 @@ buildscript{
     repositories {
         mavenLocal()
         mavenCentral()
+        ${antennaGradleRepoAddition}
     }
 
     dependencies {
-        classpath 'org.eclipse.sw360.antenna:antenna-gradle-plugin:VERSION'
+        classpath '${antennaMavenGroupId}:${antennaGradlePluginName}:VERSION'
     }
 }
 
-apply plugin: org.eclipse.sw360.antenna.gradle.AntennaBasicGradlePlugin
+apply plugin: ${antennaGradleJavaFilename}
 
 repositories {
     mavenLocal()
     mavenCentral()
 }
 
-AntennaConfiguration{
+${docNameCap}Configuration{
     pomPath 'pom.xml'
     debugEnabled = false
 }
 ```
 
-Note:
-For Gradle, Maven is optional.
+Some additional pointers:
+
+* For Gradle, Maven is optional.
 Should you choose to run ${docNameCap} without having the maven environment variable `M2_HOME` set, the mvn dependency tree plugin will not work.
 The result could possibly not include some information that could have been useful.
 If you choose to run ${docNameCap} with Maven, you need to set the maven environment variable (`M2_HOME` should be set to the maven executable) and add
 ```xml
 <isMavenInstalled>true</isMavenInstalled>
 ```
-to the ${docNameCap} configuration in the pom.xml.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to the ${docNameCap} configuration in the pom.xml.
+
+
+* All paths must be absolute.
+
+* For technical reasons variables / properties containing dots will in general not be rendered correctly
+
+    * No Maven variables can be used (except for `project.build.directory`, `project.build.outputDirectory` and `project.basedir`, since they have been added to the context).
+
+    * Properties with a dot in them, like `${system.password}` should be changed to `${systemPassword}` in order to be rendered.
+

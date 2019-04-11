@@ -26,7 +26,15 @@
         <copied.site.files.path>${generated.source.path}/markdown</copied.site.files.path>
         <docName>antenna</docName>
         <docNameCap>Antenna</docNameCap>
+        <docNameAllCap>ANTENNA</docNameAllCap>
         <skip.tests>true</skip.tests>
+        <antennaCliJavaFilename>org.eclipse.sw360.antenna.frontend.AntennaCLIFrontend</antennaCliJavaFilename>
+        <antennaMavenGroupId>org.eclipse.sw360.antenna</antennaMavenGroupId>
+        <antennaMavenPluginName>antenna-maven-plugin</antennaMavenPluginName>
+        <antennaGradlePluginName>antenna-gradle-plugin</antennaGradlePluginName>
+        <antennaGradleJavaFilename>org.eclipse.sw360.antenna.gradle.AntennaBasicGradlePlugin</antennaGradleJavaFilename>
+        <antennaGradleRepoAddition></antennaGradleRepoAddition>
+        <antennaDisclosureDocumentName>antenna-disclosure-document-bosch</antennaDisclosureDocumentName>
     </properties>
 
     <dependencies>
