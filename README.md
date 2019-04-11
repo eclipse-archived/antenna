@@ -1,4 +1,4 @@
-# osm-antenna-2.0
+# Antenna
 
 Antenna scans artifacts of a project, downloads sources for dependencies, 
 validates sources and licenses and creates:
