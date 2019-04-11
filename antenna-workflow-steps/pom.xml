@@ -9,7 +9,8 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
@@ -27,6 +28,7 @@
         <module>analyzers/antenna-json-analyzer</module>
         <module>analyzers/antenna-mvn-dependency-tree-analyzer</module>
         <module>analyzers/antenna-ort-result-analyzer</module>
+        <module>analyzers/antenna-conf-analyzer</module>
         <!-- processors -->
         <module>processors/antenna-conf-processor</module>
         <module>processors/abstract-antenna-compliance-checker</module>

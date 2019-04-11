@@ -75,15 +75,16 @@ public class BasicTestProject extends AbstractTestProjectWithExpectations implem
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationAnalyzers() {
-        WorkflowStep analyzer = mkWorkflowStep("Example Analyzer", "full.qualified.class.name",
+        final List<WorkflowStep> analyzers = BasicConfiguration.getAnalyzers();
+        analyzers.add(mkWorkflowStep("Example Analyzer", "full.qualified.class.name",
                 "configuration_key_1", "configuration_value_1",
-                "configuration_key_2", "configuration_value_2");
-        return Stream.of(analyzer).collect(Collectors.toList());
+                "configuration_key_2", "configuration_value_2"));
+        return analyzers;
     }
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
-        final List<WorkflowStep> generators = new BasicConfiguration().getGenerators(projectRoot.toString());
+        final List<WorkflowStep> generators = BasicConfiguration.getGenerators(projectRoot.toString());
         WorkflowStep generator1 = mkWorkflowStep("First Generator", "full.qualified.generator1.class.name",
                 "configuration_key_1", "configuration_value_1");
         generators.add(generator1);
@@ -94,7 +95,7 @@ public class BasicTestProject extends AbstractTestProjectWithExpectations implem
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
-        final List<WorkflowStep> processors = new BasicConfiguration().getProcessors();
+        final List<WorkflowStep> processors = BasicConfiguration.getProcessors();
         processors.add(
                 mkWorkflowStep("Arbitrary processor", "full.qualified.processor.class.name",
                         "configuration_key_1", "configuration_value_1"));

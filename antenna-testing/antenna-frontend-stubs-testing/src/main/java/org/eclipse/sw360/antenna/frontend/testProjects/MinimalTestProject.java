@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.frontend.testProjects;
 
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
+import sun.swing.BakedArrayList;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,17 +59,17 @@ public class MinimalTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationAnalyzers() {
-        return Collections.EMPTY_LIST;
+        return BasicConfiguration.getAnalyzers();
     }
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
-        return new BasicConfiguration().getGenerators(projectRoot.toString());
+        return BasicConfiguration.getGenerators(projectRoot.toString());
     }
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
-        return new BasicConfiguration().getProcessors();
+        return BasicConfiguration.getProcessors();
     }
 
     @Override

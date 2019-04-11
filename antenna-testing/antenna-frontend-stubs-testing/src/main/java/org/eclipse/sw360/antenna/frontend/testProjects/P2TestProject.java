@@ -77,20 +77,17 @@ public class P2TestProject extends AbstractTestProjectWithExpectations implement
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationAnalyzers() {
-        WorkflowStep analyzer = mkWorkflowStep("CSV Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer",
-                "base.dir", this.projectRoot.toString(),
-                "file.path", "src/dependencies.csv");
-        return Stream.of(analyzer).collect(Collectors.toList());
+        return BasicConfiguration.getAnalyzers();
     }
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
-        return new BasicConfiguration().getGenerators(projectRoot.toString());
+        return BasicConfiguration.getGenerators(projectRoot.toString());
     }
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
-        final List<WorkflowStep> processors = new BasicConfiguration().getProcessors();
+        final List<WorkflowStep> processors = BasicConfiguration.getProcessors();
         WorkflowStep enricher1 = mkWorkflowStep("P2 Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.P2Resolver",
                 "repositories", this.projectRoot.toString() + "/additional_p2_resources");
         processors.add(enricher1);

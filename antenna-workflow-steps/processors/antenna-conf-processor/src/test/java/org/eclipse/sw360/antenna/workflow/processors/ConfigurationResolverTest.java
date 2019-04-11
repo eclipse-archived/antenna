@@ -14,15 +14,11 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorAndSet;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
-import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
-import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerAdd;
 import org.eclipse.sw360.antenna.workflow.processors.filter.ConfigurationHandlerOverride;
 import org.eclipse.sw360.antenna.xml.XMLResolverJaxB;
 import org.junit.After;
@@ -123,23 +119,5 @@ public class ConfigurationResolverTest extends AntennaTestWithMockedContext {
     @Test
     public void forbiddenLicensesText() {
         assertThat(config.getFinalLicenses().size()).isEqualTo(1);
-    }
-
-    @Test
-    public void addArtifactsTest() {
-        ConfigurationHandlerAdd resolver = new ConfigurationHandlerAdd(antennaContextMock);
-
-        List<Artifact> artifacts = new ArrayList<>();
-        resolver.process(artifacts);
-
-        assertThat(artifacts.size()).isEqualTo(2);
-        assertThat(artifacts.get(0).getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY)).isFalse();
-        assertThat(artifacts.get(0).askFor(ArtifactMatchingMetadata.class).map(ArtifactMatchingMetadata::getMatchState).get()).isEqualTo(MatchState.EXACT);
-
-
-        final ArtifactSelectorAndSet selector = new ArtifactSelectorAndSet(new ArtifactFilename("addArtifact.jar"),
-                new MavenCoordinates("addArtifactId", "addGroupId", "addVersion"),
-                new BundleCoordinates("addSymbolicName", "addBundleVersion"));
-        assertThat(selector.matches(artifacts.get(0))).isTrue();
     }
 }
