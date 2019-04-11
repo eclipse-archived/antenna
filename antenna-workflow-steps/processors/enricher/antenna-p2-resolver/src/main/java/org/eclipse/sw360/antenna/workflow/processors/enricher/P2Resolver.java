@@ -15,11 +15,11 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.eclipse.sw360.antenna.p2resolver.ArtifactAttacher;
-import org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics;
-import org.eclipse.sw360.antenna.p2resolver.ProductInstaller;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.p2resolver.ArtifactAttacher;
+import org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics;
+import org.eclipse.sw360.antenna.p2resolver.P2RepositoryExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,8 +64,7 @@ public class P2Resolver extends AbstractProcessor {
         // We do P2 extraction by running an eclipse RCP product headless on the command line.
         // To find the product at runtime, it resides in the antenna-p2-resolver jar file and is extracted and
         // installed to a temporary location (the productInstallationArea)
-        ProductInstaller.create()
-                .installEclipseProductForP2Resolution(productInstallationArea.toString());
+        P2RepositoryExtractor.installEclipseProductForP2Resolution(productInstallationArea.toString());
 
         // The product is run as a subprocess. Output is captured and printed to the console.
         // To pass information to the product, we use command line arguments as described in the EclipseProcessBuilder.

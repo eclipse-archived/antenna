@@ -11,6 +11,8 @@
 
 package org.eclipse.sw360.antenna.drools;
 
+import org.eclipse.sw360.antenna.util.ZipExtractor;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -23,7 +25,7 @@ public final class InternalRulesExtractor {
     public static InternalRulesPackage extractRules(Path jarPath, Path extractionLocation) throws IOException {
         extractionLocation.toFile().mkdirs();
         File unzippedFile = extractionLocation.toFile();
-        ZipExtractor.extractAll(jarPath, unzippedFile);
+        ZipExtractor.extractAll(jarPath.toFile(), unzippedFile);
         return new InternalRulesPackage(unzippedFile);
     }
 }

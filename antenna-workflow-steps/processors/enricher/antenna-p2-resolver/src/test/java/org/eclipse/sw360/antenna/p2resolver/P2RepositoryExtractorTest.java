@@ -12,8 +12,6 @@
 package org.eclipse.sw360.antenna.p2resolver;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics;
-import org.eclipse.sw360.antenna.p2resolver.ProductInstaller;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -23,15 +21,14 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ProductInstallerTest {
+public class P2RepositoryExtractorTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void testProductInstallation() throws IOException, AntennaException {
-        ProductInstaller productInstaller = new ProductInstaller();
         File extractionPath = temporaryFolder.newFolder();
-        productInstaller.installEclipseProductForP2Resolution(extractionPath.toString());
+        P2RepositoryExtractor.installEclipseProductForP2Resolution(extractionPath.toString());
 
         // The product contains an eclipse launcher file which is just "eclipse"
         assertThat(OperatingSystemSpecifics.getEclipseExecutable(extractionPath)).exists();
