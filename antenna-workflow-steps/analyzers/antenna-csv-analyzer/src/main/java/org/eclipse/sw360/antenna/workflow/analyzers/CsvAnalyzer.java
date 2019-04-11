@@ -14,9 +14,8 @@ package org.eclipse.sw360.antenna.workflow.analyzers;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -27,10 +26,12 @@ import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CsvAnalyzer extends ManualAnalyzer {
@@ -42,30 +43,26 @@ public class CsvAnalyzer extends ManualAnalyzer {
     private static final String PATH_NAME = "File Name";
 
     @Override
-    public WorkflowStepResult yield() throws AntennaExecutionException {
+    public WorkflowStepResult yield() throws AntennaException {
         List<Artifact> artifacts = new ArrayList<>();
         List<CSVRecord> records = getRecords();
 
         for (CSVRecord record : records) {
-            MavenCoordinates coordinates = new MavenCoordinates(record.get(NAME),record.get(GROUP),record.get(VERSION));
+            MavenCoordinates coordinates = new MavenCoordinates(record.get(NAME), record.get(GROUP), record.get(VERSION));
 
             License license = new License();
             license.setName(record.get(LICENSE_SHORT_NAME));
             license.setLongName(record.get(LICENSE_LONG_NAME));
 
-            String[] pathNames = new String[] { record.get(PATH_NAME) };
-            pathNames = Arrays.stream(pathNames).map(path -> Paths.get(path)).map(path -> {
-                if (path.isAbsolute()) {
-                    return path.toString();
-                } else {
-                    return baseDir.resolve(path).toAbsolutePath().toString();
-                }
-            }).toArray(String[]::new);
+            String pathName = record.get(PATH_NAME);
+            String absolutePathName = Paths.get(pathName).isAbsolute()
+                    ? Paths.get(pathName).toString()
+                    : baseDir.resolve(Paths.get(pathName)).toAbsolutePath().toString();
 
             Artifact artifact = new Artifact(getName())
                     .addFact(coordinates)
                     .addFact(new DeclaredLicenseInformation(license))
-                    .addFact(new ArtifactPathnames(pathNames))
+                    .addFact(new ArtifactPathnames(absolutePathName))
                     .addFact(new ArtifactMatchingMetadata(MatchState.EXACT));
 
             artifacts.add(artifact);
@@ -74,26 +71,22 @@ public class CsvAnalyzer extends ManualAnalyzer {
         return new WorkflowStepResult(artifacts, true);
     }
 
-    private List<CSVRecord> getRecords() throws AntennaExecutionException {
+    private List<CSVRecord> getRecords() throws AntennaException {
         CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader();
         String filename = componentInfoFile.getAbsolutePath();
-        Reader fileReader;
-        CSVParser csvParser = null;
         List<CSVRecord> records;
         ToolConfiguration toolConfig = context.getToolConfiguration();
 
-        try {
-            fileReader = new InputStreamReader(new FileInputStream(filename), toolConfig.getEncoding());
-            csvParser = new CSVParser(fileReader, csvFormat);
+        try (FileInputStream fs = new FileInputStream(filename);
+             InputStreamReader isr = new InputStreamReader(fs, toolConfig.getEncoding());
+             CSVParser csvParser = new CSVParser(isr, csvFormat)) {
             records = csvParser.getRecords();
         } catch (FileNotFoundException e) {
-            throw new AntennaExecutionException(
+            throw new AntennaException(
                     "Antenna is configured to read a CSV configuration file (" + filename + "), but the file wasn't found",
                     e);
         } catch (IOException e) {
-            throw new AntennaExecutionException("Error when attempting to parse CSV configuration file: " + filename, e);
-        } finally {
-            IOUtils.closeQuietly(csvParser);
+            throw new AntennaException("Error when attempting to parse CSV configuration file: " + filename, e);
         }
 
         return records;
