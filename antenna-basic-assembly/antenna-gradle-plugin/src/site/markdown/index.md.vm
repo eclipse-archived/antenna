@@ -51,3 +51,22 @@ If you choose to run ${docNameCap} with Maven, you need to set the maven environ
 
     * Properties with a dot in them, like `${system.password}` should be changed to `${systemPassword}` in order to be rendered.
 
+#[[##]]# Adding workflow steps and plugins
+
+It is possible to use workflow steps, knowledge-bases, etc. also if they are not referenced in the assembly.
+To do this, the jars need to be added as dependencies to the plugin step of Gradle.
+If you have a custom plugin `my-custom-plugin` with groupId `org.mycompany.plugin`, artifactId `my-custom-plugin` and version `VERSION`, modify the `buildscript` part within `build.gradle` as follows:
+
+```groovy
+buildscript{
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.eclipse.sw360.antenna:antenna-gradle-plugin:VERSION'
+        classpath 'org.mycompany.plugin:my-custom-plugin:VERSION'
+    }
+}
+```

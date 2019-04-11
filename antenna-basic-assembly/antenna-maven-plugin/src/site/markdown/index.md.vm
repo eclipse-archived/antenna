@@ -51,16 +51,16 @@ install the ${docNameCap} plugin, something like this:
 </dependency>
 ```
 
-#[[##]]# Adding a rules engine
+#[[##]]# Adding workflow steps and plugins
 
-If you want to use a rule engine to validate your artifacts, you can
-install a rule engine module by adding a dependency to your project's 
-pom.xml file where you install the ${docNameCap} plugin, something like this: 
+It is possible to use workflow steps, knowledge-bases, etc. also if they are not referenced in the assembly.
+To do this, the jars need to be added as a dependency for the build.
+If you have a custom plugin `my-custom-plugin` with groupId `org.mycompany.plugin`, artifactId `my-custom-plugin` and version `VERSION`, modify the `buildscript` part within `build.gradle` as follows:
 
 ```xml
 <dependency>
-    <groupId>org.eclipse.sw360.antenna.rules</groupId>
-    <artifactId>simple-rule-engine</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>org.mycompany.plugin</groupId>
+    <artifactId>my-custom-plugin</artifactId>
+    <version>VERSION</version>
 </dependency>
 ```
