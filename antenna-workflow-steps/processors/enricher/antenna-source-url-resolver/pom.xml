@@ -42,11 +42,6 @@
 		</dependency>
 		<!-- ################################ testing dependencies ################################ -->
 		<dependency>
-			<groupId>org.codehaus.plexus</groupId>
-			<artifactId>plexus-utils</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.eclipse.sw360.antenna</groupId>
 			<artifactId>antenna-core-common-testing</artifactId>
 			<version>${project.version}</version>
