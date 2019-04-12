@@ -28,7 +28,7 @@ public interface IEvaluationResult {
         public static Severity fromValue(String v) {
             return valueOf(v);
         }
-    };
+    }
 
     /**
      * @return ID of the evaluated rule.

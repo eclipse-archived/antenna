@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.p2;
 
-import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;

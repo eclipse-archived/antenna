@@ -62,14 +62,18 @@ public final class ProjectArgumentExtractor {
     }
 
     private static void extractArgument(String argumentKey, String argument, ProjectArguments projectArguments) throws P2Exception {
-        if (argumentKey.equals(DOWNLOAD_AREA)) {
-            extractDownloadArea(projectArguments, argument);
-        } else if (argumentKey.equals(REPOSITORIES)) {
-            extractRepositories(projectArguments, argument);
-        } else if (argumentKey.equals(ARTIFACTS)) {
-            extractArtifacts(projectArguments, argument);
-        } else {
-            throw new P2Exception("Unrecognized argument: " + argumentKey);
+        switch (argumentKey) {
+            case DOWNLOAD_AREA:
+                extractDownloadArea(projectArguments, argument);
+                break;
+            case REPOSITORIES:
+                extractRepositories(projectArguments, argument);
+                break;
+            case ARTIFACTS:
+                extractArtifacts(projectArguments, argument);
+                break;
+            default:
+                throw new P2Exception("Unrecognized argument: " + argumentKey);
         }
     }
 

@@ -18,5 +18,5 @@ public enum DataKeys {
     PROPRIETARY,
     MATCH_STATE,
     COORDINATES,
-    SECURITY_ISSUE;
+    SECURITY_ISSUE
 }

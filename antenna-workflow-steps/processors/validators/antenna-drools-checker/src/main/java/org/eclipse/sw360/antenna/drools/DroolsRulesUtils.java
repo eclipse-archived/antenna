@@ -29,7 +29,7 @@ public final class DroolsRulesUtils {
     public static boolean isLicenseInFinalLicenses(Artifact artifact, String licenseId) {
         return ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses().stream()
                 .map(License::getName)
-                .anyMatch(l -> licenseId.equals(l));
+                .anyMatch(licenseId::equals);
     }
 
     public static boolean isThreatGroupInArtifact(Artifact artifact, LicenseThreatGroup threatGroup) {
@@ -44,7 +44,7 @@ public final class DroolsRulesUtils {
 
     public static boolean isMissingLicenseInformationInArtifact(Artifact artifact, MissingLicenseReasons reason) {
         return artifact.askFor(MissingLicenseInformation.class)
-                .map(s -> s.getMissingLicenseReasons())
+                .map(MissingLicenseInformation::getMissingLicenseReasons)
                 .orElse(Collections.emptyList())
                 .stream()
                 .anyMatch(r -> r.equals(reason));
@@ -65,7 +65,7 @@ public final class DroolsRulesUtils {
 
     public static boolean isMatchStateInArtifact(Artifact artifact, MatchState matchState) {
         return artifact.askFor(ArtifactMatchingMetadata.class)
-                .map(a -> a.getMatchState())
+                .map(ArtifactMatchingMetadata::getMatchState)
                 .orElse(MatchState.UNKNOWN)
                 .equals(matchState);
     }

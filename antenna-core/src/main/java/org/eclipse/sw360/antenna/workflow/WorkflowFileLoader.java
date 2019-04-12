@@ -14,9 +14,9 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
-import org.eclipse.sw360.antenna.xml.XMLValidator;
 import org.eclipse.sw360.antenna.util.TemplateRenderer;
 import org.eclipse.sw360.antenna.util.XmlSettingsReader;
+import org.eclipse.sw360.antenna.xml.XMLValidator;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;

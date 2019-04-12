@@ -220,7 +220,7 @@ public class JsonReader {
             return new String[]{};
         }
 
-        Stream<String> targetStream = StreamSupport.stream(jPathNames.spliterator(), false).map(Object::toString);
+        Stream<String> targetStream = jPathNames.stream().map(Object::toString);
         return targetStream.map(path -> Paths.get(path)).map(path -> {
             if (!path.isAbsolute()) {
                 return dependencyDir.resolve(path).toString();

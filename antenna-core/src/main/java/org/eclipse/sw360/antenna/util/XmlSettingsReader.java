@@ -28,6 +28,7 @@ import javax.xml.xpath.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
 
@@ -49,7 +50,7 @@ public class XmlSettingsReader {
      */
     public XmlSettingsReader(String xmlString) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilder dBuilder = initDocumentBuilder();
-        this.doc = dBuilder.parse(new ByteArrayInputStream(xmlString.getBytes("UTF-8")));
+        this.doc = dBuilder.parse(new ByteArrayInputStream(xmlString.getBytes(StandardCharsets.UTF_8)));
         doc.getDocumentElement().normalize();
         xpath = initXPath();
     }

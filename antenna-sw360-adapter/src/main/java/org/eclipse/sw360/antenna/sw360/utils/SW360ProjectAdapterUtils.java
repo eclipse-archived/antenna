@@ -13,7 +13,6 @@ package org.eclipse.sw360.antenna.sw360.utils;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Visibility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectType;
-import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
 
 public class SW360ProjectAdapterUtils {
     public static void setDescription(SW360Project project, String mvnDescription) {

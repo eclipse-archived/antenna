@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.sw360.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
@@ -122,7 +121,7 @@ public class SW360ProjectClientTest {
 
         List<SW360Project> projectsList;
         projectsList = client.searchByName(searchName, new HttpHeaders());
-        Supplier<Stream<SW360Project>> streamSupplier = () -> projectsList.stream();
+        Supplier<Stream<SW360Project>> streamSupplier = projectsList::stream;
 
         assertEquals(2, projectsList.size());
         assertTrue(streamSupplier

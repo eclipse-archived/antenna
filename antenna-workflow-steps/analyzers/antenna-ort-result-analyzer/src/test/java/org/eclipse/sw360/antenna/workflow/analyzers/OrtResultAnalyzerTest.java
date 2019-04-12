@@ -22,7 +22,6 @@ import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -31,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -92,14 +92,14 @@ public class OrtResultAnalyzerTest {
                 map(artifact -> artifact.askForGet(ArtifactSourceUrl.class)).
                 filter(Optional::isPresent).
                 map(Optional::get).
-                filter(s -> s != "").
+                filter(s -> !Objects.equals(s, "")).
                 collect(Collectors.toList())).hasSize(1);
 
         assertThat(artifacts.stream().
                 map(artifact -> artifact.askForGet(ArtifactSourceUrl.class)).
                 filter(Optional::isPresent).
                 map(Optional::get).
-                filter(s -> s != "").
+                filter(s -> !Objects.equals(s, "")).
                 collect(Collectors.toList())).contains("https:/some.jar");
     }
 
@@ -196,7 +196,7 @@ public class OrtResultAnalyzerTest {
                 map(artifact -> artifact.askForGet(ArtifactSourceUrl.class)).
                 filter(Optional::isPresent).
                 map(Optional::get).
-                filter(s -> s != "").
+                filter(s -> !Objects.equals(s, "")).
                 collect(Collectors.toList())).hasSize(0);
     }
 }

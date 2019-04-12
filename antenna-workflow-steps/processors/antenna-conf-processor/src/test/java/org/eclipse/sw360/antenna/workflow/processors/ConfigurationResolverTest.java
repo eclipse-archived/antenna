@@ -30,6 +30,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +63,7 @@ public class ConfigurationResolverTest extends AntennaTestWithMockedContext {
     @Before
     public void init() throws AntennaConfigurationException {
         File xmlFile = getResourceAsFile("antennaconf.xml");
-        XMLResolverJaxB resolverXML = new XMLResolverJaxB(Charset.forName("UTF-8"));
+        XMLResolverJaxB resolverXML = new XMLResolverJaxB(StandardCharsets.UTF_8);
         AntennaConfig antennaConfig = resolverXML.resolveXML(xmlFile);
         config = new Configuration(antennaConfig);
         when(antennaContextMock.getConfiguration())

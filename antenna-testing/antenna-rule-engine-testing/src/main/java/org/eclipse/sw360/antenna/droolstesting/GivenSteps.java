@@ -13,14 +13,19 @@ package org.eclipse.sw360.antenna.droolstesting;
 
 import cucumber.api.java.en.Given;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIssues;
+import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
+import org.eclipse.sw360.antenna.model.artifact.facts.MissingLicenseInformation;
+import org.eclipse.sw360.antenna.model.artifact.facts.MissingLicenseReasons;
 import org.eclipse.sw360.antenna.model.xml.generated.Issue;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.eclipse.sw360.antenna.droolstesting.Mappings.*;
 

@@ -103,7 +103,7 @@ public class AntennaWorkflow {
                 .collect(Collectors.toSet());
         if(collidingKeys.size() > 0) {
             LOGGER.warn("The generator " + sink.getWorkflowItemName() + " overwrites the generated output with the keys:\n\t"
-                    + collidingKeys.stream().collect(Collectors.joining(", ")));
+                    + String.join(", ", collidingKeys));
         }
     }
 

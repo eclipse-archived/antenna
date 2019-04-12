@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.frontend.testProjects;
 
-import com.google.common.collect.ImmutableMap;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;

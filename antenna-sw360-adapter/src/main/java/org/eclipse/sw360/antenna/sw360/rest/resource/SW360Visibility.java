@@ -16,7 +16,7 @@ public enum SW360Visibility {
 
     private final int value;
 
-    private SW360Visibility(int value) {
+    SW360Visibility(int value) {
         this.value = value;
     }
 

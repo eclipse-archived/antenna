@@ -66,7 +66,7 @@ public class TemplateRendererTest {
 	private TemplateRenderer mkTemplateRendererWithPropertiesMap(Map<String,String> properties) {
 		return new TemplateRenderer(properties.entrySet().stream()
 				.collect(Collectors.toMap(
-						e -> e.getKey(),
+						Map.Entry::getKey,
 						e -> (Object) e.getValue())));
 	}
 

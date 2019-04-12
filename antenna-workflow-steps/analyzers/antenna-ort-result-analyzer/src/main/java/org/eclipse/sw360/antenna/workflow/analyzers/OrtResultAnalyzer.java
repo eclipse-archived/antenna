@@ -10,40 +10,28 @@
  */
 package org.eclipse.sw360.antenna.workflow.analyzers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.GenericArtifactCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
-import org.eclipse.sw360.antenna.model.artifact.facts.CopyrightStatement;
-import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
-import org.eclipse.sw360.antenna.model.artifact.facts.ObservedLicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.StreamSupport;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OrtResultAnalyzer extends ManualAnalyzer {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrtResultAnalyzer.class);

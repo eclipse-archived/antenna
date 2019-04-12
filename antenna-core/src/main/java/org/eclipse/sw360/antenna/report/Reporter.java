@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -47,7 +48,7 @@ public class Reporter implements IProcessingReporter {
     private final Path reportPath;
 
     public Reporter(Path targetDirectory) {
-        this(targetDirectory, Charset.forName("UTF-8"));
+        this(targetDirectory, StandardCharsets.UTF_8);
     }
 
     /**
@@ -160,17 +161,6 @@ public class Reporter implements IProcessingReporter {
     public void add(ProcessingMessage msg) {
         this.report.add(msg);
     }
-
-    /**
-     * Creates a new ProcessingMessage and adds it to the report.
-     *
-     * @param licenseName
-     *            Name of the license to which the message refers to.
-     * @param type
-     *            Describes the content of the message.
-     * @param message
-     *            Message that describes the cause of the ProcessingMessage.
-     */
 
     /**
      * Creates the path to which the report will be written to.

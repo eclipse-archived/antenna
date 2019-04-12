@@ -83,13 +83,8 @@ public class ProcessingMessage {
             return false;
         }
         if (message == null) {
-            if (other.message != null) {
-                return false;
-            }
-        } else if (!message.equals(other.message)) {
-            return false;
-        }
-        return true;
+            return other.message == null;
+        } else return message.equals(other.message);
     }
     // CSON
 }

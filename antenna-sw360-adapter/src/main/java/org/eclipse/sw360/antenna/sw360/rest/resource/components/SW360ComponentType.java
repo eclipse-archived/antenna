@@ -15,7 +15,7 @@ public enum SW360ComponentType {
 
     private final int value;
 
-    private SW360ComponentType(int value) {
+    SW360ComponentType(int value) {
         this.value = value;
     }
 

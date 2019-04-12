@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.drools;
 
-import org.eclipse.sw360.antenna.drools.DroolsRuleFolderVisitor;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -111,7 +112,7 @@ class AntennaCLISettingsReader {
     private void setVersionFromPom(DefaultProject project) {
         File pomFile = project.getConfigFile();
         try {
-            String pom = FileUtils.readFileToString(pomFile);
+            String pom = FileUtils.readFileToString(pomFile, StandardCharsets.UTF_8);
             XmlSettingsReader reader = new XmlSettingsReader(pom);
             String version = reader.getStringPropertyByXPath("project", "version");
             if(version != null && !"".equals(version)){

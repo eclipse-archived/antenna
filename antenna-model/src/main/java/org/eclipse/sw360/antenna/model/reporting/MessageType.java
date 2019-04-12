@@ -120,5 +120,5 @@ public enum MessageType {
     /**
      * Rule engine has reported an INFO, WARN or FAIL.
      */
-    RULE_ENGINE;
+    RULE_ENGINE
 }

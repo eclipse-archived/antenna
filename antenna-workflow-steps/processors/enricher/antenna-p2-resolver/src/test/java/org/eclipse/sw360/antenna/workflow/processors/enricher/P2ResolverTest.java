@@ -20,9 +20,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.io.File;

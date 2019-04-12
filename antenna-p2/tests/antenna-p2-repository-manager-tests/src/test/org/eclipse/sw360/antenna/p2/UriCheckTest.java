@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.p2;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;

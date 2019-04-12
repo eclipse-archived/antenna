@@ -15,7 +15,6 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.MissingLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.Issue;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
@@ -26,7 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,7 +40,7 @@ public class JsonReaderTest {
     @Test
     public void testMapLicenses() throws URISyntaxException, IOException {
         Path recordFilePath = Paths.get(".", "target", "foo");
-        JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), Charset.forName("UTF-8"));
+        JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), StandardCharsets.UTF_8);
         URI uri = this.getClass().getClassLoader().getResource("data.json").toURI();
         InputStream iStream = Files.newInputStream(Paths.get(uri));
         artifacts = jsonReader.createArtifactsList(iStream);
@@ -51,7 +50,7 @@ public class JsonReaderTest {
     @Test
     public void testMappingAdditionalInformationForLicenses() throws URISyntaxException, IOException {
         Path recordFilePath = Paths.get(".", "target", "foo");
-        JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), Charset.forName("UTF-8"));
+        JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), StandardCharsets.UTF_8);
         URI uri = this.getClass().getClassLoader().getResource("data.json").toURI();
         InputStream iStream = Files.newInputStream(Paths.get(uri));
         artifacts = jsonReader.createArtifactsList(iStream);
@@ -64,7 +63,7 @@ public class JsonReaderTest {
     @Test
     public void testParseData2() throws URISyntaxException, IOException {
         Path recordFilePath = Paths.get(".", "target", "foo");
-        JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), Charset.forName("UTF-8"));
+        JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), StandardCharsets.UTF_8);
         URI uri = this.getClass().getClassLoader().getResource("data2.json").toURI();
         InputStream iStream = Files.newInputStream(Paths.get(uri));
 
@@ -96,7 +95,7 @@ public class JsonReaderTest {
     @Test
     public void testMapCoordinates() throws URISyntaxException, IOException {
         Path recordFilePath = Paths.get(".", "target", "foo");
-        JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), Charset.forName("UTF-8"));
+        JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), StandardCharsets.UTF_8);
         URI uri = this.getClass().getClassLoader().getResource("data3.json").toURI();
         InputStream iStream = Files.newInputStream(Paths.get(uri));
         artifacts = jsonReader.createArtifactsList(iStream);
