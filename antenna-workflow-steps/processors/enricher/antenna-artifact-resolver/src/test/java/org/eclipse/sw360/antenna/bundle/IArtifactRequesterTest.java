@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,8 +25,8 @@ public class IArtifactRequesterTest extends AntennaTestWithMockedContext {
 
     private IArtifactRequester artifactRequester = new IArtifactRequester(antennaContextMock) {
         @Override
-        public File requestFile(MavenCoordinates coordinates, Path targetDirectory, boolean isSource) {
-            return null;
+        public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation) {
+            return Optional.empty();
         }
     };
     private MavenCoordinates mavenCoordinates;
@@ -37,7 +38,7 @@ public class IArtifactRequesterTest extends AntennaTestWithMockedContext {
 
     @Test
     public void getExpectedJarBaseNameTest() {
-        final String expectedJarBaseName = artifactRequester.getExpectedJarBaseName(mavenCoordinates, false);
+        final String expectedJarBaseName = artifactRequester.getExpectedJarBaseName(mavenCoordinates, ClassifierInformation.DEFAULT_JAR);
         assertThat(expectedJarBaseName).endsWith(MavenInvokerRequester.JAR_EXTENSION);
         assertThat(expectedJarBaseName).contains(mavenCoordinates.getArtifactId());
         assertThat(expectedJarBaseName).contains(mavenCoordinates.getVersion());
@@ -46,8 +47,8 @@ public class IArtifactRequesterTest extends AntennaTestWithMockedContext {
 
     @Test
     public void getExpectedJarBaseNameTestSource() {
-        final String expectedJarBaseName = artifactRequester.getExpectedJarBaseName(mavenCoordinates, true);
-        assertThat(expectedJarBaseName).endsWith(MavenInvokerRequester.SOURCES_JAR_EXTENSION);
+        final String expectedJarBaseName = artifactRequester.getExpectedJarBaseName(mavenCoordinates, ClassifierInformation.DEFAULT_SOURCE_JAR);
+        assertThat(expectedJarBaseName).endsWith("-sources" + MavenInvokerRequester.JAR_EXTENSION);
         assertThat(expectedJarBaseName).contains(mavenCoordinates.getArtifactId());
         assertThat(expectedJarBaseName).contains(mavenCoordinates.getVersion());
         assertThat(expectedJarBaseName).doesNotContain("/");

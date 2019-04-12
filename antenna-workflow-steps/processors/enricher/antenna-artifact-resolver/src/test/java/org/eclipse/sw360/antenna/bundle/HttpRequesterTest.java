@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -25,10 +25,13 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.setVariableValueInObject;
 import static org.mockito.Mockito.*;
 
@@ -39,71 +42,62 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
 
     private ToolConfiguration toolConfigMock = Mockito.mock(ToolConfiguration.class);
     private HttpHelper httpHelperMock = Mockito.mock(HttpHelper.class);
-
     private HttpRequester hr;
-    
     private MavenCoordinates mavenCoordinates;
-
-    private boolean isSource;
+    private ClassifierInformation classifierInformation;
 
     @Parameterized.Parameters(name = "{index}: isSource={0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {{false}, {true}});
+        return Arrays.asList(new Object[][]{{ClassifierInformation.DEFAULT_JAR}, {ClassifierInformation.DEFAULT_SOURCE_JAR}});
     }
 
-    public HttpRequesterTest(boolean isSource) {
-        this.isSource = isSource;
+    public HttpRequesterTest(ClassifierInformation classifierInformation) {
+        this.classifierInformation = classifierInformation;
     }
-
 
     @Before
     public void before() throws Exception {
-        String sourceRepositoryUrl = "http://test.repo" 
-                + "/" + HttpRequester.GROUP_ID_PLACEHOLDER 
-                + "/" + HttpRequester.ARTIFACT_ID_PLACEHOLDER 
-                + "/" + HttpRequester.VERSION_PLACEHOLDER + "/";
-
+        this.baseBefore();
         mavenCoordinates = new MavenCoordinates("artifactId", "groupId", "version");
 
 
-        when(toolConfigMock.getSourcesRepositoryUrl())
-                .thenReturn(sourceRepositoryUrl);
         when(toolConfigMock.getAntennaTargetDirectory())
                 .thenReturn(temporaryFolder.newFolder("target").toPath());
         when(antennaContextMock.getToolConfiguration())
                 .thenReturn(toolConfigMock);
 
-        hr = new HttpRequester(antennaContextMock);
+        hr = new HttpRequester(antennaContextMock, new URL("http://test.repo"));
         setVariableValueInObject(hr, "httpHelper", httpHelperMock);
     }
-        
+
     @Test
     public void requestFileUsesTheCorrectUrl() throws Exception {
         Path targetDirectory = toolConfigMock.getAntennaTargetDirectory();
 
-        hr.requestFile(mavenCoordinates, targetDirectory, isSource);
+        hr.requestFile(mavenCoordinates, targetDirectory, classifierInformation);
 
-        String filename = "artifactId-version" + (isSource ? "-sources" : "") + ".jar";
+        String filename = "artifactId-version" + (classifierInformation.isSource ? "-sources" : "") + ".jar";
         verify(httpHelperMock).downloadFile("http://test.repo/groupId/artifactId/version/" + filename, targetDirectory, filename);
     }
 
-    @Test(expected = IOException.class)
-    public void requestFilePassesThroughExceptions() throws Exception {
+    @Test
+    public void requestFileDealsWithExceptionReturningAnEmptyRequest() throws Exception {
         Path targetDirectory = toolConfigMock.getAntennaTargetDirectory();
         when(httpHelperMock.downloadFile(anyString(), eq(targetDirectory), anyString())).thenThrow(new IOException("Failed to download"));
 
-        hr.requestFile(mavenCoordinates, targetDirectory, isSource);
+        Optional<File> file = hr.requestFile(mavenCoordinates, targetDirectory, classifierInformation);
+        assertThat(file).isEmpty();
     }
 
     @Test
     public void requestFileDoesNotDownloadIfFileExists() throws Exception {
         Path targetDirectory = toolConfigMock.getAntennaTargetDirectory();
-        String filename = "artifactId-version" + (isSource ? "-sources" : "") + ".jar";
+        String filename = "artifactId-version" + (classifierInformation.isSource ? "-sources" : "") + ".jar";
         File expectedFile = new File(targetDirectory.toFile(), filename);
 
         new FileOutputStream(expectedFile).close();
 
-        hr.requestFile(mavenCoordinates, targetDirectory, isSource);
+        hr.requestFile(mavenCoordinates, targetDirectory, classifierInformation);
 
         verify(httpHelperMock, never()).downloadFile(anyString(), eq(targetDirectory), anyString());
     }

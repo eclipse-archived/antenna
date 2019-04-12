@@ -65,7 +65,8 @@ Defaults is false for Gradle and CLI.
 For Maven it the variable is ignored.
 * `${docName}TargetDirectory`: *(optional)* The folder where the documents created by ${docNameCap} are stored.
 Defaults to a folder called ${docNameCap} inside the build folder of the project.
-* `sourcesRepositoryUrl`: *(deprecated)* Is already ignored by the project.
+* `sourcesRepositoryUrl`: *(deprecated)* This option once allowed to set another remote repository address
+However, in the current version it does not do anything and will be removed soon.
 
 **Related to attaching artifacts**
 

@@ -50,7 +50,7 @@ public class ChildJarResolver extends AbstractProcessor {
         for (Artifact artifact : artifacts) {
             final Optional<List<String>> pathnames = artifact.askForGet(ArtifactPathnames.class);
             boolean hasPathnames = pathnames.isPresent() && ! pathnames.get().isEmpty();
-            boolean hasSources = artifact.askForGet(ArtifactSourceFile.class).isPresent();
+            boolean hasSources = artifact.getSourceFile().isPresent();
             if (!hasSources && hasPathnames) {
                 String firstPath = pathnames.get().get(0);
 
@@ -60,7 +60,7 @@ public class ChildJarResolver extends AbstractProcessor {
                 }
             } else if (hasPathnames && !hasSources) {
                 this.reporter.add(artifact, MessageType.MISSING_PATHNAME,
-                        "As Artifact has no Pathnames, the Manifest file could not be resolved and no bundle coordinates were found.");
+                        "An Artifact has no Pathnames, the Manifest file could not be resolved and no bundle coordinates were found.");
             }
         }
     }
@@ -88,7 +88,7 @@ public class ChildJarResolver extends AbstractProcessor {
                     LOGGER.warn(e.getMessage());
                     reporter.add(artifactWithinSomeOtherJar,
                             MessageType.PROCESSING_FAILURE,
-                            "An exeption occured while Child Source resolving:" + e.getMessage());
+                            "An exception occurred while Child Source resolving:" + e.getMessage());
                 }
             }
         }

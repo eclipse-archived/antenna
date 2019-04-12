@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+ * Copyright (c) Bosch Software Innovations GmbH 2016-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -15,6 +15,7 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.utils.cli.CommandLineException;
 import org.eclipse.sw360.antenna.api.IProject;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
@@ -30,6 +31,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,7 +54,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
     private MavenCoordinates mavenCoordinates;
 
     @Before
-    public void before() throws IOException {
+    public void before() throws IOException, AntennaException {
         mavenCoordinates = new MavenCoordinates("artifactId","groupId","version");
 
         System.setProperty("maven.home", temporaryFolder.newFolder("m2").toString());
@@ -62,7 +64,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
         Mockito.when(antennaContextMock.getProject())
                 .thenReturn(projectMock);
 
-        mir = new MavenInvokerRequester(antennaContextMock, defaultInvokerMock);
+        mir = new MavenInvokerRequester(antennaContextMock, defaultInvokerMock, Optional.empty());
     }
 
     @After
@@ -94,7 +96,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
     public void requestFileTestThatRequestIsComposedCorrectly() throws Exception {
         Path targetDirectory = temporaryFolder.newFolder("target").toPath();
 
-        final String expectedJarBaseName = mir.getExpectedJarBaseName(mavenCoordinates, false);
+        final String expectedJarBaseName = mir.getExpectedJarBaseName(mavenCoordinates, ClassifierInformation.DEFAULT_JAR);
         File expectedJarFile = new File(targetDirectory.toFile(), expectedJarBaseName);
 
         Mockito.when(defaultInvokerMock.execute(ArgumentMatchers.any(InvocationRequest.class)))
@@ -106,11 +108,11 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
                     return getDummyInvocationResult(0);
                 });
 
-        File resultFile = mir.requestFile(mavenCoordinates, targetDirectory, false);
+        Optional<File> resultFile = mir.requestFile(mavenCoordinates, targetDirectory, ClassifierInformation.DEFAULT_JAR);
 
         Mockito.verify(defaultInvokerMock).execute(captor.capture());
 
-        assertThat(resultFile).isEqualTo(expectedJarFile);
+        assertThat(resultFile.get()).isEqualTo(expectedJarFile);
         InvocationRequest invocationRequest = captor.getValue();
         Collection<String> goals = invocationRequest.getGoals();
 
@@ -121,19 +123,20 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
         assertThat(goals).filteredOn(s -> s.contains(targetDirectory.toString())).hasSize(1);
     }
 
-    @Test(expected = MavenArtifactDoesNotExistException.class)
-    public void requestFileTestThatRecognizeNonExistingArtifact() throws Exception {
+    @Test
+    public void requestFileRecognizesNonExistingArtifactReturningAnEmptyOptional() throws Exception {
         Path targetDirectory = temporaryFolder.newFolder("target").toPath();
         Mockito.when(defaultInvokerMock.execute(ArgumentMatchers.any(InvocationRequest.class)))
                 .thenReturn(getDummyInvocationResult(0));
-        mir.requestFile(mavenCoordinates, targetDirectory, false);
+        Optional<File> requestResult = mir.requestFile(mavenCoordinates, targetDirectory, ClassifierInformation.DEFAULT_JAR);
+        assertThat(requestResult).isEmpty();
     }
 
-    @Test(expected = MavenArtifactDoesNotExistException.class)
-    public void requestFileTestThatHandlesReturnCodes() throws Exception {
+    @Test
+    public void requestFileOnNonzeroReturnCodeReturnsEmptyOptional() throws Exception {
         Path targetDirectory = temporaryFolder.newFolder("target").toPath();
 
-        final String expectedJarBaseName = mir.getExpectedJarBaseName(mavenCoordinates, false);
+        final String expectedJarBaseName = mir.getExpectedJarBaseName(mavenCoordinates, ClassifierInformation.DEFAULT_JAR);
         File expectedJarFile = new File(targetDirectory.toFile(), expectedJarBaseName);
 
         Mockito.when(defaultInvokerMock.execute(ArgumentMatchers.any(InvocationRequest.class)))
@@ -144,6 +147,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
                     // return dummy result
                     return getDummyInvocationResult(1);
                 });
-        mir.requestFile(mavenCoordinates, targetDirectory, false);
+        Optional<File> requestResult = mir.requestFile(mavenCoordinates, targetDirectory, ClassifierInformation.DEFAULT_JAR);
+        assertThat(requestResult).isEmpty();
     }
 }

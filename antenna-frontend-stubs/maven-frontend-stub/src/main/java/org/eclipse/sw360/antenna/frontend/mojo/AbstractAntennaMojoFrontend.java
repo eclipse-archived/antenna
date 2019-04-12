@@ -288,7 +288,6 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
                 .setVersion(version).setScanDir(scanDir)
                 .setSkipAntennaExecution(skip)
                 .setMavenInstalled(true)  // when using the maven plugin, maven is surely available
-                .setSourcesRepositoryUrl(sourcesRepositoryUrl).setCompanyName(companyName)
                 .setCopyrightHoldersName(copyrightHoldersName).setCopyrightNotice(copyrightNotice)
                 .setDisclosureDocumentNotes(disclosureDocumentNotes).setWorkflow(finalWorkflow)
                 .setProxyHost(proxyHost).setProxyPort(proxyPort)
