@@ -40,7 +40,6 @@ public class Reporter implements IProcessingReporter {
 
     private static final String CLASSIFIER = "antenna-processing-report";
     private static final String TYPE = "txt";
-    private static final String UNKNOWN = "<unknown>";
 
     private Report report;
     private Path targetDirectory;

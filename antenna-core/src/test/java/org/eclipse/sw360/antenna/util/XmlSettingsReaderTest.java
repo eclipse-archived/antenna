@@ -153,6 +153,6 @@ public class XmlSettingsReaderTest {
         xsr = new XmlSettingsReader(rootXml);
 
         String incorrectXPathExp = "::anyWrongExp";
-        String readStringPropertyByXPath = xsr.getStringPropertyByXPath(incorrectXPathExp, STRING_TAG, DEFAULT_STRING);
+        xsr.getStringPropertyByXPath(incorrectXPathExp, STRING_TAG, DEFAULT_STRING);
     }
 }

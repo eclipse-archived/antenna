@@ -41,7 +41,6 @@ public class LicenseResolverTest extends AntennaTestWithMockedContext {
 
     private List<Artifact> artifacts;
     private LicenseResolver licenseResolver;
-    private ArtifactIdentifier artifactIdentifier1;
     private LicenseStatement configuredLicense;
 
     @Before

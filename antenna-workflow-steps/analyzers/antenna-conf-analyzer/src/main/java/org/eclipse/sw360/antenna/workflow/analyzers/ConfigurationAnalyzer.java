@@ -43,7 +43,7 @@ public class ConfigurationAnalyzer extends AbstractAnalyzer {
     }
 
     @Override
-    public WorkflowStepResult yield() throws AntennaException {
+    public WorkflowStepResult yield() {
         return new WorkflowStepResult(getConfiguredArtifacts(context.getConfiguration(), reporter), true);
     }
 }

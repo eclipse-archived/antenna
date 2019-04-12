@@ -70,7 +70,7 @@ public class AntennaUtilsTest {
     }
 
     @Test
-    public void getJarPathTestWithoutChilds() throws Exception {
+    public void getJarPathTestWithoutChilds() {
         Path filePath = Paths.get("/some/path/to/file.jar").toAbsolutePath();
 
         final Path jarPath = AntennaUtils.getJarPath(filePath);
@@ -79,14 +79,14 @@ public class AntennaUtilsTest {
     }
 
     @Test(expected = AntennaExecutionException.class)
-    public void getJarRelativePathTestExpectedFail() throws Exception {
+    public void getJarRelativePathTestExpectedFail() {
         Path filePath = Paths.get("some/path/to/file.jar");
 
         AntennaUtils.getJarPath(filePath);
     }
 
     @Test
-    public void getJarPathTestWithJarFile() throws Exception {
+    public void getJarPathTestWithJarFile() {
         Path filePath = Paths.get("/some/path/to/file.jar/child.war/subChild.jar").toAbsolutePath();
 
         final Path jarPath = AntennaUtils.getJarPath(filePath);
@@ -95,7 +95,7 @@ public class AntennaUtilsTest {
     }
 
     @Test
-    public void getJarPathTestWithFile() throws Exception {
+    public void getJarPathTestWithFile() {
         Path filePath = Paths.get("/some/path/to/file.jar/child.war/subChild.jar").toAbsolutePath();
 
         final Path jarPath = AntennaUtils.getJarPath(filePath);
@@ -104,7 +104,7 @@ public class AntennaUtilsTest {
     }
 
     @Test
-    public void getJarPathIteratorFromPathTest() throws Exception {
+    public void getJarPathIteratorFromPathTest() {
         String filePath = "/some/path/to/file.jar/child.war/subChild.jar";
 
         final Iterator<Path> iterator = AntennaUtils.getJarPathIteratorFromPath(Paths.get(filePath).toAbsolutePath());
@@ -123,7 +123,7 @@ public class AntennaUtilsTest {
     }
 
     @Test
-    public void computeInnerReplacementJarPathTest() throws Exception {
+    public void computeInnerReplacementJarPathTest() {
         Path filePath = Paths.get("/some/path/to/file.jar/child.war/subChild.jar").toAbsolutePath();
 
         Path computed = AntennaUtils.computeInnerReplacementJarPath(filePath);

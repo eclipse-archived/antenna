@@ -51,12 +51,7 @@ public class LicenseResolver extends AbstractProcessor {
     /**
      * If the given Configuration contains information about the final license
      * this information is added to the artifact.
-     *
-     * @param artifact
-     * @param configuration
-     * @return
      */
-
     private Optional<LicenseInformation> findConfiguredLicense(Artifact artifact, Map<ArtifactSelector, LicenseInformation> configuration) {
         for (Entry<ArtifactSelector, LicenseInformation> entry : configuration.entrySet()) {
             ArtifactSelector selector = entry.getKey();

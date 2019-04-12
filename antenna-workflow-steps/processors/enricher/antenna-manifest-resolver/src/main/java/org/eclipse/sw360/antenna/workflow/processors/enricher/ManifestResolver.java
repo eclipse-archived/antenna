@@ -134,9 +134,6 @@ public class ManifestResolver extends AbstractProcessor {
 
     /**
      * Adds the result of getAttribute to the artifacts bundle values.
-     *
-     * @param artifact
-     * @param manifest
      */
     private void setBundleCoordinates(Artifact artifact, Manifest manifest) {
         final Optional<String> symbolicName = getAttribute(manifest, "Bundle-SymbolicName");

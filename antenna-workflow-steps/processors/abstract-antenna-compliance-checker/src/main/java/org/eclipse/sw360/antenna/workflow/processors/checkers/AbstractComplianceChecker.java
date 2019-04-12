@@ -86,7 +86,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
     }
 
     protected String makeStringForEvaluationResults(String messagePrefix, Set<IEvaluationResult> failCausingResults) {
-        Map<String,Set<IEvaluationResult>> transposedFailCausingResults = new HashMap();
+        Map<String,Set<IEvaluationResult>> transposedFailCausingResults = new HashMap<>();
         failCausingResults.forEach(iEvaluationResult ->
                 iEvaluationResult.getFailedArtifacts().forEach(artifact -> {
                             String artifactRepresentation = artifact.toString();

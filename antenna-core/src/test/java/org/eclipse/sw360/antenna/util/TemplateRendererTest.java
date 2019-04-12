@@ -18,6 +18,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -90,11 +91,11 @@ public class TemplateRendererTest {
 
 	private File writeTemplateFromString(String template) throws IOException {
 		final File templateFile = folder.newFile("template.xml");
-		FileUtils.writeStringToFile(templateFile, template, "UTF-8");
+		FileUtils.writeStringToFile(templateFile, template, StandardCharsets.UTF_8);
 		return templateFile;
 	}
 
-	private String composeTemplateXml() throws IOException {
+	private String composeTemplateXml() {
 	    return wrapTemplateXml(exampleInnerTemplate);
 	}
 
@@ -102,7 +103,7 @@ public class TemplateRendererTest {
 		return writeTemplateFromString(composeTemplateXml());
 	}
 
-	private String composeTemplateXml(Map<String,String> properties) throws IOException {
+	private String composeTemplateXml(Map<String,String> properties) {
 		return wrapTemplateXml(addPropertiesToTemplate(exampleInnerTemplate, properties));
 	}
 

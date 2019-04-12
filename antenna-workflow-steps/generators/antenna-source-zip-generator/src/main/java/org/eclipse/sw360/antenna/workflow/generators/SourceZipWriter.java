@@ -125,14 +125,6 @@ public class SourceZipWriter extends AbstractGenerator {
         }
     }
 
-    /**
-     * Writes the content of the specified source jar to the ZipOutputStream.
-     *
-     * @param zipOut
-     * @param sourceJar
-     * @param entryName
-     * @throws IOException
-     */
     private void writeContentToZipEntry(ZipOutputStream zipOut, File sourceJar, String entryName)
             throws IOException {
         ZipFile zipFile = new ZipFile(sourceJar);

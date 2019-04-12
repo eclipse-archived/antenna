@@ -89,7 +89,7 @@ public class HTMLReportGeneratorTest extends AntennaTestWithMockedContext {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         temporaryFolder.delete();
         verify(toolConfigMock).getEncoding();
     }

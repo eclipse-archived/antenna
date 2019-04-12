@@ -18,7 +18,6 @@ import org.osgi.framework.ServiceRegistration;
 
 public class Activator implements BundleActivator {
 
-    private ServiceRegistration<?> artifactResolverService;
     private static BundleContext bundleContext;
 
     public static BundleContext getContext() {
@@ -26,7 +25,7 @@ public class Activator implements BundleActivator {
     }
 
     @Override
-    public void start(BundleContext context) throws BundleException {
+    public void start(BundleContext context) {
         bundleContext = context;
     }
 

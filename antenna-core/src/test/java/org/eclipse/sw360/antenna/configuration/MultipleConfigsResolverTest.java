@@ -14,7 +14,6 @@ import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
-import org.eclipse.sw360.antenna.xml.XMLValidator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,7 +51,6 @@ public class MultipleConfigsResolverTest {
     public void init() throws URISyntaxException, IOException, AntennaConfigurationException {
         URL configUrl = MultipleConfigsResolverTest.class.getResource("/antennaconf.xml");
         URL compareUrl = MultipleConfigsResolverTest.class.getResource("/configCompare.xml");
-        XMLValidator validator = new XMLValidator();
 
         File configuration = new File(configUrl.toURI());
         File compareConfig = new File(compareUrl.toURI());

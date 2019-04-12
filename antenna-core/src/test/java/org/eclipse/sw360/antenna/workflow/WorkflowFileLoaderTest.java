@@ -65,30 +65,11 @@ public class WorkflowFileLoaderTest {
                 if(i == 0 && firstStepConfiguration != null) {
                     xml.append("<configuration>\n");
                     for (Map.Entry confItem: firstStepConfiguration.entrySet()) {
-                        int typeOfEntryRepresentation = 3;
-                        switch (typeOfEntryRepresentation) {
-                            case 1:
-                                xml.append("<entry key=\"")
-                                        .append(confItem.getKey())
-                                        .append("\" value=\"")
-                                        .append(confItem.getValue())
-                                        .append("\"/>\n");
-                                break;
-                            case 2:
-                                xml.append("<entry><entryKey>")
-                                        .append(confItem.getKey())
-                                        .append("</entryKey><entryValue>")
-                                        .append(confItem.getValue())
-                                        .append("</entryValue></entry>\n");
-                                break;
-                            case 3:
-                                xml.append("<entry key=\"")
-                                        .append(confItem.getKey())
-                                        .append("\"><entryValue>")
-                                        .append(confItem.getValue())
-                                        .append("</entryValue></entry>\n");
-                                break;
-                        }
+                        xml.append("<entry key=\"")
+                                .append(confItem.getKey())
+                                .append("\"><entryValue>")
+                                .append(confItem.getValue())
+                                .append("</entryValue></entry>\n");
                     }
                     xml.append("</configuration>\n");
                 }

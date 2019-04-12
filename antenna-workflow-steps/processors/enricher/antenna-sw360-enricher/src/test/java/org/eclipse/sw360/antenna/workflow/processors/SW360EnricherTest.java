@@ -83,7 +83,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void singleLicenseIsAddedToArtifact() throws AntennaException, IOException {
+    public void singleLicenseIsAddedToArtifact() throws AntennaException {
         SW360SparseLicense apacheSparse = createSparseLicense("apache2", "Apache 2.0");
         SW360License apache = createLicenseFromSparseLicense(apacheSparse, "Some text");
 
@@ -102,7 +102,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void multipleLicensesAreAddedToArtifact() throws AntennaException, IOException {
+    public void multipleLicensesAreAddedToArtifact() throws AntennaException {
         SW360SparseLicense apacheSparse = createSparseLicense("apache2", "Apache 2.0");
         SW360License apache = createLicenseFromSparseLicense(apacheSparse, "Some text");
 
@@ -128,7 +128,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void differingLicenseIsOverwritten() throws AntennaException, IOException {
+    public void differingLicenseIsOverwritten() throws AntennaException {
         License apache = new License();
         apache.setName("apache2");
         apache.setLongName("Apache 2.0");
