@@ -35,6 +35,8 @@ public class TemplateRendererTest {
 	private String property2value = "property2value";
 	private String property3key = "property3";
 	private String property3value = "property3value";
+	private String propertyWithDotKey = "property.subproperty";
+	private String propertyWithDotValue = "propertyValue";
 	private TemplateRenderer tr;
 	private Map<String,String> properties0 = new HashMap<>();
 	private Map<String,String> properties1 = new HashMap<>();
@@ -49,6 +51,11 @@ public class TemplateRendererTest {
 			+ "<test"+property2key+">$"+property2key+"</test"+property2key+">\n"
 			+ "</tests>";
 
+	private String exampleDotTemplate = "<tests>\n"
+			+ "<test"+propertyWithDotValue+">$"+propertyWithDotKey+"</test"+propertyWithDotValue+">\n"
+			+ "<test"+propertyWithDotValue+">${"+propertyWithDotKey+"}</test"+propertyWithDotValue+">\n"
+			+ "<test"+propertyWithDotValue+">$"+propertyWithDotKey+"</test"+propertyWithDotValue+">\n"
+			+ "</tests>";
 	@Before
 	public void before() {
 		tr = new TemplateRenderer();
@@ -83,7 +90,7 @@ public class TemplateRendererTest {
 
 	private File writeTemplateFromString(String template) throws IOException {
 		final File templateFile = folder.newFile("template.xml");
-		FileUtils.writeStringToFile(templateFile, template);
+		FileUtils.writeStringToFile(templateFile, template, "UTF-8");
 		return templateFile;
 	}
 
@@ -113,7 +120,7 @@ public class TemplateRendererTest {
 	}
 
 	@Test
-	public void testRenderTemplateFileDoesNotModifyWithEmptyPropertiesFromInstanciate() throws IOException {
+	public void testRenderTemplateFileDoesNotModifyWithEmptyPropertiesFromInstantiate() throws IOException {
 		TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(properties0);
 		File file = composeTemplateXmlToFile();
 
@@ -132,7 +139,7 @@ public class TemplateRendererTest {
 	}
 
 	@Test
-	public void testRenderTemplateFileSubstitutedPropertiesFromInstanciate() throws IOException {
+	public void testRenderTemplateFileSubstitutedPropertiesFromInstantiate() throws IOException {
 		TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(properties1);
 		File file = composeTemplateXmlToFile();
 
@@ -184,6 +191,24 @@ public class TemplateRendererTest {
 		assertThat(result).contains("<test"+property2key+">"+property2value+"</test"+property2key+">");
 	}
 
+	@Test
+	public void testRenderTemplateFileSubstitutesPropertiesWithDotsFromContext() throws IOException {
+		TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(new HashMap<>());
+		File file = writeTemplateFromString(wrapTemplateXml(addPropertiesToTemplate(exampleDotTemplate, new HashMap<>())));
+
+		HashMap<String, Object> contextMap = new HashMap<>();
+		// In order to resolve ${property.subproperty}, velocity searches the context for an object called "property" with
+		// a field "subproperty". The value of "subproperty" will then replace ${property.subproperty}.
+		// This can be arbitrarily nested.
+		contextMap.put("property", new Property());
+		String result = trWithCustomProperties.renderTemplateFile(file, contextMap);
+
+		assertThat(result).doesNotContain("$"+propertyWithDotKey);
+		assertThat(result).doesNotContain("${"+propertyWithDotKey+"}");
+		assertThat(result).doesNotContain("$"+propertyWithDotKey);
+		assertThat(result).contains("<test"+propertyWithDotValue+">"+propertyWithDotValue+"</test"+propertyWithDotValue+">");
+	}
+
 	@Test(expected = Exception.class)
 	public void testRenderTemplateFileShouldNotReturnInvalidXmlIfTemplateWasInvalid() throws IOException {
 	    String invalidXmlTemplate = "<invalid xml";
@@ -192,5 +217,14 @@ public class TemplateRendererTest {
 		String result = tr.renderTemplateFile(file);
 
 		assertThat(result).isNotEqualTo(invalidXmlTemplate);
+	}
+
+	// This class is needed to resolve properties with dots.
+	public class Property {
+		private final String subproperty = "propertyValue";
+
+		public String getSubproperty() {
+			return subproperty;
+		}
 	}
 }

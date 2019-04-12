@@ -154,12 +154,20 @@ You can define the workflow as described in the [Workflow configuration](./workf
 augment your workflow definition file by adding some steps in the maven `pom.xml`.
 The only difference is that in the `pom.xml` you cannot use the notation `<entry key="somekey" value="somevalue">`, you have to use the long form.
 
-For Maven, this has the advantage that properties are fully resolved in the `pom.xml` and can therefore be used in the step configuration.
-
 If a workflow is present in the pom, it will get merged with any `workflow.xml` provided by you or by the assembly.
 
 * Properties of existing steps will be changed.
 * New steps are added at the end of the list of steps in the same segment (analyzers, processors, generators and output handlers).
+
+#[[###]]# Properties in the `pom.xml`
+
+Defining the workflow in the `pom.xml` allows defining and using properties in the workflow.
+
+* Properties which do not contain dots are rendered into the workflow for all frontends.
+  Properties containing a dot such as `user.password` are in general not rendered correctly so cannot be used.
+* For Maven, all properties known to maven are fully resolved in the `pom.xml` and can therefore be used in the step configuration.
+* For Gradle and CLI, only some `project` properties are resolved. The list is equivalent to the list in the [Workflow configuration](./workflow-configuration.html)
+
 
 #[[###]]# Additional configuration for Java 9 or newer
 Since some Java EE dependencies like JAXB have been removed from the standard installation 

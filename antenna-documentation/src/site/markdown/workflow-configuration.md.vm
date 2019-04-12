@@ -166,10 +166,18 @@ For further information, see the [Tool configuration](./tool-configuration.html)
 
 #[[##]]# Usage of POM properties in the workflow.xml
 
-For technical reasons Maven variables / properties will in general not be rendered correctly in the workflow.xml. This means that
-
-* No Maven variables can be used (except for the Maven build and base directory, since they have been added to the context).
+For technical reasons properties will in general not be rendered correctly in the workflow.xml. This means that
 
 * No properties declared in the Maven POM can be used, since they will not be rendered correctly.
   Instead of rendering `${system.password}` to `password1234` as declared in the pom.xml, the literal `"${system.password}"` will be used.
   If those properties are used, they will most likely cause build, authentication or access issues or errors.
+
+* For a Maven frontend, every Maven `project` property can be used.
+
+* For a Gradle or CLI frontend, the following additional properties are available and preset:
+    * `basedir`: build folder (i.e. `build` for Gradle or `target` for CLI)
+    * `project.basedir` and `project.baseUri`: path and uri to current `pom.xml` file.
+    * `project.build.directory`: build folder (i.e. `build` for Gradle or `target` for CLI)
+    * `project.build.outputDirectory`: build output folder relative to pom file (e.g. `target/classes`)
+    * `project.build.sourceDirectory`: source directory assuming a maven structure relative to pom file (`src/main/java`)
+    * `project.build.testSourceDirectory`: test source directory assuming a maven structure relative to pom file (`src/test/java`)
