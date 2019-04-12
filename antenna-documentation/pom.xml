@@ -28,7 +28,7 @@
         <docNameCap>Antenna</docNameCap>
         <docNameAllCap>ANTENNA</docNameAllCap>
         <skip.tests>true</skip.tests>
-        <antennaCliJavaFilename>org.eclipse.sw360.antenna.frontend.AntennaCLIFrontend</antennaCliJavaFilename>
+        <antennaCliJavaFilename>org.eclipse.sw360.antenna.frontend.AntennaBasicCLIFrontend</antennaCliJavaFilename>
         <antennaMavenGroupId>org.eclipse.sw360.antenna</antennaMavenGroupId>
         <antennaMavenPluginName>antenna-maven-plugin</antennaMavenPluginName>
         <antennaGradlePluginName>antenna-gradle-plugin</antennaGradlePluginName>

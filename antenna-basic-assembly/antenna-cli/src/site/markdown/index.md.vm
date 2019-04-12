@@ -21,7 +21,7 @@ must describe the original locations of your source artifacts.
 
 * For technical reasons variables / properties containing dots will in general not be rendered correctly
 
-    * No Maven variables can be used (except for `project.build.directory`, `project.build.outputDirectory` and `project.basedir`, since they have been added to the context).
+    * No Maven variables can be used except for those properties noted in [WorkflowConfiguration](../workflow-configuration.html)
 
     * Properties with a dot in them, like `${system.password}` should be changed to `${systemPassword}` in order to be rendered.
 
@@ -79,3 +79,16 @@ Alternatively ${docNameCap} can be run over the command line with this simple li
 ```
 java -jar path\to\ ${docName}.jar path\to\pom.xml
 ```
+
+#[[##]]# Adding workflow steps and plugins
+
+It is possible to use workflow steps, knowledge-bases, etc. also if they are not referenced in the assembly.
+To do this, the jars need to be added to the classpath.
+If you have a custom plugin `my-custom-plugin` where the jar can be found at `$MY_CUSTOM_PLUGIN_JAR`, then simply add
+```sh
+CLASSPATH=$ANTENNA_JAR:$MY_CUSTOM_PLUGIN_JAR
+java -cp %CLASSPATH% $${antennaCliJavaFilename} %POM_FILE%
+```
+in the script above.
+
+The same is true for bat scripts on Windows.
