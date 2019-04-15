@@ -51,7 +51,7 @@ All parameters are required unless specified as optional.
 * `productFullname`: Full name of the product (e.g. Visual Rules - Modeler)
 * `version`: Version of the product
 * `configFiles`: *(optional)* Path to your configuration file(s).
-* `configFileUri`: *(optional)* URI to your config file.
+* `configFileUris`: *(optional)* URIs to your config file.
 * `licenseValidation`: In this section a license can be defined as
 forbidden and parameter for the license Validation can be set.
 * `copyrightHoldersName`: *(optional)* The name of the copyright holder
@@ -76,11 +76,11 @@ the current build. Defaults to `false`. The default properties are:
 | File                | Identifier       | Type | Classifier           |
 |---------------------|------------------|------|----------------------|
 |sources.zip          |sources-zip       |zip   |${docName}-sources-zip      |
-|processing report    |${docName}-sources-zip  |txt   |${docName}-processing-report|
+|${docNameCap}_3rdPartyAnalysisReport.txt    |${docName}-report |txt   |${docName}-processing-report|
 |disclosure document  |disclosure-doc    |pdf   |${docName}-disclosure-doc   |
-|clm report           |clm-report        |json  |${docName}-clm-report       |
-|artifacts information|artifact-information|csv |${docName}-artifact-info    |
-|clm report pdf       |clm-report-pdf    |pdf   |clm-report-pdf        |
+|${docNameCap}_artifactsInformation.csv|artifact-information|csv |${docName}-artifact-info    |
+|ClmReportData.json   |clm-report        |json  |${docName}-clm-report       |
+|clm-report.pdf       |clm-report-pdf    |pdf   |clm-report-pdf        |
 
 * `filesToAttach`: *(optional)* If you want to attach single files or
 to overwrite default values, use this parameter (identifier from table):
@@ -96,6 +96,7 @@ to overwrite default values, use this parameter (identifier from table):
 
 Inside the plugin definition, you can also add a fully fledged workflow definition.
 As an example consider the following plugin definition for ${docNameCap}:
+
 ```xml
     <build>
         <plugins>
