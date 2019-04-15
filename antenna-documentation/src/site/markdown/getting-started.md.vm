@@ -2,8 +2,8 @@
 
 #[[##]]# Overview
 
-This guide shows how to bring ${docNameCap} into action. It will show which tools are required and how to set up
-${docNameCap} in a small java example project using maven.
+This guide shows how to bring ${docNameCap} into action.
+It will show which tools are required and how to set up ${docNameCap} in a small java example project using maven.
 
 #[[##]]# Requirements
 
@@ -25,7 +25,8 @@ Fetch ${docNameCap} from the corresponding repository or build it yourself.
 #[[##]]# The example project
 #[[###]]# Setting up the example project
 
-We create a new maven project. This will result in a project structure like this.
+We create a new maven project.
+This will result in a project structure like this.
 
 ```
 example_project
@@ -38,7 +39,9 @@ example_project
         └───java
 ```
 
-Now we're going to add ${docNameCap} to our project. Therefore we have to edit the pom.xml to our needs. We add the `${antennaMavenPluginName}` as a plugin.
+Now we're going to add ${docNameCap} to our project.
+Therefore we have to edit the pom.xml to our needs.
+We add the `${antennaMavenPluginName}` as a plugin.
 
 The plugin section of our pom should look like this:
 
@@ -69,11 +72,12 @@ The plugin section of our pom should look like this:
 </plugins>
 ```
 
-With the above mentioned configuration ${docNameCap} will be executed while the `package` execution step is running. Also have a look at the
-`<workflowDefinitionFile>` key (further reading about plugin specific settings [here][toolconfig]). This points to our workflow.xml which we still have to define. It will contain which analyzers, processors and
-generators ${docNameCap} should use.
+With the above mentioned configuration ${docNameCap} will be executed while the `package` execution step is running.
+Also have a look at the `<workflowDefinitionFile>` key (further reading about plugin specific settings [here][toolconfig]).
+This points to our workflow.xml which we still have to define. It will contain which analyzers, processors and generators ${docNameCap} should use.
 
-In this example we are going to use the `JSON Analyzer` and generate an HTML Report wih the `HTML Report Writer`. For this we have to create our workflow.xml in the `src` folder with the following content:
+In this example we are going to use the `JSON Analyzer` and generate an HTML Report with the `HTML Report Writer`.
+For this we have to create our workflow.xml (previously set via the `<workflowDefinitionFile>` in the configuration) in the `src` folder:
 
 ```xml
 <workflow>
@@ -97,10 +101,15 @@ In this example we are going to use the `JSON Analyzer` and generate an HTML Rep
 </workflow>
 ```
 
-This configuration adds the JSON Analyzer(further reading [here][jsonanalyzer]) and the HTML Report Writer. The JSON Analyzer refers to a json file, which
-contains the dependencies used in our project. This is not provided yet so let us add it to the project. Like mentioned above it is also placed in the `src` directory.
-The json file is called `dependencies.json`. You can call it whatever you feel like but don't forget to let the analyzer point to the correct path in your workflow.xml. To keep things small and easy
-we are going to have only one dependency and this is the commons-lang3 library.
+This configuration adds the [JSON Analyzer][jsonanalyzer] and the [HTML Report Writer](./generators/HTML-report-generator-step.html).
+Further information to the configuration of the workflow, and how to add more steps, can be found [here][workflow].
+The JSON Analyzer refers to a json file, which
+contains the dependencies used in our project.
+This is not provided yet so let us add it to the project.
+Like mentioned above it is also placed in the `src` directory.
+The json file is called `dependencies.json`.
+You can call it whatever you feel like but don't forget to let the analyzer point to the correct path in your workflow.xml.
+To keep things small and easy, we are going to have only one dependency and this is the commons-lang3 library.
 
 ```json
 {
@@ -139,8 +148,9 @@ we are going to have only one dependency and this is the commons-lang3 library.
 }
 ```
 
-You can add as many dependency entries (here called components) to the json file. To understand the parameters more deeply please read the
-[JSON analyzer][jsonanalyzer] guide. It is also possible to provide a CSV file instead or additionally to the json analyzer(check the [CSV analzyer][csvanalyzer] guide).
+You can add as many dependency entries (here called components) to the json file.
+To understand the parameters more deeply please read the [JSON Analyzer][jsonanalyzer] guide.
+It is also possible to provide a CSV file instead, or additionally, to the json analyzer(check the [CSV Analzyer][csvanalyzer] guide).
 
 The final project structure after adding the workflow.xml and dependencies.json file should now look like this:
 
@@ -160,8 +170,9 @@ example_project
 
 #[[###]]# Building the example project
 
-After the setup and configuration of our project we are ready to build and execute it. Like above mentioned we attached ${docNameCap} to be executed in the
-build step `package`. Therefor we can just execute
+After the setup and configuration of our project we are ready to build and execute it.
+Like above mentioned we attached ${docNameCap} to be executed in the build step `package`.
+Therefor we can just execute
 
 ```
 mvn package
@@ -173,12 +184,13 @@ or any post build step after package. It is also possible to execute ${docNameCa
 mvn antenna:analyze
 ```
 
-this is useful if the plugin is not bound to a build step or only the project should be analyzed without being build.
+this is useful if the plugin is not bound to a build step or the project should be only analyzed, without being build.
 
 #[[###]]# Result
 
-After building our project a target folder will be created by maven. A subfolder called `antenna` was created in it.
-The hierarchy of it looks like this:
+After building our project a target folder will be created by maven.
+A subfolder called `antenna` will be created in it.
+The file hierarchy will look like this:
 
 ```
 antenna
