@@ -153,7 +153,7 @@ public class DroolsEngine implements IRuleEngine {
         );
     }
 
-    private List<File> getAllRuleFiles(List<Path> folderPaths) throws AntennaException {
+    private List<File> getAllRuleFiles(List<Path> folderPaths) {
         return folderPaths
                 .stream()
                 .map(this::getAllRulesInConfiguredFolder)

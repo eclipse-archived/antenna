@@ -52,7 +52,7 @@ public class LicenseKnowledgeBaseResolverTest {
     private static final LicenseClassification KB_LICENSE_CLASSIFICATION = LicenseClassification.NOT_COVERED;
 
     @Before
-    public void before() throws AntennaConfigurationException {
+    public void before() {
         when(knowledgeBaseMock.getLicenseNameForId(LICENSE_ID))
                 .thenReturn(LICENSE_NAME);
         when(knowledgeBaseMock.getTextForId(LICENSE_ID))

@@ -128,15 +128,15 @@ public class JsonReader {
 
     private void potentiallyAddSpecialLicenseInformation(JsonObject licenseDataObj, Artifact a) {
         List<MissingLicenseReasons> missingLicenseReasons = new ArrayList<>();
-        missingLicenseReasons.addAll(extractSpecialLicenseDeclarations(a, "declaredLicenses", licenseDataObj));
-        missingLicenseReasons.addAll(extractSpecialLicenseDeclarations(a, "observedLicenses", licenseDataObj));
-        missingLicenseReasons.addAll(extractSpecialLicenseDeclarations(a, "overriddenLicenses", licenseDataObj));
+        missingLicenseReasons.addAll(extractSpecialLicenseDeclarations("declaredLicenses", licenseDataObj));
+        missingLicenseReasons.addAll(extractSpecialLicenseDeclarations("observedLicenses", licenseDataObj));
+        missingLicenseReasons.addAll(extractSpecialLicenseDeclarations("overriddenLicenses", licenseDataObj));
         if (!missingLicenseReasons.isEmpty()) {
             a.addFact(new MissingLicenseInformation(missingLicenseReasons));
         }
     }
 
-    private List<MissingLicenseReasons> extractSpecialLicenseDeclarations(Artifact artifact, String identifier, JsonObject licenseDataObj) {
+    private List<MissingLicenseReasons> extractSpecialLicenseDeclarations(String identifier, JsonObject licenseDataObj) {
         List<MissingLicenseReasons> missingLicenseReasons = new ArrayList<>();
         if (null != licenseDataObj) {
             JsonArray objs = (JsonArray) licenseDataObj.get(identifier);

@@ -115,7 +115,7 @@ public class HTMLReportGenerator extends AbstractGenerator {
     }
 
     @Override
-    public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String, String> configMap) {
         this.encoding = context.getToolConfiguration().getEncoding();
     }
 }

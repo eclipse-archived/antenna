@@ -36,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ConfigurationCheckerTest {
 
-    private File file;
     private TemporaryFolder folder;
     private Artifact artifact;
     private ArtifactSelector selector;
@@ -48,7 +47,7 @@ public class ConfigurationCheckerTest {
     public void init() throws IOException {
         folder = new TemporaryFolder();
         folder.create();
-        file = folder.newFile();
+        File file = folder.newFile();
         artifact = new Artifact();
 
         artifact.addFact(new ArtifactFilename("artifact"));
@@ -61,7 +60,7 @@ public class ConfigurationCheckerTest {
 
         config = new Configuration(null);
         artifacts = new ArrayList<>();
-        reporter = new Reporter(this.file.toPath());
+        reporter = new Reporter(file.toPath());
     }
 
     @Test
@@ -84,7 +83,6 @@ public class ConfigurationCheckerTest {
         config.setremoveArtifact(list);
         TemporaryFolder folder = new TemporaryFolder();
         folder.create();
-        File file = folder.newFile();
         ConfigurationChecker checker = new ConfigurationChecker(reporter, config);
         checker.process(artifacts);
         List<ProcessingMessage> messageList = reporter.getProcessingReport().getMessageList();

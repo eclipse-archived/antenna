@@ -78,14 +78,14 @@ public class OrtResultAnalyzerTest {
                 .map(artifact -> artifact.askForGet(CopyrightStatement.class))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .flatMap(s -> Stream.of(s.split("/n"))).collect(Collectors.toList()).toArray())
+                .flatMap(s -> Stream.of(s.split("/n"))).toArray())
                 .contains("\"" + "Copyright (c) 2014-2017 Teist Peirson2 <teist.peirson@2.com>" + "\"");
 
         assertThat(artifacts.stream()
                 .map(artifact -> artifact.askForGet(CopyrightStatement.class))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .flatMap(s -> Stream.of(s.split("/n"))).collect(Collectors.toList()).toArray())
+                .flatMap(s -> Stream.of(s.split("/n"))).toArray())
                 .hasSize(1+1); //+1 since first element of array will be empty due to parsing
 
         assertThat(artifacts.stream().
@@ -182,14 +182,14 @@ public class OrtResultAnalyzerTest {
                 .map(artifact -> artifact.askForGet(CopyrightStatement.class))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .flatMap(s -> Stream.of(s.split("/n"))).collect(Collectors.toList()).toArray())
+                .flatMap(s -> Stream.of(s.split("/n"))).toArray())
                 .contains("\"" + "Copyright (c) 2014-2017 Teist Peirson2 <teist.peirson@2.com>" + "\"");
 
         assertThat(artifacts.stream()
                 .map(artifact -> artifact.askForGet(CopyrightStatement.class))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .flatMap(s -> Stream.of(s.split("/n"))).collect(Collectors.toList()).toArray())
+                .flatMap(s -> Stream.of(s.split("/n"))).toArray())
                 .hasSize(4 + 1); //+1 since first element of array will be empty due to parsing
 
         assertThat(artifacts.stream().

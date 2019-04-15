@@ -22,6 +22,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -102,8 +103,7 @@ public class ConfigurationChecker extends AbstractProcessor {
     }
 
     private void checkSecIssues(Collection<Artifact> artifacts, Map<ArtifactSelector, Issues> securityIssues, String type) {
-        List<ArtifactSelector> extractedSelectors = securityIssues.keySet().stream()
-                .collect(Collectors.toList());
+        List<ArtifactSelector> extractedSelectors = new ArrayList<>(securityIssues.keySet());
         check(artifacts, extractedSelectors, type);
     }
 

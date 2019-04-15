@@ -19,7 +19,7 @@ import java.util.List;
  * Report for processingMessages.
  */
 public class Report {
-    private List<ProcessingMessage> messageList = Collections.synchronizedList(new ArrayList<>());
+    private final List<ProcessingMessage> messageList = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * Add the given ProcessingMessage to this report.

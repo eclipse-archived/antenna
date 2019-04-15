@@ -102,8 +102,7 @@ public class MvnDependencyTreeAnalyzerTest {
         artifact.setArtifactId("artifact-" + i);
         artifact.setVersion("1.0." + i);
 
-        DependencyNode dependencyNode = new DefaultDependencyNode(null, artifact, null, null, null);
-        return dependencyNode;
+        return new DefaultDependencyNode(null, artifact, null, null, null);
     }
 
     private Artifact getExpectedArtifact(int i) {

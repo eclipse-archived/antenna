@@ -16,7 +16,7 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import java.util.*;
 
 public class WorkflowStepResult {
-    private final Set<Artifact> artifacts = new HashSet();
+    private final Set<Artifact> artifacts = new HashSet<>();
     /*
      * if the value artifactsShouldBeAppended is set to
      *  - false: the set artifacts here is treated as the complete set and it overwrites the set in the state

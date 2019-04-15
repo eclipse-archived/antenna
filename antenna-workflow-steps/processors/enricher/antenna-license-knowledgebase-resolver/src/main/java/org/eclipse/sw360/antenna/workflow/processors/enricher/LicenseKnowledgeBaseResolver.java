@@ -86,11 +86,7 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
     /**
      * Replaces the longName that belongs to the given licenseId to the license, if
      * it is found in the knowledgeBase.
-     *
-     * @param license
-     * @param licenseId
      */
-
     private void setLongName(License license, String licenseId) {
         String configuredLongName = license.getLongName();
         if (StringUtils.isEmpty(configuredLongName)) {
@@ -108,7 +104,6 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
      * @param licenses
      *            List of licenses for which the text will be set
      */
-
     private void setText(List<License> licenses) {
         licenses.forEach(license -> {
             String configuredText = license.getText();

@@ -55,7 +55,7 @@ public class ChildJarResolverTest extends AntennaTestWithMockedContext {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         jarCreator.cleanUp();
         temporaryFolder.delete();
 

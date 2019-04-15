@@ -103,7 +103,7 @@ public class LicenseValidatorTest extends AntennaTestWithMockedContext {
 
     @Test
     public void testLicenseWithoutTextTestFail() throws AntennaConfigurationException {
-        configMap.put(MISSING_LICENSE_TEXT_SEVERITY_KEY, "WARN");
+        configMap.put(MISSING_LICENSE_TEXT_SEVERITY_KEY, "FAIL");
         runTest(emptyTextLicense, IEvaluationResult.Severity.FAIL);
     }
 
@@ -122,7 +122,7 @@ public class LicenseValidatorTest extends AntennaTestWithMockedContext {
     @Test
     public void testLicenseWithoutLicenseInformationTestWarn() throws AntennaConfigurationException {
         configMap.put(MISSING_LICENSE_INFORMATION_SEVERITY_KEY, "WARN");
-        runTest(emptyLicense, IEvaluationResult.Severity.FAIL);
+        runTest(emptyLicense, IEvaluationResult.Severity.WARN);
     }
 
     private void runTest(License license, IEvaluationResult.Severity expectedSeverity) throws AntennaConfigurationException {
@@ -133,6 +133,6 @@ public class LicenseValidatorTest extends AntennaTestWithMockedContext {
         assertThat(validate.size()).isEqualTo(1);
         assertThat(validate.stream()
                 .map(IEvaluationResult::getSeverity)
-                .allMatch(expectedSeverity::equals));
+                .allMatch(expectedSeverity::equals)).isTrue();
     }
 }

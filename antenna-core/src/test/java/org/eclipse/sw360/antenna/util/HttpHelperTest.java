@@ -36,7 +36,6 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.setVariableValueInObject;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)

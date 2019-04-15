@@ -62,7 +62,7 @@ public class ChildJarResolver extends AbstractProcessor {
                 if (isPathContainingInnerJars(path)) {
                     resolveSources(artifacts, artifact, path);
                 }
-            } else if (hasPathnames && !hasSources) {
+            } else if (!hasPathnames && !hasSources) {
                 this.reporter.add(artifact, MessageType.MISSING_PATHNAME,
                         "An Artifact has no Pathnames, the Manifest file could not be resolved and no bundle coordinates were found.");
             }
