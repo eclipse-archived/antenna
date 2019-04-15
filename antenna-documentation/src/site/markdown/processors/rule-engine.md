@@ -26,3 +26,7 @@ Add this configuration to the workflow.xml
 Currently, only folders of rules can be added to the policy engine, no zip files or URLs.
 * The policy results have different severities **FAIL**, **WARN** and **INFO**.
 If you want the build to also fail on e.g. **WARN**, add `<entry key="failOn" value="WARN"/>` to the configuration in the workflow.xml
+
+#### Rule Development
+Several helpers are available to let you easily develop rules for the rule engine. 
+Here is a guide that explains how to develop the rules: [Rule Development](../rule-development.html).  

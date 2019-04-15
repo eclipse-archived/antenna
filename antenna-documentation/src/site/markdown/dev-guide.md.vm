@@ -99,7 +99,7 @@ Open a browser and type the directory `http://localhost:9000`
 
 Once the site is run, it can also be started from the main folder via `mvn site:run`
 
-#[[##]]# How to implement a custom worflow item
+#[[##]]# How to implement a custom workflow item
 
 ${docNameCap} uses a pipeline workflow. The **sources** yield **Artifact**s that are
 processed by the **processors**. After processing the **sinks** produce an
@@ -122,3 +122,7 @@ There needs to be a default constructor and a configure method.
 Since the components are instantiated via reflection the default constructor is used. Followed by a call to the configure method with a Map<String, String> containing the configuration.
 See how to configure ${docNameCap} to see how the configuration is passed.
 
+#[[##]]# How to develop rules
+${docNameCap} can be used to test artifacts against certain rules.
+You can create your own rule set and add it as an additional workstep to your workflow configuration ([Rule Engine](./processors/rule-engine.html)).
+Here is a guide that explains how to develop the rules: [Rule Development](rule-development.html).
