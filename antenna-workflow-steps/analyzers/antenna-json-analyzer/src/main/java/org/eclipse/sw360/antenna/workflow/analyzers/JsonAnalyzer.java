@@ -27,6 +27,11 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 
 public class JsonAnalyzer extends ManualAnalyzer {
+
+    public JsonAnalyzer() {
+        this.workflowStepOrder = 600;
+    }
+
     private void validate(ToolConfiguration toolConfig) throws AntennaException {
         // Check that JSON file is present
         if (!componentInfoFile.exists()) {

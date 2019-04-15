@@ -51,6 +51,10 @@ public class SourceZipWriter extends AbstractGenerator {
     private IProcessingReporter reporter;
     private static final Logger LOGGER = LoggerFactory.getLogger(SourceZipWriter.class);
 
+    public SourceZipWriter() {
+        this.workflowStepOrder = 700;
+    }
+
     /**
      * Creates a zip file which contains the source jars of the artifacts, which
      * have passed all filters. Name of zip file :

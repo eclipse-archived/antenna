@@ -33,6 +33,10 @@ public class LicenseResolver extends AbstractProcessor {
     private Map<ArtifactSelector, LicenseInformation> configuredLicenses;
     private static final Logger LOGGER = LoggerFactory.getLogger(LicenseResolver.class);
 
+    public LicenseResolver() {
+        this.workflowStepOrder = 500;
+    }
+
     /**
      * Adds the license information from the license document to the artifacts
      * list.

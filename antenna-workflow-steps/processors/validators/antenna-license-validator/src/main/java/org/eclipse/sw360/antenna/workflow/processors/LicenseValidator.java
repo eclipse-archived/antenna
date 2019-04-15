@@ -52,6 +52,10 @@ public class LicenseValidator extends AbstractComplianceChecker {
     private List<String> forbiddenLicenseIds;
     private List<String> ignoredLicenseIds;
 
+    public LicenseValidator() {
+        this.workflowStepOrder = 10200;
+    }
+
     /**
      * Validates the licenses of the given list of artifacts. If a license is
      * not valid a ProcessingMessage is added to the reporter. If a license is

@@ -46,6 +46,10 @@ public class HTMLReportGenerator extends AbstractGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(HTMLReportGenerator.class);
     private Charset encoding;
 
+    public HTMLReportGenerator() {
+        this.workflowStepOrder = 600;
+    }
+
     @Override
     public Map<String, IAttachable> produce(Collection<Artifact> artifacts) throws AntennaExecutionException {
         LOGGER.info("Generating HTML report.");

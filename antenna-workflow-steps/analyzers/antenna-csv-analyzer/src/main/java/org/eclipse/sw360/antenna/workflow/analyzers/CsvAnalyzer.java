@@ -42,6 +42,10 @@ public class CsvAnalyzer extends ManualAnalyzer {
     private static final String LICENSE_LONG_NAME = "License Long Name";
     private static final String PATH_NAME = "File Name";
 
+    public CsvAnalyzer() {
+        this.workflowStepOrder = 500;
+    }
+
     @Override
     public WorkflowStepResult yield() throws AntennaException {
         List<Artifact> artifacts = new ArrayList<>();

@@ -28,6 +28,10 @@ public class AntennaDroolsChecker extends AbstractComplianceChecker {
     private static final String POLICIES_FOLDER_PATH = "folder.paths";
     private static final String NO_VERSION = "no version string specified";
 
+    public AntennaDroolsChecker() {
+        this.workflowStepOrder = 20000;
+    }
+
     @Override
     public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
         super.configure(configMap);

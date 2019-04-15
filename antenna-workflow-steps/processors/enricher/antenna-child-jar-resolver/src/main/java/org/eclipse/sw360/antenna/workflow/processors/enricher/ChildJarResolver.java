@@ -41,6 +41,10 @@ public class ChildJarResolver extends AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChildJarResolver.class);
     private Path targetDirectory;
 
+    public ChildJarResolver() {
+        this.workflowStepOrder = 400;
+    }
+
     /**
      * Resolves the given list of artifacts. Checks if a pathname contains more
      * than one jar/zip/war, if yes the inner jar/zip/war will be resolved.

@@ -36,6 +36,10 @@ import java.util.stream.StreamSupport;
 public class OrtResultAnalyzer extends ManualAnalyzer {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrtResultAnalyzer.class);
 
+    public OrtResultAnalyzer() {
+        this.workflowStepOrder = 700;
+    }
+
     static private Optional<ArtifactCoordinates> mapCoordinates(String ortIdentifier) {
         String[] ortIdentifierSeparate = ortIdentifier.split(":");
         if (ortIdentifierSeparate.length < 3) {

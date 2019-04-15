@@ -38,6 +38,10 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
 
     private final List<FileToArchiveWriterInstruction> writeToArchiveInstructions = new ArrayList<>();
 
+    public FileToArchiveWriter() {
+        this.workflowStepOrder = 500;
+    }
+
     @Override
     public void handle(Map<String, IAttachable> generatedOutput) {
         for (FileToArchiveWriterInstruction instruction : writeToArchiveInstructions) {

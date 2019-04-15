@@ -34,6 +34,10 @@ public class SourceUrlResolver extends AbstractProcessor {
     private HttpHelper httpHelper;
     private Path dependencyTargetDirectory;
 
+    public SourceUrlResolver() {
+        this.workflowStepOrder = 1500;
+    }
+
     @Override
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
         LOGGER.info("Resolve source urls...");

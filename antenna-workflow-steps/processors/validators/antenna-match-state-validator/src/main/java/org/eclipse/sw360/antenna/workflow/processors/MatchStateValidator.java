@@ -35,6 +35,10 @@ public class MatchStateValidator extends AbstractComplianceChecker {
     private IEvaluationResult.Severity SIMILAR_Severity = IEvaluationResult.Severity.WARN;
     private IEvaluationResult.Severity UNKNOWN_Severity = IEvaluationResult.Severity.WARN;
 
+    public MatchStateValidator() {
+        this.workflowStepOrder = 10300;
+    }
+
     @Override
     public IPolicyEvaluation evaluate(Collection<Artifact> artifacts) {
         DefaultPolicyEvaluation policyEvaluation = new DefaultPolicyEvaluation();

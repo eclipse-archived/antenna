@@ -41,6 +41,10 @@ public class P2Resolver extends AbstractProcessor {
 
     private List<String> repositories;
 
+    public P2Resolver() {
+        this.workflowStepOrder = 1100;
+    }
+
     @Override
     public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
         repositories = Arrays.asList(getConfigValue(DEPENDENCY_REPOSITORY, configMap).split(";"));

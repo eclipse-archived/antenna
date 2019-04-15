@@ -47,11 +47,14 @@ public class CSVGenerator extends AbstractGenerator {
     private Path targetDirectory;
     private Charset encoding;
 
+    public CSVGenerator() {
+        this.workflowStepOrder = 500;
+    }
+
     /**
      * Creates a csv file that contains artifact name, version and license. File
      * will be written to CsvFileWriter.ANTENNA_ARTIFACT_INFORMATION_CSV
      */
-
     private void writeFile(StringBuilder information, File csvFile) {
         try (PrintWriter out = new PrintWriter(csvFile, encoding.toString())) {
             out.write(information.toString());

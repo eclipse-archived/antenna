@@ -46,6 +46,10 @@ public class MavenArtifactResolver extends AbstractProcessor {
     private String preferredSourceQualifier;
     private URL sourcesRepositoryUrl;
 
+    public MavenArtifactResolver() {
+        this.workflowStepOrder = 300;
+    }
+
     private boolean isIgnoredForSourceResolving(Artifact artifact) {
         return sourceResolvingBlacklist.stream()
                 .anyMatch(artifactSelector -> artifactSelector.matches(artifact));
