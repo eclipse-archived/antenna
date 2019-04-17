@@ -23,7 +23,7 @@
         <!-- >This is the main version applied throughout the project. Change this to increase all versions<-->
         <revision>1.0.0</revision>
         <!-- >The qualifier can be set to any value and will set the corresponding qualifier in all projects except antenna-p2<-->
-        <qualifier>-SNAPSHOT</qualifier>
+        <qualifier>-RC3</qualifier>
         <drools.version>7.17.0.Final</drools.version>
         <gradle.version>4.1</gradle.version>
         <jackson.version>2.9.8</jackson.version>
