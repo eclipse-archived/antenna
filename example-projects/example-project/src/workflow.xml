@@ -28,6 +28,17 @@
             </configuration>
         </step>
     </analyzers>
+    <processors>
+        <step>
+            <name>Drools Policy Engine</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.AntennaDroolsChecker</classHint>
+            <configuration>
+                <entry key="base.dir" value="${project.basedir}"/>
+                <entry key="folder.paths" value="../example-policies"/>
+                <entry key="failOn" value="WARN"/>
+            </configuration>
+        </step>
+    </processors>
     <generators>
         <step>
             <name>SW360 Updater</name>
@@ -40,31 +51,13 @@
             </configuration>
             <deactivated>true</deactivated>
         </step>
-        <step>
-            <name>SW360 Report Generator</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.generators.SW360DisclosureDocumentGenerator</classHint>
-            <configuration>
-                <entry key="disclosure.doc.formats" value="txt"/>
-            </configuration>
-        </step>
     </generators>
-    <processors>
-        <step>
-            <name>Drools Policy Engine</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.AntennaDroolsChecker</classHint>
-            <configuration>
-                <entry key="base.dir" value="${project.basedir}"/>
-                <entry key="folder.paths" value="../example-policies"/>
-                <entry key="failOn" value="WARN"/>
-            </configuration>
-        </step>
-    </processors>
     <outputHandlers>
         <step>
             <name>Add disclosure document to jar</name>
             <classHint>org.eclipse.sw360.antenna.workflow.outputHandlers.FileToArchiveWriter</classHint>
             <configuration>
-                <entry key="instructions" value="disclosure-sw360-doc-txt:${project.build.directory}/${project.artifactId}-${project.version}.jar:/legalnotice/DisclosureDoc.txt"/>
+                <entry key="instructions" value="disclosure-doc:${project.build.directory}/${project.artifactId}-${project.version}.jar:/legalnotice/DisclosureDoc.html"/>
             </configuration>
         </step>
     </outputHandlers>

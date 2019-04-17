@@ -62,8 +62,6 @@ public interface ExecutableTestProject {
         artifactTypeToClassifierMap.put("disclosure-doc", "antenna-processing-report");
         artifactTypeToClassifierMap.put("sources-zip", "antenna-sources-zip");
         artifactTypeToClassifierMap.put("antenna-report", "antenna-disclosure-doc");
-        artifactTypeToClassifierMap.put("disclosure-sw360-doc-html", "antenna-sw360-disclosure-doc");
-        artifactTypeToClassifierMap.put("disclosure-sw360-doc-txt", "antenna-sw360-disclosure-doc");
 
         if(project.getRawProject() instanceof MavenProject){
             MavenProject mavenProject = (MavenProject) project.getRawProject();

@@ -89,11 +89,12 @@
     </processors>
     <generators>
         <step>
-            <name>SW360 Report Generator</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.generators.SW360DisclosureDocumentGenerator</classHint>
-            <configuration>
-                <entry key="disclosure.doc.formats" value="docx,txt,html"/>
-            </configuration>
+            <name>HTML Report Writer</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.generators.HTMLReportGenerator</classHint>
+        </step>
+        <step>
+            <name>CSV Report Writer</name>
+            <classHint>org.eclipse.sw360.antenna.workflow.generators.CSVGenerator</classHint>
         </step>
         <step>
             <name>Source Zip Writer</name>

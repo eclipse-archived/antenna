@@ -6,7 +6,6 @@
 # http://www.eclipse.org/legal/epl-v20.html
 #
 # SPDX-License-Identifier: EPL-2.0
-sudo: true
 language: java
 addons:
   apt:
@@ -15,12 +14,6 @@ addons:
 jdk: openjdk8
 
 before_install:
-  - sudo apt-get update -qq
-  - git clone --branch sw360-3.3.0-M1 --depth 1 https://github.com/eclipse/sw360 /tmp/sw360
-  - sudo /tmp/sw360/scripts/install-thrift.sh --no-cleanup
-  - pushd /tmp/sw360
-  - mvn install -pl backend/src/src-licenseinfo,libraries/lib-datahandler -am -DskipTests
-  - popd
   - wget -N -O /tmp/install-jdk.sh https://raw.githubusercontent.com/sormuras/bach/ab648ed36892439f49a827cdf18c25e17c8095db/install-jdk.sh
   - chmod +x /tmp/install-jdk.sh
 install:

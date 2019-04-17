@@ -119,7 +119,6 @@ ${docNameCap} core is prepackaged with 3 analyzers and 5 generators:
 * [HTML generator](./generators/HTML-report-generator-step.html)
 * [CSV generator](./generators/csv-generator-step.html)
 * [Source Zip Generator](./generators/source-zip-generator-step.html)
-* [SW360 report generator](./generators/sw360-disclosure-document-generator-step.html)
 - [SW360 update generator](./generators/sw360-update-generator-step.html)
 
 However, it is quite likely that the default configuration that is provided at your organization already contains a lot more workflow steps.
