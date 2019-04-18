@@ -293,3 +293,57 @@ The license that is defined in this section overrides all other licenses that ar
     </setFinalLicense>
 </setFinalLicenses>
 ```
+
+**securityIssues**
+
+In the securityIssues block you can either add or suppress security issues,
+by creating a block with `securityIssue` to define a new security issue or
+by creating a block with `suppress` to declare a security issue that should be suppressed.
+
+For adding an artifact with one or several security issues put it in a `securityIssue` block and add an artifact selector and the amount of issues you want to add.
+
+For suppressing a security issue you add a `suppress` block. There you need to add tags:
+
+* `reference` security issue reference
+* `until` date until which the security issues should be suppressed in a YYYY-MM-DD format
+
+Then you add all artifacts of the security issue reference you want to suppress.
+
+```xml
+<securityIssues>
+  <securityIssue>
+     <artifactSelector>
+        <mavenCoordinates>
+           <groupId>org.apache.logging.log4j</groupId>
+           <artifactId>log4j-core</artifactId>
+           <version>2.6.2</version>
+        </mavenCoordinates>
+     </artifactSelector>
+     <issues>
+        <issue>
+           <reference>CVE-2018-8014</reference>
+           <severity>4.9</severity>
+           <source>cve</source>
+           <status>Acknowledged</status>
+           <url>http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-8014</url>
+        </issue>
+        <issue>
+           <reference>CVE-2016-8011</reference>
+           <severity>4</severity>
+           <source>cve</source>
+           <status>Open</status>
+           <url>http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-8014</url>
+        </issue>
+     </issues>
+  </securityIssue>
+  <suppress reference="CVE-2016-8011" until="2100-01-01">
+     <artifactSelector>
+        <mavenCoordinates>
+           <groupId>org.apache.logging.log4j</groupId>
+           <artifactId>log4j-core</artifactId>
+           <version>2.6.2</version>
+        </mavenCoordinates>
+     </artifactSelector>
+  </suppress>
+</securityIssues>
+```

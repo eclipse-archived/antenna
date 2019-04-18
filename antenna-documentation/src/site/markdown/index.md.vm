@@ -5,26 +5,33 @@ validates sources and licenses and creates:
 
 * a third-party disclosure document that lists all dependencies with 
 their licenses
+* an artifact information *.csv-file containing a list of the artifacts coordinate and license data
 * a sources.zip containing all sources of the dependencies
 * a processing report.
+
+Additionally, ${docNameCap} has a [rule engine](./processors/rule-engine.html) to evaluate artifact rules
+and ${docNameCap} provides information and warnings about [security issues](./processors/security-issue-validator.html).
 
 ![Process of ${docNameCap}](../images/antenna-process.png)
 
 
 #[[##]]# Explanation of process
 
-#[[###]]# <span style="color:#73ffdb">Phase 1</span>
+#[[###]]# <span style="color:#73ffdb">Phase 1 - Analyzers</span>
 
 This phase is done by the [Maven Dependency Tree Analyzer](analyzers/mvn-dep-tree-analyzer-step.html) or/and an external tool. The tool scans your project and determines which dependencies
-and licenses are being used by it. Usually this results in an scan report which contains the findings. ${docNameCap} is able to trigger this phase for you
+and licenses are being used by it. Usually this results is a scan report which contains the findings. ${docNameCap} is able to trigger this phase for you
 [(see Workflow Configuration)](workflow-configuration.html).
 
+It is possible to add additional analyzers to the [Maven Dependency Tree Analyzer](analyzers/mvn-dep-tree-analyzer-step.html) to find more artifacts.
+This could be necessary, for example, if you use a language that is not supported by Maven or have another dependency analyzer you trust more.
+Those can be implemented externally and added to the workflow.
 
-#[[###]]# <span style="color:#73a9ff">Phase 2</span>
+#[[###]]# <span style="color:#73a9ff">Phase 2 - Processors</span>
 
-#[[####]]# Download of sources and artefacts
+#[[####]]# Download of sources and artifacts
 
-In this phase ${docNameCap} downloads the source codes and licences of the artefacts, which are defined in the report of phase 1.
+In this phase ${docNameCap} downloads the source codes and licences of the artifacts, which are defined in the report of phase 1.
 Both, the source code and the licence have to be validated.
 
 
@@ -37,7 +44,9 @@ processing report and the sources jar is handled as valid.
 **License validation**: It is checked whether a license has a license 
 text and if the artifacts list contains forbidden licenses.
 
-#[[###]]# <span style="color:#ff7873">Phase 3</span>
+It is possible to add more steps here that validate the sources for different criteria or enrich the source information.
+
+#[[###]]# <span style="color:#ff7873">Phase 3 - Generators</span>
 
 In the last phase ${docNameCap} generates the disclosure document and bundles all existing sources into a zip file.
 
@@ -46,8 +55,6 @@ In the last phase ${docNameCap} generates the disclosure document and bundles al
 All information from the artifacts list is added to the disclosure 
 document. The document contains a list of artifacts with filename,
 maven coordinates and licenses.
-
-The disclosure document functionality is provided by the `antenna-sw360-disclosure-document-generator`.
 
 The full license text is appended for each license.
 
@@ -64,10 +71,18 @@ having Maven installed. To use it, set these properties in your
 project's pom.xml file as described in 
 [How to configure ${docNameCap}](tool-configuration.html#Explanation_of_parameters).
 
+It is possible to add additional steps here that generate additional documents you might want or need.
+
 #[[###]]# Attach artifacts
 It is possible to attach artifacts created by ${docNameCap} directly to the 
 build job. For more information read
 [How to configure ${docNameCap}](tool-configuration.html#Explanation_of_parameters).
+
+#[[###]]# Attach workflow steps
+It is possible to add additional steps to the phases.
+There you can, for example, add an additional analyzer (like a JSON Analyzer),
+processor step (like a rule engine or a security issue validator)
+or generator step (like a HTML report generator).
 
 
 #[[##]]# How ${docNameCap} resolves the license
@@ -80,3 +95,6 @@ highest priority:
 1. Configured license
 2. Overwritten license
 3. Declared license
+
+However, there is a possibility to set a `finalLicense` for an artifact in the ${docNameCap} Configuration.
+Consequently, that set `finalLicense` then has priority above all other found licenses.
