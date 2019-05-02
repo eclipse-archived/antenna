@@ -287,6 +287,25 @@
         </dependencies>
     </dependencyManagement>
 
+
+    <pluginRepositories>
+      <pluginRepository>
+        <id>repo.eclipse.org</id>
+        <url>https://repo.eclipse.org/content/repositories/cbi</url>
+        <releases>
+          <enabled>true</enabled>
+        </releases>
+        <snapshots>
+          <enabled>true</enabled>
+        </snapshots>
+      </pluginRepository>
+    </pluginRepositories>
+    <repositories>
+      <repository>
+        <id>eclipse-antenna-snapshot</id>
+        <url>https://download.eclipse.org/antenna/snapshots/</url>
+      </repository>
+    </repositories>
     <build>
         <resources>
             <resource>
@@ -432,6 +451,11 @@
                     <artifactId>maven-source-plugin</artifactId>
                     <version>3.0.1</version>
                 </plugin>
+                <plugin>
+                  <groupId>org.eclipse.cbi.maven.plugins</groupId>
+                  <artifactId>eclipse-jarsigner-plugin</artifactId>
+                  <version>1.1.5</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -496,6 +520,14 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.cbi.maven.plugins</groupId>
+                <artifactId>eclipse-jarsigner-plugin</artifactId>
+                <version>1.1.5</version>
+                <configuration>
+                    <resigningStrategy>OVERWRITE</resigningStrategy>
+                </configuration>
             </plugin>
         </plugins>
     </build>
