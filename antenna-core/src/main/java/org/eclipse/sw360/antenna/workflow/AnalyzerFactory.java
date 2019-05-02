@@ -13,10 +13,12 @@ package org.eclipse.sw360.antenna.workflow;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractAnalyzer;
+import org.eclipse.sw360.antenna.api.workflow.ConfigurableWorkflowItem;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,8 +44,9 @@ public class AnalyzerFactory extends WorkflowItemFactory {
                 .filter(ar -> !Optional.ofNullable(ar.isDeactivated()).orElse(false))
                 .map(ar -> {
                     LOGGER.debug("Loading the {} analyzer", ar.getName());
-                    return WorkflowItemFactory.<AbstractAnalyzer>buildWorkflowItem(ar, ar.getConfiguration(), context);
+                    return WorkflowItemFactory.<AbstractAnalyzer>buildWorkflowItem(ar, ar.getConfiguration(), context, ar.getWorkflowStepOrder());
                 })
+                .sorted(Comparator.comparingInt(ConfigurableWorkflowItem::getWorkflowStepOrder))
                 .collect(Collectors.toList());
     }
 }

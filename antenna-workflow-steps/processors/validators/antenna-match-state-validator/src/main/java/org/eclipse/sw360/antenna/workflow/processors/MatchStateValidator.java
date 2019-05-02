@@ -36,7 +36,7 @@ public class MatchStateValidator extends AbstractComplianceChecker {
     private IEvaluationResult.Severity UNKNOWN_Severity = IEvaluationResult.Severity.WARN;
 
     public MatchStateValidator() {
-        this.workflowStepOrder = 10300;
+        this.workflowStepOrder = VALIDATOR_BASE_ORDER + 300;
     }
 
     @Override

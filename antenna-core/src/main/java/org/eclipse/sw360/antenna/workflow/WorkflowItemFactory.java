@@ -26,7 +26,7 @@ import java.util.Optional;
 public abstract class WorkflowItemFactory {
     protected static final Logger LOGGER = LoggerFactory.getLogger(WorkflowItemFactory.class);
 
-    protected static <T extends ConfigurableWorkflowItem> T buildWorkflowItem(WorkflowStep wfi, StepConfiguration stepConfiguration, AntennaContext context) {
+    protected static <T extends ConfigurableWorkflowItem> T buildWorkflowItem(WorkflowStep wfi, StepConfiguration stepConfiguration, AntennaContext context, Short stepOrderOveride) {
         Map<String, String> workflowitemConfig = Optional.ofNullable(stepConfiguration)
                 .map(StepConfiguration::getAsMap)
                 .orElse(Collections.emptyMap());
@@ -38,6 +38,7 @@ public abstract class WorkflowItemFactory {
             Class<T> workflowitemClazz = (Class<T>) Class.forName(classHint);
             T instance = workflowitemClazz.newInstance();
             instance.setAntennaContext(context);
+            instance.overrideStepOrder(stepOrderOveride);
             instance.configure(workflowitemConfig);
             LOGGER.info("{} loaded and configured", name);
             return instance;

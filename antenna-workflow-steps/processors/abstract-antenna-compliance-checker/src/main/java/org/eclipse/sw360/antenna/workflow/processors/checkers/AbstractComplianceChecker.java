@@ -32,7 +32,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
     protected static final String FAIL_ON_KEY = "failOn";
 
     public AbstractComplianceChecker() {
-        this.workflowStepOrder = 10000;
+        this.workflowStepOrder = VALIDATOR_BASE_ORDER;
     }
 
     public abstract IPolicyEvaluation evaluate(Collection<Artifact> artifacts) throws AntennaException;

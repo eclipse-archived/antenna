@@ -45,7 +45,7 @@ public class SecurityIssueValidator extends AbstractComplianceChecker {
     private Map<String, Map<ArtifactSelector, GregorianCalendar>> suppressedSecurityIssues;
 
     public SecurityIssueValidator() {
-        this.workflowStepOrder = 10400;
+        this.workflowStepOrder = VALIDATOR_BASE_ORDER + 400;
     }
 
     public List<IEvaluationResult> validate(Artifact artifact) {

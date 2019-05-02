@@ -18,8 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class AntennaWorkflowConfiguration {
@@ -44,28 +42,24 @@ public class AntennaWorkflowConfiguration {
         if (analyzers.isEmpty()) {
             LOGGER.warn("No analyzers found. You might want to check your configuration.");
         }
-        analyzers.sort(Comparator.comparingInt(ConfigurableWorkflowItem::getWorkflowStepOrder));
-        warnOnDuplicateOrders(analyzers);
+        debugLogAndWarnOnDuplicateOrders("analyzers", analyzers);
 
         // initialize processors
         processors = ProcessorFactory.getProcessors(workflow, context);
         if (processors.isEmpty()) {
             LOGGER.warn("No processors found. You might want to check your configuration.");
         }
-        processors.sort(Comparator.comparingInt(ConfigurableWorkflowItem::getWorkflowStepOrder));
-        warnOnDuplicateOrders(processors);
+        debugLogAndWarnOnDuplicateOrders("processors", processors);
 
         // initialize generators
         generators = GeneratorFactory.getGenerators(workflow, context);
         if (generators.isEmpty()) {
             LOGGER.warn("No generators found. You might want to check your configuration.");
         }
-        generators.sort(Comparator.comparingInt(ConfigurableWorkflowItem::getWorkflowStepOrder));
-        warnOnDuplicateOrders(generators);
+        debugLogAndWarnOnDuplicateOrders("generators", generators);
 
         outputHandlers = OutputHandlerFactory.getOutputHandlers(workflow, context);
-        outputHandlers.sort(Comparator.comparingInt(ConfigurableWorkflowItem::getWorkflowStepOrder));
-        warnOnDuplicateOrders(outputHandlers);
+        debugLogAndWarnOnDuplicateOrders("outputHandlers", outputHandlers);
 
         LOGGER.info("Initializing workflow configuration done");
     }
@@ -86,10 +80,12 @@ public class AntennaWorkflowConfiguration {
         return outputHandlers;
     }
 
-    private void warnOnDuplicateOrders(List<? extends ConfigurableWorkflowItem> items) {
-        for (int i = 0; i < items.size() - 1; i++) {
-            if (items.get(i).getWorkflowStepOrder() == items.get(i + 1).getWorkflowStepOrder()) {
-                LOGGER.warn("Workflow steps " + items.get(i).getWorkflowItemName() + " and " + items.get(i + 1).getWorkflowItemName() + " have the same step order. The former will be executed before the latter.");
+    private void debugLogAndWarnOnDuplicateOrders(String nameOfSteps, List<? extends ConfigurableWorkflowItem> items) {
+        LOGGER.info("The calculated order of " + nameOfSteps + " is:");
+        for (int i = 0; i < items.size() ; i++) {
+            LOGGER.info("    - " + items.get(i).getWorkflowStepOrder() + ": " + items.get(i).getWorkflowItemName());
+            if (i > 0 && items.get(i - 1).getWorkflowStepOrder() == items.get(i).getWorkflowStepOrder()) {
+                LOGGER.warn("Workflow steps " + items.get(i - 1).getWorkflowItemName() + " and " + items.get(i).getWorkflowItemName() + " have the same step order. The former will be executed before the latter.");
             }
         }
     }

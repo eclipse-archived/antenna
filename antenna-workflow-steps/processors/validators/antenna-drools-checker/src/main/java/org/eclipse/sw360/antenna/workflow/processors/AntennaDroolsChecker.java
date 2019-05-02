@@ -29,7 +29,7 @@ public class AntennaDroolsChecker extends AbstractComplianceChecker {
     private static final String NO_VERSION = "no version string specified";
 
     public AntennaDroolsChecker() {
-        this.workflowStepOrder = 20000;
+        this.workflowStepOrder = VALIDATOR_BASE_ORDER + 10000;
     }
 
     @Override

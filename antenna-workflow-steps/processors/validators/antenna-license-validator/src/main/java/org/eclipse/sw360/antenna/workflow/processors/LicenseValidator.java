@@ -53,7 +53,7 @@ public class LicenseValidator extends AbstractComplianceChecker {
     private List<String> ignoredLicenseIds;
 
     public LicenseValidator() {
-        this.workflowStepOrder = 10200;
+        this.workflowStepOrder = VALIDATOR_BASE_ORDER + 200;
     }
 
     /**
