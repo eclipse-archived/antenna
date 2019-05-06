@@ -42,7 +42,6 @@ public class AntennaWorkflowConfiguration {
         if (analyzers.isEmpty()) {
             LOGGER.warn("No analyzers found. You might want to check your configuration.");
         }
-        debugLogAndWarnOnDuplicateOrders("analyzers", analyzers);
 
         // initialize processors
         processors = ProcessorFactory.getProcessors(workflow, context);
@@ -56,10 +55,8 @@ public class AntennaWorkflowConfiguration {
         if (generators.isEmpty()) {
             LOGGER.warn("No generators found. You might want to check your configuration.");
         }
-        debugLogAndWarnOnDuplicateOrders("generators", generators);
 
         outputHandlers = OutputHandlerFactory.getOutputHandlers(workflow, context);
-        debugLogAndWarnOnDuplicateOrders("outputHandlers", outputHandlers);
 
         LOGGER.info("Initializing workflow configuration done");
     }

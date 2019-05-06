@@ -67,36 +67,36 @@ The following example shows a workflow with one analyzer, one additional process
 <workflow>
     <analyzers>
         <step>
-          <name>Example Analyzer</name>
-          <classHint>full.qualified.class.name</classHint>
-          <configuration>
-            <entry key="configuration_key_1" value="configuration_value_1" />
-            <entry key="configuration_key_2" value="configuration_value_2" />
-          </configuration>
+            <name>Example Analyzer</name>
+            <classHint>full.qualified.class.name</classHint>
+            <configuration>
+                <entry key="configuration_key_1" value="configuration_value_1" />
+                <entry key="configuration_key_2" value="configuration_value_2" />
+            </configuration>
         </step>
     </analyzers>
-      <processors>
+    <processors>
         <step>
-          <name>Arbitrary processor</name>
-          <classHint>full.qualified.processor.class.name</classHint>
-          <configuration>
-                     <entry key="configuration_key_2" value="configuration_value_2" />
-          </configuration>
+            <name>Arbitrary processor</name>
+            <classHint>full.qualified.processor.class.name</classHint>
+            <configuration>
+                <entry key="configuration_key_2" value="configuration_value_2" />
+            </configuration>
         </step>
-      </processors>
+    </processors>
     <generators>
         <step>
-          <name>First Generator</name>
-          <classHint>full.qualified.generator1.class.name</classHint>
-       <configuration>
-                  <entry key="configuration_key_1" value="configuration_value_1" />
-       </configuration>
+            <name>First Generator</name>
+            <classHint>full.qualified.generator1.class.name</classHint>
+            <configuration>
+                <entry key="configuration_key_1" value="configuration_value_1" />
+            </configuration>
         </step>
         <step>
-          <name>Second Generator</name>
-          <classHint>full.qualified.generator2.class.name</classHint>
+            <name>Second Generator</name>
+            <classHint>full.qualified.generator2.class.name</classHint>
         </step>
-      </generators>
+    </generators>
 </workflow>
 ```
 ### Workflow order
@@ -113,16 +113,16 @@ The evaluated order, together with the used values for `workflowStepOrder`, is l
 One is able to override the order value corresponding to a workflow step using the `workflowStepOrder` tag. This could look something like
 ```xml
 <workflow>
-      <processors>
+    <processors>
         <step>
-          <name>Arbitrary processor</name>
-          <classHint>full.qualified.processor.class.name</classHint>
-          <configuration>
-                     <entry key="configuration_key_2" value="configuration_value_2" />
-          </configuration>
-          <workflowStepOrder>150</workflowStepOrder>
+            <name>Arbitrary processor</name>
+            <classHint>full.qualified.processor.class.name</classHint>
+            <configuration>
+                <entry key="configuration_key_2" value="configuration_value_2" />
+            </configuration>
+            <workflowStepOrder>150</workflowStepOrder>
         </step>
-      </processors>
+    </processors>
 </workflow>
 ```
 This would move the `Arbitrary processor` to the front, but not before e.g. the `AntennaConfHandler` with order number `0`.
