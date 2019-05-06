@@ -14,6 +14,7 @@ import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WorkflowStepResult {
     private final Set<Artifact> artifacts = new HashSet<>();
@@ -64,5 +65,14 @@ public class WorkflowStepResult {
 
     public boolean isArtifactsShouldBeAppended() {
         return artifactsShouldBeAppended;
+    }
+
+    public List<Artifact> getPotentialDuplicatesWith(WorkflowStepResult compareWsr) {
+        return this.artifacts.stream()
+                .flatMap(artifact ->
+                    compareWsr.getArtifacts().stream()
+                            .filter(artifact::isPotentialDuplicateOf)
+                )
+                .collect(Collectors.toList());
     }
 }
