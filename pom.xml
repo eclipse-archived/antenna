@@ -45,7 +45,6 @@
 
     <modules>
         <module>antenna-license-provider</module>
-        <module>antenna-api</module>
         <module>antenna-model</module>
         <module>antenna-testing</module>
         <module>antenna-core</module>
