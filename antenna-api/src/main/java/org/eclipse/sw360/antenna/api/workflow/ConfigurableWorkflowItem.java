@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ConfigurableWorkflowItem implements IWorkflowable {
+public abstract class ConfigurableWorkflowItem {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurableWorkflowItem.class);
     protected IProcessingReporter reporter;
@@ -32,6 +32,14 @@ public abstract class ConfigurableWorkflowItem implements IWorkflowable {
     public void setAntennaContext(AntennaContext context) {
         this.context = context;
         this.reporter = context.getProcessingReporter();
+    }
+
+    public String getWorkflowItemName() {
+        return getClass().getName();
+    }
+
+    public void cleanup() {
+        // NO OP
     }
 
     public void overrideStepOrder(Short override) {

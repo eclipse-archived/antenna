@@ -17,7 +17,7 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import java.util.Collection;
 import java.util.Map;
 
-public abstract class AbstractGenerator extends ConfigurableWorkflowItem implements IWorkflowable {
+public abstract class AbstractGenerator extends ConfigurableWorkflowItem {
     public Map<String,IAttachable> produce(ProcessingState previousState) throws AntennaException {
         return produce(previousState.getArtifacts());
     }

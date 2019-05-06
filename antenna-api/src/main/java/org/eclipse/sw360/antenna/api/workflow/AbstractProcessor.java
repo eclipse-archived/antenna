@@ -15,7 +15,7 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 import java.util.Collection;
 
-public abstract class AbstractProcessor extends ConfigurableWorkflowItem implements IWorkflowable {
+public abstract class AbstractProcessor extends ConfigurableWorkflowItem {
     final public WorkflowStepResult process(ProcessingState previousState) throws AntennaException {
         WorkflowStepResult newResult = new WorkflowStepResult(process(previousState.getArtifacts()));
         return postProcessResult(newResult);

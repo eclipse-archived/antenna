@@ -127,6 +127,6 @@ public class AntennaWorkflow {
     private void cleanup() {
         Stream.of(analyzers, processors, generators, postSinksHooks)
                 .flatMap(Collection::stream)
-                .forEach(IWorkflowable::cleanup);
+                .forEach(ConfigurableWorkflowItem::cleanup);
     }
 }
