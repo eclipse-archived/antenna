@@ -300,12 +300,6 @@
         </snapshots>
       </pluginRepository>
     </pluginRepositories>
-    <repositories>
-      <repository>
-        <id>eclipse-antenna-snapshot</id>
-        <url>https://download.eclipse.org/antenna/snapshots/</url>
-      </repository>
-    </repositories>
     <build>
         <resources>
             <resource>
