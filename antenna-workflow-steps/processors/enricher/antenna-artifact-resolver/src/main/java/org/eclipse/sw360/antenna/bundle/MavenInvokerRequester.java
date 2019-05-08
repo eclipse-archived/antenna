@@ -62,8 +62,6 @@ public class MavenInvokerRequester extends IArtifactRequester {
         this.defaultInvoker = defaultInvoker;
         if (System.getenv("M2_HOME") != null) {
             defaultInvoker.setMavenExecutable(new File(System.getenv("M2_HOME")));
-        } else {
-            LOGGER.warn("Variable M2_HOME is undefined. If you have any problems using the MavenInvokerRequester, please set this variable.");
         }
         this.sourceRepositoryUrl = sourceRepositoryUrl;
     }
