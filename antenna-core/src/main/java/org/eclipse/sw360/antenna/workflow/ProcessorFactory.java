@@ -13,10 +13,12 @@ package org.eclipse.sw360.antenna.workflow;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
+import org.eclipse.sw360.antenna.api.workflow.ConfigurableWorkflowItem;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,8 +47,9 @@ public class ProcessorFactory extends WorkflowItemFactory {
                 .filter(pr -> !Optional.ofNullable(pr.isDeactivated()).orElse(false))
                 .map(pr -> {
                     LOGGER.debug("Loading the {} processor", pr.getName());
-                    return WorkflowItemFactory.<AbstractProcessor>buildWorkflowItem(pr, pr.getConfiguration(), context);
+                    return WorkflowItemFactory.<AbstractProcessor>buildWorkflowItem(pr, pr.getConfiguration(), context, pr.getWorkflowStepOrder());
                 })
+                .sorted(Comparator.comparingInt(ConfigurableWorkflowItem::getWorkflowStepOrder))
                 .collect(Collectors.toList());
     }
 }

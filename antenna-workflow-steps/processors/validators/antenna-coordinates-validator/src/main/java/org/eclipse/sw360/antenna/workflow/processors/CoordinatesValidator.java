@@ -30,7 +30,7 @@ public class CoordinatesValidator extends AbstractComplianceChecker {
     private IEvaluationResult.Severity missingCoordinatesSeverity;
 
     public CoordinatesValidator() {
-        this.workflowStepOrder = 10100;
+        this.workflowStepOrder = VALIDATOR_BASE_ORDER + 100;
     }
 
     @Override

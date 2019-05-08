@@ -27,10 +27,17 @@ public abstract class ConfigurableWorkflowItem implements IWorkflowable {
     protected IProcessingReporter reporter;
     protected AntennaContext context;
     protected short workflowStepOrder = 1000;
+    protected final short VALIDATOR_BASE_ORDER = 10000;
 
     public void setAntennaContext(AntennaContext context) {
         this.context = context;
         this.reporter = context.getProcessingReporter();
+    }
+
+    public void overrideStepOrder(Short override) {
+        if(override != null && override >= 0) {
+            workflowStepOrder = override;
+        }
     }
 
     public void configure() throws AntennaConfigurationException {

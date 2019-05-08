@@ -53,6 +53,7 @@
             <xsd:element name="classHint" type="xsd:string"/>
             <xsd:element name="configuration" type="stepConfiguration" minOccurs="0"/>
             <xsd:element name="deactivated" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="workflowStepOrder" type="xsd:short" default="-1" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
 

@@ -47,7 +47,7 @@ public class SourceValidator extends AbstractComplianceChecker {
     private IEvaluationResult.Severity incompleteSourcesSeverity;
 
     public SourceValidator() {
-        this.workflowStepOrder = 10500;
+        this.workflowStepOrder = VALIDATOR_BASE_ORDER + 500;
     }
 
     private boolean isArtifactAllowedToHaveNoSourceJar(Artifact artifact) {
