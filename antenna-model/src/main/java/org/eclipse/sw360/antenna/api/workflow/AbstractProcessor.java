@@ -10,17 +10,20 @@
  */
 package org.eclipse.sw360.antenna.api.workflow;
 
-import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 import java.util.Collection;
-import java.util.Map;
 
-public abstract class AbstractGenerator extends ConfigurableWorkflowItem implements IWorkflowable {
-    public Map<String,IAttachable> produce(ProcessingState previousState) throws AntennaException {
-        return produce(previousState.getArtifacts());
+public abstract class AbstractProcessor extends ConfigurableWorkflowItem {
+    final public WorkflowStepResult process(ProcessingState previousState) throws AntennaException {
+        WorkflowStepResult newResult = new WorkflowStepResult(process(previousState.getArtifacts()));
+        return postProcessResult(newResult);
     }
 
-    public abstract Map<String,IAttachable> produce(Collection<Artifact> intermediates) throws AntennaException;
+    public abstract Collection<Artifact> process(Collection<Artifact> intermediates) throws AntennaException;
+
+    public WorkflowStepResult postProcessResult(WorkflowStepResult result) {
+        return result;
+    }
 }

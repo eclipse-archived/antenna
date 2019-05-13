@@ -15,6 +15,6 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 
 import java.util.Map;
 
-public abstract class AbstractOutputHandler extends ConfigurableWorkflowItem implements IWorkflowable {
+public abstract class AbstractOutputHandler extends ConfigurableWorkflowItem {
     public abstract void handle(Map<String,IAttachable> generatedOutput) throws AntennaException;
 }

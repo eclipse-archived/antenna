@@ -16,7 +16,7 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 /**
  * Executes an analysis of the source code artifacts in a project.
  */
-public abstract class AbstractAnalyzer extends ConfigurableWorkflowItem implements IWorkflowable {
+public abstract class AbstractAnalyzer extends ConfigurableWorkflowItem {
 
     /**
      * @return Identifies this analyzer.
