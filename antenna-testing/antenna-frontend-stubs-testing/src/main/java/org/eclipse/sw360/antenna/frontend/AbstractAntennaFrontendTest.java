@@ -18,6 +18,7 @@ import org.eclipse.sw360.antenna.model.util.WorkflowComparator;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +37,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.assumeToBeConnectedToTheInternet;
+import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.checkInternetConnectionAndAssume;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
@@ -226,7 +227,7 @@ abstract public class AbstractAntennaFrontendTest {
     protected void protoypeExecutionTest(RunnableWithExceptions executor, Function<AntennaFrontend, Map<String, IAttachable>> buildArtifactsGetter)
             throws Exception {
         assumeTrue("The test data " + testData.getClass().getSimpleName() + " is not executable", testData instanceof ExecutableTestProject);
-        assumeToBeConnectedToTheInternet();
+        checkInternetConnectionAndAssume(Assume::assumeTrue);
 
         executor.run();
 

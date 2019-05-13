@@ -14,8 +14,8 @@ import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
-
-import static org.junit.Assume.assumeTrue;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 public class AntennaTestingUtils {
 
@@ -25,7 +25,17 @@ public class AntennaTestingUtils {
         // only static methods
     }
 
-    private static Optional<Exception> checkInternetConnection(String url) {
+
+    public static void checkInternetConnectionAndAssume(BiConsumer<String, Boolean> assumer) {
+        checkInternetConnection()
+                .ifPresent(e -> assumer.accept("Can not reach the internet (due to " + e.getClass().getSimpleName() + ")", false));
+    }
+
+    public static Optional<Exception> checkInternetConnection() {
+        return checkInternetConnection(testUrl);
+    }
+
+    public static Optional<Exception> checkInternetConnection(String url) {
         HttpURLConnection urlConnection = null;
         try {
             urlConnection = (HttpURLConnection)
@@ -40,11 +50,6 @@ public class AntennaTestingUtils {
                 urlConnection.disconnect();
             }
         }
-    }
-
-    public static void assumeToBeConnectedToTheInternet() {
-        checkInternetConnection(testUrl)
-                .ifPresent(e -> assumeTrue("Can not reach the internet (due to " + e.getClass().getSimpleName() + ")", false));
     }
 
     public static void setVariableValueInObject(Object object, String variable, Object value) throws IllegalAccessException {

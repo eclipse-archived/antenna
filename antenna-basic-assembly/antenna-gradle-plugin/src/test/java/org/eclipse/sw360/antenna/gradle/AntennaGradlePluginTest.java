@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.frontend.testProjects.ExampleTestProject;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,7 +26,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.assumeToBeConnectedToTheInternet;
+import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.checkInternetConnectionAndAssume;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 
 public class AntennaGradlePluginTest {
@@ -54,7 +55,7 @@ public class AntennaGradlePluginTest {
     @Ignore("steps are not on classpath")
     @Test
     public void testWithoutGradle() throws Exception {
-        assumeToBeConnectedToTheInternet();
+        checkInternetConnectionAndAssume(Assume::assumeTrue);
         AntennaImpl runner = new AntennaImpl(exampleTestProject.getProjectPom());
         runner.execute();
         assertThat(projectRoot.resolve("antenna").toFile()).exists(); // TODO
@@ -62,7 +63,7 @@ public class AntennaGradlePluginTest {
 
     @Test
     public void testWithGradle() throws Exception {
-        assumeToBeConnectedToTheInternet();
+        checkInternetConnectionAndAssume(Assume::assumeTrue);
         boolean withDebug = false; // whether to enable debugging
         BuildResult result = GradleRunner.create()
                 .withProjectDir(projectRoot.toFile())
