@@ -88,13 +88,7 @@ spec:
                 sh 'rm -rf repository'
                 sh 'mkdir -p repository'
                 container('maven') {
-                    dir ('antenna-p2') {
-                        dir ('dependencies') {
-                            // see: https://stackoverflow.com/questions/48327214/xtext-maven-build-fails-under-jenkins-docker/51278987
-                            sh 'mvn -Dmaven.repo.local=$(readlink -f ../../localRepository) --batch-mode package'
-                        }
-                        sh 'mvn -Dmaven.repo.local=$(readlink -f ../localRepository) --batch-mode package'
-                    }
+                    sh "./modules/p2/prepareDependenciesForP2.sh"
                 }
             }
         }
@@ -105,7 +99,9 @@ spec:
             steps {
                 sh 'rm -rf repository'
                 sh 'mkdir -p repository'
-                sh 'rm -rf antenna-p2/repository_manager/target'
+                container('maven') {
+                    sh "./modules/p2/cleanupDependenciesForP2.sh"
+                }
             }
         }
 
