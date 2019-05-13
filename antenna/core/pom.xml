@@ -15,6 +15,7 @@
         <artifactId>antenna-management</artifactId>
         <groupId>org.eclipse.sw360.antenna</groupId>
         <version>${revision}${qualifier}</version>
+        <relativePath>../..</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
