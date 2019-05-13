@@ -1,0 +1,568 @@
+@startuml
+
+'
+' SPDX-License-Identifier: EPL-2.0
+'
+' An architecture model of SW360antenna
+'
+
+skinparam componentStyle uml2
+
+' Antenna Product Components
+
+node "Runtime" {
+    component [Model\n(antenna-model)] as model
+    component [API\n(antenna-api)] as api
+    component [Core\n(antenna-core)] as core
+    component [Common Testing\n(antenna-core-common-testing)] as common_testing
+}
+
+node "Frontend API" {
+    component [Frontend API\n(antenna-frontend-api)] as frontend_api
+    component [Frontend Stub Testing\n(antenna-frontend-stubs-testing)] as frontend_testing
+}
+
+node "Base Workflow Steps" {
+    component [CSV Analyzer\n(antenna-csv-analyzer)] as csv_analyzer
+    component [JSON Analyzer\n(antenna-json-analyzer)] as json_analyzer
+    component [Config Analyzer\n(antenna-conf-analyzer)] as conf_analyzer
+    component [Config Processor\n(antenna-conf-processor)] as conf_processor
+    component [License KB Resolver\n(antenna-license-knowledgebase-resolver)] as lic_kb_resolver
+    component [CSV Generator\n(antenna-csv-generator)] as csv_generator
+    component [HTML Report Generator\n(antenna-HTML-report-generator)] as html_report_generator
+    component [Source Zip Generator\n(antenna-source-zip-generator)] as src_zip_generator
+    component [Test License KB\n(antenna-test-license-knowledge-base)] as test_lic_kb
+}
+
+
+node "Validators" {
+    component [Base Compliance Checker\n(abstract-antenna-compliance-checker)] as base_comp_checker
+    component [Rule Checker\n(antenna-drools-checker)] as drools_checker
+    component [Source Validator\n(antenna-source-validator)] as source_validator
+    component [Vulnerability Validator\n(antenna-security-issue-validator)] as vulnerability_validator
+    component [License Validator\n(antenna-license-validator)] as license_validator
+    component [Match State Validator\n(antenna-match-state-validator)] as match_state_validator
+    component [Coordinates Validator\n(antenna-coordinates-validator)] as coord_validator
+    component [Rule Testing\n(antenna-rule-engine-testing)] as drools_testing
+}
+
+node "Maven" {
+    component [MVN Dependency Analyzer\n(antenna-mvn-dependency-tree-analyzer)] as mvn_dep_analyzer
+    component [Artifact Resolver\n(antenna-artifact-resolver)] as artifact_resolver
+    component [Child-Jar Resolver\n(antenna-child-jar-resolver)] as child_jar_resolver
+}
+
+node "P2" {
+    component [Manifest Resolver\n(antenna-manifest-resolver)] as manifest_resolver
+    component [P2 Resolver\n(antenna-p2-resolver)] as p2_resolver
+}
+
+node "SW360" {
+    component [SW360 Adapter\n(antenna-sw360-adapter)] as sw360_adapter
+    component [SW360 Enricher\n(antenna-sw360-enricher)] as sw360_enricher
+    component [SW360 Generator\n(antenna-sw360-update-generator)] as sw360_generator
+}
+
+node "ORT" {
+    component [Ort Result Analyzer\n(antenna-ort-result-analyzer)] as ort_analyzer
+}
+
+component [License Resolver\n(antenna-license-resolver)] as license_resolver
+component [CSV License KB\n(antenna-csv-license-knowledge-base)] as csv_lic_kb
+component [Source URL Resolver\n(antenna-source-url-resolver)] as src_url_resolver
+component [Archive Output\n(antenna-add-to-archive-output-handler)] as archive_output
+component [SPDX License KB\n(antenna-spdx-license-knowledge-base)] as spdx_kb
+
+component [CLI Stub\n(cli-frontend-stub)] as cli_stub
+component [Maven Stub\n(maven-frontend-stub)] as maven_stub
+component [Gradle Stub\n(gradle-frontend-stub)] as gradle_stub
+
+component [Documentation\n(antenna-documentation)] as docu
+
+component [Basic Rules\n(antenna-basic-rules)] as basic_rules
+component [Basic Configuration\n(antenna-basic-configuration)] as base_config
+component [CLI\n(antenna-cli)] as cli
+component [Maven Plugin\n(antenna-maven-plugin)] as maven_plugin
+component [Gradle Plugin\n(antenna-gradle-plugin)] as gradle_plugin
+
+
+' Tina Components
+
+component [Protex Connector\n(tina-bdp)] as bdp <<Tina>>
+
+component [Nexus iQ Connector\n(tina-clm)] as iq <<Tina>>
+
+component [Javascript Support\n(tina-javascript)] as javascript <<Tina, obsolete>>
+
+component [Simple Rule Engine\n(osm-tina-simple-rule-engine)] as simple_rule_engine <<Tina, obsolete>>
+
+component [Drools Engine\n(osm-tina-drools-engine)] as drools_engine <<Tina, obsolete>>
+
+node "Bosch Docu Generator" {
+    component [Base PDF Report Generator\n(abstract-tina-pdf-report-generator)] as base_pdf_generator <<Tina, obsolete>>
+    component [Bosch Disclosure Document Generator\n(osm-tina-bosch-disclosure-document)] as legal_generator <<Tina, obsolete>>
+}
+
+component [Bosch Basic Configuration\n(tina-bosch-configuration)] as bosch_base_config <<Tina>>
+component [Bosch CLI\n(tina-bosch-cli)] as bosch_cli <<Tina>>
+component [Bosch Maven Plugin\n(tina-bosch-mojo)] as bosch_maven_plugin <<Tina>>
+component [Bosch Gradle Plugin\n(tina-bosch-gradle-plugin)] as bosch_gradle_plugin <<Tina>>
+
+component [Tina Documentation(documentation)] as tina_docu <<Tina>>
+
+component [Bosch License Knowledge Base (tina-knowledge-base)] as bosch_lic_kb <<Tina>>
+
+' Antenna Testing Components
+
+
+' Tina Testing
+
+component [Bosch Example Projects\n(tina-bosch-example-projects)] as tina_testing <<Tina>>
+
+' Dependencies Antenna
+
+api --> model
+
+core --> model
+
+core --> api
+
+frontend_api --> api
+
+frontend_api --> core
+
+cli_stub --> api
+
+cli_stub --> core
+
+cli_stub --> frontend_api
+
+maven_stub --> api
+
+maven_stub --> model
+
+maven_stub --> frontend_api
+
+gradle_stub --> api
+
+gradle_stub --> cli_stub
+
+base_comp_checker --> api
+
+base_comp_checker --> model
+
+drools_checker --> api
+
+drools_checker --> core
+
+drools_checker --> base_comp_checker
+
+csv_lic_kb --> api
+
+csv_analyzer --> api
+
+csv_analyzer --> model
+
+json_analyzer -> api
+
+json_analyzer -> model
+
+json_analyzer -> core
+
+mvn_dep_analyzer -> api
+
+mvn_dep_analyzer -> model
+
+mvn_dep_analyzer -> maven_stub
+
+ort_analyzer --> api
+
+ort_analyzer --> core
+
+conf_analyzer --> api
+
+conf_analyzer --> model
+
+conf_processor --> api
+
+conf_processor --> model
+
+conf_processor --> base_comp_checker
+
+artifact_resolver --> api
+
+artifact_resolver --> core
+
+child_jar_resolver --> api
+
+child_jar_resolver --> core
+
+lic_kb_resolver --> api
+
+license_resolver --> api
+
+manifest_resolver --> api
+
+manifest_resolver --> core
+
+src_url_resolver --> api
+
+src_url_resolver --> core
+
+sw360_adapter --> api
+
+sw360_adapter --> model
+
+sw360_enricher --> api
+
+sw360_enricher --> base_comp_checker
+
+sw360_enricher --> sw360_adapter
+
+coord_validator --> api
+
+coord_validator --> model
+
+coord_validator --> base_comp_checker
+
+source_validator --> api
+
+source_validator --> model
+
+source_validator --> base_comp_checker
+
+vulnerability_validator --> api
+
+vulnerability_validator --> model
+
+vulnerability_validator --> base_comp_checker
+
+license_validator --> api
+
+license_validator --> model
+
+license_validator --> base_comp_checker
+
+match_state_validator --> api
+
+match_state_validator --> model
+
+match_state_validator --> base_comp_checker
+
+csv_generator --> api
+
+csv_generator --> core
+
+html_report_generator --> api
+
+html_report_generator --> core
+
+src_zip_generator --> api
+
+src_zip_generator --> model
+
+src_zip_generator --> core
+
+src_zip_generator --> conf_processor
+
+sw360_generator --> api
+
+sw360_generator --> core
+
+sw360_generator --> sw360_adapter
+
+archive_output --> api
+
+archive_output --> model
+
+p2_resolver --> api
+
+p2_resolver --> core
+
+basic_rules --> api
+
+basic_rules --> model
+
+spdx_kb --> api
+
+base_config --> basic_rules
+
+base_config --> conf_analyzer
+
+base_config --> conf_processor
+
+base_config --> csv_analyzer
+
+base_config --> json_analyzer
+
+base_config --> mvn_dep_analyzer
+
+base_config --> ort_analyzer
+
+base_config --> artifact_resolver
+
+base_config --> drools_checker
+
+base_config --> csv_generator
+
+base_config --> html_report_generator
+
+base_config --> src_zip_generator
+
+base_config --> spdx_kb
+
+base_config --> license_resolver
+
+base_config --> child_jar_resolver
+
+base_config --> manifest_resolver
+
+base_config --> src_url_resolver
+
+base_config --> lic_kb_resolver
+
+base_config --> coord_validator
+
+base_config --> match_state_validator
+
+base_config --> source_validator
+
+base_config --> license_validator
+
+base_config --> vulnerability_validator
+
+base_config --> archive_output
+
+base_config --> sw360_generator
+
+base_config --> sw360_enricher
+
+base_config --> p2_resolver
+
+cli --> cli_stub
+
+cli --> base_config
+
+maven_plugin --> maven_stub
+
+maven_plugin --> base_config
+
+gradle_plugin --> gradle_stub
+
+gradle_plugin --> base_config
+
+' Tina Dependencies
+
+bdp --> api : tina
+
+bdp --> model : tina
+
+iq --> core : tina
+
+iq --> json_analyzer : tina
+
+iq --> api : tina
+
+iq --> model : tina
+
+javascript --> api : tina
+
+javascript --> model : tina
+
+javascript --> json_analyzer : tina
+
+simple_rule_engine --> api : tina
+
+simple_rule_engine --> model : tina
+
+simple_rule_engine --> base_comp_checker : tina
+
+drools_engine --> api : tina
+
+drools_engine --> model : tina
+
+drools_engine --> base_comp_checker : tina
+
+base_pdf_generator --> api : tina
+
+base_pdf_generator --> model : tina
+
+base_pdf_generator --> core : tina
+
+legal_generator --> api : tina
+
+legal_generator --> core : tina
+
+legal_generator --> base_pdf_generator : tina
+
+bosch_base_config --> model : tina 
+
+bosch_base_config --> csv_lic_kb : tina
+
+bosch_base_config --> bosch_lic_kb : tina 
+
+bosch_base_config --> csv_analyzer : tina
+
+bosch_base_config --> json_analyzer : tina
+
+bosch_base_config --> iq : tina
+
+bosch_base_config --> javascript : tina
+
+bosch_base_config --> conf_processor : tina
+
+bosch_base_config --> drools_engine : tina
+
+bosch_base_config --> artifact_resolver : tina
+
+bosch_base_config --> license_resolver : tina
+
+bosch_base_config --> child_jar_resolver : tina
+
+bosch_base_config --> manifest_resolver : tina
+
+bosch_base_config --> lic_kb_resolver : tina
+
+bosch_base_config --> coord_validator : tina
+
+bosch_base_config --> match_state_validator : tina
+
+bosch_base_config --> source_validator : tina
+
+bosch_base_config --> license_validator : tina
+
+bosch_base_config --> vulnerability_validator : tina
+
+bosch_base_config --> sw360_enricher : tina
+
+bosch_base_config --> p2_resolver : tina
+
+bosch_base_config --> basic_rules : tina
+
+bosch_base_config --> legal_generator : tina
+
+bosch_base_config --> csv_generator : tina
+
+bosch_base_config --> html_report_generator : tina
+
+bosch_base_config --> src_zip_generator : tina
+
+bosch_base_config --> sw360_generator : tina
+
+bosch_base_config --> archive_output : tina
+
+bosch_cli --> cli_stub : tina
+
+bosch_cli --> bosch_base_config : tina
+
+bosch_maven_plugin --> maven_stub : tina
+
+bosch_maven_plugin --> bosch_base_config : tina
+
+bosch_gradle_plugin --> gradle_stub : tina
+
+bosch_gradle_plugin --> bosch_base_config : tina
+
+' Antenna Testing Dependencies
+
+core ..> common_testing : test
+
+common_testing ..> model : test
+
+common_testing ..> api : test
+
+frontend_testing ..> api : test
+
+frontend_testing ..> common_testing : test
+
+frontend_testing ..> cli_stub : test
+
+frontend_testing ..> maven_stub : test
+
+frontend_testing ..> gradle_stub : test
+
+test_lic_kb ..> model : test
+
+test_lic_kb ..> api : test
+
+base_comp_checker ..> common_testing : test
+
+drools_testing ..> api : test
+
+drools_testing ..> drools_checker : test
+
+csv_analyzer ..> common_testing : test
+
+conf_analyzer ..> common_testing : test
+
+conf_analyzer ..> core : test
+
+conf_processor ..> common_testing : test
+
+conf_processor ..> core : test
+
+artifact_resolver ..> common_testing : test
+
+child_jar_resolver ..> common_testing : test
+
+license_resolver ..> common_testing : test
+
+manifest_resolver ..> common_testing : test
+
+src_url_resolver ..> common_testing : test
+
+sw360_enricher ..> common_testing : test
+
+coord_validator ..> common_testing : test
+
+source_validator ..> common_testing : test
+
+vulnerability_validator ..> common_testing : test
+
+license_validator ..> common_testing : test
+
+match_state_validator ..> common_testing : test
+
+html_report_generator ..> common_testing : test
+
+src_zip_generator ..> common_testing : test
+
+archive_output ..> common_testing : test
+
+p2_resolver ..> common_testing : test
+
+basic_rules ..> drools_testing : test
+
+base_config ..> common_testing : test
+
+cli ..> frontend_testing : test
+
+maven_plugin ..> frontend_testing : test
+
+gradle_plugin ..> frontend_testing : test
+
+gradle_plugin ..> common_testing : test
+
+' Tina Test Dependencies
+
+bdp ..> common_testing : test
+
+iq ..> common_testing : test
+
+base_pdf_generator ..> common_testing : test
+
+legal_generator ..> common_testing : test
+
+legal_generator ..> model : test
+
+bosch_base_config ..> common_testing : test
+
+bosch_maven_plugin ..> frontend_testing : test
+
+tina_testing ..> frontend_testing : test
+
+bosch_gradle_plugin ..> tina_testing : test
+
+bosch_gradle_plugin ..> frontend_testing : test
+
+@enduml
