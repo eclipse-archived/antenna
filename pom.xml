@@ -31,7 +31,7 @@
         <maven.version>3.3.9</maven.version>
         <maven.shared.version>3.0.1</maven.shared.version>
         <mockito.version>2.23.0</mockito.version>
-        <slf4j.version>1.7.25</slf4j.version>
+        <slf4j.version>1.7.26</slf4j.version>
         <spring.version>5.1.2.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

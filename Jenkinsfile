@@ -151,7 +151,7 @@ spec:
                     sh '''
                       tmpdir="$(mktemp -d)"
                       locRep="$(readlink -f localRepository)"
-                      cp -r example-projects/example-project example-projects/example-policies $tmpdir
+                      cp -r example-projects/example-project $tmpdir
                       cd $tmpdir/example-project
                       mvn -Dmaven.repo.local="$locRep" \
                         --batch-mode \
@@ -162,7 +162,7 @@ spec:
                     // test as CLI tool
                     sh '''
                       tmpdir="$(mktemp -d)"
-                      cp -r example-projects/example-project example-projects/example-policies $tmpdir
+                      cp -r example-projects/example-project $tmpdir
                       .travis/runCLI.sh $tmpdir/example-project
                       java -jar antenna-testing/antenna-frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject $tmpdir/example-project/target
                     '''

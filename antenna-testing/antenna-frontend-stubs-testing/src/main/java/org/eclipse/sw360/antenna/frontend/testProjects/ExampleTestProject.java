@@ -39,9 +39,9 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     @Override
     public List<String> getOutOfProjectFilesToCopy() {
         return Stream.of(
-                "../example-policies/rules/DummyRule.drl",
-                "../example-policies/policies.properties",
-                "../example-policies/policies.xml")
+                "./src/example-policies/rules/DummyRule.drl",
+                "./src/example-policies/policies.properties",
+                "./src/example-policies/policies.xml")
                 .collect(Collectors.toList());
     }
 
@@ -111,7 +111,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                 .collect(Collectors.toList());
         Map<String, String> droolsConfig = new HashMap<String, String>() {{
             put("base.dir", projectRoot.toString());
-            put("folder.paths", "../example-policies");
+            put("folder.paths", "./src/example-policies");
             put("failOn", "WARN");
         }};
         WorkflowStep checker1 = mkWorkflowStep("Drools Policy Engine", "org.eclipse.sw360.antenna.workflow.processors.AntennaDroolsChecker", droolsConfig);
