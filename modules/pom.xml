@@ -23,6 +23,8 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>maven</module>
+        <module>sw360</module>
         <module>p2</module>
     </modules>
 </project>

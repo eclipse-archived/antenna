@@ -52,7 +52,6 @@
         <module>antenna-license-provider</module>
         <module>antenna-csv-license-knowledge-base</module>
         <module>antenna-workflow-steps</module>
-        <module>antenna-sw360-adapter</module>
         <module>antenna-documentation</module>
     </modules>
 

@@ -14,12 +14,11 @@
 
 	<parent>
 		<groupId>org.eclipse.sw360.antenna</groupId>
-		<artifactId>antenna-workflow-steps</artifactId>
+		<artifactId>antenna-maven-module</artifactId>
 		<version>${revision}${qualifier}</version>
-		<relativePath>../../..</relativePath>
 	</parent>
 
-	<artifactId>antenna-sw360-enricher</artifactId>
+	<artifactId>antenna-artifact-resolver</artifactId>
 
 	<packaging>jar</packaging>
 
@@ -31,13 +30,26 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.sw360.antenna</groupId>
-			<artifactId>abstract-antenna-compliance-checker</artifactId>
+			<artifactId>antenna-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.sw360.antenna</groupId>
-			<artifactId>antenna-sw360-adapter</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-core</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-compat</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.shared</groupId>
+			<artifactId>maven-invoker</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>compile</scope>
 		</dependency>
 		<!-- ################################ testing dependencies ################################ -->
 		<dependency>
@@ -47,18 +59,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency> <!-- necessary for mocking -->
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!-- ################################ compliance dependency ########################### -->
@@ -70,5 +72,5 @@
 			<type>zip</type>
 			<scope>provided</scope>
 		</dependency>
-    </dependencies>
+	</dependencies>
 </project>

@@ -14,12 +14,11 @@
 
 	<parent>
 		<groupId>org.eclipse.sw360.antenna</groupId>
-		<artifactId>antenna-workflow-steps</artifactId>
+		<artifactId>antenna-maven-module</artifactId>
 		<version>${revision}${qualifier}</version>
-		<relativePath>../../..</relativePath>
 	</parent>
 
-	<artifactId>antenna-child-jar-resolver</artifactId>
+	<artifactId>antenna-mvn-dependency-tree-analyzer</artifactId>
 
 	<packaging>jar</packaging>
 
@@ -29,22 +28,31 @@
 			<artifactId>antenna-model</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>maven-frontend-stub</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-core</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<!-- ################################ testing dependencies ################################ -->
 		<dependency>
-			<groupId>org.eclipse.sw360.antenna</groupId>
-			<artifactId>antenna-core-common-testing</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.apache.maven.plugin-testing</groupId>
+			<artifactId>maven-plugin-testing-harness</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.sw360.antenna</groupId>
-			<artifactId>antenna-core</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!-- ################################ compliance dependency ########################### -->

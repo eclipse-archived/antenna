@@ -26,19 +26,14 @@
         <!-- analyzers -->
         <module>analyzers/antenna-csv-analyzer</module>
         <module>analyzers/antenna-json-analyzer</module>
-        <module>analyzers/antenna-mvn-dependency-tree-analyzer</module>
         <module>analyzers/antenna-ort-result-analyzer</module>
         <module>analyzers/antenna-conf-analyzer</module>
         <!-- processors -->
         <module>processors/antenna-conf-processor</module>
         <module>processors/abstract-antenna-compliance-checker</module>
-        <module>processors/enricher/antenna-artifact-resolver</module>
-        <module>processors/enricher/antenna-child-jar-resolver</module>
         <module>processors/enricher/antenna-license-knowledgebase-resolver</module>
         <module>processors/enricher/antenna-license-resolver</module>
-        <module>processors/enricher/antenna-manifest-resolver</module>
         <module>processors/enricher/antenna-source-url-resolver</module>
-        <module>processors/enricher/antenna-sw360-enricher</module>
         <module>processors/validators/antenna-coordinates-validator</module>
         <module>processors/validators/antenna-source-validator</module>
         <module>processors/validators/antenna-security-issue-validator</module>
@@ -49,7 +44,6 @@
         <module>generators/antenna-csv-generator</module>
         <module>generators/antenna-HTML-report-generator</module>
         <module>generators/antenna-source-zip-generator</module>
-        <module>generators/antenna-sw360-update-generator</module>
         <!-- outputHandlers -->
         <module>outputHandlers/antenna-add-to-archive-output-handler</module>
     </modules>

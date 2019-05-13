@@ -17,25 +17,13 @@
         <version>${revision}${qualifier}</version>
     </parent>
 
-    <artifactId>antenna-p2-module</artifactId>
-    <name>antenna-p2-module</name>
+    <artifactId>antenna-sw360-module</artifactId>
+    <name>antenna-sw360-module</name>
     <packaging>pom</packaging>
 
     <modules>
-        <module>antenna-manifest-resolver</module>
+        <module>antenna-sw360-adapter</module>
+        <module>antenna-sw360-enricher</module>
+        <module>antenna-sw360-update-generator</module>
     </modules>
-
-    <profiles>
-        <profile>
-            <id>with-p2</id>
-            <activation>
-                <file>
-                    <exists>./antenna-p2-product/repository_manager/target/products</exists>
-                </file>
-            </activation>
-            <modules>
-                <module>antenna-p2-resolver</module>
-            </modules>
-        </profile>
-    </profiles>
 </project>
