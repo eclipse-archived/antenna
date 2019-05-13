@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * she must also add it to the pom.xml of the maven-frontend-stub.
  */
 public class DependencyTest {
-    private static final Path PARENT_POM = Paths.get(DependencyTest.class.getProtectionDomain().getCodeSource().getLocation().getPath()).resolve("../../../../pom.xml").normalize();
+    private static final Path PARENT_POM = Paths.get(DependencyTest.class.getProtectionDomain().getCodeSource().getLocation().getPath()).resolve("../../../../../pom.xml").normalize();
     private static final Path MAVEN_FRONTEND_POM = Paths.get(DependencyTest.class.getProtectionDomain().getCodeSource().getLocation().getPath()).resolve("../../pom.xml").normalize();
     /*
      * List of Dependencies that explicitly do not need to be present in the pom.xml.

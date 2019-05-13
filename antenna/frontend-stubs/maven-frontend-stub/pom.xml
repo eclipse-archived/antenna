@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-model</artifactId>
+            <artifactId>antenna-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
