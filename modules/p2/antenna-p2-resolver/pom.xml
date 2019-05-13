@@ -14,9 +14,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>antenna-workflow-steps</artifactId>
+        <artifactId>antenna-p2-module</artifactId>
         <version>${revision}${qualifier}</version>
-        <relativePath>../../..</relativePath>
+        <relativePath>..</relativePath>
     </parent>
     <artifactId>antenna-p2-resolver</artifactId>
 
@@ -64,7 +64,7 @@
     <build>
         <resources>
             <resource>
-                <directory>../../../../antenna-p2/repository_manager/target/products</directory>
+                <directory>../antenna-p2-product/repository_manager/target/products</directory>
                 <includes>
                     <include>*.zip</include>
                 </includes>

@@ -207,7 +207,7 @@
             <id>with-p2</id>
             <activation>
                 <file>
-                    <exists>../../antenna-p2/repository_manager/target/products</exists>
+                    <exists>../../modules/p2/antenna-p2-product/repository_manager/target/products</exists>
                 </file>
             </activation>
             <dependencies>

@@ -53,19 +53,4 @@
         <!-- outputHandlers -->
         <module>outputHandlers/antenna-add-to-archive-output-handler</module>
     </modules>
-
-    <profiles>
-        <profile>
-            <id>with-p2</id>
-            <activation>
-                <file>
-                    <exists>../antenna-p2/repository_manager/target/products</exists>
-                </file>
-            </activation>
-            <modules>
-                <module>processors/enricher/antenna-p2-resolver</module>
-            </modules>
-        </profile>
-    </profiles>
-
 </project>

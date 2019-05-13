@@ -18,6 +18,7 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.junit.Before;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -29,7 +30,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.assumeToBeConnectedToTheInternet;
+import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.checkInternetConnectionAndAssume;
 import static org.mockito.Mockito.when;
 
 
@@ -62,7 +63,7 @@ public class P2ResolverTest {
 
     @Test
     public void testProductInstallation() throws AntennaException {
-        assumeToBeConnectedToTheInternet();
+        checkInternetConnectionAndAssume(Assume::assumeTrue);
 
         Artifact artifact = new Artifact();
         artifact.addFact(new BundleCoordinates("org.junit", "4.12.0.v201504281640"));

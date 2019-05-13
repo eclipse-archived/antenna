@@ -47,6 +47,7 @@
         <module>antenna/model</module>
         <module>antenna/core</module>
         <module>antenna/frontend-stubs</module>
+        <module>modules</module>
         <module>antenna-testing</module>
         <module>antenna-license-provider</module>
         <module>antenna-csv-license-knowledge-base</module>
