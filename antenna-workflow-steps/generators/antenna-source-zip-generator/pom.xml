@@ -31,11 +31,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.sw360.antenna</groupId>
-			<artifactId>antenna-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sw360.antenna</groupId>
 			<artifactId>antenna-conf-processor</artifactId>
 			<version>${project.version}</version>
 		</dependency>

@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.jsonreader;
 
-import org.eclipse.sw360.antenna.jsonreader.JsonReader;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
