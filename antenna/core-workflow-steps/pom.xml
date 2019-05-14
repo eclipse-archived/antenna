@@ -14,12 +14,12 @@
 
 	<parent>
 		<groupId>org.eclipse.sw360.antenna</groupId>
-		<artifactId>antenna-workflow-steps</artifactId>
+		<artifactId>antenna-management</artifactId>
 		<version>${revision}${qualifier}</version>
 		<relativePath>../..</relativePath>
 	</parent>
 
-	<artifactId>antenna-source-zip-generator</artifactId>
+	<artifactId>antenna-core-workflow-steps</artifactId>
 
 	<packaging>jar</packaging>
 
@@ -29,11 +29,32 @@
 			<artifactId>antenna-model</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.sw360.antenna</groupId>
+			<artifactId>abstract-antenna-compliance-checker</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>compile</scope>
+		</dependency>
 		<!-- ################################ testing dependencies ################################ -->
 		<dependency>
 			<groupId>org.eclipse.sw360.antenna</groupId>
 			<artifactId>antenna-core-common-testing</artifactId>
 			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.sw360.antenna</groupId>
+			<artifactId>antenna-core</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!-- ################################ compliance dependency ########################### -->
