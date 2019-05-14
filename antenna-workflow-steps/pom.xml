@@ -28,7 +28,6 @@
         <module>analyzers/antenna-json-analyzer</module>
         <module>analyzers/antenna-ort-result-analyzer</module>
         <!-- processors -->
-        <module>processors/abstract-antenna-compliance-checker</module>
         <module>processors/enricher/antenna-license-knowledgebase-resolver</module>
         <module>processors/enricher/antenna-license-resolver</module>
         <module>processors/enricher/antenna-source-url-resolver</module>
@@ -37,7 +36,6 @@
         <module>processors/validators/antenna-security-issue-validator</module>
         <module>processors/validators/antenna-license-validator</module>
         <module>processors/validators/antenna-match-state-validator</module>
-        <module>processors/validators/antenna-drools-checker</module>
         <!-- generators -->
         <module>generators/antenna-csv-generator</module>
         <module>generators/antenna-HTML-report-generator</module>

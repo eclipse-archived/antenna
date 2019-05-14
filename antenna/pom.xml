@@ -9,21 +9,24 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>antenna</artifactId>
+        <artifactId>antenna-management</artifactId>
         <version>${revision}${qualifier}</version>
     </parent>
 
-    <artifactId>antenna-frontend-stubs</artifactId>
-    <name>antenna-frontend-stubs</name>
+    <artifactId>antenna</artifactId>
+    <name>antenna</name>
     <packaging>pom</packaging>
 
     <modules>
-        <module>cli-frontend-stub</module>
-        <module>gradle-frontend-stub</module>
-        <module>maven-frontend-stub</module>
+        <module>model</module>
+        <module>core</module>
+        <module>core-workflow-steps</module>
+        <module>frontend-stubs</module>
+        <module>abstract-antenna-compliance-checker</module>
     </modules>
 </project>

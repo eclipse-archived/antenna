@@ -13,17 +13,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>antenna</artifactId>
+        <artifactId>antenna-modules</artifactId>
         <version>${revision}${qualifier}</version>
     </parent>
 
-    <artifactId>antenna-frontend-stubs</artifactId>
-    <name>antenna-frontend-stubs</name>
+    <artifactId>antenna-drools-module</artifactId>
+    <name>antenna-drools-module</name>
     <packaging>pom</packaging>
 
     <modules>
-        <module>cli-frontend-stub</module>
-        <module>gradle-frontend-stub</module>
-        <module>maven-frontend-stub</module>
+        <module>antenna-drools-checker</module>
     </modules>
 </project>

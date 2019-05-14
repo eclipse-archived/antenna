@@ -14,9 +14,8 @@
 
 	<parent>
 		<groupId>org.eclipse.sw360.antenna</groupId>
-		<artifactId>antenna-workflow-steps</artifactId>
+		<artifactId>antenna</artifactId>
 		<version>${revision}${qualifier}</version>
-		<relativePath>../..</relativePath>
 	</parent>
 
 	<artifactId>abstract-antenna-compliance-checker</artifactId>

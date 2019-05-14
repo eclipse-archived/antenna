@@ -44,10 +44,7 @@
     </scm>
 
     <modules>
-        <module>antenna/model</module>
-        <module>antenna/core</module>
-        <module>antenna/frontend-stubs</module>
-        <module>antenna/core-workflow-steps</module>
+        <module>antenna</module>
         <module>modules</module>
         <module>antenna-testing</module>
         <module>antenna-license-provider</module>
