@@ -40,7 +40,7 @@ public class JsonReaderTest {
     public void testMapLicenses() throws URISyntaxException, IOException {
         Path recordFilePath = Paths.get(".", "target", "foo");
         JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), StandardCharsets.UTF_8);
-        URI uri = this.getClass().getClassLoader().getResource("data.json").toURI();
+        URI uri = this.getClass().getClassLoader().getResource("JsonReaderTest/data.json").toURI();
         InputStream iStream = Files.newInputStream(Paths.get(uri));
         artifacts = jsonReader.createArtifactsList(iStream);
         assertThat(artifacts.get(0).askForGet(DeclaredLicenseInformation.class).get().evaluate()).isEqualTo("( license1 AND ( license2 AND license3 ) )");
@@ -50,7 +50,7 @@ public class JsonReaderTest {
     public void testMappingAdditionalInformationForLicenses() throws URISyntaxException, IOException {
         Path recordFilePath = Paths.get(".", "target", "foo");
         JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), StandardCharsets.UTF_8);
-        URI uri = this.getClass().getClassLoader().getResource("data.json").toURI();
+        URI uri = this.getClass().getClassLoader().getResource("JsonReaderTest/data.json").toURI();
         InputStream iStream = Files.newInputStream(Paths.get(uri));
         artifacts = jsonReader.createArtifactsList(iStream);
 
@@ -63,7 +63,7 @@ public class JsonReaderTest {
     public void testParseData2() throws URISyntaxException, IOException {
         Path recordFilePath = Paths.get(".", "target", "foo");
         JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), StandardCharsets.UTF_8);
-        URI uri = this.getClass().getClassLoader().getResource("data2.json").toURI();
+        URI uri = this.getClass().getClassLoader().getResource("JsonReaderTest/data2.json").toURI();
         InputStream iStream = Files.newInputStream(Paths.get(uri));
 
         artifacts = jsonReader.createArtifactsList(iStream);
@@ -95,7 +95,7 @@ public class JsonReaderTest {
     public void testMapCoordinates() throws URISyntaxException, IOException {
         Path recordFilePath = Paths.get(".", "target", "foo");
         JsonReader jsonReader = new JsonReader(recordFilePath, Paths.get("tmp"), StandardCharsets.UTF_8);
-        URI uri = this.getClass().getClassLoader().getResource("data3.json").toURI();
+        URI uri = this.getClass().getClassLoader().getResource("JsonReaderTest/data3.json").toURI();
         InputStream iStream = Files.newInputStream(Paths.get(uri));
         artifacts = jsonReader.createArtifactsList(iStream);
 

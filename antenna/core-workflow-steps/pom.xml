@@ -30,6 +30,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.sw360.antenna</groupId>
+			<artifactId>antenna-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.sw360.antenna</groupId>
 			<artifactId>abstract-antenna-compliance-checker</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -42,16 +47,18 @@
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.cliftonlabs</groupId>
+			<artifactId>json-simple</artifactId>
+		</dependency>
 		<!-- ################################ testing dependencies ################################ -->
 		<dependency>
 			<groupId>org.eclipse.sw360.antenna</groupId>
 			<artifactId>antenna-core-common-testing</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sw360.antenna</groupId>
-			<artifactId>antenna-core</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>

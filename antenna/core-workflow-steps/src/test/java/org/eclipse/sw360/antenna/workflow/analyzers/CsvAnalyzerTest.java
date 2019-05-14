@@ -47,7 +47,7 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
         analyzer.setAntennaContext(antennaContextMock);
 
         Map<String, String> configMap = new HashMap<>();
-        configMap.put("file.path", Paths.get("src", "test", "resources", "dependencies.csv").toString());
+        configMap.put("file.path", Paths.get("src", "test", "resources", "CsvAnalyzerTest", "dependencies.csv").toString());
         configMap.put("base.dir", this.getClass().getProtectionDomain().getCodeSource().toString());
         analyzer.configure(configMap);
 

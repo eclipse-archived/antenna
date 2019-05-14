@@ -35,7 +35,7 @@
         </step>
         <step>
             <name>License Resolver</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.LicenseResolver</classHint>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.LicenseResolver</classHint>
         </step>
         <step>
             <name>License Knowledgebase Resolver</name>

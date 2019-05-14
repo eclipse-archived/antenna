@@ -36,7 +36,7 @@ public final class BasicConfiguration {
         WorkflowStep enricher1 = mkWorkflowStep("Maven Artifact Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.MavenArtifactResolver");
         WorkflowStep enricher3 = mkWorkflowStep("Child Jar Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.ChildJarResolver");
         WorkflowStep enricher4 = mkWorkflowStep("Manifest Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.ManifestResolver");
-        WorkflowStep enricher5 = mkWorkflowStep("License Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.LicenseResolver");
+        WorkflowStep enricher5 = mkWorkflowStep("License Resolver", "org.eclipse.sw360.antenna.workflow.processors.LicenseResolver");
         WorkflowStep enricher6 = mkWorkflowStep("License Knowledgebase Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.LicenseKnowledgeBaseResolver");
         // validators
         WorkflowStep validator1 = mkWorkflowStep("Coordinates Validator", "org.eclipse.sw360.antenna.workflow.processors.CoordinatesValidator",

@@ -9,24 +9,19 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>antenna-management</artifactId>
+        <artifactId>antenna-modules</artifactId>
         <version>${revision}${qualifier}</version>
     </parent>
 
-    <artifactId>antenna-modules</artifactId>
-    <name>antenna-modules</name>
+    <artifactId>antenna-ort-module</artifactId>
+    <name>antenna-ort-module</name>
     <packaging>pom</packaging>
 
     <modules>
-        <module>maven</module>
-        <module>sw360</module>
-        <module>drools</module>
-        <module>p2</module>
-        <module>ort</module>
+        <module>antenna-ort-result-analyzer</module>
     </modules>
 </project>

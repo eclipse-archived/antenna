@@ -23,13 +23,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <!-- analyzers -->
-        <module>analyzers/antenna-csv-analyzer</module>
-        <module>analyzers/antenna-json-analyzer</module>
-        <module>analyzers/antenna-ort-result-analyzer</module>
-        <!-- processors -->
         <module>processors/enricher/antenna-license-knowledgebase-resolver</module>
-        <module>processors/enricher/antenna-license-resolver</module>
         <module>processors/enricher/antenna-source-url-resolver</module>
         <module>processors/validators/antenna-coordinates-validator</module>
         <module>processors/validators/antenna-source-validator</module>
