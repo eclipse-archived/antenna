@@ -38,6 +38,10 @@
 			<artifactId>slf4j-api</artifactId>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+		</dependency>
 		<!-- ################################ testing dependencies ################################ -->
 		<dependency>
 			<groupId>org.eclipse.sw360.antenna</groupId>

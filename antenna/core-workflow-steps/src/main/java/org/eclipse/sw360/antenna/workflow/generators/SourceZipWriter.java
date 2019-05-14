@@ -23,7 +23,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.eclipse.sw360.antenna.repository.Attachable;
+import org.eclipse.sw360.antenna.api.Attachable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

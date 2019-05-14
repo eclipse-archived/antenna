@@ -20,7 +20,7 @@ import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessageWithPayload;
 import org.eclipse.sw360.antenna.model.reporting.Report;
-import org.eclipse.sw360.antenna.repository.Attachable;
+import org.eclipse.sw360.antenna.api.Attachable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
