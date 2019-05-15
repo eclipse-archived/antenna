@@ -14,12 +14,11 @@
 
 	<parent>
 		<groupId>org.eclipse.sw360.antenna</groupId>
-		<artifactId>antenna-workflow-steps</artifactId>
+		<artifactId>antenna-simple-validators-module</artifactId>
 		<version>${revision}${qualifier}</version>
-		<relativePath>../../..</relativePath>
 	</parent>
 
-	<artifactId>antenna-source-validator</artifactId>
+	<artifactId>antenna-match-state-validator</artifactId>
 
 	<packaging>jar</packaging>
 

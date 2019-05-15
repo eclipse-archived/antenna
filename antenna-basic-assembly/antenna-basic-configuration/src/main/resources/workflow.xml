@@ -39,7 +39,7 @@
         </step>
         <step>
             <name>License Knowledgebase Resolver</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.LicenseKnowledgeBaseResolver</classHint>
+            <classHint>org.eclipse.sw360.antenna.workflow.processors.LicenseKnowledgeBaseResolver</classHint>
         </step>
         <!-- validators -->
         <step>

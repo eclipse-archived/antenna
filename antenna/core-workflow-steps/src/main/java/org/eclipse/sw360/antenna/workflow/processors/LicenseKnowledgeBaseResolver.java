@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.workflow.processors.enricher;
+package org.eclipse.sw360.antenna.workflow.processors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;

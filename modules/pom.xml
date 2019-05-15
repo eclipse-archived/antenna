@@ -26,6 +26,7 @@
         <module>maven</module>
         <module>sw360</module>
         <module>drools</module>
+        <module>simple-validators</module>
         <module>p2</module>
         <module>ort</module>
     </modules>
