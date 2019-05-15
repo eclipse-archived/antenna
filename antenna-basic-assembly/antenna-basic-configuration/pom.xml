@@ -27,19 +27,13 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>antenna-core-workflow-steps</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>antenna-basic-rules</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-conf-analyzer</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-conf-processor</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
@@ -74,24 +68,6 @@
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>antenna-drools-checker</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-csv-generator</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-HTML-report-generator</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-source-zip-generator</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
@@ -163,12 +139,6 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-add-to-archive-output-handler</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>antenna-sw360-update-generator</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
@@ -207,7 +177,7 @@
             <id>with-p2</id>
             <activation>
                 <file>
-                    <exists>../../antenna-p2/repository_manager/target/products</exists>
+                    <exists>../../modules/p2/antenna-p2-product/repository_manager/target/products</exists>
                 </file>
             </activation>
             <dependencies>
