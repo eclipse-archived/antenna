@@ -81,4 +81,15 @@ public class Artifact extends ArtifactCore {
                 .map(ArtifactMatchingMetadata::getMatchState)
                 .orElse(MatchState.UNKNOWN);
     }
+
+    public boolean isPotentialDuplicateOf(Artifact compareA) {
+        return this.getArtifactIdentifiers().stream()
+                .anyMatch(identifier ->
+                        compareA.getArtifactIdentifiers().stream()
+                                .anyMatch(compareIdentifier ->
+                                        compareIdentifier.matches(identifier)
+                                                || identifier.matches(compareIdentifier)
+                                )
+                );
+    }
 }
