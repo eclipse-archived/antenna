@@ -23,7 +23,6 @@
 
     <modules>
         <module>antenna-artifact-resolver</module>
-        <module>antenna-child-jar-resolver</module>
         <module>antenna-mvn-dependency-tree-analyzer</module>
     </modules>
 </project>

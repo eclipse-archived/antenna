@@ -27,17 +27,8 @@ If you want to build antenna without the p2 parts, use
 $ <b>mvn install</b>
 </pre>
 
-Otherwise, you have to use the following steps:
-
-<pre>
-$ <b>cd antenna-p2/dependencies</b>
-$ <b>mvn package</b>
-$ <b>cd ..</b>
-$ <b>mvn package</b>
-$ <b>cd ..</b>
-$ <b>mvn install</b>
-</pre>
-
+Otherwise, you can use the script `./modules/p2/prepareDependenciesForP2.sh` and afterwards call `mvn install`.
+To undo this one has the script `./modules/p2/cleanupDependenciesForP2.sh`.
 
 You can activate the following optional profiles (`build-assembly` is active by default):
 - `-P build-assembly,ci`: activates also the optional profile for continious integration and includes the system tests. 

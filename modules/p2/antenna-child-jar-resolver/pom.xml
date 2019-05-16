@@ -14,7 +14,7 @@
 
 	<parent>
 		<groupId>org.eclipse.sw360.antenna</groupId>
-		<artifactId>antenna-maven-module</artifactId>
+		<artifactId>antenna-p2-module</artifactId>
 		<version>${revision}${qualifier}</version>
 	</parent>
 

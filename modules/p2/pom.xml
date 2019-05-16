@@ -23,6 +23,7 @@
 
     <modules>
         <module>antenna-manifest-resolver</module>
+        <module>antenna-child-jar-resolver</module>
     </modules>
 
     <profiles>

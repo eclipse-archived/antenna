@@ -52,9 +52,17 @@ abstract public class AbstractAntennaFrontendTest {
 
     @Parameterized.Parameters(name = "{index}: Test data = {1}")
     public static Collection<Object[]> data() {
+        String relativePathToP2Product = "../../../../modules/p2/antenna-p2-product/repository_manager";
+        if (! Paths.get(
+                AbstractAntennaFrontendTest.class.getProtectionDomain().getCodeSource().getLocation().getPath(),
+                relativePathToP2Product).normalize().toFile().exists()) {
+            throw new RuntimeException("The folder " + relativePathToP2Product + " should be found by AbstractAntennaFrontendTest. Maybe the Path is outdated.");
+        }
+
         if (Paths.get(
                 AbstractAntennaFrontendTest.class.getProtectionDomain().getCodeSource().getLocation().getPath(),
-                "../../../../antenna-p2/repository_manager/target/products").normalize().toFile().exists()) {
+                relativePathToP2Product,
+                "target/products").normalize().toFile().exists()) {
             return Arrays.asList(new Object[][]{
                     {(Supplier<AbstractTestProjectWithExpectations>) MinimalTestProject::new, "minimal configuration"},
                     {(Supplier<AbstractTestProjectWithExpectations>) BasicTestProject::new, "basic configuration"},
