@@ -45,7 +45,12 @@
 
     <modules>
         <module>antenna</module>
-        <module>modules</module>
+        <module>modules/maven</module>
+        <module>modules/sw360</module>
+        <module>modules/drools</module>
+        <module>modules/simple-validators</module>
+        <module>modules/p2</module>
+        <module>modules/ort</module>
         <module>antenna-testing</module>
         <module>antenna-license-provider</module>
         <module>antenna-csv-license-knowledge-base</module>

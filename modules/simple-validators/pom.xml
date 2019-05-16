@@ -11,10 +11,12 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>antenna-modules</artifactId>
+        <artifactId>antenna-management</artifactId>
         <version>${revision}${qualifier}</version>
+        <relativePath>../../</relativePath>
     </parent>
 
     <artifactId>antenna-simple-validators-module</artifactId>
