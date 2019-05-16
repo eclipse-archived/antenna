@@ -25,5 +25,6 @@
 
     <modules>
         <module>antenna-drools-checker</module>
+        <module>antenna-rule-engine-testing</module>
     </modules>
 </project>
