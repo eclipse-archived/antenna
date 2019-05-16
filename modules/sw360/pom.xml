@@ -22,7 +22,7 @@
 
     <artifactId>sw360-module</artifactId>
     <name>antenna-sw360-module</name>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
