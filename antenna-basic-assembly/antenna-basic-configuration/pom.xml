@@ -37,19 +37,13 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-mvn-dependency-tree-analyzer</artifactId>
+            <artifactId>maven-module</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>ort-module</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-artifact-resolver</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
