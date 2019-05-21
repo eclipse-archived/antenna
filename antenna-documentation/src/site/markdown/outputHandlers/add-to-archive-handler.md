@@ -5,6 +5,7 @@ The add to archive handler can add generated output (for instance disclosure doc
 ### How to use
 
 To add the output handler, add the following to the workflow.xml:
+
 ```xml
     <outputHandlers>
         <step>
