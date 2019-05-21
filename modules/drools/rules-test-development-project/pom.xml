@@ -28,12 +28,7 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-api</artifactId>
-            <version>${antenna.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-model</artifactId>
+            <artifactId>model</artifactId>
             <version>${antenna.version}</version>
         </dependency>
         <dependency>
