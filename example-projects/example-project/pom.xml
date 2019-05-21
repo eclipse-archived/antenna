@@ -67,7 +67,6 @@
                     <!-- Attach all build artifacts -->
                     <attachAll>true</attachAll>
 
-                    <disableP2Resolving>true</disableP2Resolving>
                     <!-- Here you configure the path on which Antenna will find the configuration files -->
                     <configFiles>
                         <param>${project.basedir}/src/antennaconf.xml</param>
