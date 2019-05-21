@@ -26,12 +26,12 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-core</artifactId>
+            <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-model</artifactId>
+            <artifactId>model</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -42,7 +42,7 @@
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-core-common-testing</artifactId>
+            <artifactId>core-common-testing</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

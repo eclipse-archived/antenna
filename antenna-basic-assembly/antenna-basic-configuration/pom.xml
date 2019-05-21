@@ -27,7 +27,7 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-core-workflow-steps</artifactId>
+            <artifactId>core-workflow-steps</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -86,7 +86,7 @@
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-core-common-testing</artifactId>
+            <artifactId>core-common-testing</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

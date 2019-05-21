@@ -25,17 +25,17 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-model</artifactId>
+            <artifactId>model</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-core</artifactId>
+            <artifactId>core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>abstract-antenna-compliance-checker</artifactId>
+            <artifactId>abstract-compliance-checker</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

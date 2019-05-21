@@ -44,7 +44,11 @@
     </scm>
 
     <modules>
-        <module>antenna</module>
+        <module>antenna/model</module>
+        <module>antenna/core</module>
+        <module>antenna/core-workflow-steps</module>
+        <module>antenna/frontend-stubs</module>
+        <module>antenna/abstract-compliance-checker</module>
         <module>modules/maven</module>
         <module>modules/sw360</module>
         <module>modules/drools</module>

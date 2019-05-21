@@ -13,11 +13,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>antenna</artifactId>
+        <artifactId>antenna-management</artifactId>
         <version>${revision}${qualifier}</version>
+        <relativePath>../../</relativePath>
     </parent>
 
-    <artifactId>antenna-frontend-stubs</artifactId>
+    <artifactId>frontend-stubs</artifactId>
     <name>antenna-frontend-stubs</name>
     <packaging>pom</packaging>
 

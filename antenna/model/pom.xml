@@ -13,10 +13,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>antenna</artifactId>
+        <artifactId>antenna-management</artifactId>
         <version>${revision}${qualifier}</version>
+        <relativePath>../../</relativePath>
     </parent>
-    <artifactId>antenna-model</artifactId>
+
+    <artifactId>model</artifactId>
+    <name>antenna-model</name>
+
     <dependencies>
         <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>
