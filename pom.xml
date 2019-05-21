@@ -44,13 +44,13 @@
     </scm>
 
     <modules>
-        <module>antenna/model</module>
-        <module>antenna/model-testing</module>
-        <module>antenna/runtime</module>
-        <module>antenna/core-workflow-steps</module>
-        <module>antenna/frontend-stubs</module>
-        <module>antenna/frontend-stubs-testing</module>
-        <module>antenna/abstract-compliance-checker</module>
+        <module>core/model</module>
+        <module>core/model-testing</module>
+        <module>core/runtime</module>
+        <module>core/core-workflow-steps</module>
+        <module>core/frontend-stubs</module>
+        <module>core/frontend-stubs-testing</module>
+        <module>core/abstract-compliance-checker</module>
         <module>modules/maven</module>
         <module>modules/sw360</module>
         <module>modules/drools</module>
