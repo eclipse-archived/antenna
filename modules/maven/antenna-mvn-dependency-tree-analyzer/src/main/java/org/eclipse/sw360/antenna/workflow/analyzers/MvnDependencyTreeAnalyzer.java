@@ -80,7 +80,7 @@ public class MvnDependencyTreeAnalyzer extends AbstractAnalyzer {
 
     @Override
     public String getName() {
-        return "MVN DEPENDENCY TREE";
+        return "Maven dependency anaylzer";
     }
 
 }

@@ -29,9 +29,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
+            <groupId>local-test-repo.org.eclipse.sw360.antenna</groupId>
             <artifactId>example-dependency</artifactId>
             <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/local-test-repo/org/eclipse/sw360/antenna/example-dependency/1.0/example-dependency-1.0.jar</systemPath>
         </dependency>
     </dependencies>
 

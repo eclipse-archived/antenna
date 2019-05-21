@@ -6,9 +6,9 @@ This analyzer collects the maven coordinates for each dependent artifact. Collec
 ### How to use
 Add the following step into the `<analyzers>` section of your workflow.xml
 
-```xml
+```xml 
         <step>
-            <name>Maven Dependency Tree Analyzer</name>
+            <name>Maven dependency analyzer</name>
             <classHint>org.eclipse.sw360.antenna.workflow.analyzers.MvnDependencyTreeAnalyzer</classHint>
         </step>
 ```
