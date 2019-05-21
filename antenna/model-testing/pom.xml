@@ -13,14 +13,37 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>antenna-testing</artifactId>
+        <artifactId>antenna-management</artifactId>
         <version>${revision}${qualifier}</version>
+        <relativePath>../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>core-common-testing</artifactId>
+    <artifactId>model-testing</artifactId>
+    <name>antenna-model-testing</name>
 
     <build>
+        <plugins>
+            <!-- Generates the service provider definitions (i.e. META-INF/services/* -->
+            <plugin>
+                <groupId>eu.somatik.serviceloader-maven-plugin</groupId>
+                <artifactId>serviceloader-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <configuration>
+                    <services>
+                        <param>org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase</param>
+                    </services>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
         <testResources>
             <testResource>
                 <directory>src/main/resources</directory>

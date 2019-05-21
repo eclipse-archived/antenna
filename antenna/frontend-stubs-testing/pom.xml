@@ -13,12 +13,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>antenna-testing</artifactId>
+        <artifactId>antenna-management</artifactId>
         <version>${revision}${qualifier}</version>
+        <relativePath>../../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>antenna-frontend-stubs-testing</artifactId>
+    <artifactId>frontend-stubs-testing</artifactId>
+    <name>antenna-frontend-stubs-testing</name>
 
     <build>
         <resources>
@@ -79,7 +81,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>core-common-testing</artifactId>
+            <artifactId>model-testing</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

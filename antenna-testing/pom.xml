@@ -21,12 +21,6 @@
     <packaging>pom</packaging>
     <name>Antenna Testing</name>
 
-    <modules>
-        <module>antenna-core-common-testing</module>
-        <module>antenna-frontend-stubs-testing</module>
-        <module>antenna-test-license-knowledge-base</module>
-    </modules>
-
     <profiles>
         <profile>
             <id>ci</id>

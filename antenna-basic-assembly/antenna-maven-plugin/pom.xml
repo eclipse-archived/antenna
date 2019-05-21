@@ -95,7 +95,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-frontend-stubs-testing</artifactId>
+            <artifactId>frontend-stubs-testing</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
