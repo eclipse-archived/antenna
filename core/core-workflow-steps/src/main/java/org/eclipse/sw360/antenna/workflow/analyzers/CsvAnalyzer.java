@@ -28,6 +28,8 @@ import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 
 public class CsvAnalyzer extends ManualAnalyzer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CsvAnalyzer.class);
+
     private static final String NAME = "Artifact Id";
     private static final String GROUP = "Group Id";
     private static final String VERSION = "Version";
@@ -191,8 +195,12 @@ public class CsvAnalyzer extends ManualAnalyzer {
         if (record.isMapped(RELEASE_ARTIFACT_URL) && !record.get(RELEASE_ARTIFACT_URL).isEmpty()) {
             artifact.addFact(new ArtifactReleaseTagURL(record.get(RELEASE_ARTIFACT_URL)));
         }
-        if (record.isMapped(SWH_ID) && !record.get(SWH_ID).isEmpty()) {
-            artifact.addFact(new ArtifactSoftwareHeritageURL(record.get(SWH_ID)));
+        if (record.isMapped(SWH_ID)) {
+            try {
+                artifact.addFact(new ArtifactSoftwareHeritageID.Builder(record.get(SWH_ID)).build());
+            } catch (AntennaException e) {
+                LOGGER.warn(e.getMessage());
+            }
         }
         if (record.isMapped(CLEARING_STATE) && !record.get(CLEARING_STATE).isEmpty()) {
             artifact.addFact(new ArtifactClearingState(

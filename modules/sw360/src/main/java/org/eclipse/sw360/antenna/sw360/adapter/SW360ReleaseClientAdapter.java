@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -19,7 +19,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
-import org.eclipse.sw360.antenna.sw360.utils.SW360ComponentAdapterUtils;
+import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
 import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class SW360ReleaseClientAdapter {
 
     public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws IOException, AntennaException {
         SW360Release release = new SW360Release();
-        SW360ComponentAdapterUtils.prepareRelease(release, sw360Component, sw360LicenseIds, artifact);
+        SW360ReleaseAdapterUtils.prepareRelease(release, sw360Component, sw360LicenseIds, artifact);
         return releaseClient.createRelease(release, header);
     }
 
@@ -44,7 +44,7 @@ public class SW360ReleaseClientAdapter {
         return releaseClient.getRelease(releaseId, header);
     }
 
-    public List<SW360SparseRelease> getReleases(HttpHeaders header) throws IOException, AntennaException {
+    public List<SW360SparseRelease> getReleases(HttpHeaders header) throws AntennaException {
         return releaseClient.getReleases(header);
     }
 
@@ -55,10 +55,11 @@ public class SW360ReleaseClientAdapter {
     }
 
     public Optional<SW360Release> getReleaseByArtifact(SW360Component component, Artifact artifact, HttpHeaders header) throws AntennaException {
-        String releaseVersionOfArtifact = SW360ComponentAdapterUtils.createSW360ReleaseVersion(artifact);
+        String releaseVersionOfArtifact = SW360ReleaseAdapterUtils.createSW360ReleaseVersion(artifact);
         if (component != null &&
                 component.get_Embedded() != null &&
                 component.get_Embedded().getReleases() != null) {
+
             List<SW360SparseRelease> releases = component.get_Embedded().getReleases();
             Optional<String> releaseId = releases.stream()
                     .filter(release -> release.getVersion().equals(releaseVersionOfArtifact))

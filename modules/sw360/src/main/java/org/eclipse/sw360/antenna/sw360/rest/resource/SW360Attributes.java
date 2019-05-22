@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2017-2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2017-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -43,6 +43,7 @@ public class SW360Attributes {
     public static final String COMPONENT_TYPE = "type";
     public static final String COMPONENT_CREATED_ON = "createdOn";
     public static final String COMPONENT_CATEGORIES = "categories";
+    public static final String COMPONENT_HOMEPAGE = "homepage";
 
     // Attributes of Sw360Release
     public static final String RELEASE_ID = "id";
@@ -51,7 +52,17 @@ public class SW360Attributes {
     public static final String RELEASE_VERSION = "version";
     public static final String RELEASE_CLEARINGSTATE = "clearingState";
     public static final String RELEASE_CPE_ID = "cpeid";
+    public static final String RELEASE_SOURCES = "downloadurl";
     public static final String RELEASE_MAIN_LICENSE_IDS = "mainLicenseIds";
+    public static final String RELEASE_EXTERNAL_IDS = "externalIds";
+    public static final String RELEASE_EXTERNAL_ID_FLICENSES = "license";
+    public static final String RELEASE_EXTERNAL_ID_DLICENSES = "declared_license";
+    public static final String RELEASE_EXTERNAL_ID_OLICENSES = "observed_license";
+    public static final String RELEASE_EXTERNAL_ID_OREPO = "orig_repo";
+    public static final String RELEASE_EXTERNAL_ID_SWHID = "swh";
+    public static final String RELEASE_EXTERNAL_ID_HASHES = "hash_";
+    public static final String RELEASE_EXTERNAL_ID_CHANGESTATUS = "change_status";
+    public static final String RELEASE_EXTERNAL_ID_COPYRIGHTS = "copyrights";
 
     // Attributes of Sw360Attachment
     public static final String ATTACHMENT_ATTACHMENT_TYPE = "attachmentType";

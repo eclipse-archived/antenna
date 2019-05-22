@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -18,6 +18,7 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
     private SW360ComponentType componentType;
     private String type;
     private String createdOn;
+    private String homepage;
 
     public String getName() {
         return this.name;
@@ -52,6 +53,15 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
 
     public SW360Component setComponentType(SW360ComponentType componentType) {
         this.componentType = componentType;
+        return this;
+    }
+
+    public String getHomepage() {
+        return this.homepage;
+    }
+
+    public SW360Component setHomepage(String homepage) {
+        this.homepage = homepage;
         return this;
     }
 }

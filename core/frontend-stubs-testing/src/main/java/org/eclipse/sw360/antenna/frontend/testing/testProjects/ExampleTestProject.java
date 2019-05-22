@@ -124,6 +124,18 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
         }};
         WorkflowStep checker1 = mkWorkflowStep("Drools Policy Engine", "org.eclipse.sw360.antenna.drools.workflow.processors.AntennaDroolsChecker", droolsConfig);
         processors.add(checker1);
+        WorkflowStep enricher = mkWorkflowStep("SW360 Enricher", "org.eclipse.sw360.antenna.sw360.workflow.processors.SW360Enricher",
+                new HashMap<String, String>() {{
+                    put("rest.server.url", "http://localhost:8080/resource/api");
+                    put("auth.server.url", "http://localhost:8080/authorization/oauth");
+                    put("user.id", "admin@sw360.org");
+                    put("user.password", "12345");
+                    put("client.id", "trusted-sw360-client");
+                    put("client.password", "sw360-secret");
+                    put("proxy.use", "false");
+                }});
+        enricher.setDeactivated(true);
+        processors.add(enricher);
         return processors;
     }
 
