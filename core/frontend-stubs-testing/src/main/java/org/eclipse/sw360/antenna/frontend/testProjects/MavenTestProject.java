@@ -53,7 +53,7 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
 
     @Override
     public String getExpectedToolConfigurationProductName() {
-        return "Antenna EP";
+        return "Antenna mvn EP";
     }
 
     @Override

@@ -35,9 +35,12 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAntennaCLIFrontend.class);
     private final Map<String, IAttachable> output = new HashMap<>();
     private DefaultProject project;
-    protected String pluginDescendantArtifactIdName = "antenna-maven-plugin";
+    private final String pluginDescendantArtifactIdName;
+
+    protected abstract String getPluginDescendantArtifactIdName();
 
     public AbstractAntennaCLIFrontend(File pomFile) {
+        this.pluginDescendantArtifactIdName = getPluginDescendantArtifactIdName();
         Path buildDir = getBuildDirFromPomFile(pomFile);
         Path sourceDir = getSourceDirFromPomFile(pomFile);
         project = new DefaultProject(pomFile, buildDir.toString(), sourceDir.toString());

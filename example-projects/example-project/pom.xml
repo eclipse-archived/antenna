@@ -53,7 +53,7 @@
             </plugin>
             <plugin>
                 <groupId>org.eclipse.sw360.antenna</groupId>
-                <artifactId>antenna-maven-plugin</artifactId>
+                <artifactId>basic-maven-plugin</artifactId>
                 <version>${org.eclipse.sw360.antenna.version}</version>
                 <configuration>
                     <!-- The short name of the application -->

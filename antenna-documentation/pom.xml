@@ -32,7 +32,7 @@
         <antennaMavenGroupId>org.eclipse.sw360.antenna</antennaMavenGroupId>
         <antennaMavenPluginName>antenna-maven-plugin</antennaMavenPluginName>
         <antennaGradlePluginName>antenna-gradle-plugin</antennaGradlePluginName>
-        <antennaGradleJavaFilename>org.eclipse.sw360.antenna.gradle.AntennaBasicGradlePlugin</antennaGradleJavaFilename>
+        <antennaGradleJavaFilename>org.eclipse.sw360.antenna.gradle.BasicGradlePlugin</antennaGradleJavaFilename>
         <antennaGradleRepoAddition></antennaGradleRepoAddition>
         <antennaDisclosureDocumentName>antenna-disclosure-document-bosch</antennaDisclosureDocumentName>
     </properties>

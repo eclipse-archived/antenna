@@ -17,31 +17,31 @@ import java.io.File;
 import java.nio.file.Path;
 
 public class AntennaImpl {
+    private final AbstractAntennaCLIFrontend antennaCLIFrontend;
+    private final File pomFilePath;
 
-    private static class GradleAntennaFrontend extends AbstractAntennaCLIFrontend {
-        public GradleAntennaFrontend(File pomFile) {
-            super(pomFile);
-        }
+    public AntennaImpl(String pluginDescendantArtifactIdName, Path pomFilePath) {
+        this.pomFilePath = pomFilePath.toFile();
+        antennaCLIFrontend = new AbstractAntennaCLIFrontend(this.pomFilePath) {
+            @Override
+            protected String getPluginDescendantArtifactIdName() {
+                return pluginDescendantArtifactIdName;
+            }
 
-        @Override
-        protected Path getBuildDirFromFolder(Path folder) {
-            return folder.resolve("build");
-        }
-    }
+            @Override
+            protected Path getBuildDirFromFolder(Path folder) {
+                return folder.resolve("build");
+            }
+        };
 
-    private final Path pomFilePath;
-
-    public AntennaImpl(Path pomFilePath) {
-        this.pomFilePath = pomFilePath;
     }
 
     public void execute() throws AntennaException {
 
-        if (!pomFilePath.toFile().exists()) {
+        if (!pomFilePath.exists()) {
             throw new IllegalArgumentException("Cannot find " + pomFilePath.toString());
         }
 
-        GradleAntennaFrontend antennaCLIFrontend = new GradleAntennaFrontend(pomFilePath.toFile());
         antennaCLIFrontend.execute();
     }
 }

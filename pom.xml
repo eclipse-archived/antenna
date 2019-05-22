@@ -44,6 +44,7 @@
     </scm>
 
     <modules>
+        <!-- core -->
         <module>core/model</module>
         <module>core/model-testing</module>
         <module>core/runtime</module>
@@ -51,29 +52,21 @@
         <module>core/frontend-stubs</module>
         <module>core/frontend-stubs-testing</module>
         <module>core/abstract-compliance-checker</module>
+        <!-- modules -->
         <module>modules/maven</module>
         <module>modules/sw360</module>
         <module>modules/drools</module>
         <module>modules/simple-validators</module>
         <module>modules/p2</module>
         <module>modules/ort</module>
+        <!-- assembly -->
+        <module>basic-assembly</module>
+        <!-- misc -->
         <module>antenna-testing</module>
         <module>antenna-license-provider</module>
         <module>antenna-csv-license-knowledge-base</module>
         <module>antenna-documentation</module>
     </modules>
-
-    <profiles>
-        <profile>
-            <id>build-assembly</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>antenna-basic-assembly</module>
-            </modules>
-        </profile>
-    </profiles>
 
     <dependencyManagement>
         <dependencies>

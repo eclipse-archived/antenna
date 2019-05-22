@@ -126,7 +126,7 @@
             </plugin>
             <plugin>
                 <groupId>org.eclipse.sw360.antenna</groupId>
-                <artifactId>antenna-maven-plugin</artifactId>
+                <artifactId>basic-maven-plugin</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
                 <configuration>
                     <!-- The short name of the application -->

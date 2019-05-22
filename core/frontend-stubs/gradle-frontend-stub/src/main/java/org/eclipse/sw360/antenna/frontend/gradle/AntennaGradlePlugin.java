@@ -10,16 +10,19 @@
  */
 package org.eclipse.sw360.antenna.frontend.gradle;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
-public class AntennaGradlePlugin implements Plugin<Project> {
+public abstract class AntennaGradlePlugin implements Plugin<Project> {
     public static final String TASK_NAME = "analyze";
+
+    public abstract Class<? extends DefaultTask> getTaskClass();
 
     @Override
     public void apply(Project target) {
         target.getExtensions().create("AntennaConfiguration", AntennaExtension.class);
-        target.getTasks().create(TASK_NAME, AnalyzeTask.class);
+        target.getTasks().create(TASK_NAME, getTaskClass());
     }
 
 }

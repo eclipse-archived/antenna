@@ -16,7 +16,9 @@ import org.gradle.api.tasks.TaskAction;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class AnalyzeTask extends DefaultTask {
+public abstract class AnalyzeTask extends DefaultTask {
+
+    protected abstract String getPluginDescendantArtifactIdName();
 
     @TaskAction
     public void analyze() throws Exception {
@@ -28,7 +30,7 @@ public class AnalyzeTask extends DefaultTask {
 
         Path pomPath = Paths.get(System.getProperty("user.dir")).resolve(extension.getPomPath()).toAbsolutePath();
 
-        AntennaImpl osmRunner = new AntennaImpl(pomPath);
+        AntennaImpl osmRunner = new AntennaImpl(getPluginDescendantArtifactIdName(), pomPath);
         osmRunner.execute();
     }
 

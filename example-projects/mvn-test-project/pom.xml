@@ -58,11 +58,11 @@
             </plugin>
             <plugin>
                 <groupId>org.eclipse.sw360.antenna</groupId>
-                <artifactId>antenna-maven-plugin</artifactId>
+                <artifactId>basic-maven-plugin</artifactId>
                 <version>${org.eclipse.sw360.antenna.version}</version>
                 <configuration>
                     <!-- The short name of the application -->
-                    <productName>Antenna EP</productName>
+                    <productName>Antenna mvn EP</productName>
 
                     <!-- The full name of the application -->
                     <productFullname>Antenna Maven Test Project</productFullname>
