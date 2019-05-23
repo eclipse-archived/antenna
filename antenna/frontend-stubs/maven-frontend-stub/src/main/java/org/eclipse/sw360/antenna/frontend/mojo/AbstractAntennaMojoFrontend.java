@@ -89,18 +89,6 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
     @Parameter(property = "configFileUri")
     private List<URI> configFileUris;
 
-    @Parameter(property = "clmScanResultPath", defaultValue = "${project.build.outputDirectory}/clm-scan-result.json")
-    private String clmScanResultPath;
-
-    @Parameter(property = "reportDataUrl")
-    private String reportDataUrl;
-
-    @Parameter(property = "scanDir")
-    private String scanDir;
-
-    @Parameter(property = "disableP2Resolving", defaultValue = "true")
-    private boolean disableP2Resolving;
-
     @Parameter(property = "attachAll", defaultValue = "false")
     private boolean attachAll;
 
@@ -129,14 +117,8 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
     @Parameter(property = "disclosureDocumentNotes")
     private String disclosureDocumentNotes;
 
-    @Parameter(property = "disclosureTemplatePath")
-    private String disclosureDocTemplatePath;
-
     @Parameter(property = "filesToAttach")
     private List<String> filesToAttach;
-
-    @Parameter(property = "sourcesRepositoryUrl")
-    private String sourcesRepositoryUrl;
 
     @Parameter(property = "workflowDefinitionFile")
     private String workflowDefinitionFile;
@@ -199,7 +181,6 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
                     });
         }
     }
-
     /**
      * Start point of the Antenna maven-plugin.
      */
@@ -285,7 +266,7 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
                 .setFilesToAttach(filesToAttach)
                 .setConfigFiles(configFiles).setConfigFileUris(configFileUris)
                 .setProductName(productName).setProductFullName(productFullname)
-                .setVersion(version).setScanDir(scanDir)
+                .setVersion(version)
                 .setSkipAntennaExecution(skip)
                 .setMavenInstalled(true)  // when using the maven plugin, maven is surely available
                 .setCopyrightHoldersName(copyrightHoldersName).setCopyrightNotice(copyrightNotice)
