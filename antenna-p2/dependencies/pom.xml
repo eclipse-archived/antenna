@@ -26,7 +26,7 @@
 
     <properties>
         <revision>1.0.0</revision>
-        <p2qualifier>-SNAPSHOT</p2qualifier>
+        <p2qualifier>.RC3-1</p2qualifier>
         <tycho.version>1.3.0</tycho.version>
     </properties>
 
