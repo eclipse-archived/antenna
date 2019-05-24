@@ -131,7 +131,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.eclipse.sw360.antenna</groupId>
-                                    <artifactId>antenna-cli</artifactId>
+                                    <artifactId>basic-cli</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
@@ -140,7 +140,7 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.eclipse.sw360.antenna</groupId>
-                                    <artifactId>antenna-maven-plugin</artifactId>
+                                    <artifactId>basic-maven-plugin</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
@@ -149,7 +149,7 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.eclipse.sw360.antenna</groupId>
-                                    <artifactId>antenna-gradle-plugin</artifactId>
+                                    <artifactId>basic-gradle-plugin</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
