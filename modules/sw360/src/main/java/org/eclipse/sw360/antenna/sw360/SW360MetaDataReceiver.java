@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2017-2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2017-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -38,10 +38,15 @@ public class SW360MetaDataReceiver {
 
     private String userId;
     private String password;
+    private String clientId;
+    private String clientPassword;
 
-    public SW360MetaDataReceiver(String restServerUrl, String authServerUrl, String userId, String password) {
+    public SW360MetaDataReceiver(String restServerUrl, String authServerUrl, String userId, String password,
+                                 String clientId, String clientPassword) {
         this.userId = userId;
         this.password = password;
+        this.clientId = clientId;
+        this.clientPassword = clientPassword;
 
         authenticationClient = new SW360AuthenticationClient(authServerUrl);
         componentClientAdapter = new SW360ComponentClientAdapter(restServerUrl);
@@ -64,6 +69,6 @@ public class SW360MetaDataReceiver {
     }
 
     private HttpHeaders createHttpsHeaders(String userId, String password) throws AntennaException {
-        return authenticationClient.getHeadersWithBearerToken(authenticationClient.getOAuth2AccessToken(userId, password));
+        return authenticationClient.getHeadersWithBearerToken(authenticationClient.getOAuth2AccessToken(userId, password, clientId, clientPassword));
     }
 }

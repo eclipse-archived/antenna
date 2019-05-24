@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -59,8 +59,10 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         Map<String, String> configMap = new HashMap<>();
         configMap.put("rest.server.url", "rest_url");
         configMap.put("auth.server.url", "auth_url");
-        configMap.put("username", "username");
-        configMap.put("password", "password");
+        configMap.put("user.id", "username");
+        configMap.put("user.password", "password");
+        configMap.put("client.id", "client_user");
+        configMap.put("client.password", "client_password");
         sw360Enricher.configure(configMap);
 
         connector = Mockito.mock(SW360MetaDataReceiver.class);

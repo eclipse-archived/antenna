@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2016-2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2016-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -44,8 +44,10 @@ public class SW360Enricher extends AbstractProcessor {
 
     private static final String REST_SERVER_URL_KEY = "rest.server.url";
     private static final String AUTH_SERVER_URL_KEY = "auth.server.url";
-    private static final String USERNAME_KEY = "username";
-    private static final String PASSWORD_KEY = "password";
+    private static final String USERNAME_KEY = "user.id";
+    private static final String PASSWORD_KEY = "user.password";
+    private static final String CLIENT_USER_KEY = "client.id";
+    private static final String CLIENT_PASSWORD_KEY = "client.password";
 
     private SW360MetaDataReceiver connector;
 
@@ -63,7 +65,9 @@ public class SW360Enricher extends AbstractProcessor {
         String sw360AuthServerUrl = getConfigValue(AUTH_SERVER_URL_KEY, configMap);
         String sw360User = getConfigValue(USERNAME_KEY, configMap);
         String sw360Password = getConfigValue(PASSWORD_KEY, configMap);
-        connector = new SW360MetaDataReceiver(sw360RestServerUrl, sw360AuthServerUrl, sw360User, sw360Password);
+        String sw360ClientUser = getConfigValue(CLIENT_USER_KEY, configMap);
+        String sw360ClientPassword = getConfigValue(CLIENT_PASSWORD_KEY, configMap);
+        connector = new SW360MetaDataReceiver(sw360RestServerUrl, sw360AuthServerUrl, sw360User, sw360Password, sw360ClientUser, sw360ClientPassword);
     }
 
     @Override
