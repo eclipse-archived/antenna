@@ -155,13 +155,6 @@ class AntennaCLISettingsReader {
         readProjectStringSetting(reader, "artifactId", project::setProjectId);
         readAntennaStringSetting(reader, "antennaTargetDirectory", getDefaultAntennaTargetDirectory(project), toolConfigBuilder::setAntennaTargetDirectory);
         readAntennaStringSetting(reader, "scanDir", toolConfigBuilder::setScanDir);
-        readAntennaStringSetting(reader, "productName", reader.getStringProperty("name"), toolConfigBuilder::setProductName);
-        readAntennaStringSetting(reader, "productFullname", reader.getStringProperty("name"), toolConfigBuilder::setProductFullName);
-        readAntennaStringSetting(reader, "version", "1.0", toolConfigBuilder::setVersion);
-        readAntennaStringSetting(reader, "companyName", toolConfigBuilder::setCompanyName);
-        readAntennaStringSetting(reader, "copyrightHoldersName", toolConfigBuilder::setCopyrightHoldersName);
-        readAntennaStringSetting(reader, "copyrightNotice", toolConfigBuilder::setCopyrightNotice);
-        readAntennaStringSetting(reader, "disclosureDocumentNotes", toolConfigBuilder::setDisclosureDocumentNotes);
         readAntennaStringSetting(reader, "encodingCharSet", toolConfigBuilder::setEncoding);
         readAntennaStringSetting(reader, "proxyHost", toolConfigBuilder::setProxyHost);
 
@@ -170,7 +163,6 @@ class AntennaCLISettingsReader {
         // Booleans
         readAntennaBooleanSetting(reader, "attachAll", false, toolConfigBuilder::setAttachAll);
         readAntennaBooleanSetting(reader, "skip", false, toolConfigBuilder::setSkipAntennaExecution);
-        readAntennaBooleanSetting(reader, "showCopyrightStatements", false, toolConfigBuilder::setShowCopyrightStatements);
         readAntennaBooleanSetting(reader, "isMavenInstalled", false, toolConfigBuilder::setMavenInstalled);
 
         // Other lists

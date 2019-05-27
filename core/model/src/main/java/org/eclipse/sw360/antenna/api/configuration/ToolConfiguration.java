@@ -40,17 +40,9 @@ public class ToolConfiguration {
     private boolean skipAntennaExecution;
     private List<File> configFiles;
     private List<URI> configFileUris;
-    private String productName;
-    private final String productFullName;
-    private String version;
     private Path scanDir;
     private boolean isMavenInstalled;
-    private String companyName;
-    private String copyrightHoldersName;
-    private String copyrightNotice;
-    private String disclosureDocumentNotes;
     private Workflow workflow;
-    private boolean showCopyrightStatements;
     private Charset encodingCharSet;
     private final String proxyHost;
     private final int proxyPort;
@@ -70,17 +62,9 @@ public class ToolConfiguration {
         this.skipAntennaExecution = builder.skipAntennaExecution;
         this.configFiles = makeUnmodifiable(builder.configFiles);
         this.configFileUris = makeUnmodifiable(builder.configFileUris);
-        this.productName = builder.productName;
-        this.productFullName = builder.productFullName;
-        this.version = builder.version;
         this.scanDir = builder.scanDir;
         this.isMavenInstalled = builder.isMavenInstalled;
-        this.companyName = builder.companyName;
-        this.copyrightHoldersName = builder.copyrightHoldersName;
-        this.copyrightNotice = builder.copyrightNotice;
-        this.disclosureDocumentNotes = builder.disclosureDocumentNotes;
         this.workflow = builder.workflow;
-        this.showCopyrightStatements = builder.showCopyrightStatements;
         if(builder.encodingCharSet != null) {
             this.encodingCharSet = builder.encodingCharSet;
         }else{
@@ -116,18 +100,6 @@ public class ToolConfiguration {
         return this.configFileUris;
     }
 
-    public String getProductName() {
-        return this.productName;
-    }
-
-    public String getProductFullName() {
-        return this.productFullName;
-    }
-
-    public String getVersion() {
-        return this.version;
-    }
-
     public Path getScanDir() {
         return this.scanDir;
     }
@@ -142,32 +114,12 @@ public class ToolConfiguration {
         return isMavenInstalled;
     }
 
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public String getCopyrightHoldersName() {
-        return copyrightHoldersName;
-    }
-
-    public String getCopyrightNotice() {
-        return copyrightNotice;
-    }
-
-    public String getDisclosureDocumentNotes() {
-        return disclosureDocumentNotes;
-    }
-
     public Workflow getWorkflow() {
         return workflow;
     }
 
     public Charset getEncoding() {
         return encodingCharSet;
-    }
-
-    public boolean isShowCopyrightStatements() {
-        return showCopyrightStatements;
     }
 
     public boolean useProxy() {
@@ -190,17 +142,9 @@ public class ToolConfiguration {
         private boolean skipAntennaExecution;
         private List<File> configFiles;
         private List<URI> configFileUris;
-        private String productName;
-        private String productFullName;
-        private String version;
         private Path scanDir;
         private boolean isMavenInstalled;
-        private String companyName;
-        private String copyrightHoldersName;
-        private String copyrightNotice;
-        private String disclosureDocumentNotes;
         private Workflow workflow;
-        private boolean showCopyrightStatements;
         private Charset encodingCharSet;
         private String proxyHost;
         private int proxyPort;
@@ -239,21 +183,6 @@ public class ToolConfiguration {
             return this;
         }
 
-        public ConfigurationBuilder setProductName(String productName) {
-            this.productName = productName;
-            return this;
-        }
-
-        public ConfigurationBuilder setProductFullName(String productFullname) {
-            this.productFullName = productFullname;
-            return this;
-        }
-
-        public ConfigurationBuilder setVersion(String version) {
-            this.version = version;
-            return this;
-        }
-
         public ConfigurationBuilder setScanDir(String scanDir) {
             if (scanDir == null) {
                 return this;
@@ -271,30 +200,6 @@ public class ToolConfiguration {
             return this;
         }
 
-        public ConfigurationBuilder setCompanyName(String companyName) {
-            this.companyName = companyName;
-            return this;
-        }
-
-        public ConfigurationBuilder setCopyrightHoldersName(String copyrightHoldersName) {
-            if (StringUtils.isBlank(copyrightHoldersName)) {
-                this.copyrightHoldersName = "The copyright holder";
-            } else {
-                this.copyrightHoldersName = copyrightHoldersName;
-            }
-            return this;
-        }
-
-        public ConfigurationBuilder setCopyrightNotice(String copyrightNotice) {
-            this.copyrightNotice = copyrightNotice;
-            return this;
-        }
-
-        public ConfigurationBuilder setDisclosureDocumentNotes(String disclosureDocumentNotes) {
-            this.disclosureDocumentNotes = disclosureDocumentNotes;
-            return this;
-        }
-
         public ConfigurationBuilder setWorkflow(Workflow workflow) {
             this.workflow = workflow;
             return this;
@@ -309,11 +214,6 @@ public class ToolConfiguration {
                 charSetEncoding = Charset.defaultCharset();
             }
             this.encodingCharSet = charSetEncoding;
-            return this;
-        }
-
-        public ConfigurationBuilder setShowCopyrightStatements(boolean showCopyrightStatements) {
-            this.showCopyrightStatements = showCopyrightStatements;
             return this;
         }
 

@@ -61,14 +61,6 @@
                 <artifactId>antenna-maven-plugin</artifactId>
                 <version>${org.eclipse.sw360.antenna.version}</version>
                 <configuration>
-                    <!-- The short name of the application -->
-                    <productName>Antenna mvn EP</productName>
-
-                    <!-- The full name of the application -->
-                    <productFullname>Antenna Maven Test Project</productFullname>
-
-                    <version>${version_to_scan}</version>
-
                     <!-- Attach all build artifacts -->
                     <attachAll>true</attachAll>
 
@@ -106,9 +98,6 @@
                             </step>
                         </generators>
                     </workflow>
-
-                    <copyrightHoldersName>Antenna Company</copyrightHoldersName>
-                    <copyrightNotice>All rights reserved</copyrightNotice>
 
                     <skip>false</skip>
 

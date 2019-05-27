@@ -37,10 +37,6 @@
                 <version>1.0.0-SNAPSHOT</version>
 
                 <configuration>
-                    <productName>Product Name</productName>
-                    <productFullname>Super long Product Full Name</productFullname>
-                    <version>3.4.0</version>
-
                     <attachAll>true</attachAll>
 
                     <workflowDefinitionFile>${basedir}/src/workflow.xml</workflowDefinitionFile>

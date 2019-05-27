@@ -95,28 +95,6 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
     @Parameter(property = "skip", defaultValue = "false")
     private boolean skip;
 
-    // parameter for disclosure document
-    @Parameter(property = "fullname", defaultValue = "${project.name}")
-    private String productFullname;
-
-    @Parameter(property = "version", defaultValue = "1.0")
-    private String version;
-
-    @Parameter(property = "productName", defaultValue = "${project.artifactId}")
-    private String productName;
-
-    @Parameter(property = "companyName")
-    private String companyName;
-
-    @Parameter(property = "copyrightHoldersName")
-    private String copyrightHoldersName;
-
-    @Parameter(property = "copyrightNotice")
-    private String copyrightNotice;
-
-    @Parameter(property = "disclosureDocumentNotes")
-    private String disclosureDocumentNotes;
-
     @Parameter(property = "filesToAttach")
     private List<String> filesToAttach;
 
@@ -125,9 +103,6 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
 
     @Parameter(property = "workflow")
     private Workflow workflow;
-
-    @Parameter(property = "showCopyrightStatements", defaultValue = "false")
-    private boolean showCopyrightStatements;
 
     @Parameter(property = "encodingCharSet", defaultValue = "UTF-8")
     private String encodingCharSet;
@@ -265,14 +240,11 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
                 .setAntennaTargetDirectory(antennaTargetDirectory).setAttachAll(attachAll)
                 .setFilesToAttach(filesToAttach)
                 .setConfigFiles(configFiles).setConfigFileUris(configFileUris)
-                .setProductName(productName).setProductFullName(productFullname)
-                .setVersion(version)
                 .setSkipAntennaExecution(skip)
                 .setMavenInstalled(true)  // when using the maven plugin, maven is surely available
-                .setCopyrightHoldersName(copyrightHoldersName).setCopyrightNotice(copyrightNotice)
-                .setDisclosureDocumentNotes(disclosureDocumentNotes).setWorkflow(finalWorkflow)
+                .setWorkflow(finalWorkflow)
                 .setProxyHost(proxyHost).setProxyPort(proxyPort)
-                .setShowCopyrightStatements(showCopyrightStatements).setEncoding(encodingCharSet);
+                .setEncoding(encodingCharSet);
 
         return toolConfigBuilder.buildConfiguration();
     }

@@ -100,13 +100,6 @@ abstract public class AbstractAntennaFrontendTest {
     }
 
     @Test
-    public void checkConfiguredCoordinates() {
-        assertThat(testData.getExpectedToolConfigurationProductName()).isEqualTo(antennaContext.getToolConfiguration().getProductName());
-        assertThat(testData.getExpectedToolConfigurationProductFullName()).isEqualTo(antennaContext.getToolConfiguration().getProductFullName());
-        assertThat(testData.getExpectedToolConfigurationProductVersion()).isEqualTo(antennaContext.getToolConfiguration().getVersion());
-    }
-
-    @Test
     public void checkFilesToAttach() {
         List<String> expectedAttachments = testData.getExpectedFilesToAttach();
         assertThat(expectedAttachments).hasSize(antennaContext.getToolConfiguration().getFilesToAttach().size());

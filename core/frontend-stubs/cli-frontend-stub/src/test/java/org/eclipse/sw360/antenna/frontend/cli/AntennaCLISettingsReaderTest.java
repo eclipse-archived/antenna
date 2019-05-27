@@ -136,17 +136,9 @@ public class AntennaCLISettingsReaderTest {
 
     private void fillMapsForToolConfiguration() throws IOException {
         putToMaps(booleanAnswers, booleanGetters, "attachAll", true, ToolConfiguration::isAttachAll);
-        putToMaps(booleanAnswers, booleanGetters, "showCopyrightStatements", true, ToolConfiguration::isShowCopyrightStatements);
 
         putToMapsForPath(stringAnswers, stringGetters, "antennaTargetDirectory", ToolConfiguration::getAntennaTargetDirectory);
         putToMapsForPath(stringAnswers, stringGetters, "scanDir", ToolConfiguration::getScanDir);
-        putToMaps(stringAnswers, stringGetters, "productName", ToolConfiguration::getProductName);
-        putToMaps(stringAnswers, stringGetters, "productFullname", ToolConfiguration::getProductFullName);
-        putToMaps(stringAnswers, stringGetters, "version", "1.0", ToolConfiguration::getVersion);
-        putToMaps(stringAnswers, stringGetters, "companyName", ToolConfiguration::getCompanyName);
-        putToMaps(stringAnswers, stringGetters, "copyrightHoldersName", ToolConfiguration::getCopyrightHoldersName);
-        putToMaps(stringAnswers, stringGetters, "copyrightNotice", ToolConfiguration::getCopyrightNotice);
-        putToMaps(stringAnswers, stringGetters, "disclosureDocumentNotes", ToolConfiguration::getDisclosureDocumentNotes);
         // putToMaps(stringAnswers, stringGetters, "encodingCharSet", ToolConfiguration::getEncoding);
         putToMaps(stringAnswers, stringGetters, "proxyHost", ToolConfiguration::getProxyHost);
 

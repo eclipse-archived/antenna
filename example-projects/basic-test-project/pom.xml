@@ -47,10 +47,6 @@
                         <param> ${basedir}/src/antennaconf2.xml </param>
                     </configFiles>
 
-                    <productName>Product Name</productName>
-                    <productFullname>Super long Product Full Name</productFullname>
-                    <version>3.4.0</version>
-
                     <attachAll>true</attachAll>
                     <filesToAttach>
                         <param>sources-zip,zip,OSS-sources</param>
