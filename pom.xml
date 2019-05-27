@@ -60,7 +60,7 @@
         <module>modules/p2</module>
         <module>modules/ort</module>
         <!-- assembly -->
-        <module>basic-assembly</module>
+        <module>assembly</module>
         <!-- misc -->
         <module>antenna-testing</module>
         <module>antenna-license-provider</module>

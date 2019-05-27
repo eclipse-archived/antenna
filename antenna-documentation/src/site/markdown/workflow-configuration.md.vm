@@ -152,7 +152,7 @@ Since the ${docNameCap} tool is though to be used to enforce a company-wide stan
 The default workflow looks like this.
 
 ```
-antenna-basic-assembly/antenna-basic-configuration/src/main/resources/workflow.xml
+assembly/configuration/src/main/resources/workflow.xml
 ```
 
 The default workflow contains the general steps that should be performed for a project with respect to open source compliance management but leaves out configuration that is specific for your project. For that you need to adjust the workflow for your project. E.g. it might be that some workflow steps require credentials for external systems, you want to specify custom file paths or you want to add other steps to the workflow. This has to be performed in your custom workflow configuration.

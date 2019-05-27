@@ -33,7 +33,7 @@
         <plugins>
             <plugin>
                 <groupId>org.eclipse.sw360.antenna</groupId>
-                <artifactId>basic-maven-plugin</artifactId>
+                <artifactId>antenna-maven-plugin</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
 
                 <configuration>

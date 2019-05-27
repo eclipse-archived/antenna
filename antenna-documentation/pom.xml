@@ -28,11 +28,11 @@
         <docNameCap>Antenna</docNameCap>
         <docNameAllCap>ANTENNA</docNameAllCap>
         <skip.tests>true</skip.tests>
-        <antennaCliJavaFilename>org.eclipse.sw360.antenna.frontend.AntennaBasicCLIFrontend</antennaCliJavaFilename>
+        <antennaCliJavaFilename>org.eclipse.sw360.antenna.frontend.AntennaCLIFrontend</antennaCliJavaFilename>
         <antennaMavenGroupId>org.eclipse.sw360.antenna</antennaMavenGroupId>
         <antennaMavenPluginName>antenna-maven-plugin</antennaMavenPluginName>
         <antennaGradlePluginName>antenna-gradle-plugin</antennaGradlePluginName>
-        <antennaGradleJavaFilename>org.eclipse.sw360.antenna.gradle.BasicGradlePlugin</antennaGradleJavaFilename>
+        <antennaGradleJavaFilename>org.eclipse.sw360.antenna.gradle.GradlePlugin</antennaGradleJavaFilename>
         <antennaGradleRepoAddition></antennaGradleRepoAddition>
         <antennaDisclosureDocumentName>antenna-disclosure-document-bosch</antennaDisclosureDocumentName>
     </properties>

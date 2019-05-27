@@ -97,6 +97,6 @@ public abstract class AbstractAntennaMojoFrontendTest extends AbstractAntennaFro
     @Test
     public void testThatAntennaPluginIsListed() {
         Assert.assertTrue(((MavenProject) antennaContext.getProject().getRawProject()).getBuild().getPlugins().stream()
-                .anyMatch(p -> p.getArtifactId().equals("basic-maven-plugin")));
+                .anyMatch(p -> p.getArtifactId().equals("antenna-maven-plugin")));
     }
 }
