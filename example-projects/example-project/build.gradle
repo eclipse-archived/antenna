@@ -15,11 +15,11 @@ buildscript{
     }
 
     dependencies{
-        classpath 'org.eclipse.sw360.antenna:basic-gradle-plugin:1.0.0-SNAPSHOT'
+        classpath 'org.eclipse.sw360.antenna:gradle-plugin:1.0.0-SNAPSHOT'
     }
 }
 
-apply plugin: org.eclipse.sw360.antenna.gradle.BasicGradlePlugin
+apply plugin: org.eclipse.sw360.antenna.gradle.GradlePlugin
 
 repositories {
     mavenLocal()

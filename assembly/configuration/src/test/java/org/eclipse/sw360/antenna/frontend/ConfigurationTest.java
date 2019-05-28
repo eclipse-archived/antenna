@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-public class BasicConfigurationTest extends AntennaTestWithMockedContext {
+public class ConfigurationTest extends AntennaTestWithMockedContext {
 
     private Workflow workflow;
 

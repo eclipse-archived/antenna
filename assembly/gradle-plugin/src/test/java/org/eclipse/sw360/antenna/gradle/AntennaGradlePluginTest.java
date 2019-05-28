@@ -56,7 +56,7 @@ public class AntennaGradlePluginTest {
     @Test
     public void testWithoutGradle() throws Exception {
         checkInternetConnectionAndAssume(Assume::assumeTrue);
-        AntennaImpl runner = new AntennaImpl("basic-maven-plugin", exampleTestProject.getProjectPom());
+        AntennaImpl runner = new AntennaImpl("antenna-maven-plugin", exampleTestProject.getProjectPom());
         runner.execute();
         assertThat(projectRoot.resolve("antenna").toFile()).exists(); // TODO
     }

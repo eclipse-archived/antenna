@@ -21,7 +21,7 @@
         <version>${revision}${qualifier}</version>
     </parent>
 
-    <artifactId>basic-gradle-plugin</artifactId>
+    <artifactId>gradle-plugin</artifactId>
     <packaging>pom</packaging>
     <name>Antenna Gradle Plugin</name>
 

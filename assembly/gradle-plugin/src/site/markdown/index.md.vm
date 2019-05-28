@@ -65,7 +65,7 @@ buildscript{
     }
 
     dependencies {
-        classpath 'org.eclipse.sw360.antenna:basic-gradle-plugin:VERSION'
+        classpath 'org.eclipse.sw360.antenna:gradle-plugin:VERSION'
         classpath 'org.mycompany.plugin:my-custom-plugin:VERSION'
     }
 }

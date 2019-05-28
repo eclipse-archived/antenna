@@ -13,10 +13,10 @@ package org.eclipse.sw360.antenna.rules;
 
 import org.eclipse.sw360.antenna.api.IRulesPackage;
 
-public class AntennaBasicRulesPackage implements IRulesPackage {
+public class AntennaCommonRulesPackage implements IRulesPackage {
     @Override
     public String getRulesPackageName() {
-        return "Antenna Basic Rules";
+        return "Antenna Common Rules";
     }
 
     @Override

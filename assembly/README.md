@@ -1,4 +1,4 @@
-# antenna-basic-assembly
+# assembly
 
 This part of Antenna demonstrates how an organization would compile its own assembly.
 It is build to contain a Maven plugin frontend and a CLI frontend which can be distributed via an artifact repository.
