@@ -27,22 +27,12 @@ If you want to build antenna without the p2 parts, use
 $ <b>mvn install</b>
 </pre>
 
-Otherwise, you have to use the following steps:
+Otherwise, you can use the script `./modules/p2/prepareDependenciesForP2.sh` and afterwards call `mvn install`.
+To undo this one has the script `./modules/p2/cleanupDependenciesForP2.sh`.
 
-<pre>
-$ <b>cd antenna-p2/dependencies</b>
-$ <b>mvn package</b>
-$ <b>cd ..</b>
-$ <b>mvn package</b>
-$ <b>cd ..</b>
-$ <b>mvn install</b>
-</pre>
-
-
-You can activate the following optional profiles (`build-assembly` is active by default):
-- `-P build-assembly,ci`: activates also the optional profile for continious integration and includes the system tests. 
-- `-P build-assembly,experimental-steps`: activates also the profile containing some experimental steps, which may still be work in progress.
-- `-P '!build-assembly'`: to not build the assembly, e.g. only build the library part of Antenna.
+You can activate the following optional profiles:
+- `-P ci`: activates also the optional profile for which includes the system tests. 
+- `-P it`: activates also the optional profile for integration testing. 
 
 ### Configure Antenna
 Antenna can be used as a Maven plugin, with  Gradle or standalone executable.

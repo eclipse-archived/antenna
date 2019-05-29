@@ -10,7 +10,7 @@
 
 set -e
 
-jar="$(readlink -f "$(dirname $0)/../antenna-basic-assembly/antenna-cli/target/antenna.jar")"
+jar="$(readlink -f "$(dirname $0)/../assembly/cli/target/antenna.jar")"
 echo "use the JAR=[$jar]"
 
 if [[ $# -eq 0 ]] ; then

@@ -62,14 +62,14 @@ jobs:
     - name: cli test
       script:
         - .travis/runCLI.sh example-projects/example-project
-        - java -jar antenna-testing/antenna-frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject example-projects/example-project/target
+        - java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject example-projects/example-project/target
 
     # test Gradle
     - name: gradleTest
       script:
         - cd example-projects/example-project
         - gradle analyze
-        - java -jar ../../antenna-testing/antenna-frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject build
+        - java -jar ../../core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject build
     
     # test P2
     - name: p2Test

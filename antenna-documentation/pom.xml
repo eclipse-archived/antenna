@@ -28,11 +28,11 @@
         <docNameCap>Antenna</docNameCap>
         <docNameAllCap>ANTENNA</docNameAllCap>
         <skip.tests>true</skip.tests>
-        <antennaCliJavaFilename>org.eclipse.sw360.antenna.frontend.AntennaBasicCLIFrontend</antennaCliJavaFilename>
+        <antennaCliJavaFilename>org.eclipse.sw360.antenna.frontend.AntennaCLIFrontend</antennaCliJavaFilename>
         <antennaMavenGroupId>org.eclipse.sw360.antenna</antennaMavenGroupId>
         <antennaMavenPluginName>antenna-maven-plugin</antennaMavenPluginName>
         <antennaGradlePluginName>antenna-gradle-plugin</antennaGradlePluginName>
-        <antennaGradleJavaFilename>org.eclipse.sw360.antenna.gradle.AntennaBasicGradlePlugin</antennaGradleJavaFilename>
+        <antennaGradleJavaFilename>org.eclipse.sw360.antenna.gradle.GradlePlugin</antennaGradleJavaFilename>
         <antennaGradleRepoAddition></antennaGradleRepoAddition>
         <antennaDisclosureDocumentName>antenna-disclosure-document-bosch</antennaDisclosureDocumentName>
     </properties>
@@ -131,7 +131,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.eclipse.sw360.antenna</groupId>
-                                    <artifactId>antenna-cli</artifactId>
+                                    <artifactId>cli</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
@@ -149,7 +149,7 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.eclipse.sw360.antenna</groupId>
-                                    <artifactId>antenna-gradle-plugin</artifactId>
+                                    <artifactId>gradle-plugin</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
