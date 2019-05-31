@@ -119,7 +119,7 @@ Overview:
             <artifactSelector>
                 <filename>jcr-2.0.jar</filename>
             </artifactSelector>
-            <licenseStatement operator="AND">
+            <licenseStatement op="AND">
                 <license>
                     <name>GPL-3.0</name>
                 </license>
@@ -223,15 +223,15 @@ If the Match is not specified, it is set to `EXACT` automatically.
 
 **licenses**
 
-Each artifact can either have one license or more. In case we have more than one licenses, we have to specify them in the `licenseStatement` block including the operator that connects
+Each artifact can either have one license or more. In case we have more than one licenses, we have to specify them in the `licenseStatement` block including the `op` attribute that connects
 the licenses:
 
 ```xml
-<licenseStatement operator="AND">
+<licenseStatement op="AND">
     <license>
         <name>GPL-3.0</name>
     </license>
-    <licenseStatement operator="OR">
+    <licenseStatement op="OR">
         <license>
             <name>MIT</name>
         </license>
