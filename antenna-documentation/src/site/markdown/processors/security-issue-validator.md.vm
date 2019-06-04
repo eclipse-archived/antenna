@@ -9,7 +9,7 @@ Add the following step into the `<processors>` section of your workflow.xml
 ```
 <step>
     <name>Security Issue Validator</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator</classHint>
+    <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.SecurityIssueValidator</classHint>
     <configuration>
         <entry key="forbiddenSecurityIssueStatusSeverity" value="FAIL"/>
         <entry key="securityIssueSeverityLimitSeverity" value="FAIL" />

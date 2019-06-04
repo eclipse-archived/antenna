@@ -10,6 +10,6 @@ Add the following step into the `<processors>` section of your workflow.xml
 ```
 <step>
     <name>Manifest Resolver</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.ManifestResolver</classHint>
+    <classHint>org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ManifestResolver</classHint>
 </step>
 ```

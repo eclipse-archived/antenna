@@ -12,7 +12,7 @@ Add this configuration to the workflow.xml
 ```xml
         <step>
             <name>P2 Resolver</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.P2Resolver</classHint>
+            <classHint>org.eclipse.sw360.antenna.p2resolver.workflow.processors.enricher.P2Resolver</classHint>
             <configuration>
                 <entry key="repositories" value="path/to/repository;other/path/to/repo"/>
             </configuration>

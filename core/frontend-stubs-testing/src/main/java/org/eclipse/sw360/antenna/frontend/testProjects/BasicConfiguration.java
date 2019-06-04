@@ -33,15 +33,15 @@ public final class BasicConfiguration {
     public static List<WorkflowStep> getProcessors() {
         WorkflowStep confHandler = mkWorkflowStep("Processing of Antenna configuration", "org.eclipse.sw360.antenna.workflow.processors.AntennaConfHandler");
         // enricher
-        WorkflowStep enricher1 = mkWorkflowStep("Maven Artifact Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.MavenArtifactResolver");
-        WorkflowStep enricher3 = mkWorkflowStep("Child Jar Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.ChildJarResolver");
-        WorkflowStep enricher4 = mkWorkflowStep("Manifest Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.ManifestResolver");
+        WorkflowStep enricher1 = mkWorkflowStep("Maven Artifact Resolver", "org.eclipse.sw360.antenna.maven.workflow.processors.enricher.MavenArtifactResolver");
+        WorkflowStep enricher3 = mkWorkflowStep("Child Jar Resolver", "org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ChildJarResolver");
+        WorkflowStep enricher4 = mkWorkflowStep("Manifest Resolver", "org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ManifestResolver");
         WorkflowStep enricher5 = mkWorkflowStep("License Resolver", "org.eclipse.sw360.antenna.workflow.processors.LicenseResolver");
         WorkflowStep enricher6 = mkWorkflowStep("License Knowledgebase Resolver", "org.eclipse.sw360.antenna.workflow.processors.LicenseKnowledgeBaseResolver");
         // validators
-        WorkflowStep validator1 = mkWorkflowStep("Coordinates Validator", "org.eclipse.sw360.antenna.workflow.processors.CoordinatesValidator",
+        WorkflowStep validator1 = mkWorkflowStep("Coordinates Validator", "org.eclipse.sw360.antenna.validators.workflow.processors.CoordinatesValidator",
                 "failOnMissingCoordinates", "WARN");
-        WorkflowStep validator2 = mkWorkflowStep("Source Validator", "org.eclipse.sw360.antenna.workflow.processors.SourceValidator",
+        WorkflowStep validator2 = mkWorkflowStep("Source Validator", "org.eclipse.sw360.antenna.validators.workflow.processors.SourceValidator",
                 "missingSourcesSeverity", "WARN",
                 "incompleteSourcesSeverity", "WARN");
 
@@ -51,9 +51,9 @@ public final class BasicConfiguration {
         configMap.put("missingLicenseTextSeverity", "WARN");
         configMap.put("forbiddenLicenses", "");
         configMap.put("ignoredLicenses", "");
-        WorkflowStep validator3 = mkWorkflowStep("License Validator", "org.eclipse.sw360.antenna.workflow.processors.LicenseValidator",
+        WorkflowStep validator3 = mkWorkflowStep("License Validator", "org.eclipse.sw360.antenna.validators.workflow.processors.LicenseValidator",
                               configMap);
-        WorkflowStep validator4 = mkWorkflowStep("Match State Validator", "org.eclipse.sw360.antenna.workflow.processors.MatchStateValidator",
+        WorkflowStep validator4 = mkWorkflowStep("Match State Validator", "org.eclipse.sw360.antenna.validators.workflow.processors.MatchStateValidator",
                 "severityOfSIMILAR", "INFO",
                 "severityOfUNKNOWN", "WARN");
         configMap = new HashMap<>();
@@ -61,7 +61,7 @@ public final class BasicConfiguration {
         configMap.put("securityIssueSeverityLimitSeverity", "FAIL");
         configMap.put("forbiddenSecurityIssueStatuses", "Open");
         configMap.put("securityIssueSeverityLimit", "5.0");
-        WorkflowStep validator5 = mkWorkflowStep("Security Issue Validator", "org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator",
+        WorkflowStep validator5 = mkWorkflowStep("Security Issue Validator", "org.eclipse.sw360.antenna.validators.workflow.processors.SecurityIssueValidator",
                 configMap);
         return Stream.of(confHandler,
                 enricher1, enricher3, enricher4, enricher5, enricher6,

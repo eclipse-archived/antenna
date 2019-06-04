@@ -9,7 +9,7 @@ Add the following step into the `<processors>` section of your workflow.xml
 ```
 <step>
     <name>Match State Validator</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.processors.MatchStateValidator</classHint>
+    <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.MatchStateValidator</classHint>
     <configuration>
         <entry key="severityOfSIMILAR" value="INFO"/>
         <entry key="severityOfUNKNOWN" value="WARN"/>

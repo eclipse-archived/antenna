@@ -24,8 +24,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>antenna-manifest-resolver</module>
-        <module>antenna-child-jar-resolver</module>
+        <module>antenna-p2-enricher</module>
     </modules>
 
     <profiles>

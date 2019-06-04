@@ -9,7 +9,7 @@ Add the following step into the `<processors>` section of your workflow.xml
 ```
 <step>
     <name>Source Validator</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.processors.SourceValidator</classHint>
+    <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.SourceValidator</classHint>
     <configuration>
         <entry key="missingSourcesSeverity" value="WARN"/>
         <entry key="incompleteSourcesSeverity" value="WARN"/>

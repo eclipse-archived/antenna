@@ -10,7 +10,7 @@ Add the following step into the `<processors>` section of your workflow.xml
 ```xml
 <step>
     <name>SW360 Enricher</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.processors.SW360Enricher</classHint>
+    <classHint>org.eclipse.sw360.antenna.sw360.workflow.processors.SW360Enricher</classHint>
     <configuration>
         <entry key="rest.server.url" value="http://localhost:8080/resource/api"/>
         <entry key="auth.server.url" value="http://localhost:8080/authorization/oauth"/>

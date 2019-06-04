@@ -85,7 +85,7 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
         analyzers.add(mkWorkflowStep("CSV Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer",
                 "base.dir", this.projectRoot.toString(),
                 "file.path", "src/dependencies.csv"));
-        analyzers.add(mkWorkflowStep("Maven dependency analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.MvnDependencyTreeAnalyzer"));
+        analyzers.add(mkWorkflowStep("Maven dependency analyzer", "org.eclipse.sw360.antenna.maven.workflow.analyzers.MvnDependencyTreeAnalyzer"));
         return analyzers;
     }
 

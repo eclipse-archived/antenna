@@ -10,7 +10,7 @@ Add the following step into your `<processors>` section of your workflow.xml
 ```
 <step>
     <name>Coordinates Validator</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.processors.CoordinatesValidator</classHint>
+    <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.CoordinatesValidator</classHint>
     <configuration>
         <entry key="failOnMissingCoordinates" value="WARN"/>
     </configuration>

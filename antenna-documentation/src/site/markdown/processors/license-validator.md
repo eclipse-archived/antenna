@@ -10,7 +10,7 @@ Add the following step into the `<processors>` section of your workflow.xml
 ```
 <step>
     <name>License Validator</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.processors.LicenseValidator</classHint>
+    <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.LicenseValidator</classHint>
     <configuration>
         <entry key="forbiddenLicenseSeverity" value="FAIL"/>
         <entry key="missingLicenseInformationSeverity" value="WARN"/>

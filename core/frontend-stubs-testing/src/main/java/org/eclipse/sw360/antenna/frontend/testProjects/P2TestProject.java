@@ -90,7 +90,7 @@ public class P2TestProject extends AbstractTestProjectWithExpectations implement
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
         final List<WorkflowStep> processors = BasicConfiguration.getProcessors();
-        WorkflowStep enricher1 = mkWorkflowStep("P2 Resolver", "org.eclipse.sw360.antenna.workflow.processors.enricher.P2Resolver",
+        WorkflowStep enricher1 = mkWorkflowStep("P2 Resolver", "org.eclipse.sw360.antenna.p2resolver.workflow.processors.enricher.P2Resolver",
                 "repositories", this.projectRoot.toString() + "/additional_p2_resources");
         processors.add(enricher1);
         return processors;

@@ -114,7 +114,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
             put("folder.paths", "./src/example-policies");
             put("failOn", "WARN");
         }};
-        WorkflowStep checker1 = mkWorkflowStep("Drools Policy Engine", "org.eclipse.sw360.antenna.workflow.processors.AntennaDroolsChecker", droolsConfig);
+        WorkflowStep checker1 = mkWorkflowStep("Drools Policy Engine", "org.eclipse.sw360.antenna.drools.workflow.processors.AntennaDroolsChecker", droolsConfig);
                 processors.add(checker1);
         return processors;
     }
