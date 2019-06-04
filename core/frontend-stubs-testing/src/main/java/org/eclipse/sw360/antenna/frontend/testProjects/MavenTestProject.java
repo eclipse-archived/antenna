@@ -119,9 +119,11 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
         WorkflowStep generator = mkWorkflowStep("SW360 Updater", "org.eclipse.sw360.antenna.workflow.generators.SW360Updater",
                 new HashMap<String, String>() {{
                     put("rest.server.url", "http://localhost:8080/resource/api");
-                    put("auth.server.url", "http://localhost:8080/authorization");
-                    put("username", "admin@sw360.org");
-                    put("password", "12345");
+                    put("auth.server.url", "http://localhost:8080/authorization/oauth");
+                    put("user.id", "admin@sw360.org");
+                    put("user.password", "12345");
+                    put("client.id", "trusted-sw360-client");
+                    put("client.password", "sw360-secret");
                 }});
         generator.setDeactivated(true);
         result.add(generator);
