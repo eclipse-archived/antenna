@@ -25,7 +25,7 @@ In case the tool configuration is used you have specify the configuration entrie
                         <processors>
                             <step>
                                 <name>Source Validator</name>
-                                <classHint>org.eclipse.sw360.antenna.workflow.processors.SourceValidator</classHint>
+                                <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.SourceValidator</classHint>
                                 <configuration>
                                     <entry>
                                         <entryKey>missingSourcesSeverity</entryKey>

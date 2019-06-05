@@ -12,7 +12,7 @@ Add this configuration to the workflow.xml
 ```xml
         <step>
             <name>Drools Policy Engine</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.AntennaDroolsChecker</classHint>
+            <classHint>org.eclipse.sw360.antenna.drools.workflow.processors.AntennaDroolsChecker</classHint>
             <configuration>
                 <entry key="base.dir" value="${project.basedir}"/>
                 <entry key="folder.paths" value="relative/path/to/rules"/>

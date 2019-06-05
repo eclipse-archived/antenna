@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.testing;
 
-import org.eclipse.sw360.antenna.frontend.testProjects.AbstractTestProject;
+import org.eclipse.sw360.antenna.frontend.testing.testProjects.AbstractTestProject;
 
 import java.io.IOException;
 import java.util.Arrays;

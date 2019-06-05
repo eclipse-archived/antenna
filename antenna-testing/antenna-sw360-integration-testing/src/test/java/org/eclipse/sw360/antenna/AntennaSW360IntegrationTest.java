@@ -12,7 +12,7 @@ package org.eclipse.sw360.antenna;
 
 import okhttp3.*;
 import org.apache.maven.it.Verifier;
-import org.eclipse.sw360.antenna.frontend.testProjects.ExampleTestProject;
+import org.eclipse.sw360.antenna.frontend.testing.testProjects.ExampleTestProject;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

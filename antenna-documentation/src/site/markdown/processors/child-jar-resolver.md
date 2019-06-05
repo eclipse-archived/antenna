@@ -7,6 +7,6 @@ Add the following step into the `<processors>` section of your workflow.xml
 ```
 <step>
     <name>Child Jar Resolver</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.ChildJarResolver</classHint>
+    <classHint>org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ChildJarResolver</classHint>
 </step>
 ```

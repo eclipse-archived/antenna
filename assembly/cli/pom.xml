@@ -37,7 +37,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.eclipse.sw360.antenna.frontend.AntennaCLIFrontend</mainClass>
+                            <mainClass>org.eclipse.sw360.antenna.frontend.cli.AntennaCLIFrontend</mainClass>
                         </manifest>
                     </archive>
                     <appendAssemblyId>false</appendAssemblyId>

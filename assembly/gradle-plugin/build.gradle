@@ -37,7 +37,7 @@ gradlePlugin {
     plugins {
         OSMRunner {
             id = 'org.eclipse.sw360.antenna'
-            implementationClass = 'org.eclipse.sw360.antenna.gradle.GradlePlugin'
+            implementationClass = 'org.eclipse.sw360.antenna.frontend.gradle.GradlePlugin'
         }
     }
 }

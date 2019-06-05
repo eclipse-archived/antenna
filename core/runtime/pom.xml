@@ -73,6 +73,12 @@
         </dependency>
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>model-testing</artifactId>
+            <scope>test</scope>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>

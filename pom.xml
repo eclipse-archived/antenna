@@ -51,7 +51,6 @@
         <module>core/core-workflow-steps</module>
         <module>core/frontend-stubs</module>
         <module>core/frontend-stubs-testing</module>
-        <module>core/abstract-compliance-checker</module>
         <!-- modules -->
         <module>modules/maven</module>
         <module>modules/sw360</module>

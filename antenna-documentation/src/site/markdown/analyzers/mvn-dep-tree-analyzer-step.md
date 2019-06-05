@@ -9,6 +9,6 @@ Add the following step into the `<analyzers>` section of your workflow.xml
 ```xml 
         <step>
             <name>Maven dependency analyzer</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.analyzers.MvnDependencyTreeAnalyzer</classHint>
+            <classHint>org.eclipse.sw360.antenna.maven.workflow.analyzers.MvnDependencyTreeAnalyzer</classHint>
         </step>
 ```

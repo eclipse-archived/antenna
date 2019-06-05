@@ -49,7 +49,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.eclipse.sw360.antenna.frontend.testProjects.TestProjectAsserter</mainClass>
+                            <mainClass>org.eclipse.sw360.antenna.frontend.testing.testProjects.TestProjectAsserter</mainClass>
                         </manifest>
                     </archive>
                     <appendAssemblyId>false</appendAssemblyId>

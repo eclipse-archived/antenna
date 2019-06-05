@@ -23,15 +23,15 @@
         <!-- enricher -->
         <step>
             <name>Maven Artifact Resolver</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.MavenArtifactResolver</classHint>
+            <classHint>org.eclipse.sw360.antenna.maven.workflow.processors.enricher.MavenArtifactResolver</classHint>
         </step>
         <step>
             <name>Child Jar Resolver</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.ChildJarResolver</classHint>
+            <classHint>org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ChildJarResolver</classHint>
         </step>
         <step>
             <name>Manifest Resolver</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.ManifestResolver</classHint>
+            <classHint>org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ManifestResolver</classHint>
         </step>
         <step>
             <name>License Resolver</name>
@@ -44,14 +44,14 @@
         <!-- validators -->
         <step>
             <name>Coordinates Validator</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.CoordinatesValidator</classHint>
+            <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.CoordinatesValidator</classHint>
             <configuration>
                 <entry key="failOnMissingCoordinates" value="WARN"/>
             </configuration>
         </step>
         <step>
             <name>Source Validator</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.SourceValidator</classHint>
+            <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.SourceValidator</classHint>
             <configuration>
                 <entry key="missingSourcesSeverity" value="WARN"/>
                 <entry key="incompleteSourcesSeverity" value="WARN"/>
@@ -59,7 +59,7 @@
         </step>
         <step>
             <name>License Validator</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.LicenseValidator</classHint>
+            <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.LicenseValidator</classHint>
             <configuration>
                 <entry key="forbiddenLicenseSeverity" value="FAIL"/>
                 <entry key="missingLicenseInformationSeverity" value="WARN"/>
@@ -70,7 +70,7 @@
         </step>
         <step>
             <name>Match State Validator</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.MatchStateValidator</classHint>
+            <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.MatchStateValidator</classHint>
             <configuration>
                 <entry key="severityOfSIMILAR" value="INFO"/>
                 <entry key="severityOfUNKNOWN" value="WARN"/>
@@ -78,7 +78,7 @@
         </step>
         <step>
             <name>Security Issue Validator</name>
-            <classHint>org.eclipse.sw360.antenna.workflow.processors.SecurityIssueValidator</classHint>
+            <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.SecurityIssueValidator</classHint>
             <configuration>
                 <entry key="forbiddenSecurityIssueStatusSeverity" value="FAIL"/>
                 <entry key="securityIssueSeverityLimitSeverity" value="FAIL" />
