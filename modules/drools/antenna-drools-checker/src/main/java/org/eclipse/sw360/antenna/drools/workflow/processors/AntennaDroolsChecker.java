@@ -17,7 +17,7 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.drools.DroolsEngine;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractComplianceChecker;
+import org.eclipse.sw360.antenna.workflow.stubs.AbstractComplianceChecker;
 
 import java.util.*;
 

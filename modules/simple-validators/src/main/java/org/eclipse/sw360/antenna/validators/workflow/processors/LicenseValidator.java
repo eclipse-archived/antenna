@@ -18,8 +18,8 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractComplianceChecker;
-import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvaluation;
+import org.eclipse.sw360.antenna.workflow.stubs.AbstractComplianceChecker;
+import org.eclipse.sw360.antenna.workflow.stubs.DefaultPolicyEvaluation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

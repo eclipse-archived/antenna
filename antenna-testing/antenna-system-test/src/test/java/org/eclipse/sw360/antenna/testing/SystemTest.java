@@ -11,8 +11,8 @@
 package org.eclipse.sw360.antenna.testing;
 
 import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.eclipse.sw360.antenna.frontend.testProjects.AbstractTestProject;
-import org.eclipse.sw360.antenna.frontend.testProjects.FullTestProject;
+import org.eclipse.sw360.antenna.frontend.testing.testProjects.AbstractTestProject;
+import org.eclipse.sw360.antenna.frontend.testing.testProjects.FullTestProject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;

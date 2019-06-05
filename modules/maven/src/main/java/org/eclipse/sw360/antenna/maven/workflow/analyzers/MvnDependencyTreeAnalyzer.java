@@ -14,7 +14,7 @@ import org.apache.maven.shared.dependency.graph.DependencyNode;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
-import org.eclipse.sw360.antenna.frontend.mojo.WrappedDependencyNodes;
+import org.eclipse.sw360.antenna.frontend.stub.mojo.WrappedDependencyNodes;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;

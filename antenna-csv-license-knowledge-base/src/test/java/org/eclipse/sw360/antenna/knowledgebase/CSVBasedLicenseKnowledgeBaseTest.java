@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.knowledgebase;
 
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
+import org.eclipse.sw360.antenna.knowledgebase.csv.CSVBasedLicenseKnowledgeBase;
 import org.junit.Test;
 import org.mockito.Mockito;
 

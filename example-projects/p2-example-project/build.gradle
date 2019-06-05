@@ -19,7 +19,7 @@ buildscript{
     }
 }
 
-apply plugin: org.eclipse.sw360.antenna.gradle.GradlePlugin
+apply plugin: org.eclipse.sw360.antenna.frontend.gradle.GradlePlugin
 
 repositories {
     mavenLocal()

@@ -17,8 +17,8 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractComplianceChecker;
-import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvaluation;
+import org.eclipse.sw360.antenna.workflow.stubs.AbstractComplianceChecker;
+import org.eclipse.sw360.antenna.workflow.stubs.DefaultPolicyEvaluation;
 
 import java.util.Collection;
 import java.util.Map;

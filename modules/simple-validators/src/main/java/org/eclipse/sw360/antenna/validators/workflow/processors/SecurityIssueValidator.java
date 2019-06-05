@@ -20,8 +20,8 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIssues;
 import org.eclipse.sw360.antenna.model.xml.generated.Issue;
 import org.eclipse.sw360.antenna.model.xml.generated.Issues;
 import org.eclipse.sw360.antenna.model.xml.generated.SecurityIssueStatus;
-import org.eclipse.sw360.antenna.workflow.processors.checkers.AbstractComplianceChecker;
-import org.eclipse.sw360.antenna.workflow.processors.checkers.DefaultPolicyEvaluation;
+import org.eclipse.sw360.antenna.workflow.stubs.AbstractComplianceChecker;
+import org.eclipse.sw360.antenna.workflow.stubs.DefaultPolicyEvaluation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

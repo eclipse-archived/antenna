@@ -32,7 +32,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>abstract-compliance-checker</artifactId>
+            <artifactId>runtime</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
