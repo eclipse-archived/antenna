@@ -15,6 +15,7 @@ import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.frontend.AntennaFrontend;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.*;
+import org.eclipse.sw360.antenna.model.util.ClassCodeSourceLocation;
 import org.eclipse.sw360.antenna.model.util.WorkflowComparator;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
@@ -27,6 +28,7 @@ import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -52,16 +54,15 @@ abstract public class AbstractAntennaFrontendTest {
     protected boolean runExecutionTest;
 
     @Parameterized.Parameters(name = "{index}: Test data = {1}")
-    public static Collection<Object[]> data() {
+    public static Collection<Object[]> data() throws URISyntaxException {
         String relativePathToP2Product = "../../../../modules/p2/antenna-p2-product/repository_manager";
-        if (! Paths.get(
-                AbstractAntennaFrontendTest.class.getProtectionDomain().getCodeSource().getLocation().getPath(),
+        if (! Paths.get(ClassCodeSourceLocation.getClassCodeSourceLocationAsString(AbstractAntennaFrontendTest.class),
                 relativePathToP2Product).normalize().toFile().exists()) {
             throw new RuntimeException("The folder " + relativePathToP2Product + " should be found by AbstractAntennaFrontendTest. Maybe the Path is outdated.");
         }
 
         if (Paths.get(
-                AbstractAntennaFrontendTest.class.getProtectionDomain().getCodeSource().getLocation().getPath(),
+                ClassCodeSourceLocation.getClassCodeSourceLocationAsString(AbstractAntennaFrontendTest.class),
                 relativePathToP2Product,
                 "target/products").normalize().toFile().exists()) {
             return Arrays.asList(new Object[][]{

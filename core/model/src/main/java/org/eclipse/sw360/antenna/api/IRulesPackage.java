@@ -11,8 +11,10 @@
 
 package org.eclipse.sw360.antenna.api;
 
+import java.net.URISyntaxException;
+
 public interface IRulesPackage {
     String getRulesPackageName();
 
-    String getRulesetFolder();
+    String getRulesetFolder() throws URISyntaxException;
 }

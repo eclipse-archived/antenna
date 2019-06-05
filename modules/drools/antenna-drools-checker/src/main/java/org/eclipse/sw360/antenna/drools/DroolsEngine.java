@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -110,12 +111,12 @@ public class DroolsEngine implements IRuleEngine {
     private List<Path> extractInbuiltRuleFolders() throws AntennaException {
         List<Path> policiesFolders = new ArrayList<>();
         for (IRulesPackage rulesPackage : ServiceLoader.load(IRulesPackage.class, getClass().getClassLoader())) {
-            Path rulePath = Paths.get(rulesPackage.getRulesetFolder());
-            if (rulePath.toFile().isDirectory()) {
-                LOGGER.error("Path to ruleset folder should be inside a jar. Your rulefolder is probably not packed.");
-                continue;
-            }
             try {
+                Path rulePath = Paths.get(rulesPackage.getRulesetFolder());
+                if (rulePath.toFile().isDirectory()) {
+                    LOGGER.error("Path to ruleset folder should be inside a jar. Your rulefolder is probably not packed.");
+                    continue;
+                }
                 if (temporaryDirectory == null) {
                     temporaryDirectory = Files.createTempDirectory("temporaryDirectory");
                 }
@@ -125,6 +126,8 @@ public class DroolsEngine implements IRuleEngine {
                 policiesFolders.add(internalRulesPath.resolve(POLICIES_FOLDER_NAME));
             } catch (IOException e) {
                 throw new AntennaException("Error while extracting rules from folder " + rulesPackage.getRulesPackageName() + ": ", e);
+            } catch (URISyntaxException e) {
+                throw new AntennaException(e.getReason() + "when getting policy folder.", e);
             }
         }
         return policiesFolders;
