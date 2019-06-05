@@ -27,13 +27,18 @@ import java.util.*;
 public class SW360Updater extends AbstractGenerator {
     private static final String REST_SERVER_URL_KEY = "rest.server.url";
     private static final String AUTH_SERVER_URL_KEY = "auth.server.url";
-    private static final String USERNAME_KEY = "username";
-    private static final String PASSWORD_KEY = "password";
+    private static final String USERNAME_KEY = "user.id";
+    private static final String PASSWORD_KEY = "user.password";
+    private static final String CLIENT_USER_KEY = "client.id";
+    private static final String CLIENT_PASSWORD_KEY = "client.password";
 
     private String sw360RestServerUrl;
     private String sw360AuthServerUrl;
     private String sw360User;
     private String sw360Password;
+    private String sw360ClientId;
+    private String sw360ClientPassword;
+
 
     private String projectName;
     private String projectVersion;
@@ -59,11 +64,14 @@ public class SW360Updater extends AbstractGenerator {
         sw360AuthServerUrl = getConfigValue(AUTH_SERVER_URL_KEY, configMap);
         sw360User = getConfigValue(USERNAME_KEY, configMap);
         sw360Password = getConfigValue(PASSWORD_KEY, configMap);
+        sw360ClientId = getConfigValue(CLIENT_USER_KEY, configMap);
+        sw360ClientPassword = getConfigValue(CLIENT_PASSWORD_KEY, configMap);
     }
 
     @Override
     public Map<String, IAttachable> produce(Collection<Artifact> intermediates) throws AntennaException {
-        SW360MetaDataUpdater sw360MetaDataUpdater = new SW360MetaDataUpdater(sw360RestServerUrl, sw360AuthServerUrl, sw360User, sw360Password);
+        SW360MetaDataUpdater sw360MetaDataUpdater = new SW360MetaDataUpdater(sw360RestServerUrl, sw360AuthServerUrl, sw360User,
+                sw360Password, sw360ClientId, sw360ClientPassword);
 
         try {
             List<SW360Release> releases = new ArrayList<>();
