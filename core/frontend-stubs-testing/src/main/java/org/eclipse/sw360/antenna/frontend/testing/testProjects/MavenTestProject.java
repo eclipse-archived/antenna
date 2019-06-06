@@ -116,7 +116,7 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
         List<WorkflowStep> result = BasicConfiguration.getGenerators(projectRoot.toString());
-        WorkflowStep generator = mkWorkflowStep("SW360 Updater", "org.eclipse.sw360.antenna.workflow.generators.SW360Updater",
+        WorkflowStep generator = mkWorkflowStep("SW360 Updater", "org.eclipse.sw360.antenna.sw360.workflow.generators.SW360Updater",
                 new HashMap<String, String>() {{
                     put("rest.server.url", "http://localhost:8080/resource/api");
                     put("auth.server.url", "http://localhost:8080/authorization/oauth");

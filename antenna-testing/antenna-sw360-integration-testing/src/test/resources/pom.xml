@@ -100,7 +100,7 @@
                             </step>
                             <step>
                                 <name>SW360 Updater</name>
-                                <classHint>org.eclipse.sw360.antenna.workflow.generators.SW360Updater</classHint>
+                                <classHint>org.eclipse.sw360.antenna.sw360.workflow.generators.SW360Updater</classHint>
                                 <configuration>
                                     <entry>
                                         <key>rest.server.url</key>
