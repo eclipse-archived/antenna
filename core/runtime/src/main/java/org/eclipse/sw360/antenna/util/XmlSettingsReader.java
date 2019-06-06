@@ -67,6 +67,8 @@ public class XmlSettingsReader {
     /**
      * Gets the first integer with the matching tag.
      *
+     * @param xPathExp
+     *            XPath expression for the property
      * @param tagName
      *            Element name of the int.
      * @param defaultVal
@@ -95,6 +97,8 @@ public class XmlSettingsReader {
     /**
      * Gets the first boolean with the matching tag.
      *
+     * @param xPathExp
+     *            XPath expression for the property
      * @param tagName
      *            Element name of the boolean.
      * @param defaultVal
@@ -134,6 +138,8 @@ public class XmlSettingsReader {
      *
      * @param tagName
      *            Element name of the string.
+     * @param defaultValue
+     *            Default Value for the property
      * @return First string with the matching tag, or default value if not
      *         found.
      */
@@ -205,6 +211,8 @@ public class XmlSettingsReader {
     /**
      * Creates an object that is based on an XSD complex type.
      *
+     * @param <T>
+     *            The complex type of the extracted object
      * @param tagName
      *            The root element of the complex type.
      * @param targetClass

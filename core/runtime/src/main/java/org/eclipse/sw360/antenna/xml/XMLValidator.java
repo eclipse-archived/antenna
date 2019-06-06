@@ -39,7 +39,6 @@ public class XMLValidator extends IXMLValidator {
      * @param xsdUrl
      *            URL to the xsd File against which the xml File will be
      *            validated.
-     * @return Returns true if given xml is suitable to the given xsd.
      * @throws RuntimeException
      *             if the config.xml is not valid or if an IOException occurs
      *             during processing.

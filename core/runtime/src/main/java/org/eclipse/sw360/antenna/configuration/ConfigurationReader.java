@@ -47,6 +47,8 @@ public class ConfigurationReader implements IConfigReader {
      *
      * @param xsdURL
      *            Schema definition file used to validate configuration file.
+     * @param encoding
+     *            Encoding of the content referenced by the URL
      */
     public ConfigurationReader(URL xsdURL, Charset encoding) {
         this.configXsdURL = xsdURL;

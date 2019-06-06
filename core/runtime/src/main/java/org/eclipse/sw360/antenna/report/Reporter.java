@@ -53,6 +53,8 @@ public class Reporter implements IProcessingReporter {
     /**
      * @param targetDirectory
      *            Directory to which the report will be written.
+     * @param encoding
+     *            Encoding of the content
      */
     public Reporter(Path targetDirectory, Charset encoding) {
         this.targetDirectory = targetDirectory;

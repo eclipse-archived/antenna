@@ -37,6 +37,10 @@ public class AntennaCore {
 
     /**
      * Run a Antenna execution.
+     *
+     * @return Attachment map
+     *
+     * @throws AntennaException Error in execution
      */
     public Map<String, IAttachable> compose() throws AntennaException {
         // Execution workflow begins
@@ -50,6 +54,10 @@ public class AntennaCore {
 
     /**
      * Initialize components for start of the workflow.
+     *
+     * @param context The antenna context run
+     *
+     * @throws AntennaConfigurationException Configuration problem
      */
     public AntennaCore(AntennaContext context) throws AntennaConfigurationException {
         this.context = context;

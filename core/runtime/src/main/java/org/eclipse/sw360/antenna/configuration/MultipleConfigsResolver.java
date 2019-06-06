@@ -50,8 +50,14 @@ public class MultipleConfigsResolver {
      * written to the temporary reporter. With the checkReport() method it can
      * be checked if this reporter contains messages. If yes an Exception is
      * thrown and the conflicts must be solved.
+     *
+     * @param toolConfiguration
+     *              General tool configuration
+     *
+     * @return The resolved configurations
+     *
+     * @throws AntennaConfigurationException Configuration Problem
      */
-
     public Configuration resolveConfigs(ToolConfiguration toolConfiguration) throws AntennaConfigurationException {
         return resolveConfigs(toolConfiguration, true);
     }
