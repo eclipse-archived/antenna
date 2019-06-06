@@ -42,16 +42,17 @@ public class SW360MetaDataReceiver {
     private String clientPassword;
 
     public SW360MetaDataReceiver(String restServerUrl, String authServerUrl, String userId, String password,
-                                 String clientId, String clientPassword) {
+                                 String clientId, String clientPassword,
+                                 boolean proxyEnable, String proxyHost, int proxyPort) {
         this.userId = userId;
         this.password = password;
         this.clientId = clientId;
         this.clientPassword = clientPassword;
 
-        authenticationClient = new SW360AuthenticationClient(authServerUrl);
-        componentClientAdapter = new SW360ComponentClientAdapter(restServerUrl);
-        releaseClientAdapter = new SW360ReleaseClientAdapter(restServerUrl);
-        licenseClientAdapter = new SW360LicenseClientAdapter(restServerUrl);
+        authenticationClient = new SW360AuthenticationClient(authServerUrl, proxyEnable, proxyHost, proxyPort);
+        componentClientAdapter = new SW360ComponentClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
+        releaseClientAdapter = new SW360ReleaseClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
+        licenseClientAdapter = new SW360LicenseClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
     }
 
     public Optional<SW360Release> findReleaseForArtifact(Artifact artifact) throws AntennaException {

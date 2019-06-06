@@ -25,6 +25,7 @@ Add the following step into the `<generators>` section of your workflow.xml
         <entry key="user.password" value="12345"/>
         <entry key="client.id" value="trusted-sw360-client"/>
         <entry key="client.password" value="sw360-secret"/>
+        <entry key="proxy.use" value="true"/>
     </configuration>
 </step>
 ```
@@ -36,3 +37,4 @@ Add the following step into the `<generators>` section of your workflow.xml
 * `user.password`: The password of the SW360 user.
 * `client.id`: The REST API uses a two step authentication, this is general client id used.
 * `client.password`: The password of the client id.
+* `proxy.use`: Enable proxy for communication to SW360.

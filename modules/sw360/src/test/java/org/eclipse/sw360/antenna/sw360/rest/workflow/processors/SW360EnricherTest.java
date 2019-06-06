@@ -28,6 +28,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
 import org.eclipse.sw360.antenna.sw360.workflow.processors.SW360Enricher;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -38,8 +39,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class SW360EnricherTest extends AntennaTestWithMockedContext {
     private List<Artifact> artifacts;
@@ -63,11 +63,21 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         configMap.put("user.password", "password");
         configMap.put("client.id", "client_user");
         configMap.put("client.password", "client_password");
+        configMap.put("proxy.use", "false");
         sw360Enricher.configure(configMap);
 
         connector = Mockito.mock(SW360MetaDataReceiver.class);
         ReflectionTestUtils.setField(sw360Enricher, "connector", connector);
     }
+
+    @After
+    public void after(){
+        temporaryFolder.delete();
+
+        verify(toolConfigMock, atLeast(0)).getProxyHost();
+        verify(toolConfigMock, atLeast(0)).getProxyPort();
+    }
+
 
     @Test
     public void downloadUrlIsStoredAsFact() throws AntennaException {

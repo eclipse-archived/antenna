@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2017-2018.
+ * Copyright (c) Verifa Oy 2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -17,19 +18,33 @@ import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.Collections;
 
 public class SW360UserClient {
     private static final String USERS_ENDPOINT = "/users";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     private final String usersRestUrl;
+    private RestTemplate restTemplate;
 
-    public SW360UserClient(String restUrl) {
+    public SW360UserClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
         usersRestUrl = restUrl + USERS_ENDPOINT;
+        this.restTemplate = restTemplate(proxyUse, proxyHost, proxyPort);
+    }
+
+    private RestTemplate restTemplate(boolean proxyUse, String proxyHost, int proxyPort) {
+        if (proxyUse && proxyHost != null) {
+            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+            requestFactory.setProxy(proxy);
+            return new RestTemplate(requestFactory);
+        } else {
+            return new RestTemplate();
+        }
     }
 
     public SW360User getUserByEmail(String email, HttpHeaders header) throws AntennaException {

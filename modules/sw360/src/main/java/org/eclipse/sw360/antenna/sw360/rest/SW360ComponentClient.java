@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Verifa Oy 2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -19,10 +20,13 @@ import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,12 +34,23 @@ import java.util.List;
 public class SW360ComponentClient {
     private static final String COMPONENTS_ENDPOINT = "/components";
 
-    private final RestTemplate restTemplate = new RestTemplate();
-
     private final String componentsRestUrl;
+    private RestTemplate restTemplate;
 
-    public SW360ComponentClient(String restUrl) {
+    public SW360ComponentClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
         this.componentsRestUrl = restUrl + COMPONENTS_ENDPOINT;
+        this.restTemplate = restTemplate(proxyUse, proxyHost, proxyPort);
+    }
+
+    private RestTemplate restTemplate(boolean proxyUse, String proxyHost, int proxyPort) {
+        if (proxyUse && proxyHost != null) {
+            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+            requestFactory.setProxy(proxy);
+            return new RestTemplate(requestFactory);
+        } else {
+            return new RestTemplate();
+        }
     }
 
     public SW360Component getComponent(String componentId, HttpHeaders header) throws AntennaException {

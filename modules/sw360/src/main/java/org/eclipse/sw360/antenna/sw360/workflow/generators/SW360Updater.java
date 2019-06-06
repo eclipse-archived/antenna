@@ -31,6 +31,7 @@ public class SW360Updater extends AbstractGenerator {
     private static final String PASSWORD_KEY = "user.password";
     private static final String CLIENT_USER_KEY = "client.id";
     private static final String CLIENT_PASSWORD_KEY = "client.password";
+    private static final String PROXY_USE = "proxy.use";
 
     private String sw360RestServerUrl;
     private String sw360AuthServerUrl;
@@ -38,7 +39,9 @@ public class SW360Updater extends AbstractGenerator {
     private String sw360Password;
     private String sw360ClientId;
     private String sw360ClientPassword;
-
+    private String sw360ProxyHost;
+    private int sw360ProxyPort;
+    private boolean sw360ProxyUse;
 
     private String projectName;
     private String projectVersion;
@@ -66,12 +69,16 @@ public class SW360Updater extends AbstractGenerator {
         sw360Password = getConfigValue(PASSWORD_KEY, configMap);
         sw360ClientId = getConfigValue(CLIENT_USER_KEY, configMap);
         sw360ClientPassword = getConfigValue(CLIENT_PASSWORD_KEY, configMap);
+        sw360ProxyUse = Boolean.parseBoolean(getConfigValue(PROXY_USE, configMap, "false"));
+        sw360ProxyHost = context.getToolConfiguration().getProxyHost();
+        sw360ProxyPort = context.getToolConfiguration().getProxyPort();
     }
 
     @Override
     public Map<String, IAttachable> produce(Collection<Artifact> intermediates) throws AntennaException {
         SW360MetaDataUpdater sw360MetaDataUpdater = new SW360MetaDataUpdater(sw360RestServerUrl, sw360AuthServerUrl, sw360User,
-                sw360Password, sw360ClientId, sw360ClientPassword);
+                sw360Password, sw360ClientId, sw360ClientPassword,
+                sw360ProxyUse, sw360ProxyHost, sw360ProxyPort);
 
         try {
             List<SW360Release> releases = new ArrayList<>();

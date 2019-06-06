@@ -27,7 +27,9 @@ import java.util.stream.Collectors;
 public class SW360ComponentClientAdapter {
     private final SW360ComponentClient componentClient;
 
-    public SW360ComponentClientAdapter(String restUrl) { this.componentClient = new SW360ComponentClient(restUrl); }
+    public SW360ComponentClientAdapter(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
+        this.componentClient = new SW360ComponentClient(restUrl, proxyUse, proxyHost, proxyPort);
+    }
 
     public SW360Component addComponent(Artifact artifact, HttpHeaders header) throws AntennaException {
         SW360Component component = new SW360Component();

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2017-2019.
+ * Copyright (c) Verifa Oy 2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -15,9 +16,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
@@ -33,10 +37,22 @@ public class SW360AuthenticationClient {
     private static final String JSON_TOKEN_KEY = "access_token";
 
     private final String authServerUrl;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate;
 
-    public SW360AuthenticationClient(String authServerUrl) {
+    public SW360AuthenticationClient(String authServerUrl, boolean proxyUse, String proxyHost, int proxyPort) {
         this.authServerUrl = authServerUrl;
+        this.restTemplate = restTemplate(proxyUse, proxyHost, proxyPort);
+    }
+
+    private RestTemplate restTemplate(boolean proxyUse, String proxyHost, int proxyPort) {
+        if (proxyUse && proxyHost != null) {
+            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+            requestFactory.setProxy(proxy);
+            return new RestTemplate(requestFactory);
+        } else {
+            return new RestTemplate();
+        }
     }
 
     public String getOAuth2AccessToken(String username, String password, String clientId, String clientPassword)
