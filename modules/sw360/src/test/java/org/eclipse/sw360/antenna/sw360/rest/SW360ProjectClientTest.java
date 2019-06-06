@@ -42,6 +42,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 public class SW360ProjectClientTest {
     private static final String REST_URL = "http://localhost:8080/resource/api";
+    private static final boolean PROXY_ENABLE = false;
+    private static final String PROXY_HOST = "localhost";
+    private static final int PROXY_PORT = 3128;
+
     private static final String PROJECTS_ENDPOINT = REST_URL + "/projects";
     private static final String USERS_ENDPOINT = REST_URL + "/users";
     private static final String SEARCH_BY_NAME_ENDPOINT = PROJECTS_ENDPOINT + "?name=";
@@ -74,7 +78,7 @@ public class SW360ProjectClientTest {
     private static final String PROJECT_EMAIL_VALUE_2 = "testemail2@any.com";
 
 
-    private SW360ProjectClient client = new SW360ProjectClient(REST_URL);
+    private SW360ProjectClient client = new SW360ProjectClient(REST_URL, PROXY_ENABLE, PROXY_HOST, PROXY_PORT);
 
     private MockRestServiceServer mockedServer;
 

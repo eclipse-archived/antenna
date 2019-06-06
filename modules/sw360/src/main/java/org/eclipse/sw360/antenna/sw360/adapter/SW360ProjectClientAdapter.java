@@ -34,14 +34,13 @@ import java.util.stream.Collectors;
 public class SW360ProjectClientAdapter {
     private final SW360ProjectClient projectClient;
 
-    public SW360ProjectClientAdapter(String restUrl) {
-        this.projectClient = new SW360ProjectClient(restUrl);
+    public SW360ProjectClientAdapter(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
+        this.projectClient = new SW360ProjectClient(restUrl, proxyUse, proxyHost, proxyPort);
     }
 
     public Optional<String> getProjectIdByNameAndVersion(IProject project, HttpHeaders header) throws AntennaException {
         return getProjectIdByNameAndVersion(project.getProjectId(), project.getVersion(), header);
     }
-
 
     public Optional<String> getProjectIdByNameAndVersion(String projectName, String projectVersion, HttpHeaders header) throws AntennaException {
         List<SW360Project> projects = projectClient.searchByName(projectName, header);

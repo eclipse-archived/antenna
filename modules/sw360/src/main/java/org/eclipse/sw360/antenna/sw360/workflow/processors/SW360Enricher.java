@@ -48,6 +48,7 @@ public class SW360Enricher extends AbstractProcessor {
     private static final String PASSWORD_KEY = "user.password";
     private static final String CLIENT_USER_KEY = "client.id";
     private static final String CLIENT_PASSWORD_KEY = "client.password";
+    private static final String PROXY_USE = "proxy.use";
 
     private SW360MetaDataReceiver connector;
 
@@ -67,7 +68,10 @@ public class SW360Enricher extends AbstractProcessor {
         String sw360Password = getConfigValue(PASSWORD_KEY, configMap);
         String sw360ClientUser = getConfigValue(CLIENT_USER_KEY, configMap);
         String sw360ClientPassword = getConfigValue(CLIENT_PASSWORD_KEY, configMap);
-        connector = new SW360MetaDataReceiver(sw360RestServerUrl, sw360AuthServerUrl, sw360User, sw360Password, sw360ClientUser, sw360ClientPassword);
+        boolean sw360ProxyUse = Boolean.parseBoolean(getConfigValue(PROXY_USE, configMap, "false"));
+        String sw360ProxyHost = context.getToolConfiguration().getProxyHost();
+        int sw360ProxyPort = context.getToolConfiguration().getProxyPort();
+        connector = new SW360MetaDataReceiver(sw360RestServerUrl, sw360AuthServerUrl, sw360User, sw360Password, sw360ClientUser, sw360ClientPassword, sw360ProxyUse, sw360ProxyHost, sw360ProxyPort);
     }
 
     @Override

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Verifa Oy 2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -18,9 +19,12 @@ import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,12 +32,23 @@ import java.util.List;
 public class SW360LicenseClient {
     private static final String LICENSES_ENDPOINT = "/licenses";
 
-    private RestTemplate restTemplate = new RestTemplate();
-
     private String licensesRestUrl;
+    private RestTemplate restTemplate;
 
-    public SW360LicenseClient(String restUrl) {
+    public SW360LicenseClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
         licensesRestUrl = restUrl + LICENSES_ENDPOINT;
+        this.restTemplate = restTemplate(proxyUse, proxyHost, proxyPort);
+    }
+
+    private RestTemplate restTemplate(boolean proxyUse, String proxyHost, int proxyPort) {
+        if (proxyUse && proxyHost != null) {
+            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+            requestFactory.setProxy(proxy);
+            return new RestTemplate(requestFactory);
+        } else {
+            return new RestTemplate();
+        }
     }
     
     public List<SW360SparseLicense> getLicenses(HttpHeaders header) throws AntennaException {

@@ -30,8 +30,8 @@ import java.util.Set;
 public class SW360ReleaseClientAdapter {
     private final SW360ReleaseClient releaseClient;
 
-    public SW360ReleaseClientAdapter(String restUrl) {
-        this.releaseClient = new SW360ReleaseClient(restUrl);
+    public SW360ReleaseClientAdapter(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
+        this.releaseClient = new SW360ReleaseClient(restUrl, proxyUse, proxyHost, proxyPort);
     }
 
     public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws IOException, AntennaException {

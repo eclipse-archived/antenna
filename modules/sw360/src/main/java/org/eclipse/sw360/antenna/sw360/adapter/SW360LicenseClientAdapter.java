@@ -23,7 +23,9 @@ import java.util.Optional;
 public class SW360LicenseClientAdapter {
     private final SW360LicenseClient licenseClient;
 
-    public SW360LicenseClientAdapter(String restUrl) { this.licenseClient = new SW360LicenseClient(restUrl); }
+    public SW360LicenseClientAdapter(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
+        this.licenseClient = new SW360LicenseClient(restUrl, proxyUse, proxyHost, proxyPort);
+    }
 
     public boolean isLicenseOfArtifactAvailable(License license, HttpHeaders header) throws AntennaException {
         List<SW360SparseLicense> sw360Licenses = licenseClient.getLicenses(header);

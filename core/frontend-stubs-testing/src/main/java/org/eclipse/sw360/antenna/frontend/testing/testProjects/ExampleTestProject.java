@@ -130,6 +130,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                     put("user.password", "12345");
                     put("client.id", "trusted-sw360-client");
                     put("client.password", "sw360-secret");
+                    put("proxy.use", "false");
                 }});
         generator.setDeactivated(true);
         result.add(generator);

@@ -45,18 +45,20 @@ public class SW360MetaDataUpdater {
     private String clientId;
     private String clientPassword;
 
-    public SW360MetaDataUpdater(String restServerUrl, String authServerUrl, String userId, String password, String clientId, String clientPassword) {
+    public SW360MetaDataUpdater(String restServerUrl, String authServerUrl,
+                                String userId, String password, String clientId, String clientPassword,
+                                boolean proxyEnable, String proxyHost, int proxyPort) {
         this.userId = userId;
         this.password = password;
         this.clientId = clientId;
         this.clientPassword = clientPassword;
 
-        authenticationClient = new SW360AuthenticationClient(authServerUrl);
-        projectClientAdapter = new SW360ProjectClientAdapter(restServerUrl);
-        licenseClientAdapter = new SW360LicenseClientAdapter(restServerUrl);
-        componentClientAdapter = new SW360ComponentClientAdapter(restServerUrl);
-        releaseClientAdapter = new SW360ReleaseClientAdapter(restServerUrl);
-        userClientAdapter = new SW360UserClientAdapter(restServerUrl);
+        authenticationClient = new SW360AuthenticationClient(authServerUrl, proxyEnable, proxyHost, proxyPort);
+        projectClientAdapter = new SW360ProjectClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
+        licenseClientAdapter = new SW360LicenseClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
+        componentClientAdapter = new SW360ComponentClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
+        releaseClientAdapter = new SW360ReleaseClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
+        userClientAdapter = new SW360UserClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
     }
 
     public Set<String> getOrCreateLicenses(Artifact artifact) throws IOException, AntennaException {
