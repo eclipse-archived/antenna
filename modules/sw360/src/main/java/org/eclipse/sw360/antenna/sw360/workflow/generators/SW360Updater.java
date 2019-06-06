@@ -49,16 +49,10 @@ public class SW360Updater extends AbstractGenerator {
 
     @Override
     public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
-        SW360ProjectCoordinates configuredSW360Project = context.getConfiguration().getConfiguredSW360Project();
-        projectName = configuredSW360Project.getName();
-        projectVersion = configuredSW360Project.getVersion();
+        Optional<SW360ProjectCoordinates> configuredSW360Project = Optional.ofNullable(context.getConfiguration().getConfiguredSW360Project());
 
-        if (configuredSW360Project.getName() == null || configuredSW360Project.getName().isEmpty()) {
-            projectName = context.getProject().getProjectId();
-        }
-        if (configuredSW360Project.getVersion() == null || configuredSW360Project.getVersion().isEmpty()) {
-            projectVersion = context.getProject().getVersion();
-        }
+        projectName = retrieveName(configuredSW360Project);
+        projectVersion = retrieveVersion(configuredSW360Project);
 
         sw360RestServerUrl = getConfigValue(REST_SERVER_URL_KEY, configMap);
         sw360AuthServerUrl = getConfigValue(AUTH_SERVER_URL_KEY, configMap);
@@ -85,5 +79,13 @@ public class SW360Updater extends AbstractGenerator {
             throw new AntennaException("Problem occurred during updating SW360.", e);
         }
         return Collections.emptyMap();
+    }
+
+    private String retrieveName(Optional<SW360ProjectCoordinates> sw360ProjectCoordinates) {
+        return sw360ProjectCoordinates.map(SW360ProjectCoordinates::getName).orElse(context.getProject().getProjectId());
+    }
+
+    private String retrieveVersion(Optional<SW360ProjectCoordinates> sw360ProjectCoordinates) {
+        return sw360ProjectCoordinates.map(SW360ProjectCoordinates::getVersion).orElse(context.getProject().getVersion());
     }
 }
