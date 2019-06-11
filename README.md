@@ -11,15 +11,8 @@ their licenses,
 Learn more about Antenna in [What Antenna Does](antenna-documentation/src/site/markdown/index.md.vm).
 
 ### Install and build Antenna
-You need to provide some dependencies, which are not now on maven central, e.g.
-- org.eclipse.sw360:datahandler:3.1.0
-- org.eclipse.sw360:src-licenseinfo:3.1.0
 
-which can be build from the sourcecode on [SW360](https://github.com/eclipse/sw360).
-
-After all dependencies are present, you can build Antenna and deploy it in your local repository via
-
-Please also note that some dependencies of SW360antenna are only available for Java 8. So you need to use Java 8 to build the project.
+Please note that some dependencies of SW360antenna are only available for Java 8. So you need to use Java 8 to build the project.
 
 If you want to build antenna without the p2 parts, use
 
