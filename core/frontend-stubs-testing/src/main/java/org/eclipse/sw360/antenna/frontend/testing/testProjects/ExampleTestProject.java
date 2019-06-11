@@ -32,7 +32,9 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<String> getOtherFilesToCopy() {
-        return Stream.of("src/reportData.json", "src/dependencies.csv")
+        return Stream.of("src/reportData.json",
+                "src/dependencies.csv",
+                "src/analyzer-result.yml")
                 .collect(Collectors.toList());
     }
 
@@ -84,6 +86,9 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
         analyzers.add(mkWorkflowStep("CSV Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer",
                 "base.dir", this.projectRoot.toString(),
                 "file.path", "src/dependencies.csv"));
+        analyzers.add(mkWorkflowStep("ORT Result Analyzer", "org.eclipse.sw360.antenna.ort.workflow.analyzers.OrtResultAnalyzer",
+                "base.dir", this.projectRoot.toString(),
+                "file.path", "src/analyzer-result.yml"));
         return analyzers;
     }
 

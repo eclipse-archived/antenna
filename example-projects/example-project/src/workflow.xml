@@ -27,6 +27,14 @@
                 <entry key="file.path" value="src/dependencies.csv"/>
             </configuration>
         </step>
+        <step>
+            <name>ORT Result Analyzer</name>
+            <classHint>org.eclipse.sw360.antenna.ort.workflow.analyzers.OrtResultAnalyzer</classHint>
+            <configuration>
+                <entry key="base.dir" value="${project.basedir}"/>
+                <entry key="file.path" value="src/analyzer-result.yml"/>
+            </configuration>
+        </step>
     </analyzers>
     <processors>
         <step>

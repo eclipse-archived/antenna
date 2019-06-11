@@ -11,10 +11,7 @@
 package org.eclipse.sw360.antenna.ort.workflow.analyzers;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
-import org.eclipse.sw360.antenna.model.artifact.facts.CopyrightStatement;
-import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
-import org.eclipse.sw360.antenna.model.artifact.facts.ObservedLicenseInformation;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
@@ -89,19 +86,9 @@ public class OrtResultAnalyzerTest {
                 .flatMap(s -> Stream.of(s.split("/n"))).toArray())
                 .hasSize(1+1); //+1 since first element of array will be empty due to parsing
 
-        assertThat(artifacts.stream().
-                map(artifact -> artifact.askForGet(ArtifactSourceUrl.class)).
-                filter(Optional::isPresent).
-                map(Optional::get).
-                filter(s -> !Objects.equals(s, "")).
-                collect(Collectors.toList())).hasSize(1);
+        assertThat(makeListOfSourceUrlStrings(artifacts)).hasSize(1);
 
-        assertThat(artifacts.stream().
-                map(artifact -> artifact.askForGet(ArtifactSourceUrl.class)).
-                filter(Optional::isPresent).
-                map(Optional::get).
-                filter(s -> !Objects.equals(s, "")).
-                collect(Collectors.toList())).contains("https:/some.jar");
+        assertThat(makeListOfSourceUrlStrings(artifacts)).contains("https:/some.jar");
     }
 
     @Test
@@ -162,6 +149,18 @@ public class OrtResultAnalyzerTest {
     }
 
     @Test
+    public void testAnalyzerOrtDataToArtifact() throws IOException, URISyntaxException {
+        List<Artifact> artifacts = init("single_package.yml");
+
+        assertThat(artifacts.stream()
+                .map(artifact -> artifact.askForGet(ArtifactHomepage.class))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(s -> !"".equals(s))
+                .collect(Collectors.toList())).contains("http://www.newtonsoft.com/json");
+    }
+
+    @Test
     public void testParseOrtDataWithScanResultsToArtifacts() throws URISyntaxException, IOException {
         List<Artifact> artifacts = init("scan-result.yml");
 
@@ -193,11 +192,15 @@ public class OrtResultAnalyzerTest {
                 .flatMap(s -> Stream.of(s.split("/n"))).toArray())
                 .hasSize(4 + 1); //+1 since first element of array will be empty due to parsing
 
-        assertThat(artifacts.stream().
-                map(artifact -> artifact.askForGet(ArtifactSourceUrl.class)).
-                filter(Optional::isPresent).
-                map(Optional::get).
-                filter(s -> !Objects.equals(s, "")).
-                collect(Collectors.toList())).hasSize(0);
+        assertThat(makeListOfSourceUrlStrings(artifacts)).hasSize(0);
+    }
+
+    private List<String> makeListOfSourceUrlStrings(List<Artifact> artifacts) {
+        return artifacts.stream()
+                .map(artifact -> artifact.askForGet(ArtifactSourceUrl.class))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .filter(s -> !"".equals(s))
+                .collect(Collectors.toList());
     }
 }
