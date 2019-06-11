@@ -10,20 +10,10 @@
  */
 package org.eclipse.sw360.antenna.model.artifact.facts;
 
-import org.eclipse.sw360.antenna.model.artifact.ArtifactFact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactFactWithPayload;
 
-public class ArtifactSourceUrl extends ArtifactUrl {
-    public ArtifactSourceUrl(String sourceUrl) {
-        super(sourceUrl);
-    }
-
-    @Override
-    public String getFactContentName() {
-        return "Source URL";
-    }
-
-    @Override
-    public Class<? extends ArtifactFact> getKey() {
-        return ArtifactSourceUrl.class;
+public abstract class ArtifactUrl extends ArtifactFactWithPayload<String> {
+    public ArtifactUrl(String payload) {
+        super(payload);
     }
 }
