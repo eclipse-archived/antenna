@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
  *
@@ -12,18 +13,18 @@ package org.eclipse.sw360.antenna.model.artifact.facts;
 
 import org.eclipse.sw360.antenna.model.artifact.ArtifactFact;
 
-public class ArtifactSourceUrl extends ArtifactUrl {
-    public ArtifactSourceUrl(String sourceUrl) {
-        super(sourceUrl);
+public class ArtifactHomepage extends ArtifactUrl {
+    public ArtifactHomepage(String homepage) {
+        super(homepage);
     }
 
     @Override
     public String getFactContentName() {
-        return "Source URL";
+        return "Homepage";
     }
 
     @Override
     public Class<? extends ArtifactFact> getKey() {
-        return ArtifactSourceUrl.class;
+        return ArtifactHomepage.class;
     }
 }
