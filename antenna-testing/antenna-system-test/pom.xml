@@ -23,7 +23,7 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-frontend-stubs</artifactId>
+            <artifactId>frontend-stubs</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
@@ -95,7 +95,7 @@
                     <enableAssertions>true</enableAssertions>
                     <systemPropertyVariables>
                         <maven.home>${maven.home}</maven.home>
-                        <antenna.cli.jar>${org.eclipse.sw360.antenna:antenna-assembly:jar}</antenna.cli.jar>
+                        <antenna.cli.jar>${org.eclipse.sw360.antenna:assembly:jar}</antenna.cli.jar>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

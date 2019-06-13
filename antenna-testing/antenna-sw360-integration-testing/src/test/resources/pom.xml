@@ -111,12 +111,20 @@
                                         <value>${sw360.auth.url}</value>
                                     </entry>
                                     <entry>
-                                        <key>username</key>
+                                        <key>user.id</key>
                                         <value>${sw360.username}</value>
                                     </entry>
                                     <entry>
-                                        <key>password</key>
+                                        <key>user.password</key>
                                         <value>${sw360.password}</value>
+                                    </entry>
+                                    <entry>
+                                        <key>client.id</key>
+                                        <value>trusted-sw360-client</value>
+                                    </entry>
+                                    <entry>
+                                        <key>client.password</key>
+                                        <value>sw360-secret</value>
                                     </entry>
                                 </configuration>
                             </step>
@@ -145,7 +153,7 @@
                     <!-- The antenna mojo requires the kbase to fetch the license information -->
                     <dependency>
                         <groupId>org.eclipse.sw360.antenna</groupId>
-                        <artifactId>antenna-spdx-license-knowledge-base</artifactId>
+                        <artifactId>spdx-license-knowledge-base</artifactId>
                         <version>${org.eclipse.sw360.antenna.version}</version>
                     </dependency>
                 </dependencies>
