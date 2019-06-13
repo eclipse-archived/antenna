@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.util.ClassCodeSourceLocation;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
@@ -25,6 +26,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -38,7 +40,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.atLeast;
 public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
 
     @Test
-    public void testCsvAnalyzer() throws AntennaException {
+    public void testCsvAnalyzer() throws AntennaException, URISyntaxException {
         IProject project = Mockito.mock(IProject.class);
         when(antennaContextMock.getProject()).thenReturn(project);
         when(project.getBasedir()).thenReturn(new File(""));
@@ -48,7 +50,7 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
 
         Map<String, String> configMap = new HashMap<>();
         configMap.put("file.path", Paths.get("src", "test", "resources", "CsvAnalyzerTest", "dependencies.csv").toString());
-        configMap.put("base.dir", this.getClass().getProtectionDomain().getCodeSource().toString());
+        configMap.put("base.dir", ClassCodeSourceLocation.getClassCodeSourceLocationAsString(this.getClass()));
         analyzer.configure(configMap);
 
         Set<Artifact> artifacts = analyzer.yield().getArtifacts();

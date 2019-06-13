@@ -12,6 +12,9 @@
 package org.eclipse.sw360.antenna.rules;
 
 import org.eclipse.sw360.antenna.api.IRulesPackage;
+import org.eclipse.sw360.antenna.model.util.ClassCodeSourceLocation;
+
+import java.net.URISyntaxException;
 
 public class AntennaCommonRulesPackage implements IRulesPackage {
     @Override
@@ -20,7 +23,7 @@ public class AntennaCommonRulesPackage implements IRulesPackage {
     }
 
     @Override
-    public String getRulesetFolder() {
-        return getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+    public String getRulesetFolder() throws URISyntaxException {
+        return ClassCodeSourceLocation.getClassCodeSourceLocationAsString(getClass());
     }
 }

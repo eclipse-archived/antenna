@@ -15,10 +15,12 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.eclipse.sw360.antenna.model.util.ClassCodeSourceLocation;
 import org.junit.Test;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -36,8 +38,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * she must also add it to the pom.xml of the maven-frontend-stub.
  */
 public class DependencyTest {
-    private static final Path PARENT_POM = Paths.get(DependencyTest.class.getProtectionDomain().getCodeSource().getLocation().getPath()).resolve("../../../../../pom.xml").normalize();
-    private static final Path MAVEN_FRONTEND_POM = Paths.get(DependencyTest.class.getProtectionDomain().getCodeSource().getLocation().getPath()).resolve("../../pom.xml").normalize();
+    private static Path PARENT_POM;
+    private static Path MAVEN_FRONTEND_POM;
+
+    static {
+        try {
+            MAVEN_FRONTEND_POM = Paths.get(ClassCodeSourceLocation.getClassCodeSourceLocationURI(DependencyTest.class)).resolve("../../pom.xml").normalize();
+            PARENT_POM = Paths.get(ClassCodeSourceLocation.getClassCodeSourceLocationURI(DependencyTest.class)).resolve("../../../../../pom.xml").normalize();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /*
      * List of Dependencies that explicitly do not need to be present in the pom.xml.
      * Those may only be dependencies which are neither needed by any workflow-step nor by Maven (e.g. Gradle dependencies)
