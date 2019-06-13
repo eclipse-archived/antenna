@@ -120,7 +120,8 @@ public class JsonReader {
                 .addFact(new ObservedLicenseInformation(mapLicenses("observedLicenses", licenseDataObj)))
                 .addFact(new OverriddenLicenseInformation(mapLicenses("overriddenLicenses", licenseDataObj)))
                 .addFact(new ArtifactIssues(mapSecurityIssues(securityDataObj)))
-                .setProprietary(mapProprietary(obj));
+                .setProprietary(mapProprietary(obj))
+                .addFact(new ArtifactSourceUrl(mapArtifactDownloadurl(obj)));
         mapCoordinates(obj).ifPresent(a::addFact);
         potentiallyAddSpecialLicenseInformation(licenseDataObj, a);
         return a;
@@ -286,5 +287,9 @@ public class JsonReader {
             }
         }
         return Optional.empty();
+    }
+
+    private String mapArtifactDownloadurl(JsonObject obj) {
+        return (String) obj.get("downloadurl");
     }
 }
