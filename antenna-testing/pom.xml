@@ -23,12 +23,6 @@
 
     <profiles>
         <profile>
-            <id>ci</id>
-            <modules>
-                <module>antenna-system-test</module>
-            </modules>
-        </profile>
-        <profile>
             <id>it</id>
             <modules>
                 <module>antenna-sw360-integration-testing</module>
