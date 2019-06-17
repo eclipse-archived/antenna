@@ -164,6 +164,15 @@ spec:
                       cd -
                     '''
 
+                    // run SW360 integration tests, if corresponding sqldump is present
+                    sh '''
+                      if [[ -f modules/sw360/src/test/resources/postgres/sw360pgdb.sql ]]; then
+                          cd modules/sw360
+                          mvn clean verify -DskipTests -P integration-test
+                          cd -
+                      fi
+                    '''
+
                     // test as CLI tool
                     sh '''
                       tmpdir="$(mktemp -d)"

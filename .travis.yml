@@ -29,6 +29,7 @@ jobs:
         - mvn test -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
         - cd example-projects/example-project
         - mvn package
+        - if [[ -f modules/sw360/src/test/resources/postgres/sw360pgdb.sql ]]; then cd modules/sw360; mvn clean verify -DskipTests -P integration-test; else echo "no SQL dump for SW360 integration testing present"; fi
     - <<: *mvn-test
       name: mvn test openjdk9
       jdk: openjdk9

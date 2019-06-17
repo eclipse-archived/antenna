@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna;
+package org.eclipse.sw360.antenna.sw360.integrationtesting;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
@@ -21,8 +21,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
@@ -37,8 +36,13 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assume.assumeTrue;
 
+@Category(IntegrationTest.class)
 public class AntennaSW360IntegrationTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AntennaSW360IntegrationTest.class);
+    /*
+     * The dependencies for this class are only loaded if the `integration-test` profile is activated
+     * Without activating this profile, the class is also excluded from the compilation process.
+     */
+
     private static ExampleTestProject project;
 
     private OkHttpClient client = new OkHttpClient();
