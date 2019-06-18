@@ -12,9 +12,12 @@
 package org.eclipse.sw360.antenna.workflow.analyzers;
 
 import org.eclipse.sw360.antenna.api.IProject;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
+import org.eclipse.sw360.antenna.model.artifact.facts.ObservedLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.util.ClassCodeSourceLocation;
@@ -22,6 +25,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -39,19 +43,27 @@ import static org.mockito.internal.verification.VerificationModeFactory.atLeast;
 
 public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
 
-    @Test
-    public void testCsvAnalyzer() throws AntennaException, URISyntaxException {
-        IProject project = Mockito.mock(IProject.class);
+    private IProject project;
+    private CsvAnalyzer analyzer;
+    private License license;
+
+    @Before
+    public void setUp() {
+        project = Mockito.mock(IProject.class);
         when(antennaContextMock.getProject()).thenReturn(project);
         when(project.getBasedir()).thenReturn(new File(""));
         when(toolConfigMock.getEncoding()).thenReturn(StandardCharsets.UTF_8);
-        CsvAnalyzer analyzer = new CsvAnalyzer();
+        analyzer = new CsvAnalyzer();
         analyzer.setAntennaContext(antennaContextMock);
 
-        Map<String, String> configMap = new HashMap<>();
-        configMap.put("file.path", Paths.get("src", "test", "resources", "CsvAnalyzerTest", "dependencies.csv").toString());
-        configMap.put("base.dir", ClassCodeSourceLocation.getClassCodeSourceLocationAsString(this.getClass()));
-        analyzer.configure(configMap);
+        license = new License();
+        license.setName("Apache-2.0");
+        license.setLongName("Apache Software License 2.0");
+    }
+
+    @Test
+    public void testCsvAnalyzer() throws AntennaException, URISyntaxException {
+        configureAnalyzer("dependencies.csv");
 
         Set<Artifact> artifacts = analyzer.yield().getArtifacts();
 
@@ -60,11 +72,31 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
         assertThat(foundArtifact.getMatchState()).isEqualTo(MatchState.EXACT);
         assertThat(foundArtifact.askFor(MavenCoordinates.class).get())
                 .isEqualTo(new MavenCoordinates("commons-csv", "org.apache.commons", "1.4"));
-        License license = new License();
-        license.setName("Apache-2.0");
-        license.setLongName("Apache Software License 2.0");
+
         assertThat(foundArtifact.askFor(DeclaredLicenseInformation.class).get())
                 .isEqualTo(new DeclaredLicenseInformation(license));
+
+        assertThat(foundArtifact.askFor(ObservedLicenseInformation.class).get())
+                .isEqualTo(new ObservedLicenseInformation(license));
+
+        assertThat(foundArtifact.askFor(ArtifactPathnames.class).get().get().get(0)).endsWith("commons-csv.jar");
+        assertThat(foundArtifact.askFor(ArtifactSourceUrl.class).get().get()).contains("http://archive.apache.org/dist/commons/csv/source/commons-csv-1.4-src.zip");
+    }
+
+    @Test
+    public void testThatOldFormatIsSupported() throws AntennaException, URISyntaxException {
+        configureAnalyzer("dependenciesOldFormat.csv");
+
+        Set<Artifact> artifacts = analyzer.yield().getArtifacts();
+
+        assertThat(artifacts).hasSize(1);
+        Artifact foundArtifact = artifacts.iterator().next();
+        assertThat(foundArtifact.askFor(MavenCoordinates.class).get())
+                .isEqualTo(new MavenCoordinates("commons-csv", "org.apache.commons", "1.4"));
+
+        assertThat(foundArtifact.askFor(DeclaredLicenseInformation.class).get())
+                .isEqualTo(new DeclaredLicenseInformation(license));
+
         assertThat(foundArtifact.askFor(ArtifactPathnames.class).get().get().get(0)).endsWith("commons-csv.jar");
     }
 
@@ -79,5 +111,12 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
         // assert that there were no unexpected interactions with the mocked objects
         verifyNoMoreInteractions(antennaContextMock);
         verifyNoMoreInteractions(toolConfigMock);
+    }
+
+    private void configureAnalyzer(String fileName) throws URISyntaxException, AntennaConfigurationException {
+        Map<String, String> configMap = new HashMap<>();
+        configMap.put("file.path", Paths.get("src", "test", "resources", "CsvAnalyzerTest", fileName).toString());
+        configMap.put("base.dir", ClassCodeSourceLocation.getClassCodeSourceLocationAsString(this.getClass()));
+        analyzer.configure(configMap);
     }
 }
