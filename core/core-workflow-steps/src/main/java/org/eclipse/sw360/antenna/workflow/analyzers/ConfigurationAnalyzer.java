@@ -12,7 +12,6 @@
 package org.eclipse.sw360.antenna.workflow.analyzers;
 
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.Configuration;

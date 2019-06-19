@@ -44,7 +44,7 @@ public class WorkflowComparator {
                 steps1.stream()
                         .allMatch(step1 -> steps2.stream()
                                 .filter(step2 -> step1.getName().equals(step2.getName()))
-                                .filter(step2 -> (step1.getClassHint() == null && step2.getClassHint() == null) ||
+                                .filter(step2 -> step1.getClassHint() == null && step2.getClassHint() == null ||
                                         step1.getClassHint() != null && step1.getClassHint().equals(step2.getClassHint()))
                                 .filter(step2 -> Optional.ofNullable(step1.isDeactivated()).orElse(false)
                                         == Optional.ofNullable(step2.isDeactivated()).orElse(false))
@@ -54,7 +54,7 @@ public class WorkflowComparator {
 
     private static boolean checkStepForEqual(Workflow workflow1, Workflow workflow2,
                                       Function<Workflow,Object> firstGetter, Function<Workflow,List<WorkflowStep>> secondGetter) {
-        return (firstGetter.apply(workflow1) == null && firstGetter.apply(workflow2) == null) ||
+        return firstGetter.apply(workflow1) == null && firstGetter.apply(workflow2) == null ||
                 firstGetter.apply(workflow1) != null && areEqual(secondGetter.apply(workflow1), secondGetter.apply(workflow2));
     }
 

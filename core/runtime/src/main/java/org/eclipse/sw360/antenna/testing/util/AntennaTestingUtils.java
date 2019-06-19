@@ -15,7 +15,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 public class AntennaTestingUtils {
 

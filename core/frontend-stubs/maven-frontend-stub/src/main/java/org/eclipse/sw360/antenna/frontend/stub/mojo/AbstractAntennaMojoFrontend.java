@@ -59,6 +59,7 @@ import java.util.stream.Stream;
  * Provides configuration and execution services for using Antenna as a Maven Mojo.
  */
 
+@SuppressWarnings("PMD.UnusedPrivateField")
 public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implements AntennaFrontend {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAntennaMojoFrontend.class);
@@ -153,9 +154,9 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
     private void getProxySettingsFromSettings() {
         boolean noProxyIsYetConfigured = proxyHost == null || "".equals(proxyHost) || proxyPort <= 0;
         Predicate<Proxy> proxyContainsUnsupportedConfiguration = proxy ->
-                (proxy.getUsername() != null && ! "".equals(proxy.getUsername())) ||
-                        (proxy.getPassword() != null && ! "".equals(proxy.getPassword())) ||
-                        (proxy.getNonProxyHosts() != null && ! "".equals(proxy.getNonProxyHosts()));
+                proxy.getUsername() != null && ! "".equals(proxy.getUsername()) ||
+                        proxy.getPassword() != null && ! "".equals(proxy.getPassword()) ||
+                        proxy.getNonProxyHosts() != null && ! "".equals(proxy.getNonProxyHosts());
 
         if (noProxyIsYetConfigured) {
             settings.getProxies().stream()

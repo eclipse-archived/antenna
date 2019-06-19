@@ -39,6 +39,11 @@ jobs:
       name: mvn test openjdk11
       jdk: openjdk11
 
+    # run static code analysis
+    - name: static code analysis
+      script:
+        - mvn pmd:pmd
+
     # compile with JDK8 and execute with other JDK
     - &differentJDK-test
       name: mvn test, run with openjdk9

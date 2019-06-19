@@ -98,7 +98,7 @@ public abstract class AbstractAntennaCLIFrontendTest extends AbstractAntennaFron
     public void checkAntennaContextProjectResolution() {
         assertFalse(((DefaultProject) antennaContext.getProject()).getBuild().getDirectory().contains("${"));
         assertFalse(((DefaultProject) antennaContext.getProject()).getBuild().getOutputDirectory().contains("${"));
-        assertFalse((antennaContext.getProject()).getBasedir().toString().contains("${"));
+        assertFalse(antennaContext.getProject().getBasedir().toString().contains("${"));
         assertFalse(antennaContext.getProject().getVersion().contains("${"));
     }
 

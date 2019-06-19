@@ -93,7 +93,7 @@ public class ThenSteps {
         state.artifacts.forEach((key, value) -> kieSession.insert(value));
         state.evaluations.forEach(kieSession::insert);
 
-        int rulesFired = kieSession.fireAllRules();
+        kieSession.fireAllRules();
     }
 
 }
