@@ -56,7 +56,9 @@ public class SW360ReleaseClientAdapter {
 
     public Optional<SW360Release> getReleaseByArtifact(SW360Component component, Artifact artifact, HttpHeaders header) throws AntennaException {
         String releaseVersionOfArtifact = SW360ComponentAdapterUtils.createSW360ReleaseVersion(artifact);
-        if ((component.get_Embedded() != null) && (component.get_Embedded().getReleases() != null)) {
+        if (component != null &&
+                component.get_Embedded() != null &&
+                component.get_Embedded().getReleases() != null) {
             List<SW360SparseRelease> releases = component.get_Embedded().getReleases();
             Optional<String> releaseId = releases.stream()
                     .filter(release -> release.getVersion().equals(releaseVersionOfArtifact))

@@ -59,7 +59,7 @@ public class SW360ComponentAdapterUtils {
     }
 
     public static void setCreatedOn(SW360Component component, String date) {
-        if ((date != null) && (!date.isEmpty())) {
+        if (date != null && !date.isEmpty()) {
             component.setCreatedOn(date);
         } else {
             setCreatedOn(component);
@@ -68,7 +68,7 @@ public class SW360ComponentAdapterUtils {
 
     public static void setName(SW360Component component, Artifact artifact) {
         final String name = createComponentName(artifact);
-        if ((name != null) && (!name.isEmpty())) {
+        if (!name.isEmpty()) {
             component.setName(name);
         }
     }
@@ -103,7 +103,7 @@ public class SW360ComponentAdapterUtils {
 
     public static void setVersion(SW360Release release, Artifact artifact) {
         final String version = SW360ComponentAdapterUtils.createSW360ReleaseVersion(artifact);
-        if ((version != null) && (!version.isEmpty())) {
+        if (!version.isEmpty()) {
             release.setVersion(version);
         }
     }

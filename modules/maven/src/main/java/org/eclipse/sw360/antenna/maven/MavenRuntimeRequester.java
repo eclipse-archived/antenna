@@ -77,7 +77,7 @@ public class MavenRuntimeRequester extends IArtifactRequester {
         String artifactId = mavenCoordinates.getArtifactId();
         String version = mavenCoordinates.getVersion();
 
-        org.apache.maven.artifact.Artifact mvnArtifact = classifier.classifier.isEmpty()
+        Artifact mvnArtifact = classifier.classifier.isEmpty()
                 ? repositorySystem.createArtifact(groupId, artifactId, version, type)
                 : repositorySystem.createArtifactWithClassifier(groupId, artifactId, version, type, classifier.classifier);
 
@@ -119,7 +119,7 @@ public class MavenRuntimeRequester extends IArtifactRequester {
         return repositorySystem.resolve(artifactRequest);
     }
 
-    private boolean wasSuccessful(ArtifactResolutionResult result, org.apache.maven.artifact.Artifact mvnArtifact) {
+    private boolean wasSuccessful(ArtifactResolutionResult result, Artifact mvnArtifact) {
         final List<ArtifactResolutionException> resolutionErrors = result.getErrorArtifactExceptions();
         final List<Artifact> missingArtifacts = result.getMissingArtifacts();
         return resolutionErrors.isEmpty() && (missingArtifacts == null ||

@@ -19,46 +19,23 @@ import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class SW360ReleaseClient {
+public class SW360ReleaseClient extends SW360Client {
     private static final String RELEASES_ENDPOINT = "/releases";
 
     private String releasesRestUrl;
-    private RestTemplate restTemplate;
 
     public SW360ReleaseClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
+        super(proxyUse, proxyHost, proxyPort);
         releasesRestUrl = restUrl + RELEASES_ENDPOINT;
-        this.restTemplate = restTemplate(proxyUse, proxyHost, proxyPort);
-    }
-
-    private RestTemplate restTemplate(boolean proxyUse, String proxyHost, int proxyPort) {
-        if (proxyUse && proxyHost != null) {
-            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-            requestFactory.setProxy(proxy);
-            return new RestTemplate(requestFactory);
-        } else {
-            return new RestTemplate();
-        }
     }
 
     public SW360Release getRelease(String releaseId, HttpHeaders header) throws AntennaException {
-        HttpEntity<String> httpEntity = RestUtils.getHttpEntity(Collections.emptyMap(), header);
-
-        ResponseEntity<Resource<SW360Release>> response =
-                this.restTemplate.exchange(this.releasesRestUrl + "/" + releaseId,
-                        HttpMethod.GET,
-                        httpEntity,
-                        new ParameterizedTypeReference<Resource<SW360Release>>() {});
+        ResponseEntity<Resource<SW360Release>> response = doRestGET(this.releasesRestUrl + "/" + releaseId, header,
+                new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody().getContent();
@@ -68,18 +45,14 @@ public class SW360ReleaseClient {
         }
     }
 
-    public List<SW360SparseRelease> getReleases(HttpHeaders header) throws IOException, AntennaException {
-        HttpEntity<String> httpEntity = RestUtils.getHttpEntity(Collections.emptyMap(), header);
-
-        ResponseEntity<Resource<SW360ReleaseList>> response =
-                this.restTemplate.exchange(this.releasesRestUrl,
-                        HttpMethod.GET,
-                        httpEntity,
-                        new ParameterizedTypeReference<Resource<SW360ReleaseList>>() {});
+    public List<SW360SparseRelease> getReleases(HttpHeaders header) throws AntennaException {
+        ResponseEntity<Resource<SW360ReleaseList>> response = doRestGET(this.releasesRestUrl, header,
+                new ParameterizedTypeReference<Resource<SW360ReleaseList>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
             SW360ReleaseList resource = response.getBody().getContent();
-            if ((resource.get_Embedded() != null) && (resource.get_Embedded().getReleases() != null)) {
+            if (resource.get_Embedded() != null &&
+                    resource.get_Embedded().getReleases() != null) {
                 return resource.get_Embedded().getReleases();
             } else {
                 return new ArrayList<>();
@@ -89,14 +62,11 @@ public class SW360ReleaseClient {
         }
     }
 
-    public SW360Release createRelease(SW360Release sw360Release, HttpHeaders header) throws IOException, AntennaException {
+    public SW360Release createRelease(SW360Release sw360Release, HttpHeaders header) throws AntennaException {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
 
-        ResponseEntity<Resource<SW360Release>> response =
-                this.restTemplate.exchange(this.releasesRestUrl,
-                        HttpMethod.POST,
-                        httpEntity,
-                        new ParameterizedTypeReference<Resource<SW360Release>>() {});
+        ResponseEntity<Resource<SW360Release>> response = doRestPOST(this.releasesRestUrl, httpEntity,
+                new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
         if (response.getStatusCode() == HttpStatus.CREATED) {
             return response.getBody().getContent();

@@ -19,50 +19,29 @@ import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class SW360LicenseClient {
+public class SW360LicenseClient extends SW360Client {
     private static final String LICENSES_ENDPOINT = "/licenses";
 
     private String licensesRestUrl;
-    private RestTemplate restTemplate;
 
     public SW360LicenseClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
+        super(proxyUse, proxyHost, proxyPort);
         licensesRestUrl = restUrl + LICENSES_ENDPOINT;
-        this.restTemplate = restTemplate(proxyUse, proxyHost, proxyPort);
     }
 
-    private RestTemplate restTemplate(boolean proxyUse, String proxyHost, int proxyPort) {
-        if (proxyUse && proxyHost != null) {
-            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-            requestFactory.setProxy(proxy);
-            return new RestTemplate(requestFactory);
-        } else {
-            return new RestTemplate();
-        }
-    }
-    
     public List<SW360SparseLicense> getLicenses(HttpHeaders header) throws AntennaException {
-        HttpEntity<String> httpEntity = RestUtils.getHttpEntity(Collections.emptyMap(), header);
-
-        ResponseEntity<Resource<SW360LicenseList>> response =
-                this.restTemplate.exchange(this.licensesRestUrl,
-                        HttpMethod.GET,
-                        httpEntity,
-                        new ParameterizedTypeReference<Resource<SW360LicenseList>>() {});
+        ResponseEntity<Resource<SW360LicenseList>> response = doRestGET(this.licensesRestUrl, header,
+                new ParameterizedTypeReference<Resource<SW360LicenseList>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
             SW360LicenseList resource = response.getBody().getContent();
-            if ((resource.get_Embedded() != null) && (resource.get_Embedded().getLicenses() != null)) {
+            if (resource.get_Embedded() != null &&
+                    resource.get_Embedded().getLicenses() != null) {
                 return resource.get_Embedded().getLicenses();
             } else {
                 return new ArrayList<>();
@@ -73,13 +52,8 @@ public class SW360LicenseClient {
     }
 
     public SW360License getLicenseByName(String name, HttpHeaders header) throws AntennaException {
-        HttpEntity<String> httpEntity = RestUtils.getHttpEntity(Collections.emptyMap(), header);
-
-        ResponseEntity<Resource<SW360License>> response =
-                this.restTemplate.exchange(this.licensesRestUrl + "/" + name,
-                        HttpMethod.GET,
-                        httpEntity,
-                        new ParameterizedTypeReference<Resource<SW360License>>() {});
+        ResponseEntity<Resource<SW360License>> response = doRestGET(this.licensesRestUrl + "/" + name, header,
+                new ParameterizedTypeReference<Resource<SW360License>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody().getContent();
@@ -93,10 +67,8 @@ public class SW360LicenseClient {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360License, header);
         ResponseEntity<Resource<SW360License>> response;
         try {
-            response = this.restTemplate.exchange(this.licensesRestUrl,
-                            HttpMethod.POST,
-                            httpEntity,
-                            new ParameterizedTypeReference<Resource<SW360License>>() {});
+            response = doRestPOST(this.licensesRestUrl, httpEntity,
+                new ParameterizedTypeReference<Resource<SW360License>>() {});
         } catch (HttpClientErrorException e) {
             throw new AntennaException("Request to create license " + sw360License.getFullName() + " failed with "
                     + e.getStatusCode());

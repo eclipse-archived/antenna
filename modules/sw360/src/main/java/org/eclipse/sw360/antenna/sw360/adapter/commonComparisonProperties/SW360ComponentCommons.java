@@ -31,8 +31,10 @@ public class SW360ComponentCommons implements ICommonComparisonProperties {
         List<String> versions = new ArrayList<>();
         List<SW360SparseRelease> releases = new ArrayList<>();
 
-        if ((this.component.get_Embedded() != null) && (this.component.get_Embedded().getReleases() != null)) {
-            releases.addAll(this.component.get_Embedded().getReleases());
+        if (component != null &&
+                component.get_Embedded() != null &&
+                component.get_Embedded().getReleases() != null) {
+            releases.addAll(component.get_Embedded().getReleases());
         }
         for (SW360SparseRelease release : releases) {
             versions.add(release.getVersion());

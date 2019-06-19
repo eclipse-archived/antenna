@@ -38,7 +38,6 @@ public class SW360MetaDataUpdater {
     private SW360LicenseClientAdapter licenseClientAdapter;
     private SW360ComponentClientAdapter componentClientAdapter;
     private SW360ReleaseClientAdapter releaseClientAdapter;
-    private SW360UserClientAdapter userClientAdapter;
 
     private String userId;
     private String password;
@@ -58,7 +57,6 @@ public class SW360MetaDataUpdater {
         licenseClientAdapter = new SW360LicenseClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
         componentClientAdapter = new SW360ComponentClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
         releaseClientAdapter = new SW360ReleaseClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
-        userClientAdapter = new SW360UserClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
     }
 
     public Set<String> getOrCreateLicenses(Artifact artifact) throws IOException, AntennaException {

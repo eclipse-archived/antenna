@@ -16,18 +16,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
 import org.springframework.http.*;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 
-public class SW360AuthenticationClient {
+public class SW360AuthenticationClient extends SW360Client {
     private static final String AUTHORIZATION_BASIC_VALUE = "Basic ";
     private static final String AUTHORIZATION_BEARER_VALUE = "Bearer ";
 
@@ -37,22 +33,10 @@ public class SW360AuthenticationClient {
     private static final String JSON_TOKEN_KEY = "access_token";
 
     private final String authServerUrl;
-    private RestTemplate restTemplate;
 
     public SW360AuthenticationClient(String authServerUrl, boolean proxyUse, String proxyHost, int proxyPort) {
+        super(proxyUse, proxyHost, proxyPort);
         this.authServerUrl = authServerUrl;
-        this.restTemplate = restTemplate(proxyUse, proxyHost, proxyPort);
-    }
-
-    private RestTemplate restTemplate(boolean proxyUse, String proxyHost, int proxyPort) {
-        if (proxyUse && proxyHost != null) {
-            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-            requestFactory.setProxy(proxy);
-            return new RestTemplate(requestFactory);
-        } else {
-            return new RestTemplate();
-        }
     }
 
     public String getOAuth2AccessToken(String username, String password, String clientId, String clientPassword)
@@ -67,11 +51,8 @@ public class SW360AuthenticationClient {
         headers.add(HttpHeaders.CONTENT_TYPE, TOKEN_CONTENT_TYPE);
 
         HttpEntity<String> httpEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<String> response = this.restTemplate
-                .exchange(requestUrl,
-                        HttpMethod.POST,
-                        httpEntity,
-                        String.class);
+        ResponseEntity<String> response = doRestCall(requestUrl, HttpMethod.POST, httpEntity, String.class);
+
         if (response.getStatusCode() == HttpStatus.OK) {
             try {
                 return (String) new ObjectMapper().readValue(response.getBody(), HashMap.class).get(JSON_TOKEN_KEY);
@@ -83,18 +64,17 @@ public class SW360AuthenticationClient {
         }
     }
 
-    private HttpHeaders addBasicAuthentication(HttpHeaders headers, String liferayClientId, String liferayClientPassword) {
+    private void addBasicAuthentication(HttpHeaders headers, String liferayClientId, String liferayClientPassword) {
         String liferayClient = liferayClientId + ":" + liferayClientPassword;
         String base64ClientCredentials = Base64.getEncoder().encodeToString(liferayClient.getBytes(StandardCharsets.UTF_8));
         headers.add(HttpHeaders.AUTHORIZATION, AUTHORIZATION_BASIC_VALUE + base64ClientCredentials);
-        return headers;
     }
 
     public HttpHeaders getHeadersWithBearerToken(String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, AUTHORIZATION_BEARER_VALUE + accessToken);
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON_UTF8));
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8));
         return headers;
     }
 }
