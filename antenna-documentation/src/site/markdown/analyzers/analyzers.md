@@ -6,3 +6,4 @@ Antenna already provides the three following analyzers aside from an analyzer ad
 - [CSV analyzer](./csv-analyzer-step.html)
 - [JSON analyzer](./json-analyzer-step.html)
 - [Maven Dependency Tree analyzer](./mvn-dep-tree-analyzer-step.html)
+- [ORT Result analyzer](./ort-result-analyzer-step.html)

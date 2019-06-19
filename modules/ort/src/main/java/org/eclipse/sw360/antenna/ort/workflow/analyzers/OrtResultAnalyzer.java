@@ -23,6 +23,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
+import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,22 +180,26 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
                     .addFact(artifactLicenseCopyrightInfo.getCopyrightStatement());
         }
 
+        a.addFact(new ArtifactMatchingMetadata(MatchState.EXACT));
+
         return a;
     }
 
     private Artifact mapArtifactFromAnalyzerResult(JsonNode ortPackage) {
-        Artifact a = new Artifact("OrtResult")
+        Artifact artifact = new Artifact("OrtResult")
                 .addFact(mapFileName(ortPackage))
                 .addFact(new DeclaredLicenseInformation(mapDeclaredLicenses("declared_licenses", ortPackage)))
                 .addFact(new ArtifactSourceUrl(mapSourceUrl(ortPackage)));
-        mapCoordinates(ortPackage.get("id").textValue()).ifPresent(a::addFact);
+        mapCoordinates(ortPackage.get("id").textValue()).ifPresent(artifact::addFact);
+        mapHomepageUrl(ortPackage).ifPresent(homepageUrl -> artifact.addFact(new ArtifactHomepage(homepageUrl)));
 
-        return a;
+        return artifact;
     }
 
     private Artifact mapArtifactFromScanResult(JsonNode scanResult) {
         Artifact a = new Artifact("OrtResult")
                 .addFact(mapFileName(scanResult))
+                .addFact(new ArtifactSourceUrl(mapSourceUrl(scanResult.get("results"))))
                 .addFact(new ArtifactSourceUrl(mapSourceUrl(scanResult.get("results"))));
         mapCoordinates(scanResult.get("id").textValue()).ifPresent(a::addFact);
 
@@ -255,6 +260,14 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
                 }
             }
             return "";
+        }
+    }
+
+    private Optional<String> mapHomepageUrl(JsonNode ortItem) {
+        if (ortItem.has("homepage_url")) {
+            return Optional.of(ortItem.get("homepage_url").textValue());
+        } else {
+            return Optional.empty();
         }
     }
 
