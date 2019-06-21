@@ -14,9 +14,11 @@ addons:
 jdk: openjdk8
 
 before_install:
+  - set -e
   - wget -N -O /tmp/install-jdk.sh https://raw.githubusercontent.com/sormuras/bach/ab648ed36892439f49a827cdf18c25e17c8095db/install-jdk.sh
   - chmod +x /tmp/install-jdk.sh
 install:
+  - set -e
   - ./modules/p2/prepareDependenciesForP2.sh
   - mvn install -DskipTests=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
@@ -26,6 +28,7 @@ jobs:
     - &mvn-test
       name: mvn test
       script:
+        - set -e
         - mvn test -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
         - cd example-projects/example-project
         - mvn package
@@ -50,6 +53,7 @@ jobs:
       env:
         - EXECUTION_JDK=9
       script:
+        - set -e
         - export JAVA_HOME=$HOME/custom_jdk
         - /tmp/install-jdk.sh -f $EXECUTION_JDK -l GPL --target $JAVA_HOME
         - cd example-projects/example-project
@@ -66,12 +70,14 @@ jobs:
     # test CLI
     - name: cli test
       script:
+        - set -e
         - .travis/runCLI.sh example-projects/example-project
         - java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject example-projects/example-project/target
 
     # test Gradle
     - name: gradleTest
       script:
+        - set -e
         - cd example-projects/example-project
         - gradle analyze
         - java -jar ../../core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject build
@@ -84,6 +90,7 @@ jobs:
     # run site tests (for instance: all links work correctly)
     - name: siteTest
       script:
+        - set -e
         - cd antenna-documentation
         - mvn site -Psite-tests
 
