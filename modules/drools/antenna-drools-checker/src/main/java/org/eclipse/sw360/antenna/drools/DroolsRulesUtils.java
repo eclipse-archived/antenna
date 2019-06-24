@@ -35,7 +35,7 @@ public final class DroolsRulesUtils {
     public static boolean isThreatGroupInArtifact(Artifact artifact, LicenseThreatGroup threatGroup) {
         return ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses().stream()
                 .map(License::getThreatGroup)
-                .anyMatch(l -> (threatGroup == null && l == null) || threatGroup != null && threatGroup.equals(l));
+                .anyMatch(l -> threatGroup == null && l == null || threatGroup != null && threatGroup.equals(l));
     }
 
     public static <T extends ArtifactLicenseInformation> boolean isLicenseTypeInArtifact(Artifact artifact, Class<T> rawLicenseClass) {

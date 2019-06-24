@@ -16,25 +16,29 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectType;
 
 public class SW360ProjectAdapterUtils {
     public static void setDescription(SW360Project project, String mvnDescription) {
-        if ((mvnDescription != null) && (!mvnDescription.isEmpty())) {
+        if (mvnDescription != null &&
+                !mvnDescription.isEmpty()) {
             project.setDescription(mvnDescription);
         }
     }
 
     public static void setName(SW360Project project, String applicationId) {
-        if ((applicationId != null) && (!applicationId.isEmpty())) {
+        if (applicationId != null &&
+                !applicationId.isEmpty()) {
             project.setName(applicationId);
         }
     }
 
     public static void setVersion(SW360Project project, String version) {
-        if ((version != null) && (!version.isEmpty())) {
+        if (version != null &&
+                !version.isEmpty()) {
             project.setVersion(version);
         }
     }
 
     public static void setClearingTeam(SW360Project project, String clearingTeam) {
-        if ((clearingTeam != null) && (!clearingTeam.isEmpty())) {
+        if (clearingTeam != null &&
+                !clearingTeam.isEmpty()) {
             project.setClearingTeam(clearingTeam);
         }
     }

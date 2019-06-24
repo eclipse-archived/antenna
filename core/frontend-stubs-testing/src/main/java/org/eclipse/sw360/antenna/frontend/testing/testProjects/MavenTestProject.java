@@ -10,21 +10,16 @@
  */
 package org.eclipse.sw360.antenna.frontend.testing.testProjects;
 
-import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.eclipse.sw360.antenna.frontend.testing.testProjects.TestProjectUtils.mkWorkflowStep;
-import static org.junit.Assert.assertTrue;
 
-public class MavenTestProject extends AbstractTestProjectWithExpectations implements ExecutableTestProject {
+public class MavenTestProject extends ExampleTestProject {
 
     public static final String LOCAL_REPOSITORY_ROOT = "local-test-repo";
 
@@ -47,11 +42,6 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
     }
 
     @Override
-    public String getExpectedProjectVersion() {
-        return "1.0-SNAPSHOT";
-    }
-
-    @Override
     public String getExpectedToolConfigurationProductName() {
         return "Antenna mvn EP";
     }
@@ -62,18 +52,10 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
     }
 
     @Override
-    public String getExpectedToolConfigurationProductVersion() {
-        return "1.0-SNAPSHOT";
-    }
-
-    @Override
-    public List<String> getExpectedFilesToAttach() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public List<String> getExpectedToolConfigurationConfigFiles() {
-        return Stream.of("src" + File.separator + "antennaconf.xml").collect(Collectors.toList());
+    public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
+        return super.getExpectedToolConfigurationProcessors().stream()
+                .filter(wfs -> !"Drools Policy Engine".equals(wfs.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -90,130 +72,8 @@ public class MavenTestProject extends AbstractTestProjectWithExpectations implem
     }
 
     @Override
-    public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
-        return BasicConfiguration.getProcessors()
-                .stream()
-                .map(s -> {
-                    if (!"Source Validator".equals(s.getName())) {
-                        return s;
-                    }
-                    final Map<String, String> map = Stream.of(s.getConfiguration().getAsMap(), Collections.singletonMap("missingSourcesSeverity", "FAIL"))
-                            .flatMap(m -> m.entrySet().stream())
-                            .collect(Collectors.toMap(
-                                    Map.Entry::getKey,
-                                    Map.Entry::getValue,
-                                    (v1, v2) -> v2));
-                    WorkflowStep newS = new WorkflowStep();
-                    newS.setName(s.getName());
-                    newS.setClassHint(s.getClassHint());
-                    newS.setConfiguration(StepConfiguration.fromMap(map));
-                    newS.setDeactivated(true);
-                    return newS;
-                })
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
-        List<WorkflowStep> result = BasicConfiguration.getGenerators(projectRoot.toString());
-        WorkflowStep generator = mkWorkflowStep("SW360 Updater", "org.eclipse.sw360.antenna.sw360.workflow.generators.SW360Updater",
-                new HashMap<String, String>() {{
-                    put("rest.server.url", "http://localhost:8080/resource/api");
-                    put("auth.server.url", "http://localhost:8080/authorization/oauth");
-                    put("user.id", "admin@sw360.org");
-                    put("user.password", "12345");
-                    put("client.id", "trusted-sw360-client");
-                    put("client.password", "sw360-secret");
-                    put("proxy.use", "false");
-                }});
-        generator.setDeactivated(true);
-        result.add(generator);
-        return result;
-    }
-
-    @Override
-    public List<WorkflowStep> getExpectedToolConfigurationOutputHandlers() {
-        return Collections.singletonList(mkWorkflowStep(
-                "Add disclosure document to jar", "org.eclipse.sw360.antenna.workflow.outputHandlers.FileToArchiveWriter",
-                "instructions", "disclosure-doc:" + projectRoot.toString() + File.separator + "target/mvn-test-project-1.0-SNAPSHOT.jar:/legalnotice/DisclosureDoc.html"));
-    }
-
-    @Override
-    public int getExpectedProxyPort() {
-        return 0;
-    }
-
-    @Override
-    public String getExpectedProxyHost() {
-        return null;
-    }
-
-    @Override
-    public boolean getExpectedToolConfigurationMavenInstalled() {
-        return false;
-    }
-
-    @Override
-    public boolean getExpectedToolConfigurationAttachAll() {
-        return true;
-    }
-
-    @Override
-    public boolean getExpectedToolConfigurationSkip() {
-        return false;
-    }
-
-    @Override
     public String getExpectedProjectArtifactId() {
         return "mvn-test-project";
-    }
-
-    @Override
-    public Collection<String> getExpectedBuildArtifacts() {
-        return Stream.of("artifact-information", "disclosure-doc", "sources-zip", "antenna-report").collect(Collectors.toSet());
-    }
-
-    @Override
-    public Collection<String> getExpectedP2Dependencies() {
-        return Collections.emptyList();
-    }
-    
-    @Override
-    public Collection<String> getExpectedDependencies() {
-        return Stream.of("jackson-annotations-2.8.4", "jackson-core-2.8.4", "log4j-core-2.6.2").collect(Collectors.toSet());
-    }
-
-    @Override
-    public void assertExecutionResult(Path pathToTarget, Map<String, IAttachable> buildArtifacts, AntennaContext context) throws Exception {
-        final Path antennaOutDir = pathToTarget.resolve("antenna");
-        assertTrue(antennaOutDir.toFile().exists());
-
-        final Path report = antennaOutDir.resolve("Antenna_3rdPartyAnalysisReport.txt");
-        assertTrue(report.toFile().exists());
-
-        final Path depsDir = antennaOutDir.resolve("dependencies");
-        assertTrue(depsDir.toFile().exists());
-        assertDependenciesExistence(depsDir);
-
-        if (buildArtifacts != null) {
-            assertBuildArtifactsExistence(context.getProject(), buildArtifacts.entrySet());
-            assertSourceZipContents(buildArtifacts.entrySet());
-        }
-    }
-
-    @Override
-    public boolean getExpectedConfigurationFailOnIncompleteSources() {
-        return true;
-    }
-
-    @Override
-    public boolean getExpectedConfigurationFailOnMissingSources() {
-        return false;
-    }
-
-    @Override
-    public List<String> getExpectedToolConfigurationConfigFilesEndings() {
-        return Collections.singletonList("" + File.separator + "src" + File.separator + "antennaconf.xml");
     }
 
     @Override

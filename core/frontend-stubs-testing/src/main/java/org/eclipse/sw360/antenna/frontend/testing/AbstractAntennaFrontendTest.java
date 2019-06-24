@@ -44,6 +44,7 @@ import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.checkIn
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+@SuppressWarnings("PMD.UnusedFormalParameter")
 @RunWith(Parameterized.class)
 abstract public class AbstractAntennaFrontendTest {
 

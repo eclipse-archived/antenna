@@ -14,47 +14,23 @@ package org.eclipse.sw360.antenna.sw360.rest;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
-import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
 
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.util.Collections;
-
-public class SW360UserClient {
+public class SW360UserClient extends SW360Client {
     private static final String USERS_ENDPOINT = "/users";
 
     private final String usersRestUrl;
-    private RestTemplate restTemplate;
 
     public SW360UserClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
+        super(proxyUse, proxyHost, proxyPort);
         usersRestUrl = restUrl + USERS_ENDPOINT;
-        this.restTemplate = restTemplate(proxyUse, proxyHost, proxyPort);
-    }
-
-    private RestTemplate restTemplate(boolean proxyUse, String proxyHost, int proxyPort) {
-        if (proxyUse && proxyHost != null) {
-            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-            requestFactory.setProxy(proxy);
-            return new RestTemplate(requestFactory);
-        } else {
-            return new RestTemplate();
-        }
     }
 
     public SW360User getUserByEmail(String email, HttpHeaders header) throws AntennaException {
-        HttpEntity<String> httpEntity = RestUtils.getHttpEntity(Collections.emptyMap(), header);
-
-        ResponseEntity<Resource<SW360User>> response =
-                this.restTemplate.exchange(this.usersRestUrl + "/" + email ,
-                        HttpMethod.GET,
-                        httpEntity,
-                        new ParameterizedTypeReference<Resource<SW360User>>() {});
+        ResponseEntity<Resource<SW360User>> response = doRestGET(this.usersRestUrl + "/" + email, header,
+                new ParameterizedTypeReference<Resource<SW360User>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody().getContent();

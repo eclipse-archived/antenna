@@ -86,7 +86,7 @@ public class JsonReader {
         try {
             stream.close();
         } catch (IOException e) {
-            // ignore
+            LOGGER.debug("Failed to close stream. Ignored.");
         }
         return artifacts;
     }
@@ -232,7 +232,7 @@ public class JsonReader {
 
     private boolean mapProprietary(JsonObject obj) {
         Boolean ppObject = (Boolean) obj.get("proprietary");
-        return (null != ppObject && ppObject);
+        return null != ppObject && ppObject;
     }
 
     private MatchState mapMatchState(JsonObject obj) {

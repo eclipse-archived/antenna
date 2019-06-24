@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.api;
 
-import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 
 import java.io.File;

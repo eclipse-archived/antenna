@@ -113,6 +113,11 @@ pipeline {
                             site -Psite-tests
                         '''
                     }
+
+                    // run static code analysis
+                    sh '''
+                      mvn pmd:pmd
+                    '''
                 }
             }
         }

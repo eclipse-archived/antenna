@@ -14,6 +14,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
+@SuppressWarnings("PMD.UselessOverridingMethod")
 public class InlineWorkflowParsingResult extends Workflow {
 
     public static class InlineWorkflowStepParsingResult extends WorkflowStep {

@@ -74,7 +74,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<String> getExpectedToolConfigurationConfigFiles() {
-        return Stream.of("src/antennaconf.xml").collect(Collectors.toList());
+        return Stream.of("src" + File.separator + "antennaconf.xml").collect(Collectors.toList());
     }
 
     @Override
@@ -120,7 +120,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
             put("failOn", "WARN");
         }};
         WorkflowStep checker1 = mkWorkflowStep("Drools Policy Engine", "org.eclipse.sw360.antenna.drools.workflow.processors.AntennaDroolsChecker", droolsConfig);
-                processors.add(checker1);
+        processors.add(checker1);
         return processors;
     }
 
@@ -146,7 +146,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     public List<WorkflowStep> getExpectedToolConfigurationOutputHandlers() {
         return Collections.singletonList(mkWorkflowStep(
                 "Add disclosure document to jar", "org.eclipse.sw360.antenna.workflow.outputHandlers.FileToArchiveWriter",
-                "instructions", "disclosure-doc:" + projectRoot.toString() + File.separator + "target/example-project-1.0-SNAPSHOT.jar:/legalnotice/DisclosureDoc.html"));
+                "instructions", "disclosure-doc:" + projectRoot.toString() + File.separator + "target/" + getExpectedProjectArtifactId() + "-" +getExpectedProjectVersion() + ".jar:/legalnotice/DisclosureDoc.html"));
     }
 
     @Override

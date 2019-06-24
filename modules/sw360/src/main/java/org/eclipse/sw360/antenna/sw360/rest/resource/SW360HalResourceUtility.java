@@ -20,13 +20,11 @@ public class SW360HalResourceUtility {
     }
 
     public static Optional<String> getLastIndexOfLinkObject(LinkObjects linkObj) {
-        if (linkObj != null) {
-            if (linkObj.getSelf() != null) {
-                String href = linkObj.getSelf().getHref();
-                if (href != null && !href.isEmpty()) {
-                    int lastSlashIndex =  href.lastIndexOf('/');
-                    return Optional.of(href.substring(lastSlashIndex + 1));
-                }
+        if (linkObj != null && linkObj.getSelf() != null) {
+            String href = linkObj.getSelf().getHref();
+            if (href != null && !href.isEmpty()) {
+                int lastSlashIndex =  href.lastIndexOf('/');
+                return Optional.of(href.substring(lastSlashIndex + 1));
             }
         }
         return Optional.empty();

@@ -13,7 +13,6 @@ package org.eclipse.sw360.antenna.model.util;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ClassCodeSourceLocation {

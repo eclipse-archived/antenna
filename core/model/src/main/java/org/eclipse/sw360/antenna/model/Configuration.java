@@ -125,20 +125,6 @@ public class Configuration {
         return overrideMap;
     }
 
-    /**
-     * Deletes "\n" and "\t" from the value.
-     *
-     * @param value
-     * @return New adapted value.
-     */
-    private String adaptValue(final String value) {
-        String newValue = null;
-        if (value != null) {
-            newValue = value.trim();
-        }
-        return newValue;
-    }
-
     public List<ArtifactSelector> getIgnoreForSourceResolving() {
         return ignoreForSourceResolving;
     }

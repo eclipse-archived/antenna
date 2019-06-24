@@ -228,7 +228,7 @@ public class DroolsEngine implements IRuleEngine {
                 .map(rulesetPath -> {
                     Properties appProperties = new Properties();
                     Path policiesVersionPath = rulesetPath.resolve(POLICIES_PROPERTIES_FILENAME).normalize();
-                    try (FileInputStream policiesFile = new FileInputStream((policiesVersionPath.toFile()));
+                    try (FileInputStream policiesFile = new FileInputStream(policiesVersionPath.toFile());
                          InputStream policiesStream = new DataInputStream(policiesFile)) {
                         appProperties.load(policiesStream);
                         return Optional.ofNullable(appProperties.getProperty(POLICIES_NAME)).orElse(NO_NAME) + ":" +
