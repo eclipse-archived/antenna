@@ -95,6 +95,15 @@ pipeline {
                       rm -r "$tmpdir"
                     '''
 
+                    // run SW360 integration tests, if corresponding sqldump is present
+                    sh '''
+                      if [[ -f modules/sw360/src/test/resources/postgres/sw360pgdb.sql ]]; then
+                          cd modules/sw360
+                          mvn clean verify -DskipTests -P integration-test
+                          cd -
+                      fi
+                    '''
+
 /* Diable CLI test on Jenkins for now, since it is not working
                     // test as CLI tool
                     sh '''

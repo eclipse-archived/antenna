@@ -8,8 +8,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna;
+package org.eclipse.sw360.antenna.sw360.integrationtesting;
 
+import com.github.cliftonlabs.json_simple.JsonArray;
+import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
 import okhttp3.*;
 import org.apache.maven.it.Verifier;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.ExampleTestProject;
@@ -17,26 +21,28 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assume.assumeTrue;
 
+@Category(IntegrationTest.class)
 public class AntennaSW360IntegrationTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AntennaSW360IntegrationTest.class);
+    /*
+     * The dependencies for this class are only loaded if the `integration-test` profile is activated
+     * Without activating this profile, the class is also excluded from the compilation process.
+     */
+
     private static ExampleTestProject project;
 
     private OkHttpClient client = new OkHttpClient();
@@ -89,7 +95,7 @@ public class AntennaSW360IntegrationTest {
     }
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws Exception {
         servicePort = sw360_deployment.getServicePort("test_sw360", SW360_PORT);
         accessToken = login();
     }
@@ -110,21 +116,36 @@ public class AntennaSW360IntegrationTest {
         verifier.verifyTextInLog("BUILD SUCCESS");
 
 
-        JsonArray licenses = get("/licenses").getJsonObject("_embedded").getJsonArray("sw360:licenses");
+        JsonArray licenses = (JsonArray) ((JsonObject) get("/licenses").get("_embedded")).get("sw360:licenses");
         assertThat(licenses).hasSize(4);
-        assertThat(licenses.getValuesAs((JsonObject k) -> k.getString("fullName"))).contains("Creative Commons Attribution Share Alike 3.0 Unported");
+        assertThat(IntStream.range(0, licenses.size())
+                .mapToObj(licenses::getString)
+                .collect(Collectors.toList()))
+                .contains("Creative Commons Attribution Share Alike 3.0 Unported");
 
-        JsonArray components = get("/components").getJsonObject("_embedded").getJsonArray("sw360:components");
+        JsonArray components = (JsonArray) ((JsonObject) get("/components").get("_embedded")).get("sw360:components");
         assertThat(components).hasSize(8);
-        assertThat(components.getValuesAs((JsonObject k) -> k.getString("name"))).contains("org.apache.commons:commons-csv");
+        assertThat(IntStream.range(0, components.size())
+                .mapToObj(i -> (JsonObject) components.get(i))
+                .map(o -> o.getString(Jsoner.mintJsonKey("name", null)))
+                .collect(Collectors.toList()))
+                .contains("org.apache.commons:commons-csv");
 
-        JsonArray releases = get("/releases").getJsonObject("_embedded").getJsonArray("sw360:releases");
+        JsonArray releases = (JsonArray) ((JsonObject) get("/releases").get("_embedded")).get("sw360:releases");
         assertThat(releases).hasSize(8);
-        assertThat(releases.getValuesAs((JsonObject k) -> k.getString("name"))).contains("org.apache.commons:commons-csv");
+        assertThat(IntStream.range(0, releases.size())
+                .mapToObj(i -> (JsonObject) releases.get(i))
+                .map(o -> o.getString(Jsoner.mintJsonKey("name", null)))
+                .collect(Collectors.toList()))
+                .contains("org.apache.commons:commons-csv");
 
-        JsonArray projects = get("/projects").getJsonObject("_embedded").getJsonArray("sw360:projects");
+        JsonArray projects = (JsonArray) ((JsonObject) get("/projects").get("_embedded")).get("sw360:projects");
         assertThat(projects).hasSize(1);
-        assertThat(projects.getValuesAs((JsonObject k) -> k.getString("name"))).contains("example-project-using-sw360-uploader");
+        assertThat(IntStream.range(0, projects.size())
+                .mapToObj(i -> (JsonObject) projects.get(i))
+                .map(o -> o.getString(Jsoner.mintJsonKey("name", null)))
+                .collect(Collectors.toList()))
+                .contains("example-project-using-sw360-uploader");
     }
 
     private String authUrl() {
@@ -135,7 +156,7 @@ public class AntennaSW360IntegrationTest {
         return SW360_BASE + ":" + servicePort + SW360_RESOURCE_ENDPOINT;
     }
 
-    private String login() throws IOException {
+    private String login() throws IOException, JsonException {
         Request request = new Request.Builder()
                 .url(authUrl() + "/oauth/token?grant_type=password&username=" + SW360_USERNAME + "&password=" + SW360_PASSWORD)
                 .method("POST", RequestBody.create(MediaType.get("application/json"), "{}"))
@@ -143,18 +164,19 @@ public class AntennaSW360IntegrationTest {
                 .build();
         Response response = client.newCall(request).execute();
         if (response.body() != null) {
-            return Json.createReader(new StringReader(response.body().string())).readObject().getString("access_token");
+            return ((JsonObject) Jsoner.deserialize(response.body().string()))
+                    .getString(Jsoner.mintJsonKey("access_token", null));
         }
         throw new AssertionError("Failed to log in");
     }
 
-    private JsonObject get(String endpoint) throws IOException {
+    private JsonObject get(String endpoint) throws IOException, JsonException {
         Request request = new Request.Builder()
                 .url(restUrl() + endpoint)
                 .get()
                 .header("Authorization", "Bearer " + accessToken)
                 .build();
         Response response = client.newCall(request).execute();
-        return Json.createReader(new StringReader(response.body().string())).readObject();
+        return (JsonObject) Jsoner.deserialize(response.body().string());
     }
 }

@@ -96,10 +96,12 @@ abstract public class AbstractTestProject {
 
 
     public void addAndOverwriteFile(InputStream inputStream, String targetFileName) throws IOException {
-        try {
-            Files.copy(inputStream, getProjectRoot().resolve(targetFileName), StandardCopyOption.REPLACE_EXISTING);
-        } finally {
-            inputStream.close();
+        if (inputStream != null) {
+            try {
+                Files.copy(inputStream, getProjectRoot().resolve(targetFileName), StandardCopyOption.REPLACE_EXISTING);
+            } finally {
+                inputStream.close();
+            }
         }
     }
 

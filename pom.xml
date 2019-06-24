@@ -27,7 +27,6 @@
         <drools.version>7.17.0.Final</drools.version>
         <gradle.version>4.1</gradle.version>
         <jackson.version>2.9.8</jackson.version>
-        <javax.json.version>1.1.4</javax.json.version>
         <maven.version>3.3.9</maven.version>
         <maven.shared.version>3.0.1</maven.shared.version>
         <mockito.version>2.23.0</mockito.version>
@@ -61,7 +60,6 @@
         <!-- assembly -->
         <module>assembly</module>
         <!-- misc -->
-        <module>antenna-testing</module>
         <module>antenna-license-provider</module>
         <module>antenna-csv-license-knowledge-base</module>
         <module>antenna-documentation</module>
