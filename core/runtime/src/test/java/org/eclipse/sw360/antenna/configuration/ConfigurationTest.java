@@ -110,8 +110,8 @@ public class ConfigurationTest {
                 .getName()
         ).isEqualTo("testLicense");
 
-        assertThat(generatedArtifact.askFor(ArtifactFilename.class).get().getFilename())
-                .isEqualTo("overrideName.jar");
+        assertThat(generatedArtifact.askFor(ArtifactFilename.class).get().getFilenames())
+                .contains("overrideName.jar");
         assertThat(generatedArtifact.askFor(MavenCoordinates.class).get().getArtifactId())
                 .isEqualTo("testID");
         assertThat(generatedArtifact.askFor(MavenCoordinates.class).get().getGroupId())
@@ -130,8 +130,8 @@ public class ConfigurationTest {
 
         assertThat(artifact.askForGet(DeclaredLicenseInformation.class).get().getLicenses().get(0).getName())
                 .isEqualTo("Apache");
-        assertThat(artifact.askFor(ArtifactFilename.class).get().getFilename())
-                .isEqualTo("addArtifact.jar");
+        assertThat(artifact.askFor(ArtifactFilename.class).get().getFilenames())
+                .contains("addArtifact.jar");
         assertThat(artifact.askFor(MavenCoordinates.class).get().getArtifactId())
                 .isEqualTo("addArtifactId");
         assertThat(artifact.askFor(MavenCoordinates.class).get().getGroupId())

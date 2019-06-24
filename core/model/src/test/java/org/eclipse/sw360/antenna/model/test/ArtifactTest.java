@@ -26,8 +26,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -86,6 +88,16 @@ public class ArtifactTest {
         assertThat(artifact.askFor(MavenCoordinates.class).get().getVersion()).isEqualTo("version");
         assertThat(artifact.askFor(ArtifactFile.class).isPresent()).isTrue();
         assertThat(artifact.getFlag(Artifact.IS_IGNORE_FOR_DOWNLOAD_KEY)).isTrue();
+    }
+
+    @Test
+    public void artifactFilenameTest() {
+        artifact.addFact(new ArtifactFilename("test1", "12345Test1"));
+        artifact.addFact(new ArtifactFilename("test2", "12345Test2"));
+        artifact.addFact(new ArtifactFilename("test1", "12345Test1"));
+
+        assertThat(artifact.askFor(ArtifactFilename.class).get().getArtifactFilenameEntries()).hasSize(2);
+        assertThat(artifact.askFor(ArtifactFilename.class).get().getFilenames()).isEqualTo(Arrays.asList("test1", "test2"));
     }
 
     @Test

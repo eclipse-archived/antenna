@@ -69,7 +69,9 @@ public class CSVGenerator extends AbstractGenerator {
         StringBuilder information = new StringBuilder();
         information.append("artifactName;artifactId;groupId;mavenVersion;bundleVersion;license \n");
         for (Artifact artifact : artifacts) {
-            appendInformation(information, artifact.askFor(ArtifactFilename.class).map(ArtifactFilename::getFilename).orElse(""));
+            appendInformation(information, artifact.askFor(ArtifactFilename.class)
+                    .flatMap(ArtifactFilename::getBestFilenameGuess)
+                    .orElse(""));
             final Optional<MavenCoordinates> mavenCoordinates = artifact.askFor(MavenCoordinates.class); // TODO
             appendInformation(information, mavenCoordinates.map(MavenCoordinates::getArtifactId).orElse(""));
             appendInformation(information, mavenCoordinates.map(MavenCoordinates::getGroupId).orElse(""));

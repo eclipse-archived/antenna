@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.workflow.analyzers;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
@@ -69,7 +68,7 @@ public class ConfigurationAnalyzerTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testAddArtifact() throws AntennaException {
+    public void testAddArtifact() {
         ConfigurationAnalyzer handler = new ConfigurationAnalyzer();
         handler.setAntennaContext(antennaContextMock);
 
@@ -79,7 +78,7 @@ public class ConfigurationAnalyzerTest extends AntennaTestWithMockedContext {
         Artifact processedArtifact = artifacts.stream()
                 .filter(a -> {
                     final Optional<ArtifactFilename> artifactFilename = a.askFor(ArtifactFilename.class);
-                    return artifactFilename.isPresent() && FILENAME.equals(artifactFilename.get().getFilename());
+                    return artifactFilename.isPresent() && FILENAME.equals(artifactFilename.get().getBestFilenameGuess().orElse(null));
                 })
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("should not happen"));
