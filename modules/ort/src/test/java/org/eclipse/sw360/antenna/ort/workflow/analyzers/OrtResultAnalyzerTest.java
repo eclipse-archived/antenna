@@ -16,7 +16,6 @@ import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.ort.workflow.analyzers.OrtResultAnalyzer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,7 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -84,7 +82,7 @@ public class OrtResultAnalyzerTest {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .flatMap(s -> Stream.of(s.split("/n"))).toArray())
-                .hasSize(1+1); //+1 since first element of array will be empty due to parsing
+                .hasSize(1);
 
         assertThat(makeListOfSourceUrlStrings(artifacts)).hasSize(1);
 
@@ -190,9 +188,11 @@ public class OrtResultAnalyzerTest {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .flatMap(s -> Stream.of(s.split("/n"))).toArray())
-                .hasSize(4 + 1); //+1 since first element of array will be empty due to parsing
+                .hasSize(4);
 
-        assertThat(makeListOfSourceUrlStrings(artifacts)).hasSize(0);
+        assertThat(makeListOfSourceUrlStrings(artifacts)).hasSize(1);
+
+        assertThat(makeListOfSourceUrlStrings(artifacts)).contains("https://github.com/babel/babel.git");
     }
 
     private List<String> makeListOfSourceUrlStrings(List<Artifact> artifacts) {
