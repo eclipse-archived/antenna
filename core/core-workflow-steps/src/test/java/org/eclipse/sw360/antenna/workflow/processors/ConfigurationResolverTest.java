@@ -89,7 +89,7 @@ public class ConfigurationResolverTest extends AntennaTestWithMockedContext {
         resolver.process(artifacts);
 
         assertThat(artifact.askFor(ArtifactFilename.class)
-                .map(ArtifactFilename::getFilename)
+                .flatMap(ArtifactFilename::getBestFilenameGuess)
                 .orElse(""))
                 .isEqualTo("director-ant.jar");
         assertThat(artifact1.getFlag(Artifact.IS_IGNORE_FOR_DOWNLOAD_KEY)).isTrue();
