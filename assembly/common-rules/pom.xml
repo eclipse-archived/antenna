@@ -21,6 +21,7 @@
     </parent>
 
     <artifactId>common-rules</artifactId>
+    <name>antenna-common-rules</name>
     <packaging>jar</packaging>
 
 
@@ -49,7 +50,7 @@
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-rule-engine-testing</artifactId>
+            <artifactId>rule-engine-testing</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

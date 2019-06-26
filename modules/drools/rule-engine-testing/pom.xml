@@ -13,11 +13,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>antenna-drools-module</artifactId>
+        <artifactId>drools-module</artifactId>
         <version>${revision}${qualifier}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>antenna-rule-engine-testing</artifactId>
+    <artifactId>rule-engine-testing</artifactId>
+    <name>antenna-rule-engine-testing</name>
 
     <dependencies>
         <dependency>
@@ -27,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-drools-checker</artifactId>
+            <artifactId>drools-checker</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

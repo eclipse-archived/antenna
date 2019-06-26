@@ -10,7 +10,7 @@
 
 set -ex
 
-cd "$(dirname $0)/antenna-p2-product/dependencies/"
+cd "$(dirname $0)/p2-product/dependencies/"
 mvn package -B
 cd ..
 mvn package -B

@@ -14,11 +14,12 @@
 
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>antenna-drools-module</artifactId>
+        <artifactId>drools-module</artifactId>
         <version>${revision}${qualifier}</version>
     </parent>
 
-    <artifactId>antenna-drools-checker</artifactId>
+    <artifactId>drools-checker</artifactId>
+    <name>antenna-drools-checker</name>
 
     <packaging>jar</packaging>
 
