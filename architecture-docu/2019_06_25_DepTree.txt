@@ -1,0 +1,219 @@
+[INFO] ------------------< org.eclipse.sw360.antenna:model >-------------------
+[INFO] Building antenna-model 1.0.0-SNAPSHOT                             [3/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ model ---
+[INFO] org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT
+[INFO]
+[INFO] --------------< org.eclipse.sw360.antenna:model-testing >---------------
+[INFO] Building antenna-model-testing 1.0.0-SNAPSHOT                     [4/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ model-testing ---
+[INFO] org.eclipse.sw360.antenna:model-testing:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO]
+[INFO] -----------------< org.eclipse.sw360.antenna:runtime >------------------
+[INFO] Building antenna-runtime 1.0.0-SNAPSHOT                           [5/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ runtime ---
+[INFO] org.eclipse.sw360.antenna:runtime:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:model-testing:jar:1.0.0-SNAPSHOT:test
+[INFO]
+[INFO] -----------< org.eclipse.sw360.antenna:core-workflow-steps >------------
+[INFO] Building core-workflow-steps 1.0.0-SNAPSHOT                       [6/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ core-workflow-steps ---
+[INFO] org.eclipse.sw360.antenna:core-workflow-steps:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:runtime:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:model-testing:jar:1.0.0-SNAPSHOT:test
+[INFO]
+[INFO] ------------< org.eclipse.sw360.antenna:cli-frontend-stub >-------------
+[INFO] Building cli-frontend-stub 1.0.0-SNAPSHOT                         [8/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ cli-frontend-stub ---
+[INFO] org.eclipse.sw360.antenna:cli-frontend-stub:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:runtime:jar:1.0.0-SNAPSHOT:compile
+[INFO]
+[INFO] -----------< org.eclipse.sw360.antenna:gradle-frontend-stub >-----------
+[INFO] Building gradle-frontend-stub 1.0.0-SNAPSHOT                      [9/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ gradle-frontend-stub ---
+[INFO] org.eclipse.sw360.antenna:gradle-frontend-stub:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:cli-frontend-stub:jar:1.0.0-SNAPSHOT:compile
+[INFO]
+[INFO] -----------< org.eclipse.sw360.antenna:maven-frontend-stub >------------
+[INFO] Building maven-frontend-stub 1.0.0-SNAPSHOT                      [10/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ maven-frontend-stub ---
+[INFO] org.eclipse.sw360.antenna:maven-frontend-stub:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:runtime:jar:1.0.0-SNAPSHOT:compile
+[INFO]
+[INFO] ----------< org.eclipse.sw360.antenna:frontend-stubs-testing >----------
+[INFO] Building antenna-frontend-stubs-testing 1.0.0-SNAPSHOT           [11/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ frontend-stubs-testing ---
+[INFO] org.eclipse.sw360.antenna:frontend-stubs-testing:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:model-testing:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:cli-frontend-stub:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:maven-frontend-stub:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:gradle-frontend-stub:jar:1.0.0-SNAPSHOT:compile
+[INFO]
+[INFO] ---------------< org.eclipse.sw360.antenna:maven-module >---------------
+[INFO] Building antenna-maven-module 1.0.0-SNAPSHOT                     [12/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ maven-module ---
+[INFO] org.eclipse.sw360.antenna:maven-module:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:runtime:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:maven-frontend-stub:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:model-testing:jar:1.0.0-SNAPSHOT:test
+[INFO]
+[INFO] ---------------< org.eclipse.sw360.antenna:sw360-module >---------------
+[INFO] Building antenna-sw360-module 1.0.0-SNAPSHOT                     [13/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ sw360-module ---
+[INFO] org.eclipse.sw360.antenna:sw360-module:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:runtime:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:model-testing:jar:1.0.0-SNAPSHOT:test
+[INFO]
+[INFO] ----------< org.eclipse.sw360.antenna:antenna-drools-checker >----------
+[INFO] Building antenna-drools-checker 1.0.0-SNAPSHOT                   [15/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ antenna-drools-checker ---
+[INFO] org.eclipse.sw360.antenna:antenna-drools-checker:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:runtime:jar:1.0.0-SNAPSHOT:compile
+[INFO]
+[INFO] -------< org.eclipse.sw360.antenna:antenna-rule-engine-testing >--------
+[INFO] Building antenna-rule-engine-testing 1.0.0-SNAPSHOT              [16/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ antenna-rule-engine-testing ---
+[INFO] org.eclipse.sw360.antenna:antenna-rule-engine-testing:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:antenna-drools-checker:jar:1.0.0-SNAPSHOT:compile
+[INFO]
+[INFO] ---------< org.eclipse.sw360.antenna:simple-validators-module >---------
+[INFO] Building antenna-simple-validators-module 1.0.0-SNAPSHOT         [17/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ simple-validators-module ---
+[INFO] org.eclipse.sw360.antenna:simple-validators-module:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:runtime:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:model-testing:jar:1.0.0-SNAPSHOT:test
+[INFO]
+[INFO] -----------< org.eclipse.sw360.antenna:antenna-p2-enricher >------------
+[INFO] Building antenna-p2-enricher 1.0.0-SNAPSHOT                      [19/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ antenna-p2-enricher ---
+[INFO] org.eclipse.sw360.antenna:antenna-p2-enricher:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:runtime:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:model-testing:jar:1.0.0-SNAPSHOT:test
+[INFO]
+[INFO] ----------------< org.eclipse.sw360.antenna:ort-module >----------------
+[INFO] Building antenna-ort-module 1.0.0-SNAPSHOT                       [20/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ ort-module ---
+[INFO] org.eclipse.sw360.antenna:ort-module:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:runtime:jar:1.0.0-SNAPSHOT:compile
+[INFO]
+[INFO] ---------------< org.eclipse.sw360.antenna:common-rules >---------------
+[INFO] Building common-rules 1.0.0-SNAPSHOT                             [22/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ common-rules ---
+[INFO] org.eclipse.sw360.antenna:common-rules:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:antenna-rule-engine-testing:jar:1.0.0-SNAPSHOT:test
+[INFO]
+[INFO] -------< org.eclipse.sw360.antenna:spdx-license-knowledge-base >--------
+[INFO] Building spdx-license-knowledge-base 1.0.0-SNAPSHOT              [23/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ spdx-license-knowledge-base ---
+[INFO] org.eclipse.sw360.antenna:spdx-license-knowledge-base:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO]
+[INFO] --------------< org.eclipse.sw360.antenna:configuration >---------------
+[INFO] Building Antenna Configuration 1.0.0-SNAPSHOT                    [24/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ configuration ---
+[INFO] org.eclipse.sw360.antenna:configuration:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:core-workflow-steps:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:common-rules:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:maven-module:jar:1.0.0-SNAPSHOT:runtime
+[INFO] +- org.eclipse.sw360.antenna:ort-module:jar:1.0.0-SNAPSHOT:runtime
+[INFO] +- org.eclipse.sw360.antenna:antenna-drools-checker:jar:1.0.0-SNAPSHOT:runtime
+[INFO] +- org.eclipse.sw360.antenna:spdx-license-knowledge-base:jar:1.0.0-SNAPSHOT:runtime
+[INFO] +- org.eclipse.sw360.antenna:antenna-p2-enricher:jar:1.0.0-SNAPSHOT:runtime
+[INFO] +- org.eclipse.sw360.antenna:simple-validators-module:jar:1.0.0-SNAPSHOT:runtime
+[INFO] +- org.eclipse.sw360.antenna:sw360-module:jar:1.0.0-SNAPSHOT:runtime
+[INFO] +- org.eclipse.sw360.antenna:model-testing:jar:1.0.0-SNAPSHOT:test
+[INFO]
+[INFO] -------------------< org.eclipse.sw360.antenna:cli >--------------------
+[INFO] Building Antenna CLI 1.0.0-SNAPSHOT                              [25/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ cli ---
+[INFO] org.eclipse.sw360.antenna:cli:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:cli-frontend-stub:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:configuration:jar:1.0.0-SNAPSHOT:runtime
+[INFO] +- org.eclipse.sw360.antenna:frontend-stubs-testing:jar:1.0.0-SNAPSHOT:test
+[INFO]
+[INFO] -----------< org.eclipse.sw360.antenna:antenna-maven-plugin >-----------
+[INFO] Building Antenna Maven Plugin 1.0.0-SNAPSHOT                     [26/29]
+[INFO] ----------------------------[ maven-plugin ]----------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ antenna-maven-plugin ---
+[INFO] org.eclipse.sw360.antenna:antenna-maven-plugin:maven-plugin:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:maven-frontend-stub:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:configuration:jar:1.0.0-SNAPSHOT:runtime
+[INFO] +- org.eclipse.sw360.antenna:frontend-stubs-testing:jar:1.0.0-SNAPSHOT:test
+[INFO]
+[INFO] --------------< org.eclipse.sw360.antenna:gradle-plugin >---------------
+[INFO] Building Antenna Gradle Plugin 1.0.0-SNAPSHOT                    [27/29]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ gradle-plugin ---
+[INFO] org.eclipse.sw360.antenna:gradle-plugin:pom:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:configuration:jar:1.0.0-SNAPSHOT:runtime
+[INFO] +- org.eclipse.sw360.antenna:gradle-frontend-stub:jar:1.0.0-SNAPSHOT:compile
+[INFO] +- org.eclipse.sw360.antenna:frontend-stubs-testing:jar:1.0.0-SNAPSHOT:test
+[INFO]
+[INFO] ----< org.eclipse.sw360.antenna:antenna-csv-license-knowledge-base >----
+[INFO] Building antenna-csv-license-knowledge-base 1.0.0-SNAPSHOT       [28/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ antenna-csv-license-knowledge-base ---
+[INFO] org.eclipse.sw360.antenna:antenna-csv-license-knowledge-base:jar:1.0.0-SNAPSHOT
+[INFO] +- org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT:compile
+[INFO]
+[INFO] ----------< org.eclipse.sw360.antenna:antenna-documentation >-----------
+[INFO] Building antenna-documentation 1.0.0-SNAPSHOT                    [29/29]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.1:tree (default-cli) @ antenna-documentation ---
+[INFO] org.eclipse.sw360.antenna:antenna-documentation:jar:1.0.0-SNAPSHOT
