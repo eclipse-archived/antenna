@@ -112,26 +112,26 @@ public class SourceValidator extends AbstractComplianceChecker {
                     "SourceValidator::jarIsEmpty", "Source jar '" + sourceJar.getName() + "' is an empty file", missingSourcesSeverity, artifact));
         }
 
-        JarFile source = new JarFile(sourceJar);
+        try (JarFile source = new JarFile(sourceJar)) {
+            List<String> missingClasses = new ArrayList<>();
 
-        List<String> missingClasses = new ArrayList<>();
-
-        int numberOfClassFiles = 0;
-        int numberOfMatchingJavaFiles = 0;
-        Enumeration<JarEntry> jarEntries = jar.entries();
-        while (jarEntries.hasMoreElements()) {
-            JarEntry entry = jarEntries.nextElement();
-            String name = entry.getName();
-            if (name.contains(".class") && !name.contains("$")) {
-                numberOfClassFiles++;
-                if(checkIfJavaFileExists(name, source, missingClasses)){
-                    numberOfMatchingJavaFiles++;
+            int numberOfClassFiles = 0;
+            int numberOfMatchingJavaFiles = 0;
+            Enumeration<JarEntry> jarEntries = jar.entries();
+            while (jarEntries.hasMoreElements()) {
+                JarEntry entry = jarEntries.nextElement();
+                String name = entry.getName();
+                if (name.contains(".class") && !name.contains("$")) {
+                    numberOfClassFiles++;
+                    if (checkIfJavaFileExists(name, source, missingClasses)) {
+                        numberOfMatchingJavaFiles++;
+                    }
                 }
             }
-        }
-        if (numberOfClassFiles > 0 && numberOfMatchingJavaFiles <= (numberOfClassFiles * threshold / 100)) {
-            return Collections.singletonList(new DefaultPolicyEvaluation.DefaultEvaluationResult(
-                    "SourceValidator::incompleteJar", "The sources are incomplete (only " + numberOfMatchingJavaFiles + " of " + numberOfClassFiles + " could be matched)", incompleteSourcesSeverity, artifact));
+            if (numberOfClassFiles > 0 && numberOfMatchingJavaFiles <= (numberOfClassFiles * threshold / 100)) {
+                return Collections.singletonList(new DefaultPolicyEvaluation.DefaultEvaluationResult(
+                        "SourceValidator::incompleteJar", "The sources are incomplete (only " + numberOfMatchingJavaFiles + " of " + numberOfClassFiles + " could be matched)", incompleteSourcesSeverity, artifact));
+            }
         }
         return Collections.emptyList();
     }

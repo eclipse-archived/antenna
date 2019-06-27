@@ -81,9 +81,8 @@ public class RecordingInputStream extends InputStream {
         target.close();
     }
 
-    @SuppressWarnings("sync-override")
     @Override
-    public void mark(int arg0) {
+    public synchronized void mark(int arg0) {
         target.mark(arg0);
     }
 
@@ -92,9 +91,8 @@ public class RecordingInputStream extends InputStream {
         return target.markSupported();
     }
 
-    @SuppressWarnings("sync-override")
     @Override
-    public void reset() throws IOException {
+    public synchronized void reset() throws IOException {
         target.reset();
     }
 
