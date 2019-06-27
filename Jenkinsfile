@@ -125,7 +125,7 @@ pipeline {
 
                     // run static code analysis
                     sh '''
-                      mvn pmd:pmd
+                      mvn pmd:pmd -Dmaven.repo.local=$(readlink -f localRepository)
                     '''
                 }
             }
