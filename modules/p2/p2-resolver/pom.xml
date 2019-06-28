@@ -15,11 +15,12 @@
 
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>antenna-p2-module</artifactId>
+        <artifactId>p2-module</artifactId>
         <version>${revision}${qualifier}</version>
     </parent>
 
-    <artifactId>antenna-p2-resolver</artifactId>
+    <artifactId>p2-resolver</artifactId>
+    <name>antenna-p2-resolver</name>
 
     <packaging>jar</packaging>
 
@@ -65,7 +66,7 @@
     <build>
         <resources>
             <resource>
-                <directory>../antenna-p2-product/repository_manager/target/products</directory>
+                <directory>../p2-product/repository_manager/target/products</directory>
                 <includes>
                     <include>*.zip</include>
                 </includes>

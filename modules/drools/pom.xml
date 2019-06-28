@@ -19,12 +19,13 @@
         <relativePath>../../</relativePath>
     </parent>
 
-    <artifactId>antenna-drools-module</artifactId>
+    <artifactId>drools-module</artifactId>
     <name>antenna-drools-module</name>
+
     <packaging>pom</packaging>
 
     <modules>
-        <module>antenna-drools-checker</module>
-        <module>antenna-rule-engine-testing</module>
+        <module>drools-checker</module>
+        <module>rule-engine-testing</module>
     </modules>
 </project>

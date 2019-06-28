@@ -19,6 +19,7 @@
 	</parent>
 
 	<artifactId>core-workflow-steps</artifactId>
+	<name>antenna-core-workflow-steps</name>
 	<packaging>jar</packaging>
 
 	<dependencies>

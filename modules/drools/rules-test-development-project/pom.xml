@@ -33,12 +33,12 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-drools-checker</artifactId>
+            <artifactId>drools-checker</artifactId>
             <version>${antenna.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-rule-engine-testing</artifactId>
+            <artifactId>rule-engine-testing</artifactId>
             <version>${antenna.version}</version>
         </dependency>
         <dependency>

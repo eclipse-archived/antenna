@@ -11,6 +11,6 @@
 set -ex
 
 cd "$(dirname $0)"
-rm -r antenna-p2-product/repository_manager/target || true
-cd antenna-p2-product/dependencies/
+rm -r p2-product/repository_manager/target || true
+cd p2-product/dependencies/
 mvn clean
