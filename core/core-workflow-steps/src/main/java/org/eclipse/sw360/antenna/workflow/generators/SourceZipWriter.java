@@ -131,20 +131,20 @@ public class SourceZipWriter extends AbstractGenerator {
 
     private void writeContentToZipEntry(ZipOutputStream zipOut, File sourceJar, String entryName)
             throws IOException {
-        ZipFile zipFile = new ZipFile(sourceJar);
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-            ZipEntry zipEntry = entries.nextElement();
-            InputStream inputStream = zipFile.getInputStream(zipEntry);
-            zipOut.putNextEntry(new ZipEntry(entryName + "/" + zipEntry.getName()));
-            byte[] buffer = new byte[1024 * 4];
-            for (int read = inputStream.read(buffer); -1 != read; read = inputStream.read(buffer)) {
-                zipOut.write(buffer, 0, read);
+        try (ZipFile zipFile = new ZipFile(sourceJar)) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry zipEntry = entries.nextElement();
+                InputStream inputStream = zipFile.getInputStream(zipEntry);
+                zipOut.putNextEntry(new ZipEntry(entryName + "/" + zipEntry.getName()));
+                byte[] buffer = new byte[1024 * 4];
+                for (int read = inputStream.read(buffer); -1 != read; read = inputStream.read(buffer)) {
+                    zipOut.write(buffer, 0, read);
+                }
+                zipOut.flush();
+                inputStream.close();
             }
-            zipOut.flush();
-            inputStream.close();
         }
-        zipFile.close();
     }
 
     /**

@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class DroolsEvaluationResultReader {
 
@@ -30,8 +31,8 @@ public final class DroolsEvaluationResultReader {
 
     public static List<IEvaluationResult> getEvaluationResult(Path policesPath) throws AntennaException {
         if (policesPath.toFile().exists() && policesPath.toFile().isFile()) {
-            try {
-                String policyXml = Files.lines(policesPath).map(String::trim).collect(Collectors.joining());
+            try (Stream<String> policyLines = Files.lines(policesPath)) {
+                String policyXml = policyLines.map(String::trim).collect(Collectors.joining());
                 XmlSettingsReader policyReader = new XmlSettingsReader(policyXml);
                 return new ArrayList<>(policyReader.getComplexType("policies", Policies.class).getPolicy());
             } catch (Exception e) {

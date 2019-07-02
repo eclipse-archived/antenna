@@ -47,6 +47,17 @@ public class JsonReader {
     protected final Path recordingFile;
     private final Path dependencyDir;
 
+    public static final Map<String, MissingLicenseReasons> SPECIAL_INFORMATION;
+    static {
+        SPECIAL_INFORMATION = new HashMap<>();
+        SPECIAL_INFORMATION.put("No-Sources", MissingLicenseReasons.NO_SOURCES);
+        SPECIAL_INFORMATION.put("No-Source-License", MissingLicenseReasons.NO_LICENSE_IN_SOURCES);
+        SPECIAL_INFORMATION.put("Not-Declared", MissingLicenseReasons.NOT_DECLARED);
+        SPECIAL_INFORMATION.put("Not-Provided", MissingLicenseReasons.NOT_PROVIDED);
+        SPECIAL_INFORMATION.put("Not-Supported", MissingLicenseReasons.NOT_SUPPORTED);
+        SPECIAL_INFORMATION.put("Non-Standard", MissingLicenseReasons.NON_STANDARD);
+    }
+
     public JsonReader(Path recordingFile, Path dependencyDir, Charset encoding) {
         this.recordingFile = recordingFile;
         this.encoding = encoding;
@@ -145,8 +156,8 @@ public class JsonReader {
                 StreamSupport.stream(tmp, false)
                         .map(obj -> (JsonObject) obj)
                         .map(obj -> (String) obj.get("licenseId"))
-                        .filter(SpecialLicenseInformation.SPECIAL_INFORMATION::containsKey)
-                        .forEach(specialLicenseInformation -> missingLicenseReasons.add(SpecialLicenseInformation.SPECIAL_INFORMATION.get(specialLicenseInformation)));
+                        .filter(SPECIAL_INFORMATION::containsKey)
+                        .forEach(specialLicenseInformation -> missingLicenseReasons.add(SPECIAL_INFORMATION.get(specialLicenseInformation)));
                 return missingLicenseReasons;
             }
         }
@@ -206,7 +217,7 @@ public class JsonReader {
                         .map(obj -> (JsonObject) obj)
                         .map(obj -> (String) obj.get("licenseId"))
                         // We delete all special strings which can be used to convey information about missing licenses
-                        .filter(licenseId -> !SpecialLicenseInformation.SPECIAL_INFORMATION.containsKey(licenseId))
+                        .filter(licenseId -> !SPECIAL_INFORMATION.containsKey(licenseId))
                         .collect(Collectors.toSet());
                 return LicenseSupport.mapLicenses(licenses);
             }
