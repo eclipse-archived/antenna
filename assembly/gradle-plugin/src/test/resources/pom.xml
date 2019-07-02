@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) Bosch Software Innovations GmbH 2017-2018.
+  ~
+  ~ All rights reserved. This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ http://www.eclipse.org/legal/epl-v20.html
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  -->
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.sw360.antenna</groupId>
+                <artifactId>antenna-maven-plugin</artifactId>
+                <version>${org.eclipse.sw360.antenna.version}</version>
+                <configuration>
+                    <!-- The short name of the application -->
+                    <productName>Antenna mvn EP</productName>
+
+                    <!-- The full name of the application -->
+                    <productFullname>Antenna Maven Test Project</productFullname>
+
+                    <version>${version_to_scan}</version>
+
+                    <!-- Attach all build artifacts -->
+                    <attachAll>true</attachAll>
+
+                    <workflow>
+                        <processors>
+                            <step>
+                                <name>Source Validator</name>
+                                <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.SourceValidator</classHint>
+                                <configuration>
+                                    <entry>
+                                        <entryKey>missingSourcesSeverity</entryKey>
+                                        <entryValue>FAIL</entryValue>
+                                    </entry>
+                                    <entry>
+                                        <entryKey>incompleteSourcesSeverity</entryKey>
+                                        <entryValue>WARN</entryValue>
+                                    </entry>
+                                </configuration>
+                                <deactivated>true</deactivated>
+                            </step>
+                        </processors>
+                        <generators>
+                            <step>
+                                <name>HTML Report Writer</name>
+                                <classHint>${ANTENNATESTVARIABLE}</classHint>
+                            </step>
+                            <step>
+                                <name>CSV Report Writer</name>
+                                <classHint>org.eclipse.sw360.antenna.workflow.generators.CSVGenerator</classHint>
+                            </step>
+                        </generators>
+                    </workflow>
+
+                    <copyrightHoldersName>Antenna Company</copyrightHoldersName>
+                    <copyrightNotice>All rights reserved</copyrightNotice>
+
+                    <skip>false</skip>
+
+                    <!--
+                    <proxyHost>${proxyHost}</proxyHost>
+                    <proxyPort>${proxyPort}</proxyPort>
+                    -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>analyze</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <!-- The antenna mojo requires the kbase to fetch the license information -->
+                    <dependency>
+                        <groupId>org.eclipse.sw360.antenna</groupId>
+                        <artifactId>antenna-spdx-license-knowledge-base</artifactId>
+                        <version>${org.eclipse.sw360.antenna.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

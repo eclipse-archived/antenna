@@ -64,3 +64,37 @@ If you have a custom plugin `my-custom-plugin` with groupId `org.mycompany.plugi
     <version>VERSION</version>
 </dependency>
 ```
+
+#[[##]]# Adding entry values over maven properties or environment variables
+
+Sometimes a workflow step contains entries with variables that are credentials or should remain secret due to other reasons.
+
+#[[####]]# Maven Properties
+
+Maven has a standard way of reading in properties, which can also be used for a ${docNameCap} run.
+One way is setting them in a separate `settings.xml` or via the command line:
+
+```sh
+mvn clean install -Dpassword=password12345
+```
+
+Withing your `pom.xml` variables will get rendered correctly.
+Should you have a separate `workflow.xml` file that will not be the case.
+The property variables are limited to the `pom.xml`.
+Should you choose this way, you would have to include a workflow section in your pom ${docName} configuration,
+ as described in the [Workflow configuration](../workflow-configuration.html).
+Alternatively, you could use system environment variables.
+
+
+#[[####]]# System environment variables
+
+Additionally you can use system environment variables that you have either set in the environment or when executing the analyze command:
+
+```
+SECRET=password12345 mvn clean install
+```
+
+Should you execute it within the command, the variable will not be saved in your environment but only exist for the run of the command.
+${docNameCap} adheres to standards and only renders environment variables that are written in upper case letters.
+
+Within both, your `pom.xml` or the `workflow.xml`, you can then reference the variables.

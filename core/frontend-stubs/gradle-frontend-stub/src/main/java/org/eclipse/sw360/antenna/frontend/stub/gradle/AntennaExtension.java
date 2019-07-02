@@ -13,11 +13,21 @@ package org.eclipse.sw360.antenna.frontend.stub.gradle;
 public class AntennaExtension {
     private String pomPath;
 
+    private String propertiesFilePath;
+
     public String getPomPath() {
         return pomPath;
     }
 
     public void setPomPath(String pomPath) {
         this.pomPath = pomPath;
+    }
+
+    public String getPropertiesFilePath() {
+        return propertiesFilePath;
+    }
+
+    public void setPropertiesFilePath(String propertiesFilePath) {
+        this.propertiesFilePath = propertiesFilePath;
     }
 }

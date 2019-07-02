@@ -70,3 +70,43 @@ buildscript{
     }
 }
 ```
+
+#[[##]]# Adding entry values over a properties file or environment variables
+
+Sometimes a workflow step contains entries with variables that are credentials or should remain secret due to other reasons.
+
+#[[####]]# Properties file
+
+For that ${docNameCap} provides the possibility to give a properties file that can be stored outside of your project.
+To use this functionality one can give the properties file in the `${docNameCap}Configuration` of the build file, like this:
+
+```groovy
+${docNameCap}Configuration{
+    pomPath 'pom.xml'
+    propertiesFilePath '/path/to/antenna.properties'
+}
+```
+
+The properties file can be the normal gradle.properties file.
+It should be written in the standard properties format:
+
+```
+ExampleUsername=maxMustermann
+ExamplePassword=12345password
+```
+
+Within your `pom.xml` or the `workflow.xml` you can then reference variables by the usual xml standard `${ExampleUsername}`.
+This will get rendered by the `TemplateRenderer` according to the value you assigned to the key in the secrets file.
+
+Note: You should still refrain from using key names containing dots, as the `TemplateRenderer` will not render them correctly.
+
+#[[####]]# System environment variables
+
+Additionally you can use system environment variables that you have either set in the environment or when executing the analyze command:
+
+```
+SECRET=password12345 gradle analyze
+```
+
+Should you execute it within the command, the variable will not be saved in your environment but only exist for the run of the command.
+${docNameCap} adheres to standards and only renders environment variables that are written in upper case letters.

@@ -92,3 +92,18 @@ java -cp %CLASSPATH% $${antennaCliJavaFilename} %POM_FILE%
 in the script above.
 
 The same is true for bat scripts on Windows.
+
+#[[##]]# Adding entry values over system environment variables
+
+Sometimes a workflow step contains entries with variables that are credentials or should remain secret due to other reasons.
+
+You can use system environment variables that you have either set in the environment or when executing the analyze command:
+
+```
+SECRET=password12345 java -jar path\to\ ${docName}.jar path\to\pom.xml
+```
+
+Should you execute it within the command, the variable will not be saved in your environment but only exist for the run of the command.
+${docNameCap} adheres to standards and only renders environment variables that are written in upper case letters.
+
+Within both, your `pom.xml` or the `workflow.xml`, you can then reference the variables.

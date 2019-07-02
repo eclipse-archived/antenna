@@ -30,7 +30,15 @@ public abstract class AnalyzeTask extends DefaultTask {
 
         Path pomPath = Paths.get(System.getProperty("user.dir")).resolve(extension.getPomPath()).toAbsolutePath();
 
-        AntennaImpl osmRunner = new AntennaImpl(getPluginDescendantArtifactIdName(), pomPath);
+        AntennaImpl osmRunner;
+
+        if(extension.getPropertiesFilePath() != null) {
+            Path propertiesFilePath = Paths.get(System.getProperty("user.dir")).resolve(extension.getPropertiesFilePath()).toAbsolutePath();
+            osmRunner = new AntennaImpl(getPluginDescendantArtifactIdName(), pomPath, propertiesFilePath);
+        } else {
+            osmRunner = new AntennaImpl(getPluginDescendantArtifactIdName(), pomPath);
+        }
+
         osmRunner.execute();
     }
 

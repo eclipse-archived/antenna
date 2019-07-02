@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.frontend.gradle;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.frontend.stub.gradle.AntennaImpl;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.AbstractTestProject;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.ExampleTestProject;
@@ -23,7 +24,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.checkInternetConnectionAndAssume;
@@ -42,7 +45,7 @@ public class AntennaGradlePluginTest {
 
         System.setProperty("user.dir", projectRoot.toAbsolutePath().toString());
 
-        String buildGradle = "plugins {\nid 'org.eclipse.sw360.antenna'\n}\n"+
+        String buildGradle = "plugins {\nid 'org.eclipse.sw360.antenna'\n}\n" +
                 "AntennaConfiguration{\npomPath '" + exampleTestProject.getProjectPom() + "'\n}";
         FileUtils.writeStringToFile(projectRoot.resolve("build.gradle").toFile(), buildGradle);
     }
@@ -79,5 +82,21 @@ public class AntennaGradlePluginTest {
         assertThat(projectRoot.resolve("build/antenna").toFile()).exists();
         assertThat(projectRoot.resolve("build/antenna/3rdparty-licenses.html").toFile()).exists();
         assertThat(projectRoot.resolve("build/antenna/sources.zip").toFile()).exists();
+    }
+
+    @Test
+    public void testWithoutGradleSetSystemEnvironmentVariables() throws AntennaException {
+        URL pom = AntennaGradlePluginTest.class.getClassLoader().getResource("pom.xml");
+        URL propertiesFile = AntennaGradlePluginTest.class.getClassLoader().getResource("antennaTestVariable.properties");
+
+        AntennaImpl runner = new AntennaImpl("antenna-maven-plugin",
+                Paths.get(pom.getPath()),
+                Paths.get(propertiesFile.getPath()));
+
+        runner.execute();
+
+        Path root = Paths.get(AntennaGradlePluginTest.class.getClassLoader().getResource("build").getPath());
+
+        assertThat(root.resolve("antenna")).exists();
     }
 }
