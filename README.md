@@ -14,18 +14,21 @@ Learn more about Antenna in [What Antenna Does](antenna-documentation/src/site/m
 
 Please note that some dependencies of SW360antenna are only available for Java 8. So you need to use Java 8 to build the project.
 
-If you want to build antenna without the p2 parts, use
+If you want to build Antenna just use Maven, e.g.
 
 <pre>
 $ <b>mvn install</b>
 </pre>
 
-Otherwise, you can use the script `./modules/p2/prepareDependenciesForP2.sh` and afterwards call `mvn install`.
-To undo this one has the script `./modules/p2/cleanupDependenciesForP2.sh`.
-
+#### Optional Profiles
 You can activate the following optional profiles:
-- `-P ci`: activates also the optional profile for which includes the system tests. 
-- `-P it`: activates also the optional profile for integration testing. 
+- `-P integration-test`: activates also the optional profile for integration testing in the sw360 module
+- `-P site-tests`: which activates the site tests in `./documentation/`
+
+#### Optional Modules
+By default the p2-resolver in `./modules/p2/p2-resolver/`, which resolves OSGi sources via P2 repositories, is excluded from the build (since it complicates the build and is unnecessary in most cases).
+To enable it, one can call the corresponding prepare script `./modules/p2/prepareDependenciesForP2.sh` (without Bash support one has to follow the steps in the script by hand).
+To remove the P2 dependencies again you can use the script `./modules/p2/cleanupDependenciesForP2.sh`.
 
 ### Configure Antenna
 Antenna can be used as a Maven plugin, with  Gradle or standalone executable.
