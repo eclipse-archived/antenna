@@ -18,9 +18,10 @@ container: 'maven:3.6-jdk-8-slim'
 
 steps:
 - task: Maven@3
+  displayName: 'mvn install'
   inputs:
     mavenPomFile: 'pom.xml'
-    goals: 'package'
+    goals: 'install'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     javaHomeOption: 'JDKVersion'
@@ -28,3 +29,22 @@ steps:
     mavenAuthenticateFeed: false
     sonarQubeRunAnalysis: false
     pmdRunAnalysis: true
+
+# - task: Bash@3
+#   displayName: 'test example project with gradle'
+#   inputs:
+#     targetType: 'inline'
+#     script: 'rm -rf example-projects/example-project/target &&
+#       cd example-projects/example-project &&
+#       gradle analyze &&
+#       java -jar ../../core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject build'
+#     failOnStderr: true
+
+# - task: Bash@3
+#   displayName: 'test example project with cli'
+#   inputs:
+#     targetType: 'inline'
+#     script: 'rm -rf example-projects/example-project/target &&
+#       .travis/runCLI.sh example-projects/example-project &&
+#       java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject target'
+#     failOnStderr: true
