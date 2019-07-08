@@ -14,11 +14,13 @@ Learn more about Antenna in [What Antenna Does](antenna-documentation/src/site/m
 
 Please note that some dependencies of SW360antenna are only available for Java 8. So you need to use Java 8 to build the project.
 
-If you want to build Antenna just use Maven, e.g.
+If you want to build Antenna on the command line, just use Maven like
 
-<pre>
-$ <b>mvn install</b>
-</pre>
+    $ mvn install
+
+By default, this will run tests. If you want to skip running tests use
+
+    $ mvn install -DskipTests
 
 #### Optional Profiles
 You can activate the following optional profiles:
