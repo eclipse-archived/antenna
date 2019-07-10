@@ -153,11 +153,11 @@
                  }
 
                  public String getLinkStr(){
-                    return String.format("<listitem><xref linkend=\"sect_%s\" endterm=\"sect_shortTitle_%s\"/></listitem>", org.apache.commons.lang3.StringEscapeUtils.escapeXml11(getName()), org.apache.commons.lang3.StringEscapeUtils.escapeXml11(getName()));
+                    return String.format("<listitem><xref linkend=\"sect_%s\" endterm=\"sect_shortTitle_%s\"/></listitem>", org.apache.commons.text.StringEscapeUtils.escapeXml11(getName()), org.apache.commons.text.StringEscapeUtils.escapeXml11(getName()));
                  }
 
                  public String getHTMLLinkStr(){
-                    return String.format("<li><a href=\"#%s\">%s</a></li>", org.apache.commons.lang3.StringEscapeUtils.escapeHtml4(getName()), getLongName() != null ? org.apache.commons.lang3.StringEscapeUtils.escapeHtml4(getLongName()) : org.apache.commons.lang3.StringEscapeUtils.escapeHtml4(getName()));
+                    return String.format("<li><a href=\"#%s\">%s</a></li>", org.apache.commons.text.StringEscapeUtils.escapeHtml4(getName()), getLongName() != null ? org.apache.commons.text.StringEscapeUtils.escapeHtml4(getLongName()) : org.apache.commons.text.StringEscapeUtils.escapeHtml4(getName()));
                  }
                  ]]>
             </ci:code>
