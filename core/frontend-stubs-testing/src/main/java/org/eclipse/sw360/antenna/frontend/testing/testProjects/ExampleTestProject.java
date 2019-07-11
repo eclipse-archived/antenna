@@ -92,6 +92,12 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
         analyzers.add(mkWorkflowStep("ORT Result Analyzer", "org.eclipse.sw360.antenna.ort.workflow.analyzers.OrtResultAnalyzer",
                 "base.dir", projectRoot.toString(),
                 "file.path", "src/analyzer-result.yml"));
+        analyzers.add(mkWorkflowStep("ORT Analyzer", "org.eclipse.sw360.antenna.ort.workflow.analyzers.OrtAnalyzer",
+                Stream.of(new String[][] {
+                        { "ignore.tool.versions", "true" },
+                        { "allow.dynamic.versions", "true" },
+                        { "use.clearly.defined.curations", "true" }})
+                        .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]))));
         return analyzers;
     }
 

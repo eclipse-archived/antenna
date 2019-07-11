@@ -36,6 +36,15 @@
                 <entry key="file.path" value="src/analyzer-result.yml"/>
             </configuration>
         </step>
+        <step>
+            <name>ORT Analyzer</name>
+            <classHint>org.eclipse.sw360.antenna.ort.workflow.analyzers.OrtAnalyzer</classHint>
+            <configuration>
+                <entry key="ignore.tool.versions" value="true"/>
+                <entry key="allow.dynamic.versions" value="true"/>
+                <entry key="use.clearly.defined.curations" value="true"/>
+            </configuration>
+        </step>
     </analyzers>
     <processors>
         <step>

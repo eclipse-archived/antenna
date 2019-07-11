@@ -263,6 +263,11 @@
             </dependency>
             <dependency>
                 <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+                <artifactId>analyzer</artifactId>
+                <version>${ort.rev}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.heremaps.oss-review-toolkit</groupId>
                 <artifactId>model</artifactId>
                 <version>${ort.rev}</version>
             </dependency>

@@ -178,6 +178,10 @@
         </dependency>
         <dependency>
             <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+            <artifactId>analyzer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.heremaps.oss-review-toolkit</groupId>
             <artifactId>model</artifactId>
         </dependency>
         <dependency>
