@@ -92,4 +92,11 @@ public class Artifact extends ArtifactCore {
                                 )
                 );
     }
+
+    public void mergeWith(Artifact newArtifact) {
+        if(isPotentialDuplicateOf(newArtifact)) {
+            newArtifact.askForAll(ArtifactFact.class)
+                    .forEach(this::addFact);
+        }
+    }
 }

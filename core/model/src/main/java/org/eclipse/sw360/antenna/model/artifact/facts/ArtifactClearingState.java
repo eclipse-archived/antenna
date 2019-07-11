@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.sw360.model.artifact.facts;
+package org.eclipse.sw360.antenna.model.artifact.facts;
 
 import org.eclipse.sw360.antenna.model.artifact.ArtifactFact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactFactWithPayload;

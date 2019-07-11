@@ -15,6 +15,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
@@ -35,20 +36,28 @@ import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CsvAnalyzer extends ManualAnalyzer {
     private static final String NAME = "Artifact Id";
     private static final String GROUP = "Group Id";
     private static final String VERSION = "Version";
-    private static final String LICENSE_SHORT_NAME = "License Short Name";
-    private static final String LICENSE_LONG_NAME = "License Long Name";
-    private static final String PATH_NAME = "File Name";
     private static final String COORDINATE_TYPE = "Coordinate Type";
-    private static final String OBSERVED_LICENSE_SHORT_NAME = "Observed License Short Name";
-    private static final String OBSERVED_LICENSE_LONG_NAME = "Observed License Long Name";
+    private static final String EFFECTIVE_LICENSE = "Effective License";
+    private static final String DECLARED_LICENSE = "Declared License";
+    private static final String OBSERVED_LICENSE = "Observed License";
+    private static final String COPYRIGHTS = "Copyrights";
+    private static final String HASH = "Hash";
     private static final String SOURCE_URL = "Source URL";
     private static final String RELEASE_ARTIFACT_URL = "Release Tag URL";
-    private static final String SWH_URL = "Software Heritage URL";
+    private static final String SWH_ID = "Software Heritage ID";
+    private static final String CLEARING_STATE = "Clearing State";
+    private static final String CHANGES_STATUS = "Change Status";
+    private static final String CPE = "CPE";
+    private static final String PATH_NAME = "File Name";
+
+    private static final String DELIMITER = "delimiter";
+    private Character delimiter = ',';
 
     public CsvAnalyzer() {
         this.workflowStepOrder = 500;
@@ -60,27 +69,59 @@ public class CsvAnalyzer extends ManualAnalyzer {
         List<CSVRecord> records = getRecords();
 
         for (CSVRecord record : records) {
-            String pathName = record.get(PATH_NAME);
-            String absolutePathName = Paths.get(pathName).isAbsolute()
-                    ? Paths.get(pathName).toString()
-                    : baseDir.resolve(Paths.get(pathName)).toAbsolutePath().toString();
+            Artifact newArtifact = createNewArtifact(record);
 
-            Artifact artifact = new Artifact(getName())
-                    .addFact(new DeclaredLicenseInformation(
-                            createLicense(record.get(LICENSE_SHORT_NAME), record.get(LICENSE_LONG_NAME))))
-                    .addFact(new ArtifactPathnames(absolutePathName))
-                    .addFact(new ArtifactMatchingMetadata(MatchState.EXACT))
-                    .addFact(createCoordinates(record));
-            addOptionalArtifactFacts(record, artifact);
-
-            artifacts.add(artifact);
+            if(artifactListContainsArtifact(artifacts, newArtifact)) {
+                Artifact oldArtifact = getArtifactWithCoordinatesFromList(artifacts, newArtifact.askForAll(ArtifactCoordinates.class));
+                oldArtifact.mergeWith(newArtifact);
+            } else {
+                artifacts.add(newArtifact);
+            }
         }
 
         return new WorkflowStepResult(artifacts, true);
     }
 
+    @Override
+    public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
+        super.configure(configMap);
+        if(configMap.containsKey(DELIMITER))  {
+            this.delimiter = getConfigValue(DELIMITER, configMap).charAt(0);
+        }
+    }
+
+    private boolean artifactListContainsArtifact(List<Artifact> artifacts, Artifact newArtifact) {
+        return artifacts.stream()
+                .anyMatch(artifact ->
+                    artifact.askForAll(ArtifactCoordinates.class)
+                            .stream()
+                            .anyMatch(artifactCoordinates ->
+                                    newArtifact.askForAll(ArtifactCoordinates.class).stream()
+                                            .anyMatch(artifactCoordinates1 -> artifactCoordinates1.equals(artifactCoordinates)))
+                );
+    }
+
+    private Artifact getArtifactWithCoordinatesFromList(List<Artifact> artifacts, List<ArtifactCoordinates> coordinates) {
+        return artifacts.stream()
+                .filter(artifact ->
+                        artifact.askForAll(ArtifactCoordinates.class).stream()
+                                .anyMatch(coordinates1 -> coordinates.stream().anyMatch(coordinates1::equals)))
+                .findFirst()
+                .orElse(new Artifact());
+    }
+
+    private Artifact createNewArtifact(CSVRecord record) {
+        Artifact artifact = new Artifact(getName())
+                .addFact(createCoordinates(record))
+                .addFact(new ArtifactMatchingMetadata(MatchState.EXACT));
+        addOptionalArtifactFacts(record, artifact);
+        return artifact;
+    }
+
     private List<CSVRecord> getRecords() throws AntennaException {
-        CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader();
+        CSVFormat csvFormat = CSVFormat.DEFAULT;
+        csvFormat = csvFormat.withFirstRecordAsHeader();
+        csvFormat = csvFormat.withDelimiter(delimiter);
         String filename = componentInfoFile.getAbsolutePath();
         List<CSVRecord> records;
         ToolConfiguration toolConfig = context.getToolConfiguration();
@@ -105,14 +146,6 @@ public class CsvAnalyzer extends ManualAnalyzer {
         return "CSV";
     }
 
-    private License createLicense(String short_name, String long_name) {
-        License license = new License();
-        license.setName(short_name);
-        license.setLongName(long_name);
-
-        return license;
-    }
-
     private ArtifactCoordinates createCoordinates(CSVRecord record) {
         String type = record.isMapped(COORDINATE_TYPE) ? record.get(COORDINATE_TYPE) : "mvn";
 
@@ -131,18 +164,53 @@ public class CsvAnalyzer extends ManualAnalyzer {
     }
 
     private void addOptionalArtifactFacts(CSVRecord record, Artifact artifact) {
-        if (record.isMapped(OBSERVED_LICENSE_SHORT_NAME) && record.isMapped(OBSERVED_LICENSE_LONG_NAME)) {
-            artifact.addFact(new ObservedLicenseInformation(
-                    createLicense(record.get(OBSERVED_LICENSE_SHORT_NAME), record.get(OBSERVED_LICENSE_LONG_NAME))));
+        if (record.isMapped(EFFECTIVE_LICENSE) && !record.get(EFFECTIVE_LICENSE).isEmpty()) {
+            License license = new License();
+            license.setName(record.get(EFFECTIVE_LICENSE));
+            artifact.addFact(new OverriddenLicenseInformation(license));
         }
-        if (record.isMapped(SOURCE_URL)) {
+        if (record.isMapped(DECLARED_LICENSE) && !record.get(DECLARED_LICENSE).isEmpty()) {
+            License license = new License();
+            license.setName(record.get(DECLARED_LICENSE));
+            artifact.addFact(new DeclaredLicenseInformation(license));
+        }
+        if (record.isMapped(OBSERVED_LICENSE) && !record.get(OBSERVED_LICENSE).isEmpty()) {
+            License license = new License();
+            license.setName(record.get(OBSERVED_LICENSE));
+            artifact.addFact(new ObservedLicenseInformation(license));
+        }
+        if (record.isMapped(COPYRIGHTS) && !record.get(COPYRIGHTS).isEmpty()) {
+            artifact.addFact(new CopyrightStatement(record.get(COPYRIGHTS)));
+        }
+        if (record.isMapped(HASH) && !record.get(HASH).isEmpty()) {
+            artifact.addFact(new ArtifactFilename(null, record.get(HASH)));
+        }
+        if (record.isMapped(SOURCE_URL) && !record.get(SOURCE_URL).isEmpty()) {
             artifact.addFact(new ArtifactSourceUrl(record.get(SOURCE_URL)));
         }
-        if (record.isMapped(RELEASE_ARTIFACT_URL)) {
+        if (record.isMapped(RELEASE_ARTIFACT_URL) && !record.get(RELEASE_ARTIFACT_URL).isEmpty()) {
             artifact.addFact(new ArtifactReleaseTagURL(record.get(RELEASE_ARTIFACT_URL)));
         }
-        if (record.isMapped(SWH_URL)) {
-            artifact.addFact(new ArtifactSoftwareHeritageURL(record.get(SWH_URL)));
+        if (record.isMapped(SWH_ID) && !record.get(SWH_ID).isEmpty()) {
+            artifact.addFact(new ArtifactSoftwareHeritageURL(record.get(SWH_ID)));
+        }
+        if (record.isMapped(CLEARING_STATE) && !record.get(CLEARING_STATE).isEmpty()) {
+            artifact.addFact(new ArtifactClearingState(
+                    ArtifactClearingState.ClearingState.valueOf(record.get(CLEARING_STATE))));
+        }
+        if (record.isMapped(CHANGES_STATUS) && !record.get(CHANGES_STATUS).isEmpty()) {
+            artifact.addFact(new ArtifactChangeStatus(
+                    ArtifactChangeStatus.ChangeStatus.valueOf(record.get(CHANGES_STATUS))));
+        }
+        if (record.isMapped(CPE) && !record.get(CPE).isEmpty()) {
+            artifact.addFact(new ArtifactCPE(record.get(CPE)));
+        }
+        if (record.isMapped(PATH_NAME) && !record.get(PATH_NAME).isEmpty()) {
+            String pathName = record.get(PATH_NAME);
+            String absolutePathName = Paths.get(pathName).isAbsolute()
+                    ? Paths.get(pathName).toString()
+                    : baseDir.resolve(Paths.get(pathName)).toAbsolutePath().toString();
+            artifact.addFact(new ArtifactPathnames(absolutePathName));
         }
     }
 }
