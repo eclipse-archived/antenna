@@ -252,6 +252,11 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+                <artifactId>model</artifactId>
+                <version>dd6412b9e4</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.hateoas</groupId>
                 <artifactId>spring-hateoas</artifactId>
                 <version>0.25.0.RELEASE</version>
