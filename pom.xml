@@ -26,7 +26,8 @@
         <qualifier>-SNAPSHOT</qualifier>
         <drools.version>7.17.0.Final</drools.version>
         <gradle.version>4.1</gradle.version>
-        <jackson.version>2.9.8</jackson.version>
+        <jackson.version>2.9.9</jackson.version>
+        <jackson.databind.version>2.9.9.1</jackson.databind.version>
         <maven.version>3.3.9</maven.version>
         <maven.shared.version>3.0.1</maven.shared.version>
         <mockito.version>2.23.0</mockito.version>
@@ -238,7 +239,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson.databind.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.spdx</groupId>
