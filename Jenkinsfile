@@ -125,7 +125,7 @@ pipeline {
 
                     // run static code analysis
                     sh '''
-                      mvn pmd:pmd -Dmaven.repo.local=$(readlink -f localRepository)
+                      mvn install -DskipTests pmd:pmd checkstyle:checkstyle-aggregate spotbugs:check -Dmaven.repo.local=$(readlink -f localRepository)
                     '''
                 }
             }

@@ -189,6 +189,11 @@ spec:
                             site -Psite-tests
                         '''
                     }
+
+                    // run static code analysis
+                    sh '''
+                      mvn install -DskipTests pmd:pmd checkstyle:checkstyle-aggregate spotbugs:check -Dmaven.repo.local=$(readlink -f localRepository)
+                    '''
                 }
             }
         }
