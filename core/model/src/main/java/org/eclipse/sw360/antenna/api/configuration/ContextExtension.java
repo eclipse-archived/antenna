@@ -34,7 +34,7 @@ public class ContextExtension {
                 .map(o -> (T) o);
     }
 
-    class ContextExtensionElement {
+    private static class ContextExtensionElement {
         private Object object;
 
         ContextExtensionElement(Object object) {

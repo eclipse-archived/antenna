@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 public class CliProject extends MetaDataStoringProject {
     private final File configFile;
     private final String buildDir;
+    private final Build build;
 
     private String projectId = "project";
     private String projectVersion = "1.0";
@@ -26,7 +27,7 @@ public class CliProject extends MetaDataStoringProject {
     public CliProject(File configFile, String buildDir, String sourceDir) {
         this.configFile = configFile;
         this.buildDir = buildDir;
-        this.build = new Build(buildDir,
+        build = new Build(buildDir,
                 buildDir + File.separator + "classes",
                 Paths.get(sourceDir, "main", "java").toString(),
                 Paths.get(sourceDir, "test", "java").toString());
@@ -49,6 +50,11 @@ public class CliProject extends MetaDataStoringProject {
     @Override
     public void setVersion(String projectVersion) {
         this.projectVersion = projectVersion;
+    }
+
+    @Override
+    public Build getBuild() {
+        return build;
     }
 
     @Override

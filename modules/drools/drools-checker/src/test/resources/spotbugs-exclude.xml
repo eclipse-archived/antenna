@@ -12,6 +12,6 @@
   -->
 <FindBugsFilter>
   <Match>
-    <Package name="org.eclipse.sw360.antenna.model.xml.generated" />
+    <Package name="org.eclipse.sw360.antenna.drools.xml.generated" />
   </Match>
 </FindBugsFilter>

@@ -11,31 +11,28 @@
 
 package org.eclipse.sw360.antenna.p2resolver.workflow.processors.enricher;
 
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
-import org.eclipse.sw360.antenna.p2resolver.workflow.processors.enricher.P2Resolver;
-import org.junit.Before;
-import org.junit.Assume;
-import org.junit.Rule;
-import org.junit.Test;
+import org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics;
+import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.checkInternetConnectionAndAssume;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
-public class P2ResolverTest {
+public class P2ResolverTest extends AntennaTestWithMockedContext {
     private static final String DEPENDENCY_REPOSITORY = "repositories";
 
     @Rule
@@ -44,27 +41,33 @@ public class P2ResolverTest {
     private File dependencyDir;
 
     @Before
-    public void setupContext() throws IOException, AntennaConfigurationException {
-        Map<String, String> configMap = new HashMap<>();
-        configMap.put(DEPENDENCY_REPOSITORY, "https://download.eclipse.org/releases/neon/201705151400");
+    public void setup() throws IOException, AntennaConfigurationException {
         File installationDir = temporaryFolder.newFolder();
         dependencyDir = temporaryFolder.newFolder();
-
-        AntennaContext context = Mockito.mock(AntennaContext.class);
-        ToolConfiguration config = Mockito.mock(ToolConfiguration.class);
-        when(config.getAntennaTargetDirectory()).thenReturn(installationDir.toPath());
-        when(config.getDependenciesDirectory()).thenReturn(dependencyDir.toPath());
-        when(context.getToolConfiguration()).thenReturn(config);
-        when(context.getToolConfiguration()).thenReturn(config);
+        when(toolConfigMock.getAntennaTargetDirectory()).thenReturn(installationDir.toPath());
+        when(toolConfigMock.getDependenciesDirectory()).thenReturn(dependencyDir.toPath());
+        when(toolConfigMock.getEncoding()).thenReturn(StandardCharsets.UTF_8);
 
         resolver = new P2Resolver();
-        resolver.setAntennaContext(context);
+        resolver.setAntennaContext(antennaContextMock);
+
+        Map<String, String> configMap = new HashMap<>();
+        configMap.put(DEPENDENCY_REPOSITORY, "https://download.eclipse.org/releases/neon/201705151400");
         resolver.configure(configMap);
+    }
+
+    @After
+    public void tearDown() {
+        temporaryFolder.delete();
+        verify(toolConfigMock, atLeast(0)).getAntennaTargetDirectory();
+        verify(toolConfigMock, atLeast(0)).getDependenciesDirectory();
+        verify(toolConfigMock, atLeast(0)).getEncoding();
     }
 
     @Test
     public void testProductInstallation() throws AntennaException {
         checkInternetConnectionAndAssume(Assume::assumeTrue);
+        Assume.assumeFalse("The linux looks unusual and probably does not support the p2 product.", OperatingSystemSpecifics.isLinux() && ! Files.exists(Paths.get("/usr/lib/")));
 
         Artifact artifact = new Artifact();
         artifact.addFact(new BundleCoordinates("org.junit", "4.12.0.v201504281640"));

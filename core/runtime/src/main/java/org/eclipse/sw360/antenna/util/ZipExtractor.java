@@ -11,6 +11,8 @@
 
 package org.eclipse.sw360.antenna.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -56,6 +58,7 @@ public class ZipExtractor {
         return newFile;
     }
 
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     private static void createFile(ZipEntry zipEntry, File newFile) throws IOException {
         if (zipEntry.isDirectory()) {
             newFile.mkdirs();

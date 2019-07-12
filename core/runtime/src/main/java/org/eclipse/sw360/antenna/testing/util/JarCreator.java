@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.testing.util;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
@@ -77,7 +79,9 @@ public class JarCreator {
             return jarWithManifestPath;
         }
         if (jarWithManifestPath.getParent() != null) {
-            Files.createDirectories(jarWithManifestPath.getParent());
+            Path parent = Optional.ofNullable(jarWithManifestPath.getParent())
+                    .orElseThrow(() -> new AntennaExecutionException("The JarWithManifest=[" + jarWithManifestPath + "] should have a parent"));
+            Files.createDirectories(parent);
         }
         try (FileOutputStream fileOutput = new FileOutputStream(file);
             JarOutputStream jarOutput = new JarOutputStream(fileOutput, manifest) ) {
@@ -174,8 +178,10 @@ public class JarCreator {
         }
 
         File jarWithManifest = createJarWithManifest(jarInFoldersName).toFile();
-        createNestedJar(Paths.get(JarCreator.jarInFoldersName).getParent().toString(), jarWithManifest, jarInJar);
-
+        String parent = Optional.ofNullable(Paths.get(JarCreator.jarInFoldersName).getParent())
+                .orElseThrow(() -> new AntennaExecutionException("The Path [" + jarInFoldersName + "] should have a parent"))
+                .toString();
+        createNestedJar(parent, jarWithManifest, jarInJar);
         return jarjarPath;
     }
 }

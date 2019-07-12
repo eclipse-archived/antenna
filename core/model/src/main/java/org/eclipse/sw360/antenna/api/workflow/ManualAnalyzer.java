@@ -37,4 +37,12 @@ public abstract class ManualAnalyzer extends AbstractAnalyzer {
         String baseDirStr = getConfigValue(BASEDIR_KEY, configMap);
         this.baseDir = basedir.resolve(baseDirStr).toAbsolutePath();
     }
+
+    public Path getBaseDir() {
+        return baseDir;
+    }
+
+    public File getComponentInfoFile() {
+        return componentInfoFile;
+    }
 }

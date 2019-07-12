@@ -77,13 +77,13 @@ public class Reporter implements IProcessingReporter {
     private void writeFormattedMessage(PrintStream stream, ProcessingMessage message){
         final String spacer = "    ";
         if(message.getIdentifier() != null) {
-            stream.format("%s:\n%s%s: %s\n",
+            stream.format("%s:%n%s%s: %s%n",
                     message.getMessageType(),
                     spacer,
                     message.getIdentifier(),
                     message.getMessage().replaceAll("\n", "\n" + spacer + spacer + spacer));
         } else {
-            stream.format("%s:\n%s%s\n",
+            stream.format("%s:%n%s%s%n",
                     message.getMessageType(),
                     spacer,
                     message.getMessage().replaceAll("\n","\n" + spacer));

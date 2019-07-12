@@ -11,6 +11,7 @@
 
 package org.eclipse.sw360.antenna.drools;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.sw360.antenna.util.ZipExtractor;
 
 import java.io.File;
@@ -22,6 +23,7 @@ public final class InternalRulesExtractor {
         // Utility class
     }
 
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     public static InternalRulesPackage extractRules(Path jarPath, Path extractionLocation) throws IOException {
         extractionLocation.toFile().mkdirs();
         File unzippedFile = extractionLocation.toFile();

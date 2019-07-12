@@ -23,10 +23,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Writes the disclosure document to the given archive
@@ -108,7 +105,9 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
         URI zipFileUri = new URI("jar:" + zipFile.toUri().toString());
         try (FileSystem zipfs = FileSystems.newFileSystem(zipFileUri, properties)) {
             Path zipFilePath = zipfs.getPath(pathInArchive.toString()).toAbsolutePath();
-            Files.createDirectories(zipFilePath.getParent());
+            Path parent = Optional.ofNullable(zipFilePath.getParent())
+                    .orElseThrow(() -> new AntennaExecutionException("parent should exists"));
+            Files.createDirectories(parent);
             Files.copy(sourcePath, zipFilePath, StandardCopyOption.REPLACE_EXISTING);
         }
     }

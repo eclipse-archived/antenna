@@ -68,28 +68,14 @@ public class ConfigurationHandlerRemove extends AbstractProcessor {
         artifacts.removeAll(remove);
     }
 
-    @SuppressWarnings("boxing")
     private boolean getProprietaryOverrideValue(Configuration configuration, Artifact artifact) {
-        Map<ArtifactSelector, Artifact> override = configuration.getOverride();
-        Set<ArtifactSelector> keySet = override.keySet();
-        Iterator<ArtifactSelector> iterator = keySet.iterator();
-        Artifact generatedArtifact = null;
-        while (iterator.hasNext()) {
-            ArtifactSelector artifactExample = iterator.next();
-            if (artifactExample.matches(artifact)) {
-                generatedArtifact = override.get(artifactExample);
-            }
-        }
-        if (null != generatedArtifact) {
-            return generatedArtifact.getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY);
-        }
-        return artifact.getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY);
-    }
-
-    @Override
-    public void cleanup() {
-        // TODO Auto-generated method stub
-
+        return configuration.getOverride().entrySet().stream()
+                .filter(e -> e.getValue() != null)
+                .filter(e -> e.getKey().matches(artifact))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .orElse(artifact)
+                .getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY);
     }
 
     @Override

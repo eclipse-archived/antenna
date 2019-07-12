@@ -59,7 +59,7 @@ import java.util.stream.Stream;
  * Provides configuration and execution services for using Antenna as a Maven Mojo.
  */
 
-@SuppressWarnings("PMD.UnusedPrivateField")
+@SuppressWarnings({"PMD.UnusedPrivateField", "PMD.UnusedPrivateMethod"})
 public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implements AntennaFrontend<WrappedMavenProject> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAntennaMojoFrontend.class);

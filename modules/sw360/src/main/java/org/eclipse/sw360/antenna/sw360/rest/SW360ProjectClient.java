@@ -26,6 +26,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSw360SparseReleases;
 
 public class SW360ProjectClient extends SW360Client {
     private static final String PROJECTS_ENDPOINT = "/projects";
@@ -46,7 +49,9 @@ public class SW360ProjectClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360ProjectList>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            SW360ProjectList resource = response.getBody().getContent();
+            SW360ProjectList resource = Optional.ofNullable(response.getBody())
+                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .getContent();
             if (resource != null &&
                     resource.get_Embedded() != null &&
                     resource.get_Embedded().getProjects() != null) {
@@ -66,7 +71,9 @@ public class SW360ProjectClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360Project>>() {});
 
         if (response.getStatusCode() == HttpStatus.CREATED) {
-            return response.getBody().getContent();
+            return Optional.ofNullable(response.getBody())
+                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .getContent();
         } else {
             throw new AntennaException("Request to create project " + sw360Project.getName() + " failed with "
                     + response.getStatusCode());
@@ -78,7 +85,9 @@ public class SW360ProjectClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360Project>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody().getContent();
+            return Optional.ofNullable(response.getBody())
+                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .getContent();
         } else {
             throw new AntennaException("Request to get project " + projectId + " failed with "
                     + response.getStatusCode());
@@ -109,13 +118,7 @@ public class SW360ProjectClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360ReleaseList>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            SW360ReleaseList resource = response.getBody().getContent();
-            if (resource.get_Embedded() != null &&
-                    resource.get_Embedded().getReleases() != null) {
-                return resource.get_Embedded().getReleases();
-            } else {
-                return new ArrayList<>();
-            }
+            return getSw360SparseReleases(response);
         } else {
             throw new AntennaException("Request to get linked releases of project with id=[ " + projectId + "] failed with "
                     + response.getStatusCode());

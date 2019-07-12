@@ -23,8 +23,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSw360SparseReleases;
 
 public class SW360ReleaseClient extends SW360Client {
     private static final String RELEASES_ENDPOINT = "/releases";
@@ -41,7 +43,9 @@ public class SW360ReleaseClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody().getContent();
+            return Optional.ofNullable(response.getBody())
+                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .getContent();
         } else {
             throw new AntennaException("Request to get release " + releaseId + " failed with "
                     + response.getStatusCode());
@@ -53,13 +57,7 @@ public class SW360ReleaseClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360ReleaseList>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            SW360ReleaseList resource = response.getBody().getContent();
-            if (resource.get_Embedded() != null &&
-                    resource.get_Embedded().getReleases() != null) {
-                return resource.get_Embedded().getReleases();
-            } else {
-                return new ArrayList<>();
-            }
+            return getSw360SparseReleases(response);
         } else {
             throw new AntennaException("Request to get all releases failed with " + response.getStatusCode());
         }
@@ -72,7 +70,9 @@ public class SW360ReleaseClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
         if (response.getStatusCode() == HttpStatus.CREATED) {
-            return response.getBody().getContent();
+            return Optional.ofNullable(response.getBody())
+                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .getContent();
         } else {
             throw new AntennaException("Request to create release " + sw360Release.getName() + " failed with "
                     + response.getStatusCode());
@@ -85,11 +85,15 @@ public class SW360ReleaseClient extends SW360Client {
         ResponseEntity<Resource<SW360Release>> response = doRestPATCH(this.releasesRestUrl, httpEntity,
                 new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody().getContent();
-        } else {
+        if (response.getStatusCode() != HttpStatus.OK) {
             throw new AntennaException("Request to create release " + sw360Release.getName() + " failed with "
                     + response.getStatusCode());
         }
+        Resource<SW360Release> body = response.getBody();
+        if (body == null) {
+            throw new AntennaException("Request to create release " + sw360Release.getName() + " returned empty body");
+        }
+
+        return body.getContent();
     }
 }

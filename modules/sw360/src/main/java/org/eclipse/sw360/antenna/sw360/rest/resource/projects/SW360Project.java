@@ -19,6 +19,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbedded> {
     private String type;
@@ -151,5 +152,29 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
     public SW360Project setReleaseIdToUsage(Map<String, SW360ProjectReleaseRelationship> releaseIdToUsage) {
         this.releaseIdToUsage = releaseIdToUsage;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SW360Project that = (SW360Project) o;
+        return Objects.equals(type, that.type) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(version, that.version) &&
+                projectType == that.projectType &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(externalIds, that.externalIds) &&
+                Objects.equals(createdOn, that.createdOn) &&
+                Objects.equals(businessUnit, that.businessUnit) &&
+                Objects.equals(clearingTeam, that.clearingTeam) &&
+                visibility == that.visibility &&
+                Objects.equals(releaseIdToUsage, that.releaseIdToUsage);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), type, name, version, projectType, description, externalIds, createdOn, businessUnit, clearingTeam, visibility, releaseIdToUsage);
     }
 }

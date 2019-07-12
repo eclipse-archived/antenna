@@ -23,6 +23,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SW360LicenseClient extends SW360Client {
     private static final String LICENSES_ENDPOINT = "/licenses";
@@ -39,7 +40,9 @@ public class SW360LicenseClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360LicenseList>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            SW360LicenseList resource = response.getBody().getContent();
+            SW360LicenseList resource = Optional.ofNullable(response.getBody())
+                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .getContent();
             if (resource.get_Embedded() != null &&
                     resource.get_Embedded().getLicenses() != null) {
                 return resource.get_Embedded().getLicenses();
@@ -56,7 +59,9 @@ public class SW360LicenseClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360License>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody().getContent();
+            return Optional.ofNullable(response.getBody())
+                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .getContent();
         } else {
             throw new AntennaException("Request to get license " + name + " failed with "
                     + response.getStatusCode());
@@ -75,7 +80,9 @@ public class SW360LicenseClient extends SW360Client {
         }
 
         if (response.getStatusCode() == HttpStatus.CREATED) {
-            return response.getBody().getContent();
+            return Optional.ofNullable(response.getBody())
+                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .getContent();
         } else {
             throw new AntennaException("Request to create license " + sw360License.getFullName() + " failed with "
                     + response.getStatusCode());

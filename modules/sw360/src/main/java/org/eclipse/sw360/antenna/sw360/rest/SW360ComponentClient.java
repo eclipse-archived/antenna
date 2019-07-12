@@ -25,6 +25,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSw360SparseComponents;
 
 public class SW360ComponentClient extends SW360Client {
     private static final String COMPONENTS_ENDPOINT = "/components";
@@ -41,7 +44,9 @@ public class SW360ComponentClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360Component>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody().getContent();
+            return Optional.ofNullable(response.getBody())
+                    .orElseThrow(() -> new AntennaException("Request to get component " + componentId + " returned empty body"))
+                    .getContent();
         } else {
             throw new AntennaException("Request to get component " + componentId + " failed with "
                     + response.getStatusCode());
@@ -53,13 +58,7 @@ public class SW360ComponentClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360ComponentList>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            SW360ComponentList resource = response.getBody().getContent();
-            if (resource.get_Embedded() != null &&
-                    resource.get_Embedded().getComponents() != null) {
-                return resource.get_Embedded().getComponents();
-            } else {
-                return new ArrayList<>();
-            }
+            return getSw360SparseComponents(response);
         } else {
             throw new AntennaException("Request to get all components failed with " + response.getStatusCode());
         }
@@ -74,13 +73,7 @@ public class SW360ComponentClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360ComponentList>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            SW360ComponentList resource = response.getBody().getContent();
-            if (resource.get_Embedded() != null &&
-                    resource.get_Embedded().getComponents() != null) {
-                return resource.get_Embedded().getComponents();
-            } else {
-                return new ArrayList<>();
-            }
+            return getSw360SparseComponents(response);
         }
         else {
             return new ArrayList<>();
@@ -100,7 +93,9 @@ public class SW360ComponentClient extends SW360Client {
         }
 
         if (response.getStatusCode() == HttpStatus.CREATED) {
-            return response.getBody().getContent();
+            return Optional.ofNullable(response.getBody())
+                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .getContent();
         } else {
             throw new AntennaException("Request to create component " + sw360Component.getName() + " failed with "
                     + response.getStatusCode());

@@ -15,12 +15,13 @@ import org.eclipse.sw360.antenna.frontend.Build;
 import org.gradle.api.Project;
 
 import java.io.File;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Optional;
 
 public class WrappedGradleProject extends MetaDataStoringProject {
 
     private final Project innerProject;
+    private final Build build;
     private String projectId;
     private final File pomFile;
 
@@ -33,13 +34,16 @@ public class WrappedGradleProject extends MetaDataStoringProject {
         this.pomFile = pomFile;
         this.propertiesFile = propertiesFile;
 
-        String srcDir = innerProject.getRootDir().toPath().resolve("src").toFile().getAbsolutePath();
-        String buildDir = innerProject.getBuildDir().getAbsolutePath();
+        Path srcDir = innerProject.getRootDir()
+                .toPath()
+                .resolve("src")
+                .toAbsolutePath();
+        Path buildDir = innerProject.getBuildDir().toPath().toAbsolutePath();
 
-        this.build = new Build(buildDir,
-                buildDir + File.separator + "classes",
-                Paths.get(srcDir, "main", "java").toString(),
-                Paths.get(srcDir, "test", "java").toString());
+        this.build = new Build(buildDir.toString(),
+                buildDir.resolve("classes").toString(),
+                srcDir.resolve("main").resolve("java").toString(),
+                srcDir.resolve("test").resolve("java").toString());
         this.projectId = innerProject.getName();
     }
 
@@ -80,5 +84,10 @@ public class WrappedGradleProject extends MetaDataStoringProject {
     @Override
     public void setVersion(String projectVersion) {
         innerProject.setVersion(projectVersion);
+    }
+
+    @Override
+    public Build getBuild() {
+        return build;
     }
 }

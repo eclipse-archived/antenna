@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.workflow.stubs;
 
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
@@ -55,6 +56,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         failOn = getSeverityFromConfig(FAIL_ON_KEY, configMap, IEvaluationResult.Severity.FAIL);
     }
 
+    @SuppressFBWarnings("SF_SWITCH_FALLTHROUGH")
     public void execute(IPolicyEvaluation evaluation) throws AntennaException {
         IProcessingReporter reporter = context.getProcessingReporter();
 

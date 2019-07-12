@@ -27,13 +27,13 @@ import java.util.Map;
 import java.util.function.Function;
 
 public final class Mappings {
-    public static final Map<String, MatchState> MATCH_STATE_MAP =
+    static final Map<String, MatchState> MATCH_STATE_MAP =
             new HashMap<String, MatchState>() {{
                 put("unknown", MatchState.UNKNOWN);
                 put("similar", MatchState.SIMILAR);
                 put("exact", MatchState.EXACT);
             }};
-    public static final Map<String, LicenseThreatGroup> THREAT_GROUP_MAP =
+    static final Map<String, LicenseThreatGroup> THREAT_GROUP_MAP =
             new HashMap<String, LicenseThreatGroup>() {{
                 put("unknown", LicenseThreatGroup.UNKNOWN);
                 put("liberal", LicenseThreatGroup.LIBERAL);
@@ -42,14 +42,14 @@ public final class Mappings {
                 put("freeware", LicenseThreatGroup.FREEWARE);
                 put("non standard", LicenseThreatGroup.NON_STANDARD);
             }};
-    public static final Map<String, Function<LicenseInformation, ArtifactLicenseInformation>> LICENSE_GROUP =
+    static final Map<String, Function<LicenseInformation, ArtifactLicenseInformation>> LICENSE_GROUP =
             new HashMap<String, Function<LicenseInformation, ArtifactLicenseInformation>>() {{
                 put("Declared", DeclaredLicenseInformation::new);
                 put("Observed", ObservedLicenseInformation::new);
                 put("Overridden", OverriddenLicenseInformation::new);
                 put("Configured", ConfiguredLicenseInformation::new);
             }};
-    public static final Map<String, MissingLicenseReasons> MISSING_LICENSE_REASONS_MAP =
+    static final Map<String, MissingLicenseReasons> MISSING_LICENSE_REASONS_MAP =
             new HashMap<String, MissingLicenseReasons>() {{
                 put("Not-Declared", MissingLicenseReasons.NOT_DECLARED);
                 put("No-Sources", MissingLicenseReasons.NO_SOURCES);
@@ -59,7 +59,7 @@ public final class Mappings {
                 put("Non-Standard", MissingLicenseReasons.NON_STANDARD);
             }};
 
-    public static final Map<String, Function<List<String>, ArtifactCoordinates<?>>> COORDINATES_FACTORY =
+    static final Map<String, Function<List<String>, ArtifactCoordinates<?>>> COORDINATES_FACTORY =
             new HashMap<String, Function<List<String>, ArtifactCoordinates<?>>>() {{
                 put("maven", row -> {
                     if (row.size() < 5) {
@@ -93,7 +93,7 @@ public final class Mappings {
                 });
             }};
 
-    public static final Map<String, SecurityIssueStatus> SECURITY_ISSUES =
+    static final Map<String, SecurityIssueStatus> SECURITY_ISSUES =
             new HashMap<String, SecurityIssueStatus>() {{
                 put("acknowledged", SecurityIssueStatus.ACKNOWLEDGED);
                 put("confirmed", SecurityIssueStatus.CONFIRMED);
@@ -101,7 +101,7 @@ public final class Mappings {
                 put("open", SecurityIssueStatus.OPEN);
             }};
 
-    public static final Map<String, DataKeys> DATA_KEYS =
+    static final Map<String, DataKeys> DATA_KEYS =
             new HashMap<String, DataKeys>() {{
                 put("license", DataKeys.LICENSE);
                 put("licenseMissing", DataKeys.LICENSE_MISSING);

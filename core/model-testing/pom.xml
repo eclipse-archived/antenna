@@ -61,6 +61,11 @@
             <artifactId>mockito-core</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <!-- ################################ compliance dependency ########################### -->
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>

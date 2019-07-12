@@ -16,6 +16,7 @@ import org.eclipse.sw360.antenna.api.FrontendCommons;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.model.util.Utils;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.eclipse.sw360.antenna.util.TemplateRenderer;
 import org.eclipse.sw360.antenna.util.XmlSettingsReader;
@@ -123,7 +124,8 @@ public class AntennaCLISettingsReader {
 
     private XmlSettingsReader getSettingsReader(MetaDataStoringProject project) {
         File pomFile = project.getConfigFile();
-        Path parent = pomFile.toPath().getParent();
+        Path parent = Utils.getParent(pomFile.toPath())
+                .orElseThrow(() -> new IllegalArgumentException("Could not get parent dir from pomFile=[" + pomFile + "]"));
 
         // Since we are not Maven we must render the pom.xml first
         HashMap<String, Object> contextMap = new HashMap<>();

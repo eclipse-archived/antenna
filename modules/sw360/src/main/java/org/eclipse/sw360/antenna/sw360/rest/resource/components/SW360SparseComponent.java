@@ -14,6 +14,8 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 
+import java.util.Objects;
+
 public class SW360SparseComponent extends SW360HalResource<LinkObjects, Embedded> {
     private String name;
     private SW360ComponentType componentType;
@@ -34,5 +36,20 @@ public class SW360SparseComponent extends SW360HalResource<LinkObjects, Embedded
     public SW360SparseComponent setComponentType(SW360ComponentType componentType) {
         this.componentType = componentType;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SW360SparseComponent that = (SW360SparseComponent) o;
+        return Objects.equals(name, that.name) &&
+                componentType == that.componentType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), name, componentType);
     }
 }

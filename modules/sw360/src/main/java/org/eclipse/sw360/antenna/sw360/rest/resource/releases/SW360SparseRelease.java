@@ -14,6 +14,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class SW360SparseRelease extends SW360HalResource<LinkObjects, Embedded> {
@@ -66,5 +67,23 @@ public class SW360SparseRelease extends SW360HalResource<LinkObjects, Embedded> 
     public SW360SparseRelease setMainLicenseIds(Set<String> mainLicenseIds) {
         this.mainLicenseIds = mainLicenseIds;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SW360SparseRelease that = (SW360SparseRelease) o;
+        return Objects.equals(componentId, that.componentId) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(version, that.version) &&
+                Objects.equals(cpeid, that.cpeid) &&
+                Objects.equals(mainLicenseIds, that.mainLicenseIds);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), componentId, name, version, cpeid, mainLicenseIds);
     }
 }
