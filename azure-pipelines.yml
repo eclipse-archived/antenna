@@ -28,7 +28,9 @@ steps:
     mavenVersionOption: 'Default'
     mavenAuthenticateFeed: false
     sonarQubeRunAnalysis: false
+    checkStyleRunAnalysis: true
     pmdRunAnalysis: true
+    findBugsRunAnalysis: true
 
 # - task: Bash@3
 #   displayName: 'test example project with gradle'
