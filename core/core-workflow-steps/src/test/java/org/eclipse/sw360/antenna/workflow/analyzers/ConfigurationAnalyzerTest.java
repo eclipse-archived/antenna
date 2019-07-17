@@ -76,10 +76,10 @@ public class ConfigurationAnalyzerTest extends AntennaTestWithMockedContext {
 
         assertThat(artifacts.size()).isEqualTo(2);
         Artifact processedArtifact = artifacts.stream()
-                .filter(a -> {
-                    final Optional<ArtifactFilename> artifactFilename = a.askFor(ArtifactFilename.class);
-                    return artifactFilename.isPresent() && FILENAME.equals(artifactFilename.get().getBestFilenameGuess().orElse(null));
-                })
+                .filter(a -> a.askFor(ArtifactFilename.class)
+                        .flatMap(ArtifactFilename::getBestFilenameEntryGuess)
+                        .filter(afe -> FILENAME.equals(afe.getFilename()))
+                        .isPresent())
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("should not happen"));
         assertThat(processedArtifact.askFor(ArtifactMatchingMetadata.class)

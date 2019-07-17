@@ -100,7 +100,8 @@ public class ChildJarResolver extends AbstractProcessor {
 
     private Optional<String> getArtifactFileName(Artifact artifact) {
         final Optional<String> artifactFilename = artifact.askFor(ArtifactFilename.class)
-                .flatMap(ArtifactFilename::getBestFilenameGuess);
+                .flatMap(ArtifactFilename::getBestFilenameEntryGuess)
+                .map(ArtifactFilename.ArtifactFilenameEntry::getFilename);
         if(! artifactFilename.isPresent()) {
             reporter.add(MessageType.PROCESSING_FAILURE, "No filename available as ArtifactIdentifier of '" + artifact + "' is null.");
         }

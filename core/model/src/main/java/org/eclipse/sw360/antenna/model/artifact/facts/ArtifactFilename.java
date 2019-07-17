@@ -120,11 +120,10 @@ public class ArtifactFilename implements ArtifactFact<ArtifactFilename>, Artifac
                 .collect(Collectors.toList());
     }
 
-    public Optional<String> getBestFilenameGuess() {
+    public Optional<ArtifactFilenameEntry> getBestFilenameEntryGuess() {
         return artifactFilenameEntries.stream()
-                .map(ArtifactFilenameEntry::getFilename)
-                .filter(Objects::nonNull)
-                .max(Comparator.comparing(String::length));
+                .filter(afe -> Objects.nonNull(afe.getFilename()))
+                .max(Comparator.comparing(afe -> afe.getFilename().length()));
     }
 
     @Override

@@ -108,7 +108,8 @@ public class SourceZipWriter extends AbstractGenerator {
                 return;
             }
             String entryName = artifact.askFor(ArtifactFilename.class)
-                    .flatMap(ArtifactFilename::getBestFilenameGuess)
+                    .flatMap(ArtifactFilename::getBestFilenameEntryGuess)
+                    .map(ArtifactFilename.ArtifactFilenameEntry::getFilename)
                     .orElse(sourceFile.get().toFile().getName())
                     .replaceAll(".jar", "");
             try {
