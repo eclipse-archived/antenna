@@ -122,7 +122,6 @@
 
                  abstract public java.util.List<License> getLicenses();
                  abstract public String getLinkStr();
-                 abstract public String getHTMLLinkStr();
 
                  public String toString() {
                     return evaluate() + " " + super.toString();
@@ -147,17 +146,11 @@
                  }
 
                  public java.util.List<License> getLicenses(){
-                    java.util.List<License> licenseList = new java.util.ArrayList<>();
-                    licenseList.add(this);
-                    return licenseList;
+                    return java.util.Collections.singletonList(this);
                  }
 
                  public String getLinkStr(){
                     return String.format("<listitem><xref linkend=\"sect_%s\" endterm=\"sect_shortTitle_%s\"/></listitem>", org.apache.commons.text.StringEscapeUtils.escapeXml11(getName()), org.apache.commons.text.StringEscapeUtils.escapeXml11(getName()));
-                 }
-
-                 public String getHTMLLinkStr(){
-                    return String.format("<li><a href=\"#%s\">%s</a></li>", org.apache.commons.text.StringEscapeUtils.escapeHtml4(getName()), getLongName() != null ? org.apache.commons.text.StringEscapeUtils.escapeHtml4(getLongName()) : org.apache.commons.text.StringEscapeUtils.escapeHtml4(getName()));
                  }
                  ]]>
             </ci:code>
@@ -217,9 +210,10 @@
                     if (this.isEmpty()) {
                         return new java.util.ArrayList<>();
                     }
-                    java.util.List<License> allLic = getLeftStatement().getLicenses();
-                    allLic.addAll(getRightStatement().getLicenses());
-                    return allLic;
+                    return java.util.stream.Stream.of(getLeftStatement().getLicenses(), getRightStatement().getLicenses())
+                            .flatMap(java.util.Collection::stream)
+                            .distinct()
+                            .collect(java.util.stream.Collectors.toList());
                 }
 
                 public String getLinkStr(){
@@ -238,25 +232,6 @@
                     }
                     else{
                         return String.format(" %s %s ", getLeftStatement().getLinkStr() , getRightStatement().getLinkStr());
-                    }
-                }
-
-                public String getHTMLLinkStr(){
-                    if(getLeftStatement() == null && getRightStatement() == null) {
-                        return "";
-                    }
-                    if(getLeftStatement() == null) {
-                        return getRightStatement().getHTMLLinkStr();
-                    }
-                    if(getRightStatement() == null) {
-                        return getLeftStatement().getHTMLLinkStr();
-                    }
-
-                    if(op == LicenseOperator.OR){
-                        return String.format("<ul><li>%s %s</li></ul>", getLeftStatement().getHTMLLinkStr() , getRightStatement().getHTMLLinkStr());
-                    }
-                    else{
-                        return String.format(" %s %s ", getLeftStatement().getHTMLLinkStr() , getRightStatement().getHTMLLinkStr());
                     }
                 }
                 ]]>

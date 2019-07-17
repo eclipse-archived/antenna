@@ -172,7 +172,7 @@ public class ArtifactTest {
 
         assertThat(observedLicenses.evaluate()).isEqualTo("( license2 AND license1 )");
         assertThat(observedLicenses.evaluateLong()).isEqualTo("( licenseNumber2 AND licenseNumber1 )");
-        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact).evaluate()).isEqualTo("( license1 AND ( license2 AND license1 ) )");
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact).evaluate()).isEqualTo("( license2 AND license1 )");
         assertThat(observedLicenses.getLicenses().equals(licenses)).isTrue();
 
         License configuredLicense = new License();

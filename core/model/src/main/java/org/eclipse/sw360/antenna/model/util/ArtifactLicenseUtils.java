@@ -20,7 +20,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 
-import java.util.Optional;
+import java.util.*;
 
 public class ArtifactLicenseUtils {
 
@@ -54,13 +54,20 @@ public class ArtifactLicenseUtils {
         final Optional<LicenseInformation> declared = artifact.askForGet(DeclaredLicenseInformation.class);
         final Optional<LicenseInformation> observed = artifact.askForGet(ObservedLicenseInformation.class);
         if(declared.isPresent() && observed.isPresent()) {
-            final LicenseStatement effective = new LicenseStatement();
-            effective.setLeftStatement(declared.get());
-            effective.setRightStatement(observed.get());
-            effective.setOp(LicenseOperator.AND);
-            return effective;
-        }
+            final String declaredLicenseRepresentation = declared.get().evaluate();
+            final String observedLicenseRepresentation = observed.get().evaluate();
 
+            if (observedLicenseRepresentation.contains(declaredLicenseRepresentation)
+                && !observedLicenseRepresentation.contains(" OR ")) {
+                return observed.get();
+            } else {
+                final LicenseStatement effective = new LicenseStatement();
+                effective.setLeftStatement(declared.get());
+                effective.setRightStatement(observed.get());
+                effective.setOp(LicenseOperator.AND);
+                return effective;
+            }
+        }
         return declared.orElse(observed.orElse(new LicenseStatement()));
     }
 }

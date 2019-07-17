@@ -69,7 +69,7 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
                         .map(ArtifactFilename.ArtifactFilenameEntry::getHash)
                         .collect(Collectors.toSet()));
 
-        assertThat(release.getFinalLicense()).isEqualTo("( evaluated license (test1) AND evaluated license (test1) )");
+        assertThat(release.getFinalLicense()).isEqualTo("evaluated license (test1)");
         assertThat(release.getDeclaredLicense()).isEqualTo("evaluated license (test1)");
         assertThat(release.getObservedLicense()).isEqualTo("evaluated license (test1)");
 
@@ -107,11 +107,6 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
             public String getLinkStr() {
                 return "https://link.to.license" + name + ".invalid";
             }
-
-            @Override
-            public String getHTMLLinkStr() {
-                return getLinkStr();
-            }
         };
         Artifact artifact = new Artifact("JSON");
         artifact.setProprietary(false);
@@ -133,4 +128,5 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
 
         return artifact;
     }
+
 }

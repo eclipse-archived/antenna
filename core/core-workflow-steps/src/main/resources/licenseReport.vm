@@ -69,9 +69,11 @@
             #end
         </h2>
         <p>License:<br />
-        <ul>
-        $artifact.license.getHTMLLinkStr()
-        </ul>
+            <ul>
+                #foreach($license in $artifact.license.getLicenses())
+                    $HTMLReportUtils.getLicenseAsHtmlListItem($license)
+                #end
+            </ul>
         </p>
     </div>
     <hr />
