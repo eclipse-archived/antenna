@@ -180,7 +180,7 @@ public class CsvAnalyzer extends ManualAnalyzer {
             artifact.addFact(new ObservedLicenseInformation(license));
         }
         if (record.isMapped(COPYRIGHTS) && !record.get(COPYRIGHTS).isEmpty()) {
-            artifact.addFact(new CopyrightStatement(record.get(COPYRIGHTS)));
+            artifact.addFact(createCopyrightStatement(record.get(COPYRIGHTS)));
         }
         if (record.isMapped(HASH) && !record.get(HASH).isEmpty()) {
             artifact.addFact(new ArtifactFilename(null, record.get(HASH)));
@@ -212,5 +212,21 @@ public class CsvAnalyzer extends ManualAnalyzer {
                     : baseDir.resolve(Paths.get(pathName)).toAbsolutePath().toString();
             artifact.addFact(new ArtifactPathnames(absolutePathName));
         }
+    }
+
+    private CopyrightStatement createCopyrightStatement(String csvCopyrights) {
+        String[] copyrights = csvCopyrights.split("\\+");
+
+        CopyrightStatement copyrightStatement = null;
+        
+        for (String copyright : copyrights) {
+            if(copyrightStatement == null) {
+                copyrightStatement = new CopyrightStatement(copyright);
+            } else {
+                copyrightStatement = copyrightStatement.mergeWith(new CopyrightStatement(copyright));
+            }
+        }
+        
+        return copyrightStatement;
     }
 }

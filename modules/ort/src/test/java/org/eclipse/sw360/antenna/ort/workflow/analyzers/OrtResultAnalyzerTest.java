@@ -180,14 +180,14 @@ public class OrtResultAnalyzerTest {
                 .map(artifact -> artifact.askForGet(CopyrightStatement.class))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .flatMap(s -> Stream.of(s.split("/n"))).toArray())
+                .flatMap(s -> Stream.of(s.split("\n"))).toArray())
                 .contains("\"" + "Copyright (c) 2014-2017 Teist Peirson2 <teist.peirson@2.com>" + "\"");
 
         assertThat(artifacts.stream()
                 .map(artifact -> artifact.askForGet(CopyrightStatement.class))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .flatMap(s -> Stream.of(s.split("/n"))).toArray())
+                .flatMap(s -> Stream.of(s.split("\n"))).toArray())
                 .hasSize(4);
 
         assertThat(makeListOfSourceUrlStrings(artifacts)).hasSize(1);
