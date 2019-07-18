@@ -9,7 +9,7 @@ commons-csv,org.apache.commons,1.4,mvn,Apache-2.0,Apache-2.0,Apache-2.0 OR MIT,C
 Note:
 
 * The CSV Analyzer supports all elements of the SW360 data model uses.
-It can be used in combination with the [SW360 Update Generator](../generators/sw360-update-generator.html) to give data to your SW360 instance.
+It can be used in combination with the [SW360 Update Generator](../generators/sw360-update-generator-step.html) to give data to your SW360 instance.
 * The CSV Analyzer can be used to add and to enrich artifacts.
 When an artifact already exists from another analyzer, the metadata collected by the CSV Analyzer gets merged with said artifact.
 Otherwise a new artifact is created.
