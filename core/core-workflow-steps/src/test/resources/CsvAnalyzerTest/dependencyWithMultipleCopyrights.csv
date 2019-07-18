@@ -1,0 +1,3 @@
+"Artifact Id","Group Id","Version","Coordinate Type","Copyrights","File Name"
+commons-csv,org.apache.commons,1.4,mvn,"Copyright 2005-2016 The Apache Software Foundation/nCopyright 2020 Fake Company/nCopyright 2020 Fake the 2nd",commons-csv.jar
+commons-cli,org.apache.commons,1.4,mvn,"Copyright 2005-2016 The Apache Software Foundation",commons-cli.jar

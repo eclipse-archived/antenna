@@ -25,6 +25,7 @@
             <configuration>
                 <entry key="base.dir" value="${project.basedir}"/>
                 <entry key="file.path" value="src/dependencies.csv"/>
+                <entry key="delimiter" value=","/>
             </configuration>
         </step>
         <step>

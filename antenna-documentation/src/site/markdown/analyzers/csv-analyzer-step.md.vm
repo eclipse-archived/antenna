@@ -1,0 +1,113 @@
+# CSV analyzer
+This analyzer investigates a given *csv* file. The format of this csv file follows this format:
+
+```csv
+"Artifact Id","Group Id","Version","Coordinate Type","Effective License","Declared License","Observed License","Copyrights","Hash","Source URL","Release Tag URL","Software Heritage ID","Clearing State","Change Status","CPE","File Name"
+commons-csv,org.apache.commons,1.4,mvn,Apache-2.0,Apache-2.0,Apache-2.0 OR MIT,Copyright 2005-2016 The Apache Software Foundation,620580a88953cbcf4528459e485054e7c27c0889,http://archive.apache.org/dist/commons/csv/source/commons-csv-1.4-src.zip,https://github.com/apache/commons-csv/tree/csv-1.4,swh:1:cnt:60dbac0aafd98c9ca461256a0cefd8a7aaea8bda,OSM_APPROVED,AS_IS,cpe:2.3:a:apache:commons-csv:1.4,commons-csv.jar
+```
+
+Note:
+
+* The CSV Analyzer supports all elements of the SW360 data model uses.
+It can be used in combination with the [SW360 Update Generator](../generators/sw360-update-generator.html) to give data to your SW360 instance.
+* The CSV Analyzer can be used to add and to enrich artifacts.
+When an artifact already exists from another analyzer, the metadata collected by the CSV Analyzer gets merged with said artifact.
+Otherwise a new artifact is created.
+
+#[[##]]# How to use
+Add the following step into the `<analyzers>` section of your workflow.xml
+
+
+```xml
+<step>
+    <name>CSV Analyzer</name>
+    <classHint>org.eclipse.sw360.antenna.workflow.analyzer.CsvAnalyzer</classHint>
+    <configuration>
+        <entry key="file.path" value="${basedir}/reportdata.csv" />
+        <entry key="base.dir" value="${project.build.directory}/sources" />
+        <entry key="delimiter" value="," />
+    </configuration>
+</step>
+```
+
+#[[###]]# Explanation of parameters
+
+* `file.path`: Destination of a CSV file that matches the above format.
+* `base.dir`: Destination to the the path names that the CSV file refers to.
+* `file.path`: Delimiter of the entries in your CSV file.
+If you have a CSV file created by Excel, they are automatically created with a ';' delimiter.
+Hence, you'd have to change the delimiter value to ";".
+
+
+#[[##]]# Attributes
+
+#[[###]]# Required Attributes
+
+Within the CSV file there are attributes (= columns) that are required:
+
+* `Artifact Id`: Name of the component.
+* `Group Id`: Group it belongs to. This value isn't always necessary. For example .NET does not use groups.
+* `Version`: Version of the release.
+* `Coordinate Type`
+
+#[[###]]# Optional Attributes
+
+The following attributes are optional and can be added to enrich the information in the individual artifacts
+
+* `Effective License`: The licenses effective during the ${docName} run in the SPDX license expression that displays the relationship of the licenses as one String.
+* `Declared License`: The licenses declared for the component in the SPDX license expression that displays the relationship of the licenses as one String.
+* `Observed License`: The licenses observed during the ${docName} run in the SPDX license expression that displays the relationship of the licenses as one String.
+* `Copyrights`: Copyrights of the release. Multiple copyrights are to be separated  by either '\n' or '+'.
+* `Hash`: A hash connected to the variable. To see how to insert multiple hashes see the section "Multiple Hashes for one Artifact"
+* `Source URL`: Link to the source archive. E.g., used to aggregate the sources of the used OSS components for the FOSS compliance bundle.
+* `Repository Tag UR`L: This is a link to the OSS repos tag of the release used.
+* `Software Heritage ID`: A release ID in software heritage in the format "swh:1:rel:*".
+* `Clearing State`: Data Approval State.
+* `Change Status`: OSS Usage.
+* `CPE`: Common Platform Enumeration ID.
+* `Filename`: Name of the file of the dependency.
+
+#[[###]]# Change of format
+
+Within the old CSV format there were attributes (= columns) that were required:
+
+* `Artifact Id`: still exists
+* `Group Id`: still exists
+* `Version`: still exists
+* `License Short Name`: was changed to `Effective License`
+* `License Long Name`: was removed since it is not conforming with the SPDX expression of the licenses
+* `Filename`: still exists, but is not required anymore
+
+#[[###]]# Multiple Hashes for one Artifact
+If you have an artifact you associate multiple hashes with, this can be done in the following way:
+
+```csv
+"Artifact Id","Group Id","Version","Coordinate Type","Hash"
+commons-csv,org.apache.commons,1.4,mvn,620580a88953cbcf4528459e485054e7c27c0889
+commons-csv,org.apache.commons,1.4,mvn,b0060ed8397bfec39b397807f63e778618f324ce
+```
+
+You can simply insert the new hash in a new row with the same artifact coordinates.
+This will then get merged with the already existing artifact.
+Artifacts get identified by their coordinates.
+So, if you do not give the coordinates and just an empty row with hashes, the content will not get matched to its corresponding artifact.
+
+#[[###]]# Multiple Copyrights Example
+Here we provide an example on how to have multiple copyrights in one entry.
+There are three copyrights in total, each separated by "/n", the copyright separator.
+
+```csv
+"Artifact Id","Group Id","Version","Coordinate Type","Copyrights"
+commons-csv,org.apache.commons,1.4,mvn,"Copyright 2005-2016 The Apache Software Foundation/nCopyright 2020 Fake Company/nCopyright 2020 Fake the 2nd"
+```
+
+#[[###]]# CSV File created by Excel Application Example
+Here we provide an example that uses a CSV file created by Excel.
+Note that all special cases (Multiple hashes and copyrights per artifact) are also included to demonstrate.
+
+```csv
+Artifact Id;Group Id;Version;Coordinate Type;Effective License;Declared License;Observed License;Copyrights;Hash;Source URL;Release Tag URL;Software Heritage ID;Clearing State;Change Status;CPE;File Name
+commons-csv;org.apache.commons;1.4;mvn;Apache-2.0;Apache-2.0;Apache-2.0 OR MIT;Copyright 1/nCopyright 2;#hash1#;source.url;release.tag/url;swh:1:cnt:#;OSM_APPROVED;AS_IS;cpe:2.3:a:apache:commons-csv:1.4;commons-csv.jar
+commons-csv;org.apache.commons;1.4;mvn;;;;;#hash2#;;;;;;;
+commons-cli;org.apache.commons;1.4;mvn;Apache-2.0;Apache-2.0;;Copyright 1/nCopyright 3;#hash#;source.url;release.tag/url;swh:1:cnt:#;OSM_APPROVED;AS_IS;cpe:2.3:a:apache:commons-cli:1.4;commons-cli.jar
+```

@@ -15,9 +15,7 @@ import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
-import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
-import org.eclipse.sw360.antenna.model.artifact.facts.ObservedLicenseInformation;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.util.ClassCodeSourceLocation;
@@ -34,8 +32,10 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -45,7 +45,7 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
 
     private IProject project;
     private CsvAnalyzer analyzer;
-    private License license;
+    private License license1, license2;
 
     @Before
     public void setUp() {
@@ -56,48 +56,75 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
         analyzer = new CsvAnalyzer();
         analyzer.setAntennaContext(antennaContextMock);
 
-        license = new License();
-        license.setName("Apache-2.0");
-        license.setLongName("Apache Software License 2.0");
+        license1 = new License();
+        license1.setName("Apache-2.0");
+
+        license2 = new License();
+        license2.setName("Apache-2.0 OR MIT");
     }
 
     @Test
     public void testCsvAnalyzer() throws AntennaException, URISyntaxException {
-        configureAnalyzer("dependencies.csv");
+        configureAnalyzer("dependencies.csv", ",");
 
         Set<Artifact> artifacts = analyzer.yield().getArtifacts();
 
-        assertThat(artifacts).hasSize(1);
-        Artifact foundArtifact = artifacts.iterator().next();
-        assertThat(foundArtifact.getMatchState()).isEqualTo(MatchState.EXACT);
-        assertThat(foundArtifact.askFor(MavenCoordinates.class).get())
-                .isEqualTo(new MavenCoordinates("commons-csv", "org.apache.commons", "1.4"));
+        assertThat(artifacts).hasSize(2);
 
-        assertThat(foundArtifact.askFor(DeclaredLicenseInformation.class).get())
-                .isEqualTo(new DeclaredLicenseInformation(license));
+        Artifact foundArtifact = artifacts.stream()
+                .filter(artifact -> artifact.askFor(MavenCoordinates.class).get().getArtifactId().equals("commons-csv"))
+                .findFirst().get();
 
-        assertThat(foundArtifact.askFor(ObservedLicenseInformation.class).get())
-                .isEqualTo(new ObservedLicenseInformation(license));
+        commonsCsvFullDependencyCheck(foundArtifact);
 
-        assertThat(foundArtifact.askFor(ArtifactPathnames.class).get().get().get(0)).endsWith("commons-csv.jar");
-        assertThat(foundArtifact.askFor(ArtifactSourceUrl.class).get().get()).contains("http://archive.apache.org/dist/commons/csv/source/commons-csv-1.4-src.zip");
+        assertThat(foundArtifact.askFor(CopyrightStatement.class).get()).isEqualTo(new CopyrightStatement("Copyright 2005-2016 The Apache Software Foundation"));
     }
 
     @Test
-    public void testThatOldFormatIsSupported() throws AntennaException, URISyntaxException {
-        configureAnalyzer("dependenciesOldFormat.csv");
-
+    public void testCopyrightsIsParsedCorrectly() throws URISyntaxException, AntennaException {
+        configureAnalyzer("dependencyWithMultipleCopyrights.csv", ",");
         Set<Artifact> artifacts = analyzer.yield().getArtifacts();
 
-        assertThat(artifacts).hasSize(1);
-        Artifact foundArtifact = artifacts.iterator().next();
-        assertThat(foundArtifact.askFor(MavenCoordinates.class).get())
-                .isEqualTo(new MavenCoordinates("commons-csv", "org.apache.commons", "1.4"));
+        assertThat(artifacts).hasSize(2);
 
-        assertThat(foundArtifact.askFor(DeclaredLicenseInformation.class).get())
-                .isEqualTo(new DeclaredLicenseInformation(license));
+        assertThat(artifacts.stream().map(artifact1 -> artifact1.askForGet(CopyrightStatement.class).get())
+                .anyMatch(copyrightStatement ->
+                        copyrightStatement.equals(new CopyrightStatement("Copyright 2005-2016 The Apache Software Foundation")
+                                .mergeWith(new CopyrightStatement("Copyright 2020 Fake Company"))
+                                .mergeWith(new CopyrightStatement("Copyright 2020 Fake the 2nd")).get()))).isTrue();
+    }
 
-        assertThat(foundArtifact.askFor(ArtifactPathnames.class).get().get().get(0)).endsWith("commons-csv.jar");
+    @Test
+    public void testMergeOfDuplicateArtifact() throws URISyntaxException, AntennaException {
+        configureAnalyzer("dependencyWithMultipleHashes.csv", ",");
+        Set<Artifact> artifacts = analyzer.yield().getArtifacts();
+
+        Artifact artifact0 = artifacts.iterator().next();
+        assertThat(artifact0.askFor(ArtifactFilename.class).get().getArtifactFilenameEntries()).hasSize(2);
+    }
+
+    @Test
+    public void testCsvAnalyzerWithSemicolonseparator() throws URISyntaxException, AntennaException {
+        configureAnalyzer("dependenciesWithExcelFormat.csv", ";");
+        Set<Artifact> artifacts = analyzer.yield().getArtifacts();
+
+        assertThat(artifacts).hasSize(2);
+
+        Artifact foundArtifact = artifacts.stream()
+                .filter(artifact -> artifact.askFor(MavenCoordinates.class).get().getArtifactId().equals("commons-csv"))
+                .findFirst().get();
+
+        commonsCsvFullDependencyCheck(foundArtifact);
+
+        assertThat(foundArtifact.askForGet(CopyrightStatement.class).get())
+                .isEqualTo(new CopyrightStatement("Copyright 2005-2016 The Apache Software Foundation")
+                        .mergeWith(new CopyrightStatement("Copyright 2020 the fake")).get());
+
+        List<String> hashes = foundArtifact.askFor(ArtifactFilename.class).get().
+                getArtifactFilenameEntries().stream()
+                .map(ArtifactFilename.ArtifactFilenameEntry::getHash)
+                .collect(Collectors.toList());
+        assertThat(hashes).hasSize(2);
     }
 
     @Override
@@ -113,10 +140,42 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
         verifyNoMoreInteractions(toolConfigMock);
     }
 
-    private void configureAnalyzer(String fileName) throws URISyntaxException, AntennaConfigurationException {
+    private void configureAnalyzer(String fileName, String delimiter) throws URISyntaxException, AntennaConfigurationException {
         Map<String, String> configMap = new HashMap<>();
         configMap.put("file.path", Paths.get("src", "test", "resources", "CsvAnalyzerTest", fileName).toString());
         configMap.put("base.dir", ClassCodeSourceLocation.getClassCodeSourceLocationAsString(this.getClass()));
+        configMap.put("delimiter", delimiter);
         analyzer.configure(configMap);
+    }
+
+    private void commonsCsvFullDependencyCheck(Artifact foundArtifact) {
+        assertThat(foundArtifact.getMatchState()).isEqualTo(MatchState.EXACT);
+        assertThat(foundArtifact.askFor(MavenCoordinates.class).get())
+                .isEqualTo(new MavenCoordinates("commons-csv", "org.apache.commons", "1.4"));
+
+        assertThat(foundArtifact.askFor(OverriddenLicenseInformation.class).get())
+                .isEqualTo(new OverriddenLicenseInformation(license1));
+
+        assertThat(foundArtifact.askFor(DeclaredLicenseInformation.class).get())
+                .isEqualTo(new DeclaredLicenseInformation(license1));
+
+        assertThat(foundArtifact.askFor(ObservedLicenseInformation.class).get())
+                .isEqualTo(new ObservedLicenseInformation(license2));
+
+
+        assertThat(foundArtifact.askFor(ArtifactFilename.class).get().getArtifactFilenameEntries().iterator().next().getHash()).isEqualTo("620580a88953cbcf4528459e485054e7c27c0889");
+
+        assertThat(foundArtifact.askFor(ArtifactSourceUrl.class).get().get()).contains("http://archive.apache.org/dist/commons/csv/source/commons-csv-1.4-src.zip");
+        assertThat(foundArtifact.askFor(ArtifactReleaseTagURL.class).get().toString()).isEqualTo("https://github.com/apache/commons-csv/tree/csv-1.4");
+        assertThat(foundArtifact.askFor(ArtifactSoftwareHeritageURL.class).get().toString()).isEqualTo("swh:1:cnt:60dbac0aafd98c9ca461256a0cefd8a7aaea8bda");
+
+        assertThat(foundArtifact.askFor(ArtifactClearingState.class).get()).isEqualTo(
+                new ArtifactClearingState(ArtifactClearingState.ClearingState.OSM_APPROVED));
+        assertThat(foundArtifact.askFor(ArtifactChangeStatus.class).get()).isEqualTo(
+                new ArtifactChangeStatus(ArtifactChangeStatus.ChangeStatus.AS_IS));
+
+        assertThat(foundArtifact.askFor(ArtifactCPE.class).get()).isEqualTo(new ArtifactCPE("cpe:2.3:a:apache:commons-csv:1.4"));
+
+        assertThat(foundArtifact.askFor(ArtifactPathnames.class).get().get().get(0)).endsWith("commons-csv.jar");
     }
 }

@@ -81,13 +81,16 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     public List<WorkflowStep> getExpectedToolConfigurationAnalyzers() {
         List<WorkflowStep> analyzers = BasicConfiguration.getAnalyzers();
         analyzers.add(mkWorkflowStep("JSON Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.JsonAnalyzer",
-                "base.dir", this.projectRoot.toString(),
+                "base.dir", projectRoot.toString(),
                 "file.path", "src/reportData.json"));
         analyzers.add(mkWorkflowStep("CSV Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer",
-                "base.dir", this.projectRoot.toString(),
-                "file.path", "src/dependencies.csv"));
+                new HashMap<String, String>() {{
+                    put("base.dir", projectRoot.toString());
+                    put("file.path", "src/dependencies.csv");
+                    put("delimiter", ",");
+                }}));
         analyzers.add(mkWorkflowStep("ORT Result Analyzer", "org.eclipse.sw360.antenna.ort.workflow.analyzers.OrtResultAnalyzer",
-                "base.dir", this.projectRoot.toString(),
+                "base.dir", projectRoot.toString(),
                 "file.path", "src/analyzer-result.yml"));
         return analyzers;
     }
