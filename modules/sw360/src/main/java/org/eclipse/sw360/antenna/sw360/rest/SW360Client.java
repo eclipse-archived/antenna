@@ -63,4 +63,8 @@ public abstract class SW360Client {
     protected <T> ResponseEntity<T> doRestPOST(String url, HttpEntity<?> httpEntity, ParameterizedTypeReference<T> responseType) {
         return doRestCall(url, HttpMethod.POST, httpEntity, responseType);
     }
+
+    protected <T> ResponseEntity<T> doRestPATCH(String url, HttpEntity<?> httpEntity, ParameterizedTypeReference<T> responseType) {
+        return doRestCall(url, HttpMethod.PATCH, httpEntity, responseType);
+    }
 }

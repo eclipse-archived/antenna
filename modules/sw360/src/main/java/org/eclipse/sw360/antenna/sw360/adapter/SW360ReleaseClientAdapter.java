@@ -22,7 +22,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease
 import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
 import org.springframework.http.HttpHeaders;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,10 +33,23 @@ public class SW360ReleaseClientAdapter {
         this.releaseClient = new SW360ReleaseClient(restUrl, proxyUse, proxyHost, proxyPort);
     }
 
-    public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws IOException, AntennaException {
+    public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws AntennaException {
         SW360Release release = new SW360Release();
         SW360ReleaseAdapterUtils.prepareRelease(release, sw360Component, sw360LicenseIds, artifact);
         return releaseClient.createRelease(release, header);
+    }
+
+    public SW360Release updateRelease(SW360Release release, Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws AntennaException {
+        SW360Release sw360ReleaseFromArtifact = new SW360Release();
+        SW360ReleaseAdapterUtils.prepareRelease(release, sw360Component, sw360LicenseIds, artifact);
+
+        if (release.equals(sw360ReleaseFromArtifact)) {
+            return release;
+        } else if(release.shareIdentifier(sw360ReleaseFromArtifact)) {
+            return releaseClient.patchRelease(sw360ReleaseFromArtifact.mergeWith(release), header);
+        } else {
+            return sw360ReleaseFromArtifact;
+        }
     }
 
     public SW360Release getReleaseById(String releaseId, HttpHeaders header) throws AntennaException {

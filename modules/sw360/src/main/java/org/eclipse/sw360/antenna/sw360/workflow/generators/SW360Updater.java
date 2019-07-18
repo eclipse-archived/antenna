@@ -45,6 +45,7 @@ public class SW360Updater extends AbstractGenerator {
 
     private String projectName;
     private String projectVersion;
+    private boolean updateReleases = false;
 
     public SW360Updater() {
         this.workflowStepOrder = 1100;
@@ -79,6 +80,9 @@ public class SW360Updater extends AbstractGenerator {
             for (Artifact artifact : intermediates) {
                 Set<String> licenses = sw360MetaDataUpdater.getOrCreateLicenses(artifact);
                 SW360Component component = sw360MetaDataUpdater.getOrCreateComponent(artifact);
+                if(updateReleases) {
+                    sw360MetaDataUpdater.setUpdateReleases(updateReleases);
+                }
                 releases.add(sw360MetaDataUpdater.getOrCreateRelease(artifact, licenses, component));
             }
             sw360MetaDataUpdater.createProject(projectName, projectVersion, releases);
@@ -94,5 +98,8 @@ public class SW360Updater extends AbstractGenerator {
 
     private String retrieveVersion(Optional<SW360ProjectCoordinates> sw360ProjectCoordinates) {
         return sw360ProjectCoordinates.map(SW360ProjectCoordinates::getVersion).orElse(context.getProject().getVersion());
+    }
+    public void setUpdateReleases(boolean updateReleases) {
+        this.updateReleases = updateReleases;
     }
 }

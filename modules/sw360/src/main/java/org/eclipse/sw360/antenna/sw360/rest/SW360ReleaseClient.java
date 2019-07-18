@@ -18,7 +18,10 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +72,20 @@ public class SW360ReleaseClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
         if (response.getStatusCode() == HttpStatus.CREATED) {
+            return response.getBody().getContent();
+        } else {
+            throw new AntennaException("Request to create release " + sw360Release.getName() + " failed with "
+                    + response.getStatusCode());
+        }
+    }
+
+    public SW360Release patchRelease(SW360Release sw360Release, HttpHeaders header) throws AntennaException {
+        HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
+
+        ResponseEntity<Resource<SW360Release>> response = doRestPATCH(this.releasesRestUrl, httpEntity,
+                new ParameterizedTypeReference<Resource<SW360Release>>() {});
+
+        if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody().getContent();
         } else {
             throw new AntennaException("Request to create release " + sw360Release.getName() + " failed with "
