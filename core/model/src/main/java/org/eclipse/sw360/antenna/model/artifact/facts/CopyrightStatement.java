@@ -23,7 +23,7 @@ public class CopyrightStatement extends ArtifactFactWithPayload<String> {
     public CopyrightStatement mergeWith(ArtifactFact resultWithPrecedence) {
         if(resultWithPrecedence instanceof CopyrightStatement) {
             final CopyrightStatement copyrightStatementPrecedence = (CopyrightStatement) resultWithPrecedence;
-            return new CopyrightStatement(get() + "/n" + copyrightStatementPrecedence.get());
+            return new CopyrightStatement(get() + "\n" + copyrightStatementPrecedence.get());
         }
         return this;
     }
