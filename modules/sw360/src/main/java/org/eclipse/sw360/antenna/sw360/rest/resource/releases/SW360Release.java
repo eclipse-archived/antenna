@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.sw360.rest.resource.releases;
 
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 
+import java.util.Map;
 import java.util.Set;
 
 public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW360ReleaseEmbedded> {
@@ -21,6 +22,20 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     private String cpeid;
     private String downloadurl;
     private Set<String> mainLicenseIds;
+    private Map<String, String> coordinates;
+
+    private String finalLicense;
+    private String declaredLicense;
+    private String observedLicense;
+    private String releaseTagUrl;
+    private String softwareHeritageId;
+    private Set<String> hashes;
+    private String clearingState;
+    private String changeStatus;
+    private String copyrights;
+
+    private Map<String, String> externalIds;
+
 
     public String getComponentId() {
         return componentId;
@@ -73,5 +88,104 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
 
     public void setDownloadurl(String downloadurl) {
         this.downloadurl = downloadurl;
+    }
+
+
+    public Map<String, String> getCoordinates() {
+        return coordinates;
+    }
+
+    public SW360Release setCoordinates(Map<String, String> coordinates) {
+        this.coordinates = coordinates;
+        return this;
+    }
+
+    public String getFinalLicense() {
+        return finalLicense;
+    }
+
+    public SW360Release setFinalLicense(String finalLicense) {
+        this.finalLicense = finalLicense;
+        return this;
+    }
+
+    public String getDeclaredLicense() {
+        return declaredLicense;
+    }
+
+    public SW360Release setDeclaredLicense(String declaredLicense) {
+        this.declaredLicense = declaredLicense;
+        return this;
+    }
+
+    public String getObservedLicense() {
+        return observedLicense;
+    }
+
+    public SW360Release setObservedLicense(String observedLicense) {
+        this.observedLicense = observedLicense;
+        return this;
+    }
+
+    public String getReleaseTagUrl() {
+        return releaseTagUrl;
+    }
+
+    public SW360Release setReleaseTagUrl(String releaseTagUrl) {
+        this.releaseTagUrl = releaseTagUrl;
+        return this;
+    }
+
+    public String getSoftwareHeritageId() {
+        return softwareHeritageId;
+    }
+
+    public SW360Release setSoftwareHeritageId(String softwareHeritageId) {
+        this.softwareHeritageId = softwareHeritageId;
+        return this;
+    }
+
+    public Set<String> getHashes() {
+        return hashes;
+    }
+
+    public SW360Release setHashes(Set<String> hashes) {
+        this.hashes = hashes;
+        return this;
+    }
+
+    public String getClearingState() {
+        return clearingState;
+    }
+
+    public SW360Release setClearingState(String clearingState) {
+        this.clearingState = clearingState;
+        return this;
+    }
+
+    public String getChangeStatus() {
+        return changeStatus;
+    }
+
+    public SW360Release setChangeStatus(String changeStatus) {
+        this.changeStatus = changeStatus;
+        return this;
+    }
+
+    public Map<String, String> getExternalIds() {
+        return externalIds;
+    }
+
+    public SW360Release setExternalIds(Map<String, String> externalIds) {
+        this.externalIds = externalIds;
+        return this;
+    }
+
+    public String getCopyrights() {
+        return copyrights;
+    }
+
+    public void setCopyrights(String copyrights) {
+        this.copyrights = copyrights;
     }
 }

@@ -16,15 +16,15 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCPE;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
-import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
+import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
+import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
+import org.eclipse.sw360.antenna.sw360.rest.resource.SW360CoordinateKeysToArtifactCoordinates;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
@@ -32,10 +32,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedd
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SW360Enricher extends AbstractProcessor {
@@ -82,11 +79,129 @@ public class SW360Enricher extends AbstractProcessor {
                 updateLicenses(artifact, release.get());
                 addSourceUrlIfAvailable(artifact, release.get());
                 addCPEIdIfAvailable(artifact, release.get());
+                addClearingStateIfAvailable(artifact, release.get());
+                mapExternalIdsOnSW360Release(release.get(), artifact);
             } else {
                 warnAndReport(artifact, "No SW360 release found for artifact.");
             }
         }
         return intermediates;
+    }
+
+    private void addClearingStateIfAvailable(Artifact artifact, SW360Release release) {
+        if (release.getClearingState() != null && !release.getClearingState().isEmpty()) {
+            artifact.addFact(new ArtifactClearingState(
+                    ArtifactClearingState.ClearingState.valueOf(release.getClearingState())));
+        }
+    }
+
+    private void mapExternalIdsOnSW360Release(SW360Release sw360Release, Artifact artifact) {
+        if (sw360Release.getExternalIds() != null) {
+
+            mapCoordinates(sw360Release, artifact);
+            mapDeclaredLicense(sw360Release, artifact);
+            mapObservedLicense(sw360Release, artifact);
+            mapOriginalRepository(sw360Release, artifact);
+            mapSwhId(sw360Release, artifact);
+            mapHashes(sw360Release, artifact);
+            mapChangeStatus(sw360Release, artifact);
+            mapCopyrights(sw360Release, artifact);
+        }
+    }
+
+    private void mapCopyrights(SW360Release sw360Release, Artifact artifact) {
+        if (sw360Release.getExternalIds().containsKey(SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS)) {
+            String copyrights = sw360Release.getExternalIds().get(SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS);
+
+            artifact.addFact(new CopyrightStatement(copyrights));
+        }
+    }
+
+    private void mapChangeStatus(SW360Release sw360Release, Artifact artifact) {
+        if (sw360Release.getExternalIds().containsKey(SW360Attributes.RELEASE_EXTERNAL_ID_CHANGESTATUS)) {
+            String string_change_status = sw360Release.getExternalIds().get(SW360Attributes.RELEASE_EXTERNAL_ID_CHANGESTATUS);
+
+            ArtifactChangeStatus.ChangeStatus changeStatus = ArtifactChangeStatus.ChangeStatus.valueOf(string_change_status);
+
+            artifact.addFact(new ArtifactChangeStatus(changeStatus));
+        }
+    }
+
+    private void mapHashes(SW360Release sw360Release, Artifact artifact) {
+        if (sw360Release.getExternalIds().containsKey(SW360Attributes.RELEASE_EXTERNAL_ID_HASHES + "1")) {
+            Set<String> hashesSet = new HashSet<>();
+
+            sw360Release.getExternalIds().forEach((key, value) -> {
+                if (key.startsWith(SW360Attributes.RELEASE_EXTERNAL_ID_HASHES)) {
+                    hashesSet.add(value);
+                }
+            });
+            hashesSet.forEach(hash ->
+                    artifact.addFact(new ArtifactFilename(sw360Release.getName(), hash)));
+        }
+    }
+
+    private void mapSwhId(SW360Release sw360Release, Artifact artifact) {
+        if (sw360Release.getExternalIds().containsKey(SW360Attributes.RELEASE_EXTERNAL_ID_SWHID)) {
+            String swhId = sw360Release.getExternalIds().get(SW360Attributes.RELEASE_EXTERNAL_ID_SWHID);
+
+            try {
+                artifact.addFact(new ArtifactSoftwareHeritageID.Builder(swhId).build());
+            } catch (AntennaException e) {
+                LOGGER.warn(e.getMessage());
+            }
+        }
+    }
+
+    private void mapOriginalRepository(SW360Release sw360Release, Artifact artifact) {
+        if (sw360Release.getExternalIds().containsKey(SW360Attributes.RELEASE_EXTERNAL_ID_OREPO)) {
+            artifact.addFact(new ArtifactReleaseTagURL(sw360Release.getExternalIds().get(SW360Attributes.RELEASE_EXTERNAL_ID_OREPO)));
+        }
+    }
+
+    private void mapObservedLicense(SW360Release sw360Release, Artifact artifact) {
+        if (sw360Release.getExternalIds().containsKey(SW360Attributes.RELEASE_EXTERNAL_ID_OLICENSES)) {
+            License licenseStatement = makeLicenseStatementFromString(
+                    sw360Release.getExternalIds().get(SW360Attributes.RELEASE_EXTERNAL_ID_OLICENSES));
+
+            artifact.addFact(new ObservedLicenseInformation(licenseStatement));
+        }
+    }
+
+    private void mapDeclaredLicense(SW360Release sw360Release, Artifact artifact) {
+        if (sw360Release.getExternalIds().containsKey(SW360Attributes.RELEASE_EXTERNAL_ID_DLICENSES)) {
+            License licenseStatement = makeLicenseStatementFromString(
+                    sw360Release.getExternalIds().get(SW360Attributes.RELEASE_EXTERNAL_ID_DLICENSES));
+
+            artifact.addFact(new DeclaredLicenseInformation(licenseStatement));
+        }
+    }
+
+    private License makeLicenseStatementFromString(String license) {
+        License license1 = new License();
+        license1.setName(license);
+
+        return license1;
+    }
+
+    private void mapCoordinates(SW360Release sw360Release, Artifact artifact) {
+        Set<String> keySet = sw360Release.getExternalIds().keySet();
+
+        for (Class<? extends ArtifactCoordinates> key : SW360CoordinateKeysToArtifactCoordinates.getKeys()) {
+            String coordinateType = SW360CoordinateKeysToArtifactCoordinates.get(key);
+            if (keySet.contains(coordinateType)) {
+                String coordinateValue = sw360Release.getExternalIds().get(coordinateType);
+                String[] splitCoordiantes = coordinateValue.split(":");
+
+                ArtifactCoordinates coordinates;
+                if (splitCoordiantes.length == 3) {
+                    coordinates = SW360CoordinateKeysToArtifactCoordinates.createArtifactCoordinates(splitCoordiantes[0], sw360Release.getName(), sw360Release.getVersion(), key);
+                } else {
+                    coordinates = SW360CoordinateKeysToArtifactCoordinates.createArtifactCoordinates("", sw360Release.getName(), sw360Release.getVersion(), key);
+                }
+                artifact.addFact(coordinates);
+            }
+        }
     }
 
     private void addSourceUrlIfAvailable(Artifact artifact, SW360Release release) {
@@ -98,7 +213,7 @@ public class SW360Enricher extends AbstractProcessor {
     private void updateLicenses(Artifact artifact, SW360Release release) {
         List<License> artifactLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
         final SW360ReleaseEmbedded embedded = release.get_Embedded();
-        if(embedded == null) {
+        if (embedded == null) {
             return;
         }
         List<SW360SparseLicense> releaseLicenses = embedded.getLicenses();
@@ -151,7 +266,7 @@ public class SW360Enricher extends AbstractProcessor {
         return licenseDetails;
     }
 
-    private LicenseStatement appendToLicenseStatement(LicenseStatement licenseStatement, License license){
+    private LicenseStatement appendToLicenseStatement(LicenseStatement licenseStatement, License license) {
         LicenseStatement newLicenseStatement = new LicenseStatement();
         newLicenseStatement.setLeftStatement(licenseStatement);
         newLicenseStatement.setOp(LicenseOperator.AND);
@@ -164,7 +279,7 @@ public class SW360Enricher extends AbstractProcessor {
         for (SW360SparseLicense sparseLicense : licenses) {
             try {
                 Optional<License> license = enrichSparseLicenseFromSW360(sparseLicense);
-                if(license.isPresent()){
+                if (license.isPresent()) {
                     licenseStatement = appendToLicenseStatement(licenseStatement, license.get());
                 }
             } catch (AntennaException e) {
@@ -198,7 +313,7 @@ public class SW360Enricher extends AbstractProcessor {
         final String CPE_PREFIX = "cpe:2.3:";
         final String OLD_CPE_PREFIX = "cpe:/";
         String cpeId = release.getCpeid();
-        if(cpeId != null && (cpeId.startsWith(CPE_PREFIX) || cpeId.startsWith(OLD_CPE_PREFIX))) {
+        if (cpeId != null && (cpeId.startsWith(CPE_PREFIX) || cpeId.startsWith(OLD_CPE_PREFIX))) {
             artifact.addFact(new ArtifactCPE(cpeId));
         }
     }

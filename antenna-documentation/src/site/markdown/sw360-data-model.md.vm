@@ -1,0 +1,70 @@
+# SW360 Data Model
+
+${docNameCap} is capable of interacting with your instance of [SW360](https://www.eclipse.org/sw360/).
+
+Not all data that is represented in SW360 is captured and mapped by ${docNameCap}. 
+In the following section there is an outline what data of SW360 ${docNameCap} maps.
+
+#[[###]]# Projects
+ When the workflow steps of ${docNameCap} are run they create a SW360 project that is the current executed project.
+ The coordinates of this project can be set in the [`config.xml`](config-configuration.html).
+ 
+  | Variable Name         | Meaning                       |
+  |-----------------------|-------------------------------|
+  | Type | the name of the component |
+  | Name | the name of the project |
+  | Version | Current version of the project |
+  | Project Type | What type of project. E.g. "Product" |
+  | Description | Description of the project. E.g what it does and who is responsible for it. |
+  | Created On| Date of creation in SW360 instance |
+  | Business Unit | Business Unit |
+  | Clearing Team | Clearing Team |
+  | Visibility | Which roles can see the project |
+  | ReleaseIDToUsage | The release ID to the project usage |
+  | External Ids | Additional information can be put here in a `Map<String,String>` format |
+
+#[[###]]# Licenses
+ All licenses are created separately from the components and releases.
+ Enriching and updating is also done separately.
+
+  | Variable Name         | Meaning                       |
+  |-----------------------|-------------------------------|
+  | Text | The text of the license |
+  | Short Name | The short name of the license. E.g. `Apache-2.0` |
+  | Full Name | The full, long name of the license. E.g. `Apache Software License 2.0` |
+ 
+#[[###]]# Components
+ One component is an individual component with no version.
+ The individual versions of a component are called "releases" and are saved as a different object.
+ Each component has a list of its releases.
+
+ | Variable Name         | Meaning                       |
+ |-----------------------|-------------------------------|
+ | Name | the name of the component E.g. Junit:Junit |
+ | Component Type| Can be `INTERNAL`, meaning it is proprietary, or `OSS`, meaning it is open source. |
+ | Created On| Date of creation in SW360 instance |
+ | Homepage| Link to the homepage of the OSS Component |
+ 
+#[[###]]# Releases
+ An individual release is a release of a component, meaning it always has a version and always has a component it belongs to.
+ All license and copyright information can be found here.
+
+  | Variable Name         | Meaning                       |
+  |-----------------------|-------------------------------|
+  | Component ID | ID of the component this release belongs to. E.g. The ID of the Junit component |
+  | Name | Name of the release, which should equal the component name. E.g. `junit:junit` |
+  | Version | Version of the release. E.g 4.8.1, which would come to the component `junit:junit:3.8.1` |
+  | CPE ID | Common Platform Enumeration ID |
+  | Download Url | Link to the source archive. E.g., used to aggregate the sources of the used OSS components for the FOSS compliance bundle. |
+  | Main License IDs | IDs of the final licenses. The IDs have been extracted from the SPDX license format. |
+  | Coordinates | These are the corresponding ${docName} coordinates that are saved under an external ID in the release object. It is a list of key-value pairs of Strings. E.g. "mvn junit:junit:3.8.1" |
+  | License | The licenses of the main license IDs in a SPDX license expression that displays the relationship of the licenses as one String. |
+  | Declared License | The licenses declared by the release in a SPDX license expression that displays the relationship of the licenses as one String. |
+  | Observed License | The licenses observed during the ${docName} run in the SPDX license expression that displays the relationship of the licenses as one String. |
+  | Release Tag Url | This is a link to the OSS repos tag of the release used. |
+  | Software Heritage ID | A release ID in software heritage in the format "swh:1:rel:*" |
+  | Hashes | A set of hashes associated with the release. |
+  | Clearing State | Data Approval State |
+  | Change Status | OSS Usage |
+  | Copyrights | Copyrights of the release, given in a String. Individual copyrights are separated by line. |
+ 

@@ -167,7 +167,7 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
 
         assertThat(foundArtifact.askFor(ArtifactSourceUrl.class).get().get()).contains("http://archive.apache.org/dist/commons/csv/source/commons-csv-1.4-src.zip");
         assertThat(foundArtifact.askFor(ArtifactReleaseTagURL.class).get().toString()).isEqualTo("https://github.com/apache/commons-csv/tree/csv-1.4");
-        assertThat(foundArtifact.askFor(ArtifactSoftwareHeritageURL.class).get().toString()).isEqualTo("swh:1:cnt:60dbac0aafd98c9ca461256a0cefd8a7aaea8bda");
+        assertThat(foundArtifact.askFor(ArtifactSoftwareHeritageID.class).get().toString()).isEqualTo("swh:1:cnt:60dbac0aafd98c9ca461256a0cefd8a7aaea8bda");
 
         assertThat(foundArtifact.askFor(ArtifactClearingState.class).get()).isEqualTo(
                 new ArtifactClearingState(ArtifactClearingState.ClearingState.OSM_APPROVED));

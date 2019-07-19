@@ -12,7 +12,8 @@ In the config file you can:
     * on missing license information (default false)
 * override values of artifacts
 * define sources as valid
-* set licenses as forbidden.
+* set licenses as forbidden
+* give the SW360 Project Coordinates.
 
 It is possible to have multiple such files. For example one covering
 all your project and one for each single project.
@@ -45,6 +46,7 @@ shall be ignored during the whole process of ${docNameCap}.
 validation can be set.
 * `setFinalLicenses`: In this section the final license (license, that
 will occure in the disclosure document) can be defined.
+* `SW360ProjectCoordinates`: In this section you can set the SW360 project coordinates, giving name and version.
 
 
 #[[####]]# How to create a config.xml file
@@ -346,4 +348,16 @@ Then you add all artifacts of the security issue reference you want to suppress.
      </artifactSelector>
   </suppress>
 </securityIssues>
+```
+
+**SW360ProjectCoordinates**
+
+In the `SW360ProjectCoordinates` section you can provide a name and version for your SW360 Project.
+This is only necessary should you use the [SW360 Enricher](processors/sw360-enricher.html) or [SW360 Update Generator](generators/sw360-update-generator-step.html).
+
+```xml
+<SW360ProjectCoordinates>
+    <name>Example Name</name>
+    <version>1.0.0-VERSION</version>
+</SW360ProjectCoordinates>
 ```

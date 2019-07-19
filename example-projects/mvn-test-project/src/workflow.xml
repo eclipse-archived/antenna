@@ -32,6 +32,22 @@
             <classHint>org.eclipse.sw360.antenna.maven.workflow.analyzers.MvnDependencyTreeAnalyzer</classHint>
         </step>
     </analyzers>
+    <processors>
+        <step>
+            <name>SW360 Enricher</name>
+            <classHint>org.eclipse.sw360.antenna.sw360.workflow.processors.SW360Enricher</classHint>
+            <configuration>
+                <entry key="rest.server.url" value="http://localhost:8080/resource/api"/>
+                <entry key="auth.server.url" value="http://localhost:8080/authorization/oauth"/>
+                <entry key="user.id" value="admin@sw360.org"/>
+                <entry key="user.password" value="12345"/>
+                <entry key="client.id" value="trusted-sw360-client"/>
+                <entry key="client.password" value="sw360-secret"/>
+                <entry key="proxy.use" value="false"/>
+            </configuration>
+            <deactivated>true</deactivated>
+        </step>
+    </processors>
     <generators>
         <step>
             <name>SW360 Updater</name>

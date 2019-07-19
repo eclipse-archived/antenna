@@ -133,6 +133,7 @@
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>runtime</artifactId>
             <version>${project.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

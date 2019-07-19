@@ -31,3 +31,6 @@ Add the following step into the `<processors>` section of your workflow.xml
 * `client.id`: The REST API uses a two step authentication, this is general client id used.
 * `client.password`: The password of the client id.
 * `proxy.use`: Use proxy for communication to SW360.
+
+#### Data Model
+You can find a description of the data model mapping in the [SW360 data model](../sw360-data-model.html) section.
