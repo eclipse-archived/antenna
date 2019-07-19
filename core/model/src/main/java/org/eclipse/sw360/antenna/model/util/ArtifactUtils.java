@@ -60,7 +60,8 @@ public class ArtifactUtils {
         return getMostDominantFact(ArtifactCoordinates.class,
                 preferedCoordinatesTypes,
                 a -> a.askFor(ArtifactFilename.class)
-                        .flatMap(ArtifactFilename::getBestFilenameGuess)
+                        .flatMap(ArtifactFilename::getBestFilenameEntryGuess)
+                        .map(ArtifactFilename.ArtifactFilenameEntry::getFilename)
                         .map(fn -> new GenericArtifactCoordinates(fn, "-")),
                 artifact);
     }
