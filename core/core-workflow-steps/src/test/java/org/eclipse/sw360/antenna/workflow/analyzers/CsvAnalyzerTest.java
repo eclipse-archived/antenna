@@ -116,15 +116,33 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
 
         commonsCsvFullDependencyCheck(foundArtifact);
 
-        assertThat(foundArtifact.askForGet(CopyrightStatement.class).get())
+        assertThat(foundArtifact.askFor(CopyrightStatement.class).get())
                 .isEqualTo(new CopyrightStatement("Copyright 2005-2016 The Apache Software Foundation")
-                        .mergeWith(new CopyrightStatement("Copyright 2020 the fake")).get());
+                        .mergeWith(new CopyrightStatement("Copyright, 2020 the fake"))
+                        .mergeWith(new CopyrightStatement("Copyright fake; the third")));
 
         List<String> hashes = foundArtifact.askFor(ArtifactFilename.class).get().
                 getArtifactFilenameEntries().stream()
                 .map(ArtifactFilename.ArtifactFilenameEntry::getHash)
                 .collect(Collectors.toList());
         assertThat(hashes).hasSize(2);
+
+        Artifact cliArtifact = artifacts.stream()
+                .filter(artifact -> artifact.askFor(MavenCoordinates.class).get().getArtifactId().equals("commons-cli"))
+                .findFirst().get();
+
+        assertThat(cliArtifact.askFor(CopyrightStatement.class).get()).isEqualTo(
+                new CopyrightStatement("Copyright 2005-2016 The Apache Software Foundation")
+                        .mergeWith(new CopyrightStatement("copy & paste"))
+                        .mergeWith(new CopyrightStatement("this is $ it"))
+                        .mergeWith(new CopyrightStatement("!nevermind"))
+                        .mergeWith(new CopyrightStatement("§copsright"))
+                        .mergeWith(new CopyrightStatement("%gsp"))
+                        .mergeWith(new CopyrightStatement("?"))
+                        .mergeWith(new CopyrightStatement("`wer`"))
+                        .mergeWith(new CopyrightStatement("#wtewp"))
+                        .mergeWith(new CopyrightStatement("~fjd"))
+        );
     }
 
     @Override
