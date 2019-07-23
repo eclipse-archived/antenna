@@ -11,11 +11,15 @@
 package org.eclipse.sw360.antenna.util;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.rules.TemporaryFolder;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -27,205 +31,235 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TemplateRendererTest {
 
-	@Rule
-	public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
-	private String property1key = "property1";
-	private String property1value = "property1value";
-	private String property2key = "property2";
-	private String property2value = "property2value";
-	private String property3key = "property3";
-	private String property3value = "property3value";
-	private String propertyWithDotKey = "property.subproperty";
-	private String propertyWithDotValue = "propertyValue";
-	private TemplateRenderer tr;
-	private Map<String,String> properties0 = new HashMap<>();
-	private Map<String,String> properties1 = new HashMap<>();
-	private Map<String,String> properties2 = new HashMap<>();
-	private Map<String,String> properties1and2 = new HashMap<>();
-	private Map<String,String> properties1and3 = new HashMap<>();
-	private Map<String,String> properties2and3 = new HashMap<>();
+    @Rule
+    public final EnvironmentVariables environmentVariables = new EnvironmentVariables();
 
-	private String exampleInnerTemplate = "<tests>\n"
-			+ "<test"+property1key+">$"+property1key+"</test"+property1key+">\n"
-			+ "<test"+property1key+">${"+property1key+"}</test"+property1key+">\n"
-			+ "<test"+property2key+">$"+property2key+"</test"+property2key+">\n"
-			+ "</tests>";
+    private String property1key = "property1";
+    private String property1value = "property1value";
+    private String property2key = "property2";
+    private String property2value = "property2value";
+    private String property3key = "property3";
+    private String property3value = "property3value";
+    private String propertyWithDotKey = "property.subproperty";
+    private String propertyWithDotValue = "propertyValue";
+    private TemplateRenderer tr;
+    private Map<String, String> properties0 = new HashMap<>();
+    private Map<String, String> properties1 = new HashMap<>();
+    private Map<String, String> properties2 = new HashMap<>();
+    private Map<String, String> properties1and2 = new HashMap<>();
+    private Map<String, String> properties1and3 = new HashMap<>();
+    private Map<String, String> properties2and3 = new HashMap<>();
 
-	private String exampleDotTemplate = "<tests>\n"
-			+ "<test"+propertyWithDotValue+">$"+propertyWithDotKey+"</test"+propertyWithDotValue+">\n"
-			+ "<test"+propertyWithDotValue+">${"+propertyWithDotKey+"}</test"+propertyWithDotValue+">\n"
-			+ "<test"+propertyWithDotValue+">$"+propertyWithDotKey+"</test"+propertyWithDotValue+">\n"
-			+ "</tests>";
-	@Before
-	public void before() {
-		tr = new TemplateRenderer();
+    private String exampleInnerTemplate = "<tests>\n"
+            + "<test" + property1key + ">$" + property1key + "</test" + property1key + ">\n"
+            + "<test" + property1key + ">${" + property1key + "}</test" + property1key + ">\n"
+            + "<test" + property2key + ">$" + property2key + "</test" + property2key + ">\n"
+            + "</tests>";
 
-		properties1.put(property1key,property1value);
-		properties2.put(property2key,property2value);
-		properties1and2.put(property1key,property1value);
-		properties1and2.put(property2key,property2value);
-		properties1and3.put(property1key,property1value);
-		properties1and3.put(property3key,property3value);
-		properties2and3.put(property2key,property2value);
-		properties2and3.put(property3key,property3value);
-	}
+    private String exampleDotTemplate = "<tests>\n"
+            + "<test" + propertyWithDotValue + ">$" + propertyWithDotKey + "</test" + propertyWithDotValue + ">\n"
+            + "<test" + propertyWithDotValue + ">${" + propertyWithDotKey + "}</test" + propertyWithDotValue + ">\n"
+            + "<test" + propertyWithDotValue + ">$" + propertyWithDotKey + "</test" + propertyWithDotValue + ">\n"
+            + "</tests>";
 
-	private TemplateRenderer mkTemplateRendererWithPropertiesMap(Map<String,String> properties) {
-		return new TemplateRenderer(properties.entrySet().stream()
-				.collect(Collectors.toMap(
-						Map.Entry::getKey,
-						e -> (Object) e.getValue())));
-	}
+    @Before
+    public void before() {
+        tr = new TemplateRenderer();
 
-	private String addPropertiesToTemplate(String innerTemplate, Map<String,String> properties) {
-	    String propertiesXml = properties.entrySet().stream()
-				.map(e -> "<"+e.getKey()+">" +e.getValue()+ "</"+e.getKey()+">")
-                .reduce("", (s1,s2) -> s1+"\n"+s2);
-	    return "<properties>\n" + propertiesXml + "\n</properties>\n" + innerTemplate;
-	}
+        properties1.put(property1key, property1value);
+        properties2.put(property2key, property2value);
+        properties1and2.put(property1key, property1value);
+        properties1and2.put(property2key, property2value);
+        properties1and3.put(property1key, property1value);
+        properties1and3.put(property3key, property3value);
+        properties2and3.put(property2key, property2value);
+        properties2and3.put(property3key, property3value);
+    }
 
-	private String wrapTemplateXml(String innerTemplate) {
-		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><project>\n" + innerTemplate + "\n</project>";
-	}
+    private TemplateRenderer mkTemplateRendererWithPropertiesMap(Map<String, String> properties) {
+        return new TemplateRenderer(properties.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> (Object) e.getValue())));
+    }
 
-	private File writeTemplateFromString(String template) throws IOException {
-		final File templateFile = folder.newFile("template.xml");
-		FileUtils.writeStringToFile(templateFile, template, StandardCharsets.UTF_8);
-		return templateFile;
-	}
+    private String addPropertiesToTemplate(String innerTemplate, Map<String, String> properties) {
+        String propertiesXml = properties.entrySet().stream()
+                .map(e -> "<" + e.getKey() + ">" + e.getValue() + "</" + e.getKey() + ">")
+                .reduce("", (s1, s2) -> s1 + "\n" + s2);
+        return "<properties>\n" + propertiesXml + "\n</properties>\n" + innerTemplate;
+    }
 
-	private String composeTemplateXml() {
-	    return wrapTemplateXml(exampleInnerTemplate);
-	}
+    private String wrapTemplateXml(String innerTemplate) {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><project>\n" + innerTemplate + "\n</project>";
+    }
 
-	private File composeTemplateXmlToFile() throws IOException {
-		return writeTemplateFromString(composeTemplateXml());
-	}
+    private File writeTemplateFromString(String template) throws IOException {
+        final File templateFile = folder.newFile("template.xml");
+        FileUtils.writeStringToFile(templateFile, template, StandardCharsets.UTF_8);
+        return templateFile;
+    }
 
-	private String composeTemplateXml(Map<String,String> properties) {
-		return wrapTemplateXml(addPropertiesToTemplate(exampleInnerTemplate, properties));
-	}
+    private String composeTemplateXml() {
+        return wrapTemplateXml(exampleInnerTemplate);
+    }
 
-	private File composeTemplateXmlToFile(Map<String,String> properties) throws IOException {
-		return writeTemplateFromString(composeTemplateXml(properties));
-	}
+    private File composeTemplateXmlToFile() throws IOException {
+        return writeTemplateFromString(composeTemplateXml());
+    }
 
-	@Test
-	public void testRenderTemplateFileDoesNotModifyWithoutProperties() throws IOException {
-		File file = composeTemplateXmlToFile();
+    private String composeTemplateXml(Map<String, String> properties) {
+        return wrapTemplateXml(addPropertiesToTemplate(exampleInnerTemplate, properties));
+    }
 
-		String result = tr.renderTemplateFile(file);
+    private File composeTemplateXmlToFile(Map<String, String> properties) throws IOException {
+        return writeTemplateFromString(composeTemplateXml(properties));
+    }
 
-		assertThat(result).isEqualTo(composeTemplateXml());
-	}
+    @Test
+    public void testRenderTemplateFileDoesNotModifyWithoutProperties() throws IOException {
+        File file = composeTemplateXmlToFile();
 
-	@Test
-	public void testRenderTemplateFileDoesNotModifyWithEmptyPropertiesFromInstantiate() throws IOException {
-		TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(properties0);
-		File file = composeTemplateXmlToFile();
+        String result = tr.renderTemplateFile(file);
 
-		String result = trWithCustomProperties.renderTemplateFile(file);
+        assertThat(result).isEqualTo(composeTemplateXml());
+    }
 
-		assertThat(result).isEqualTo(composeTemplateXml());
-	}
+    @Test
+    public void testRenderTemplateFileDoesNotModifyWithEmptyPropertiesFromInstantiate() throws IOException {
+        TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(properties0);
+        File file = composeTemplateXmlToFile();
 
-	@Test
-	public void testRenderTemplateFileDoesNotModifyWithEmptyPropertiesFromWithinTemplate() throws IOException {
-		File file = composeTemplateXmlToFile(properties0);
+        String result = trWithCustomProperties.renderTemplateFile(file);
 
-		String result = tr.renderTemplateFile(file);
+        assertThat(result).isEqualTo(composeTemplateXml());
+    }
 
-		assertThat(result).isEqualTo(composeTemplateXml(properties0));
-	}
+    @Test
+    public void testRenderTemplateFileDoesNotModifyWithEmptyPropertiesFromWithinTemplate() throws IOException {
+        File file = composeTemplateXmlToFile(properties0);
 
-	@Test
-	public void testRenderTemplateFileSubstitutedPropertiesFromInstantiate() throws IOException {
-		TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(properties1);
-		File file = composeTemplateXmlToFile();
+        String result = tr.renderTemplateFile(file);
 
-		String result = trWithCustomProperties.renderTemplateFile(file);
+        assertThat(result).isEqualTo(composeTemplateXml(properties0));
+    }
 
-		assertThat(result).doesNotContain("$"+property1key);
-		assertThat(result).doesNotContain("${"+property1key+"}");
-		assertThat(result).contains("$" + property2key);
-		assertThat(result).contains("<test"+property1key+">"+property1value+"</test"+property1key+">");
-	}
+    @Test
+    public void testRenderTemplateFileSubstitutedPropertiesFromInstantiate() throws IOException {
+        TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(properties1);
+        File file = composeTemplateXmlToFile();
 
-	@Test
-	public void testRenderTemplateFileSubstitutedPropertiesFromWithinTemplate() throws IOException {
-	    File file = composeTemplateXmlToFile(properties1);
+        String result = trWithCustomProperties.renderTemplateFile(file);
 
-	    String result = tr.renderTemplateFile(file);
-	    
-	    assertThat(result).doesNotContain("$"+property1key);
-	    assertThat(result).doesNotContain("${"+property1key+"}");
-		assertThat(result).contains("$"+property2key);
-	    assertThat(result).contains("<test"+property1key+">"+property1value+"</test"+property1key+">");
-	}
+        assertThat(result).doesNotContain("$" + property1key);
+        assertThat(result).doesNotContain("${" + property1key + "}");
+        assertThat(result).contains("$" + property2key);
+        assertThat(result).contains("<test" + property1key + ">" + property1value + "</test" + property1key + ">");
+    }
 
-	@Test
-	public void testRenderTemplateFileSubstitutedPropertiesFromBothDirections() throws IOException {
-		TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(properties2);
-		File file = composeTemplateXmlToFile(properties1);
+    @Test
+    public void testRenderTemplateFileSubstitutedPropertiesFromWithinTemplate() throws IOException {
+        File file = composeTemplateXmlToFile(properties1);
 
-		String result = trWithCustomProperties.renderTemplateFile(file);
+        String result = tr.renderTemplateFile(file);
 
-		assertThat(result).doesNotContain("$"+property1key);
-		assertThat(result).doesNotContain("${"+property1key+"}");
-		assertThat(result).doesNotContain("$"+property2key);
-		assertThat(result).contains("<test"+property1key+">"+property1value+"</test"+property1key+">");
-		assertThat(result).contains("<test"+property2key+">"+property2value+"</test"+property2key+">");
-	}
+        assertThat(result).doesNotContain("$" + property1key);
+        assertThat(result).doesNotContain("${" + property1key + "}");
+        assertThat(result).contains("$" + property2key);
+        assertThat(result).contains("<test" + property1key + ">" + property1value + "</test" + property1key + ">");
+    }
 
-	@Test
-	public void testRenderTemplateFileSubstitutedPropertiesFromBothDirectionsAndUnusedProperties() throws IOException {
-		TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(properties2and3);
-		File file = composeTemplateXmlToFile(properties1and3);
+    @Test
+    public void testRenderTemplateFileSubstitutedPropertiesFromBothDirections() throws IOException {
+        TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(properties2);
+        File file = composeTemplateXmlToFile(properties1);
 
-		String result = trWithCustomProperties.renderTemplateFile(file);
+        String result = trWithCustomProperties.renderTemplateFile(file);
 
-		assertThat(result).doesNotContain("$"+property1key);
-		assertThat(result).doesNotContain("${"+property1key+"}");
-		assertThat(result).doesNotContain("$"+property2key);
-		assertThat(result).contains("<test"+property1key+">"+property1value+"</test"+property1key+">");
-		assertThat(result).contains("<test"+property2key+">"+property2value+"</test"+property2key+">");
-	}
+        assertThat(result).doesNotContain("$" + property1key);
+        assertThat(result).doesNotContain("${" + property1key + "}");
+        assertThat(result).doesNotContain("$" + property2key);
+        assertThat(result).contains("<test" + property1key + ">" + property1value + "</test" + property1key + ">");
+        assertThat(result).contains("<test" + property2key + ">" + property2value + "</test" + property2key + ">");
+    }
 
-	@Test
-	public void testRenderTemplateFileSubstitutesPropertiesWithDotsFromContext() throws IOException {
-		TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(new HashMap<>());
-		File file = writeTemplateFromString(wrapTemplateXml(addPropertiesToTemplate(exampleDotTemplate, new HashMap<>())));
+    @Test
+    public void testRenderTemplateFileSubstitutedPropertiesFromBothDirectionsAndUnusedProperties() throws IOException {
+        TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(properties2and3);
+        File file = composeTemplateXmlToFile(properties1and3);
 
-		HashMap<String, Object> contextMap = new HashMap<>();
-		// In order to resolve ${property.subproperty}, velocity searches the context for an object called "property" with
-		// a field "subproperty". The value of "subproperty" will then replace ${property.subproperty}.
-		// This can be arbitrarily nested.
-		contextMap.put("property", new Property());
-		String result = trWithCustomProperties.renderTemplateFile(file, contextMap);
+        String result = trWithCustomProperties.renderTemplateFile(file);
 
-		assertThat(result).doesNotContain("$"+propertyWithDotKey);
-		assertThat(result).doesNotContain("${"+propertyWithDotKey+"}");
-		assertThat(result).doesNotContain("$"+propertyWithDotKey);
-		assertThat(result).contains("<test"+propertyWithDotValue+">"+propertyWithDotValue+"</test"+propertyWithDotValue+">");
-	}
+        assertThat(result).doesNotContain("$" + property1key);
+        assertThat(result).doesNotContain("${" + property1key + "}");
+        assertThat(result).doesNotContain("$" + property2key);
+        assertThat(result).contains("<test" + property1key + ">" + property1value + "</test" + property1key + ">");
+        assertThat(result).contains("<test" + property2key + ">" + property2value + "</test" + property2key + ">");
+    }
 
-	@Test(expected = Exception.class)
-	public void testRenderTemplateFileShouldNotReturnInvalidXmlIfTemplateWasInvalid() throws IOException {
-	    String invalidXmlTemplate = "<invalid xml";
-		File file = writeTemplateFromString(invalidXmlTemplate);
+    @Test
+    public void testRenderTemplateFileSubstitutesPropertiesWithDotsFromContext() throws IOException {
+        TemplateRenderer trWithCustomProperties = mkTemplateRendererWithPropertiesMap(new HashMap<>());
+        File file = writeTemplateFromString(wrapTemplateXml(addPropertiesToTemplate(exampleDotTemplate, new HashMap<>())));
 
-		String result = tr.renderTemplateFile(file);
+        HashMap<String, Object> contextMap = new HashMap<>();
+        // In order to resolve ${property.subproperty}, velocity searches the context for an object called "property" with
+        // a field "subproperty". The value of "subproperty" will then replace ${property.subproperty}.
+        // This can be arbitrarily nested.
+        contextMap.put("property", new Property());
+        String result = trWithCustomProperties.renderTemplateFile(file, contextMap);
 
-		assertThat(result).isNotEqualTo(invalidXmlTemplate);
-	}
+        assertThat(result).doesNotContain("$" + propertyWithDotKey);
+        assertThat(result).doesNotContain("${" + propertyWithDotKey + "}");
+        assertThat(result).doesNotContain("$" + propertyWithDotKey);
+        assertThat(result).contains("<test" + propertyWithDotValue + ">" + propertyWithDotValue + "</test" + propertyWithDotValue + ">");
+    }
 
-	// This class is needed to resolve properties with dots.
-	public class Property {
-		private final String subproperty = "propertyValue";
+    @Test(expected = Exception.class)
+    public void testRenderTemplateFileShouldNotReturnInvalidXmlIfTemplateWasInvalid() throws IOException {
+        String invalidXmlTemplate = "<invalid xml";
+        File file = writeTemplateFromString(invalidXmlTemplate);
 
-		public String getSubproperty() {
-			return subproperty;
-		}
-	}
+        String result = tr.renderTemplateFile(file);
+
+        assertThat(result).isNotEqualTo(invalidXmlTemplate);
+    }
+
+    // This class is needed to resolve properties with dots.
+    public class Property {
+        private final String subproperty = "propertyValue";
+
+        public String getSubproperty() {
+            return subproperty;
+        }
+    }
+
+    @Test
+    public void testRenderWorkflowFileWithSystemEnvironmentVariables() throws IOException, ParserConfigurationException, SAXException{
+        environmentVariables.set("ANTENNATESTVARIABLE", "WARN");
+
+        Map<String, String> systemEnvs = System.getenv();
+        assertThat(systemEnvs.get("ANTENNATESTVARIABLE")).isEqualTo("WARN");
+
+        HashMap<String, Object> contextMap = new HashMap<>();
+
+        File workflowDefFile = new File(TemplateRendererTest.class.getResource("/workflow.xml").getFile());
+        TemplateRenderer tr = new TemplateRenderer(contextMap);
+        String renderedWorkflow = tr.renderTemplateFile(workflowDefFile);
+
+        Workflow workflow;
+        XmlSettingsReader workflowReader = new XmlSettingsReader(renderedWorkflow);
+        workflow = workflowReader.getComplexType("workflow", Workflow.class);
+
+        assertThat(workflow.getProcessors().getStep().stream().findFirst().get().getConfiguration().getEntry()
+                .stream()
+                .filter(entry -> entry.getKey().equals("incompleteSourcesSeverity"))
+                .findFirst()
+                .get()
+                .getValue())
+                .isEqualTo("WARN");
+    }
 }

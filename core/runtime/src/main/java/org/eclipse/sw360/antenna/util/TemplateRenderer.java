@@ -39,6 +39,12 @@ public class TemplateRenderer {
 
     public TemplateRenderer() {
         this.renderContext = new VelocityContext();
+
+        System.getenv()
+                .entrySet()
+                .stream()
+                .filter(e -> e.getKey().equals(e.getKey().toUpperCase()))
+                .forEach(e -> this.renderContext.put(e.getKey(),e.getValue()));
     }
 
     public TemplateRenderer(Map<String, Object> initMap) {
@@ -61,7 +67,7 @@ public class TemplateRenderer {
         return ve;
     }
 
-    public String renderTemplateFile(File templateFile) {
+    private VelocityEngine prepareVelocityEngine(File templateFile) {
         Map<String,String> veProperties = new HashMap<>();
         veProperties.put(RuntimeConstants.RESOURCE_LOADER, "file");
         veProperties.put(RuntimeConstants.FILE_RESOURCE_LOADER_PATH,
@@ -69,7 +75,11 @@ public class TemplateRenderer {
                         ? templateFile.getParentFile().getAbsolutePath()
                         : templateFile.getAbsoluteFile().getParentFile().getAbsolutePath());
 
-        VelocityEngine ve = getVelocityEngine(veProperties);
+        return getVelocityEngine(veProperties);
+    }
+
+    public String renderTemplateFile(File templateFile) {
+        VelocityEngine ve = prepareVelocityEngine(templateFile);
         Template template = ve.getTemplate(templateFile.getName());
         return renderTemplate(template);
     }

@@ -20,9 +20,29 @@ public class AntennaImpl {
     private final AbstractAntennaCLIFrontend antennaCLIFrontend;
     private final File pomFilePath;
 
+    private File propertiesFilePath;
+
     public AntennaImpl(String pluginDescendantArtifactIdName, Path pomFilePath) {
+        this(pluginDescendantArtifactIdName, pomFilePath, null);
+    }
+
+    public AntennaImpl(String pluginDescendantArtifactIdName, Path pomFilePath, Path propertiesFilePath) {
         this.pomFilePath = pomFilePath.toFile();
-        antennaCLIFrontend = new AbstractAntennaCLIFrontend(this.pomFilePath) {
+
+        if (!this.pomFilePath.exists()) {
+            throw new IllegalArgumentException("Cannot find " + pomFilePath.toString());
+        }
+
+        if (propertiesFilePath != null) {
+            this.propertiesFilePath = propertiesFilePath.toFile();
+            if(!this.propertiesFilePath.exists()) {
+                throw new IllegalArgumentException("Cannot find " + propertiesFilePath.toString());
+            }
+        } else {
+            this.propertiesFilePath = null;
+        }
+
+        antennaCLIFrontend = new AbstractAntennaCLIFrontend(this.pomFilePath, this.propertiesFilePath) {
             @Override
             protected String getPluginDescendantArtifactIdName() {
                 return pluginDescendantArtifactIdName;
@@ -33,15 +53,9 @@ public class AntennaImpl {
                 return folder.resolve("build");
             }
         };
-
     }
 
     public void execute() throws AntennaException {
-
-        if (!pomFilePath.exists()) {
-            throw new IllegalArgumentException("Cannot find " + pomFilePath.toString());
-        }
-
         antennaCLIFrontend.execute();
     }
 }

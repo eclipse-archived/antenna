@@ -25,6 +25,8 @@ public class DefaultProject implements IProject {
     private String projectVersion = "1.0";
     private String artifactId = projectId + ":" + projectVersion;
 
+    private File propertiesFile;
+
     public DefaultProject(File configFile, String buildDir, String sourceDir) {
         this.configFile = configFile;
         this.buildDir = buildDir;
@@ -75,6 +77,14 @@ public class DefaultProject implements IProject {
 
     public String getBaseUri() {
         return baseUri;
+    }
+
+    public File getPropertiesFile() {
+        return propertiesFile;
+    }
+
+    public void setPropertiesFile(File propertiesFile) {
+        this.propertiesFile = propertiesFile;
     }
 
     public class Build {

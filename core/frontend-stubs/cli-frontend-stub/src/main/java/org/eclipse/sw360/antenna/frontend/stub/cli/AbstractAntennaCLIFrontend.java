@@ -37,7 +37,10 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend {
     private DefaultProject project;
     private final String pluginDescendantArtifactIdName;
 
-    protected abstract String getPluginDescendantArtifactIdName();
+    public AbstractAntennaCLIFrontend(File pomFilePath, File propertiesFile) {
+        this(pomFilePath);
+        project.setPropertiesFile(propertiesFile);
+    }
 
     public AbstractAntennaCLIFrontend(File pomFile) {
         this.pluginDescendantArtifactIdName = getPluginDescendantArtifactIdName();
@@ -45,6 +48,8 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend {
         Path sourceDir = getSourceDirFromPomFile(pomFile);
         project = new DefaultProject(pomFile, buildDir.toString(), sourceDir.toString());
     }
+
+    protected abstract String getPluginDescendantArtifactIdName();
 
     private Path getSourceDirFromPomFile(File pomFile) {
         Path parent = pomFile.toPath().getParent();

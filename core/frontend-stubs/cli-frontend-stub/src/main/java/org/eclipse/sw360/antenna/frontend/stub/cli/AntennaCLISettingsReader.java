@@ -25,13 +25,13 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -126,17 +126,23 @@ public class AntennaCLISettingsReader {
         HashMap<String, Object> contextMap = new HashMap<>();
         contextMap.put("project", project);
         contextMap.put("basedir", parent.toString());
+
+        Optional.ofNullable(project.getPropertiesFile())
+                .map(this::mapProperties)
+                .ifPresent(contextMap::putAll);
+
         System.getProperties()
                 .entrySet()
                 .stream()
                 .filter(e -> e.getKey().toString().startsWith("proxy"))
                 .forEach(e -> contextMap.put(e.getKey().toString(), e.getValue().toString()));
+
         String renderedPom = tr.renderTemplateFile(pomFile, contextMap);
 
         try {
             return new XmlSettingsReader(renderedPom);
         } catch (IOException e) {
-            throw new IllegalArgumentException("IO exception when reading config: " + e.getMessage());
+            throw new RuntimeException("IO exception when reading config: " + e.getMessage());
         } catch (ParserConfigurationException | SAXException e) {
             throw new IllegalArgumentException("Problem parsing the config: " + e.getMessage());
         }
@@ -202,5 +208,22 @@ public class AntennaCLISettingsReader {
         }
 
         return toolConfigBuilder.buildConfiguration();
+    }
+
+    private Map<String, Object> mapProperties(File propertiesFile) {
+        try (InputStream input = new FileInputStream(propertiesFile)) {
+            Properties prop = new Properties();
+
+            prop.load(input);
+
+            return prop.entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(
+                            p -> p.getKey().toString(),
+                            p -> p.getValue().toString()
+                    ));
+        } catch (IOException e) {
+            throw new RuntimeException("IO exception when reading properties file: " + e.getMessage());
+        }
     }
 }
