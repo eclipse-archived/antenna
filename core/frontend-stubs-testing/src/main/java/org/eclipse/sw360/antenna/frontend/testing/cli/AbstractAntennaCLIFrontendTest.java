@@ -10,10 +10,10 @@
  */
 package org.eclipse.sw360.antenna.frontend.testing.cli;
 
+import org.eclipse.sw360.antenna.frontend.MetaDataStoringProject;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIFrontend;
 import org.eclipse.sw360.antenna.frontend.stub.cli.AntennaCLISettingsReader;
-import org.eclipse.sw360.antenna.frontend.stub.cli.DefaultProject;
 import org.eclipse.sw360.antenna.frontend.testing.AbstractAntennaFrontendTest;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.AbstractTestProjectWithExpectations;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
@@ -64,7 +64,7 @@ public abstract class AbstractAntennaCLIFrontendTest extends AbstractAntennaFron
     @Test
     public void checkForUnrederedXMLproperties() {
         ToolConfiguration toolconfig = new AntennaCLISettingsReader("antenna-maven-plugin")
-                .readSettingsToToolConfiguration((DefaultProject) antennaContext.getProject());
+                .readSettingsToToolConfiguration((MetaDataStoringProject) antennaContext.getProject());
 
         Workflow workflow = toolconfig.getWorkflow();
         List<StepConfiguration.Entry> all = new ArrayList<>();
@@ -96,8 +96,8 @@ public abstract class AbstractAntennaCLIFrontendTest extends AbstractAntennaFron
 
     @Test
     public void checkAntennaContextProjectResolution() {
-        assertFalse(((DefaultProject) antennaContext.getProject()).getBuild().getDirectory().contains("${"));
-        assertFalse(((DefaultProject) antennaContext.getProject()).getBuild().getOutputDirectory().contains("${"));
+        assertFalse(((MetaDataStoringProject) antennaContext.getProject()).getBuild().getDirectory().contains("${"));
+        assertFalse(((MetaDataStoringProject) antennaContext.getProject()).getBuild().getOutputDirectory().contains("${"));
         assertFalse(antennaContext.getProject().getBasedir().toString().contains("${"));
         assertFalse(antennaContext.getProject().getVersion().contains("${"));
     }

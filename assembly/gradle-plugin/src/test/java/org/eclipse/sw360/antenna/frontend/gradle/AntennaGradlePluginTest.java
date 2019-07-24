@@ -15,6 +15,7 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.frontend.stub.gradle.AntennaImpl;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.AbstractTestProject;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.ExampleTestProject;
+import org.gradle.api.Project;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.After;
@@ -22,7 +23,9 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mock;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -31,8 +34,13 @@ import java.nio.file.Paths;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.checkInternetConnectionAndAssume;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AntennaGradlePluginTest {
+
+    @Mock
+    private Project project = mock(Project.class);
 
     private AbstractTestProject exampleTestProject;
     private Path projectRoot;
@@ -48,6 +56,13 @@ public class AntennaGradlePluginTest {
         String buildGradle = "plugins {\nid 'org.eclipse.sw360.antenna'\n}\n" +
                 "AntennaConfiguration{\npomPath '" + exampleTestProject.getProjectPom() + "'\n}";
         FileUtils.writeStringToFile(projectRoot.resolve("build.gradle").toFile(), buildGradle);
+
+        when(project.getBuildDir())
+                .thenReturn(projectRoot.resolve("build").toFile());
+        when(project.getBuildFile())
+                .thenReturn(projectRoot.resolve("build.gradle").toFile());
+        when(project.getName())
+                .thenReturn(exampleTestProject.getExpectedProjectArtifactId());
     }
 
     @After
@@ -59,7 +74,7 @@ public class AntennaGradlePluginTest {
     @Test
     public void testWithoutGradle() throws Exception {
         checkInternetConnectionAndAssume(Assume::assumeTrue);
-        AntennaImpl runner = new AntennaImpl("antenna-maven-plugin", exampleTestProject.getProjectPom());
+        AntennaImpl runner = new AntennaImpl("antenna-maven-plugin", exampleTestProject.getProjectPom(), project);
         runner.execute();
         assertThat(projectRoot.resolve("antenna").toFile()).exists(); // TODO
     }
@@ -91,11 +106,12 @@ public class AntennaGradlePluginTest {
 
         AntennaImpl runner = new AntennaImpl("antenna-maven-plugin",
                 Paths.get(pom.getPath()),
+                project,
                 Paths.get(propertiesFile.getPath()));
 
         runner.execute();
 
-        Path root = Paths.get(AntennaGradlePluginTest.class.getClassLoader().getResource("build").getPath());
+        Path root = projectRoot.resolve("build");
 
         assertThat(root.resolve("antenna")).exists();
     }

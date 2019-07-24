@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.frontend.stub.cli;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.sw360.antenna.frontend.MetaDataStoringProject;
 import org.eclipse.sw360.antenna.api.FrontendCommons;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
@@ -96,13 +97,13 @@ public class AntennaCLISettingsReader {
         readStringListSetting(reader, name, v -> setter.accept(buildFileList(v)));
     }
 
-    public ToolConfiguration readSettingsToToolConfiguration(DefaultProject project) {
+    public ToolConfiguration readSettingsToToolConfiguration(MetaDataStoringProject project) {
         setVersionFromPom(project);
         XmlSettingsReader reader = getSettingsReader(project);
         return readSettingsToToolConfiguration(reader, project);
     }
 
-    private void setVersionFromPom(DefaultProject project) {
+    private void setVersionFromPom(MetaDataStoringProject project) {
         File pomFile = project.getConfigFile();
         try {
             String pom = FileUtils.readFileToString(pomFile, StandardCharsets.UTF_8);
@@ -115,10 +116,12 @@ public class AntennaCLISettingsReader {
         } catch (IOException | ParserConfigurationException | SAXException e) {
             log.warn("Failed to parse the pom to extract the version", e);
         }
-        project.setVersion("1.0");
+        if (project.getVersion() == null || project.getVersion().isEmpty()) {
+            project.setVersion("1.0");
+        }
     }
 
-    private XmlSettingsReader getSettingsReader(DefaultProject project) {
+    private XmlSettingsReader getSettingsReader(MetaDataStoringProject project) {
         File pomFile = project.getConfigFile();
         Path parent = pomFile.toPath().getParent();
 
@@ -148,12 +151,12 @@ public class AntennaCLISettingsReader {
         }
     }
 
-    private String getDefaultAntennaTargetDirectory(DefaultProject project) {
+    private String getDefaultAntennaTargetDirectory(MetaDataStoringProject project) {
         Path buildDir = Paths.get(project.getBuildDirectory());
         return buildDir.resolve(FrontendCommons.ANTENNA_DIR).toString();
     }
 
-    ToolConfiguration.ConfigurationBuilder readBasicSettingsToToolConfigurationBuilder(XmlSettingsReader reader, DefaultProject project)
+    ToolConfiguration.ConfigurationBuilder readBasicSettingsToToolConfigurationBuilder(XmlSettingsReader reader, MetaDataStoringProject project)
             throws IllegalArgumentException {
         ToolConfiguration.ConfigurationBuilder toolConfigBuilder = new ToolConfiguration.ConfigurationBuilder();
 
@@ -189,7 +192,7 @@ public class AntennaCLISettingsReader {
     /**
      * Extract properties from the specified pom.xml
      */
-    public ToolConfiguration readSettingsToToolConfiguration(XmlSettingsReader reader, DefaultProject project)
+    public ToolConfiguration readSettingsToToolConfiguration(XmlSettingsReader reader, MetaDataStoringProject project)
             throws IllegalArgumentException {
         ToolConfiguration.ConfigurationBuilder toolConfigBuilder = readBasicSettingsToToolConfigurationBuilder(reader, project);
 

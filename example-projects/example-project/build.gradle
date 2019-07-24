@@ -19,12 +19,21 @@ buildscript{
     }
 }
 
+plugins {
+    id 'java'
+}
 apply plugin: org.eclipse.sw360.antenna.frontend.gradle.GradlePlugin
+
+tasks.withType(Jar) {
+    destinationDir = file("$rootDir/build")
+}
 
 repositories {
     mavenLocal()
     mavenCentral()
 }
+
+version '1.0-SNAPSHOT'
 
 AntennaConfiguration{
     pomPath 'pom.xml'

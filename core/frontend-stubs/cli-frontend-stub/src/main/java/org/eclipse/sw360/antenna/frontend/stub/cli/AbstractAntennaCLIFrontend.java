@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.frontend.stub.cli;
 
+import org.eclipse.sw360.antenna.frontend.MetaDataStoringProject;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
@@ -30,11 +31,11 @@ import java.util.Map;
 /**
  * Provides configuration and execution services for using Antenna as a CLI tool.
  */
-public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend {
+public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend<MetaDataStoringProject> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAntennaCLIFrontend.class);
     private final Map<String, IAttachable> output = new HashMap<>();
-    private DefaultProject project;
+    private final MetaDataStoringProject project;
     private final String pluginDescendantArtifactIdName;
 
     public AbstractAntennaCLIFrontend(File pomFilePath, File propertiesFile) {
@@ -46,7 +47,7 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend {
         this.pluginDescendantArtifactIdName = getPluginDescendantArtifactIdName();
         Path buildDir = getBuildDirFromPomFile(pomFile);
         Path sourceDir = getSourceDirFromPomFile(pomFile);
-        project = new DefaultProject(pomFile, buildDir.toString(), sourceDir.toString());
+        project = new CliProject(pomFile, buildDir.toString(), sourceDir.toString());
     }
 
     protected abstract String getPluginDescendantArtifactIdName();
@@ -71,9 +72,9 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend {
     @Override
     public AntennaFrontendHelper init() {
         ToolConfiguration toolConfiguration = new AntennaCLISettingsReader(pluginDescendantArtifactIdName)
-                .readSettingsToToolConfiguration(project);
+                .readSettingsToToolConfiguration(getProject());
 
-        return new AntennaFrontendHelper(project)
+        return new AntennaFrontendHelper(getProject())
                 .setToolConfiguration(toolConfiguration);
     }
 
@@ -101,5 +102,10 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend {
 
     public Map<String, IAttachable> getOutputs() {
         return output;
+    }
+
+    @Override
+    public MetaDataStoringProject getProject() {
+        return project;
     }
 }

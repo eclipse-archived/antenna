@@ -12,13 +12,15 @@ package org.eclipse.sw360.antenna.frontend;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.eclipse.sw360.antenna.api.IAttachable;
+import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 
 import java.util.Map;
 
-public interface AntennaFrontend {
+public interface AntennaFrontend<T extends IProject> {
     AntennaFrontendHelper init() throws AntennaConfigurationException;
     void execute() throws AntennaException, MojoExecutionException;
     Map<String, IAttachable> getOutputs();
+    T getProject();
 }
