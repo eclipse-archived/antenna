@@ -33,12 +33,25 @@ runStaticCodeAnalysis() {
     mvn install -DskipTests pmd:pmd
 }
 
+setupExampleProject() {
+    tmpdir=$(mktemp -d)
+    trap 'rm -rf $tmpdir' EXIT
+
+    cp -r example-projects/example-project "$tmpdir"
+    rm -rf "$tmpdir/example-project/target"
+    rm -rf "$tmpdir/example-project/build"
+
+    echo "$tmpdir/example-project"
+}
+
 runCLITests() {
     logHeader "test cli"
     (
         set -ex
-        .travis/runCLI.sh example-projects/example-project
-        java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject example-projects/example-project/target
+
+        exampleProject=$(setupExampleProject)
+        .travis/runCLI.sh "$exampleProject"
+        java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject "$exampleProject/target"
     )
 }
 
@@ -47,9 +60,10 @@ runGradleTests() {
         logHeader "test gradle"
         (
             set -ex
-            cd example-projects/example-project
+            testProjectAsserter=$(readlink -f "core/frontend-stubs-testing/target/antenna-test-project-asserter.jar")
+            cd "$(setupExampleProject)"
             gradle analyze
-            java -jar ../../core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject build
+            java -jar $testProjectAsserter ExampleTestProject build
         )
     }
 }
@@ -59,7 +73,7 @@ runSW360IntegrationTests() {
         if [[ -f modules/sw360/src/test/resources/postgres/sw360pgdb.sql ]]; then
             set -ex
             cd modules/sw360
-            mvn clean verify -DskipTests -P integration-tes
+            mvn clean verify -DskipTests -P integration-test
         else
             echo "no SQL dump for SW360 integration testing present"
         fi
