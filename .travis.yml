@@ -26,7 +26,7 @@ jobs:
   include:
     # compile and execute with the same JDK
     - &mvn-test
-      name: mvn test
+      name: build & test
       script:
         - set -e
         - mvn test -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
@@ -34,13 +34,7 @@ jobs:
         - mvn package
         - if [[ -f modules/sw360/src/test/resources/postgres/sw360pgdb.sql ]]; then cd modules/sw360; mvn clean verify -DskipTests -P integration-test; else echo "no SQL dump for SW360 integration testing present"; fi
     - <<: *mvn-test
-      name: mvn test openjdk9
-      jdk: openjdk9
-    - <<: *mvn-test
-      name: mvn test openjdk10
-      jdk: openjdk10
-    - <<: *mvn-test
-      name: mvn test openjdk11
+      name: build & test with openjdk11
       jdk: openjdk11
 
     # run static code analysis
@@ -50,33 +44,25 @@ jobs:
 
     # compile with JDK8 and execute with other JDK
     - &differentJDK-test
-      name: mvn test, run with openjdk9
+      name: maven frontend test with openjdk11
       env:
-        - EXECUTION_JDK=9
+        - EXECUTION_JDK=11
       script:
         - set -e
         - export JAVA_HOME=$HOME/custom_jdk
         - /tmp/install-jdk.sh -f $EXECUTION_JDK -l GPL --target $JAVA_HOME
         - cd example-projects/example-project
         - mvn package -Dmaven.compiler.source=$EXECUTION_JDK -Dmaven.compiler.target=$EXECUTION_JDK -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-    - <<: *differentJDK-test
-      name: mvn test, run with openjdk10
-      env:
-        - EXECUTION_JDK=10
-    - <<: *differentJDK-test
-      name: mvn test, run with openjdk11
-      env:
-        - EXECUTION_JDK=11
 
     # test CLI
-    - name: cli test
+    - name: cli frontend test
       script:
         - set -e
         - .travis/runCLI.sh example-projects/example-project
         - java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject example-projects/example-project/target
 
     # test Gradle
-    - name: gradleTest
+    - name: gradle frontend test
       script:
         - set -e
         - cd example-projects/example-project
@@ -100,7 +86,6 @@ jobs:
       before_install: true
       install: true
       script: .travis/testForLicenseHeaders.sh
+
   allow_failures:
-    - name: mvn test openjdk9
-    - name: mvn test openjdk10
-    - name: mvn test openjdk11
+    - name: build & test with openjdk11
