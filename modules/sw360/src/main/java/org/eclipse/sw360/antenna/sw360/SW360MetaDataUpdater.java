@@ -44,6 +44,8 @@ public class SW360MetaDataUpdater {
     private String clientId;
     private String clientPassword;
 
+    private boolean updateReleases = false;
+
     public SW360MetaDataUpdater(String restServerUrl, String authServerUrl,
                                 String userId, String password, String clientId, String clientPassword,
                                 boolean proxyEnable, String proxyHost, int proxyPort) {
@@ -85,7 +87,11 @@ public class SW360MetaDataUpdater {
         } else {
             Optional<SW360Release> release = releaseClientAdapter.getReleaseByArtifact(component, artifact, header);
             if (release.isPresent()) {
-                return release.get();
+                if(updateReleases) {
+                    return releaseClientAdapter.addRelease(artifact, component, licenseIds, header);
+                } else {
+                    return release.get();
+                }
             } else {
                 throw new AntennaException("No release found for the artifact [" +
                         artifact + "]");
@@ -107,6 +113,10 @@ public class SW360MetaDataUpdater {
                         artifact + "]");
             }
         }
+    }
+
+    public void setUpdateReleases(boolean updateReleases) {
+        this.updateReleases = updateReleases;
     }
 
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) throws AntennaException, IOException {
