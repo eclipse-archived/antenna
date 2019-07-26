@@ -16,4 +16,4 @@
 set -e
 
 git checkout $1
-mvn clean install -DskipTests -Dqualifier=-$(git describe --tags | cut -d"-" -f2-)
+mvn clean install -DskipTests -Dqualifier=-$(git describe --tags --abbrev=7 | cut -d"-" -f2-)
