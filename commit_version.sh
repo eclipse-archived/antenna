@@ -8,12 +8,17 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 
-# Usage: 
+# Usage:
 # Use ./commit_version.sh <beginning of git comit-id>
 # If you want to build the current head directly, use
 # "./commit_version.sh $(git rev-parse HEAD)
 
 set -e
 
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
 git checkout $1
+
+modules/p2/prepareDependenciesForP2.sh
+
 mvn clean install -DskipTests -Dqualifier=-$(git describe --tags --abbrev=7 | cut -d"-" -f2-)
