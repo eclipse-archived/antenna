@@ -110,16 +110,16 @@ public class SW360Enricher extends AbstractProcessor {
     }
 
     private void mapCopyrights(SW360Release sw360Release, Artifact artifact) {
-        if (sw360Release.getExternalIds().containsKey(SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS)) {
-            String copyrights = sw360Release.getExternalIds().get(SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS);
+        if (sw360Release.getAdditionalData().containsKey(SW360Attributes.RELEASE_ADDITIONAL_DATA_COPYRIGHTS)) {
+            String copyrights = sw360Release.getAdditionalData().get(SW360Attributes.RELEASE_ADDITIONAL_DATA_COPYRIGHTS);
 
             artifact.addFact(new CopyrightStatement(copyrights));
         }
     }
 
     private void mapChangeStatus(SW360Release sw360Release, Artifact artifact) {
-        if (sw360Release.getExternalIds().containsKey(SW360Attributes.RELEASE_EXTERNAL_ID_CHANGESTATUS)) {
-            String string_change_status = sw360Release.getExternalIds().get(SW360Attributes.RELEASE_EXTERNAL_ID_CHANGESTATUS);
+        if (sw360Release.getAdditionalData().containsKey(SW360Attributes.RELEASE_ADDITIONAL_DATA_CHANGESTATUS)) {
+            String string_change_status = sw360Release.getAdditionalData().get(SW360Attributes.RELEASE_ADDITIONAL_DATA_CHANGESTATUS);
 
             ArtifactChangeStatus.ChangeStatus changeStatus = ArtifactChangeStatus.ChangeStatus.valueOf(string_change_status);
 
@@ -160,18 +160,18 @@ public class SW360Enricher extends AbstractProcessor {
     }
 
     private void mapObservedLicense(SW360Release sw360Release, Artifact artifact) {
-        if (sw360Release.getExternalIds().containsKey(SW360Attributes.RELEASE_EXTERNAL_ID_OLICENSES)) {
+        if (sw360Release.getAdditionalData().containsKey(SW360Attributes.RELEASE_ADDITIONAL_DATA_OLICENSES)) {
             License licenseStatement = makeLicenseStatementFromString(
-                    sw360Release.getExternalIds().get(SW360Attributes.RELEASE_EXTERNAL_ID_OLICENSES));
+                    sw360Release.getAdditionalData().get(SW360Attributes.RELEASE_ADDITIONAL_DATA_OLICENSES));
 
             artifact.addFact(new ObservedLicenseInformation(licenseStatement));
         }
     }
 
     private void mapDeclaredLicense(SW360Release sw360Release, Artifact artifact) {
-        if (sw360Release.getExternalIds().containsKey(SW360Attributes.RELEASE_EXTERNAL_ID_DLICENSES)) {
+        if (sw360Release.getAdditionalData().containsKey(SW360Attributes.RELEASE_ADDITIONAL_DATA_DLICENSES)) {
             License licenseStatement = makeLicenseStatementFromString(
-                    sw360Release.getExternalIds().get(SW360Attributes.RELEASE_EXTERNAL_ID_DLICENSES));
+                    sw360Release.getAdditionalData().get(SW360Attributes.RELEASE_ADDITIONAL_DATA_DLICENSES));
 
             artifact.addFact(new DeclaredLicenseInformation(licenseStatement));
         }

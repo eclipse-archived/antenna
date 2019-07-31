@@ -81,6 +81,7 @@ public class RestUtils {
         release.put(SW360Attributes.RELEASE_CLEARINGSTATE, sw360Release.getClearingState());
         release.put(SW360Attributes.RELEASE_MAIN_LICENSE_IDS, sw360Release.getMainLicenseIds());
         release.put(SW360Attributes.RELEASE_EXTERNAL_IDS, convertSW360ExternalIdsToMapOfStrings(sw360Release));
+        release.put(SW360Attributes.RELEASE_ADDITIONAL_DATA, convertSW360AdditionalDataToMapOfStrings(sw360Release));
         return getHttpEntity(release, header);
     }
 
@@ -98,15 +99,6 @@ public class RestUtils {
     private static Map<String, String> convertSW360ExternalIdsToMapOfStrings(SW360Release sw360Release) {
         Map<String, String> externalIds = new HashMap<>(sw360Release.getCoordinates());
 
-        if(sw360Release.getFinalLicense() != null) {
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_FLICENSES, sw360Release.getFinalLicense());
-        }
-        if(sw360Release.getDeclaredLicense() != null) {
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_DLICENSES, sw360Release.getDeclaredLicense());
-        }
-        if(sw360Release.getObservedLicense() != null) {
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_OLICENSES, sw360Release.getObservedLicense());
-        }
         if(sw360Release.getReleaseTagUrl() != null) {
             externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_OREPO, sw360Release.getReleaseTagUrl());
         }
@@ -115,12 +107,6 @@ public class RestUtils {
         }
         if(sw360Release.getHashes() != null) {
             externalIds.putAll(convertSetOfStringsOfHashesToMapOfStrings(sw360Release.getHashes()));
-        }
-        if(sw360Release.getChangeStatus() != null) {
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_CHANGESTATUS, sw360Release.getChangeStatus());
-        }
-        if(sw360Release.getCopyrights() != null) {
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS, sw360Release.getCopyrights());
         }
 
         return externalIds;
@@ -135,5 +121,25 @@ public class RestUtils {
             i++;
         }
         return setMap;
+    }
+
+    public static Map<String, String>  convertSW360AdditionalDataToMapOfStrings(SW360Release sw360Release) {
+        Map<String, String> additionalData = new HashMap<>();
+        if(sw360Release.getFinalLicense() != null) {
+            additionalData.put(SW360Attributes.RELEASE_ADDITIONAL_DATA_FLICENSES, sw360Release.getFinalLicense());
+        }
+        if(sw360Release.getDeclaredLicense() != null) {
+            additionalData.put(SW360Attributes.RELEASE_ADDITIONAL_DATA_DLICENSES, sw360Release.getDeclaredLicense());
+        }
+        if(sw360Release.getObservedLicense() != null) {
+            additionalData.put(SW360Attributes.RELEASE_ADDITIONAL_DATA_OLICENSES, sw360Release.getObservedLicense());
+        }
+        if(sw360Release.getChangeStatus() != null) {
+            additionalData.put(SW360Attributes.RELEASE_ADDITIONAL_DATA_CHANGESTATUS, sw360Release.getChangeStatus());
+        }
+        if(sw360Release.getCopyrights() != null) {
+            additionalData.put(SW360Attributes.RELEASE_ADDITIONAL_DATA_COPYRIGHTS, sw360Release.getCopyrights());
+        }
+        return additionalData;
     }
 }

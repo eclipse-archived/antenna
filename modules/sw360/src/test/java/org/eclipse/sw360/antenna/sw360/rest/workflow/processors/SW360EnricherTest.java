@@ -239,16 +239,22 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         Map<String, String> externalIds = new HashMap<>();
 
-        externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_DLICENSES, "Apache-2.0");
-        externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_OLICENSES, "A Test License");
         externalIds.put(SW360CoordinateKeysToArtifactCoordinates.get(MavenCoordinates.class), "test:test1:1.2.3");
         externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_OREPO, releaseTagUrl);
         externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_SWHID, swhID);
         externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_HASHES + "1", hashString);
-        externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_CHANGESTATUS, "AS_IS");
-        externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS, copyrights);
 
         sw360Release.setExternalIds(externalIds);
+
+
+        Map<String, String> additionalData = new HashMap<>();
+
+        additionalData.put(SW360Attributes.RELEASE_ADDITIONAL_DATA_DLICENSES, "Apache-2.0");
+        additionalData.put(SW360Attributes.RELEASE_ADDITIONAL_DATA_OLICENSES, "A Test License");
+        additionalData.put(SW360Attributes.RELEASE_ADDITIONAL_DATA_CHANGESTATUS, "AS_IS");
+        additionalData.put(SW360Attributes.RELEASE_ADDITIONAL_DATA_COPYRIGHTS, copyrights);
+
+        sw360Release.setAdditionalData(additionalData);
 
         return sw360Release;
     }

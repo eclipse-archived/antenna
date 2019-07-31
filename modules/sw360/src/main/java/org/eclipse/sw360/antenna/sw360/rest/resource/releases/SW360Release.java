@@ -36,6 +36,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     private String copyrights;
 
     private Map<String, String> externalIds;
+    private Map<String, String> additionalData;
 
 
     public String getComponentId() {
@@ -182,6 +183,15 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
         return this;
     }
 
+    public Map<String, String> getAdditionalData() {
+        return additionalData;
+    }
+
+    public SW360Release setAdditionalData(Map<String,String> additionalData) {
+        this.additionalData = additionalData;
+        return this;
+    }
+
     public String getCopyrights() {
         return copyrights;
     }
@@ -211,6 +221,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
         changeStatus = Optional.of(releaseWithPrecedence.getChangeStatus()).orElse(changeStatus);
         copyrights = Optional.of(releaseWithPrecedence.getCopyrights()).orElse(copyrights);
         externalIds = Optional.of(releaseWithPrecedence.getExternalIds()).orElse(externalIds);
+        additionalData = Optional.of(releaseWithPrecedence.getAdditionalData()).orElse(additionalData);
 
         return this;
     }
