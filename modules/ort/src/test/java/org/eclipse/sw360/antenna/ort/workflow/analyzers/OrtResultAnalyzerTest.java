@@ -57,36 +57,6 @@ public class OrtResultAnalyzerTest {
     }
 
     @Test
-    public void testParseOrtDataWithoutAnalyzerResultsToArtifacts() throws URISyntaxException, IOException {
-        List<Artifact> artifacts = init("scan-result-nullAnalyzer.yml");
-
-        assertThat(artifacts.stream()
-        .map(artifact -> artifact.askForGet(ObservedLicenseInformation.class))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(LicenseInformation::evaluate))
-                .contains("CPL-1.0");
-
-        assertThat(artifacts.stream()
-                .map(artifact -> artifact.askForGet(CopyrightStatement.class))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .flatMap(s -> Stream.of(s.split("/n"))).toArray())
-                .contains("\"" + "Copyright (c) 2014-2017 Teist Peirson2 <teist.peirson@2.com>" + "\"");
-
-        assertThat(artifacts.stream()
-                .map(artifact -> artifact.askForGet(CopyrightStatement.class))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .flatMap(s -> Stream.of(s.split("/n"))).toArray())
-                .hasSize(1);
-
-        assertThat(makeListOfSourceUrlStrings(artifacts)).hasSize(1);
-
-        assertThat(makeListOfSourceUrlStrings(artifacts)).contains("https:/some.jar");
-    }
-
-    @Test
     public void testParseOrtDataToArtifacts() throws URISyntaxException, IOException {
         List<Artifact> artifacts = init("analyzer-result.yml");
 

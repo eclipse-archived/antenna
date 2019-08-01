@@ -70,10 +70,8 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
         if (!ortResult.get("analyzer").isNull() &&
                 ortResult.get("analyzer").get("result").get("packages") != null) {
             return getArtifactListFromAnalyzerResult(ortResult.get("analyzer").get("result").get("packages"), optionalScanResults);
-
-        } else if (optionalScanResults.isPresent()) {
-            return getArtifactListFromScanResult(optionalScanResults.get());
         }
+
         return Collections.emptyList();
     }
 
@@ -87,16 +85,6 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
                         artifacts.add(mapAnalyzerArtifact(ortPackage, scanResult));
                     }
             );
-        }
-        return artifacts;
-    }
-
-    private List<Artifact> getArtifactListFromScanResult(JsonNode scanResults) {
-        List<Artifact> artifacts = new ArrayList<>();
-
-        Iterator<JsonNode> scanResultsIterator = scanResults.elements();
-        while (scanResultsIterator.hasNext()) {
-            artifacts.add(new OrtScannerResultResolver().apply(scanResultsIterator.next()));
         }
         return artifacts;
     }
