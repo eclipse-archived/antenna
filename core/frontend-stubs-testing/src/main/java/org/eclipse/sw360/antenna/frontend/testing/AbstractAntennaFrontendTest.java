@@ -55,11 +55,13 @@ abstract public class AbstractAntennaFrontendTest {
     protected boolean runExecutionTest;
 
     @Parameterized.Parameters(name = "{index}: Test data = {1}")
-    public static Collection<Object[]> data() throws URISyntaxException {
+    public static Collection<Object[]> data() throws IOException, URISyntaxException {
+        String p2ProductPath = ClassCodeSourceLocation.getClassCodeSourceLocationAsString(AbstractAntennaFrontendTest.class);
         String relativePathToP2Product = "../../../../modules/p2/p2-product/repository_manager";
-        if (! Paths.get(ClassCodeSourceLocation.getClassCodeSourceLocationAsString(AbstractAntennaFrontendTest.class),
-                relativePathToP2Product).normalize().toFile().exists()) {
-            throw new RuntimeException("The folder " + relativePathToP2Product + " should be found by AbstractAntennaFrontendTest. Maybe the Path is outdated.");
+        File absolutePathToP2Product = new File(p2ProductPath, relativePathToP2Product).getCanonicalFile();
+
+        if (!absolutePathToP2Product.exists()) {
+            throw new RuntimeException("The folder '" + absolutePathToP2Product + "' should be found by AbstractAntennaFrontendTest. Maybe the Path is outdated.");
         }
 
         if (Paths.get(
