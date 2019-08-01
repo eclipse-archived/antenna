@@ -12,7 +12,7 @@ package org.eclipse.sw360.antenna.ort.workflow.analyzers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
@@ -22,9 +22,8 @@ import org.eclipse.sw360.antenna.ort.resolver.OrtScannerResultResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
@@ -37,11 +36,8 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
 
     @Override
     public WorkflowStepResult yield() throws AntennaException {
-        if (!componentInfoFile.getAbsolutePath().endsWith(".yml")) {
-            throw new AntennaException("Ort Result File is not a yaml file.");
-        }
-        try (InputStream is = new FileInputStream(componentInfoFile.getAbsolutePath())) {
-            return new WorkflowStepResult(createArtifactList(is));
+        try {
+            return new WorkflowStepResult(createArtifactList(componentInfoFile));
         } catch (IOException e) {
             throw new AntennaException("Error reading or parsing the ort result yaml file: " + e.getMessage());
         }
@@ -52,18 +48,28 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
         return "OrtResult";
     }
 
-    Collection<Artifact> createArtifactList(InputStream is) throws IOException {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        JsonNode yamlContent = mapper.readTree(is);
+    Collection<Artifact> createArtifactList(File ortResultFile) throws IOException {
+        Optional<String> extension = Optional.ofNullable(ortResultFile.getName())
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(f.lastIndexOf(".") + 1));
+
+        ObjectMapper mapper;
+        switch (extension.get()) {
+            case "json": mapper = new ObjectMapper(); break;
+            case "yml": mapper = new YAMLMapper(); break;
+            default: throw new IOException("Ort Result File is not in a supported format.");
+        }
+
+        JsonNode ortResult = mapper.readTree(ortResultFile);
         LOGGER.debug("Create artifact list from input stream");
 
-        Optional<JsonNode> optionalScanResults = Optional.ofNullable(yamlContent.get("scanner"))
+        Optional<JsonNode> optionalScanResults = Optional.ofNullable(ortResult.get("scanner"))
                 .filter(j -> !j.isNull())
                 .map(v -> v.get("results").get("scan_results"));
 
-        if (!yamlContent.get("analyzer").isNull() &&
-                yamlContent.get("analyzer").get("result").get("packages") != null) {
-            return getArtifactListFromAnalyzerResult(yamlContent.get("analyzer").get("result").get("packages"), optionalScanResults);
+        if (!ortResult.get("analyzer").isNull() &&
+                ortResult.get("analyzer").get("result").get("packages") != null) {
+            return getArtifactListFromAnalyzerResult(ortResult.get("analyzer").get("result").get("packages"), optionalScanResults);
 
         } else if (optionalScanResults.isPresent()) {
             return getArtifactListFromScanResult(optionalScanResults.get());
