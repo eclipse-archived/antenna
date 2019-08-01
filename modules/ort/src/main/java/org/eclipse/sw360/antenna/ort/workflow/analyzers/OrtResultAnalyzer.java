@@ -61,7 +61,7 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
         }
 
         JsonNode ortResult = mapper.readTree(ortResultFile);
-        LOGGER.debug("Create artifact list from input stream");
+        LOGGER.debug("Create artifact list from Ort Result File");
 
         Optional<JsonNode> optionalScanResults = Optional.ofNullable(ortResult.get("scanner"))
                 .filter(j -> !j.isNull())
