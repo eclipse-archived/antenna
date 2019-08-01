@@ -10,9 +10,8 @@
  */
 package org.eclipse.sw360.antenna.frontend.stub.cli;
 
+import org.eclipse.sw360.antenna.frontend.MetaDataStoringProject;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.frontend.stub.cli.AntennaCLISettingsReader;
-import org.eclipse.sw360.antenna.frontend.stub.cli.DefaultProject;
 import org.eclipse.sw360.antenna.util.XmlSettingsReader;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,7 +44,7 @@ public class AntennaCLISettingsReaderTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Mock
-    private DefaultProject project = mock(DefaultProject.class);
+    private MetaDataStoringProject project = mock(MetaDataStoringProject.class);
 
     @Mock
     private XmlSettingsReader reader = mock(XmlSettingsReader.class);

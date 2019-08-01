@@ -60,10 +60,11 @@ import java.util.stream.Stream;
  */
 
 @SuppressWarnings("PMD.UnusedPrivateField")
-public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implements AntennaFrontend {
+public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implements AntennaFrontend<WrappedMavenProject> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAntennaMojoFrontend.class);
     private final Map<String, IAttachable> output = new HashMap<>();
+    private WrappedMavenProject wrappedMavenProject;
 
     @Parameter( defaultValue = "${project}", readonly = true )
     private MavenProject project;
@@ -219,7 +220,7 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
     public AntennaFrontendHelper init() {
         getProxySettingsFromSettings();
         ToolConfiguration toolConfiguration = loadConfiguration();
-        WrappedMavenProject wrappedMavenProject = new WrappedMavenProject(mvnBuildContext.getSession().getCurrentProject());
+        wrappedMavenProject = new WrappedMavenProject(mvnBuildContext.getSession().getCurrentProject());
 
         WrappedDependencyNodes wrappedDependencyNodes = getWrappedDependencyNodes();
 
@@ -232,6 +233,11 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
                 .putGeneric(mvnBuildContext)
                 .putGeneric(mvnRepositorySystem)
                 .putGeneric(wrappedDependencyNodes);
+    }
+
+    @Override
+    public WrappedMavenProject getProject() {
+        return wrappedMavenProject;
     }
 
     /**

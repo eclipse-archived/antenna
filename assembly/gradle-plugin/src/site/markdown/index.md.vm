@@ -18,12 +18,22 @@ buildscript{
     }
 }
 
+plugins {
+    id 'java'
+}
+
 apply plugin: ${antennaGradleJavaFilename}
+
+tasks.withType(Jar) {
+    destinationDir = file("$rootDir/build")
+}
 
 repositories {
     mavenLocal()
     mavenCentral()
 }
+
+version '1.0-SNAPSHOT'
 
 ${docNameCap}Configuration{
     pomPath 'pom.xml'
