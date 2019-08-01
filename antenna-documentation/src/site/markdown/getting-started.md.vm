@@ -172,7 +172,7 @@ example_project
 
 After the setup and configuration of our project we are ready to build and execute it.
 Like above mentioned we attached ${docNameCap} to be executed in the build step `package`.
-Therefor we can just execute
+Therefore we can just execute
 
 ```
 mvn package
