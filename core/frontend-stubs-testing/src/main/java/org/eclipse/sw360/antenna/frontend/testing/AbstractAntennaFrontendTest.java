@@ -59,11 +59,11 @@ abstract public class AbstractAntennaFrontendTest {
         String relativePathToP2Product = "../../../../modules/p2/p2-product/repository_manager";
         File absolutePathToP2Product = new File(p2ProductPath, relativePathToP2Product).getCanonicalFile();
 
-        if (!absolutePathToP2Product.exists()) {
+        if (!absolutePathToP2Product.isDirectory()) {
             throw new RuntimeException("The folder '" + absolutePathToP2Product + "' should be found by AbstractAntennaFrontendTest. Maybe the Path is outdated.");
         }
 
-        if (new File(absolutePathToP2Product, "target/products").exists()) {
+        if (new File(absolutePathToP2Product, "target/products").isDirectory()) {
             return Arrays.asList(new Object[][]{
                     {(Supplier<AbstractTestProjectWithExpectations>) MinimalTestProject::new, "minimal configuration"},
                     {(Supplier<AbstractTestProjectWithExpectations>) BasicTestProject::new, "basic configuration"},
