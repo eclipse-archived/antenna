@@ -19,12 +19,10 @@ import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,9 +43,8 @@ public class OrtResultAnalyzerTest {
     private List<Artifact> init(String filename) throws URISyntaxException, IOException {
 
         URI uri = this.getClass().getClassLoader().getResource(filename).toURI();
-        InputStream iStream = Files.newInputStream(Paths.get(uri));
 
-        return new ArrayList<>(ortResultAnalyzer.createArtifactList(iStream));
+        return new ArrayList<>(ortResultAnalyzer.createArtifactList(new File(uri)));
     }
 
     @Test
