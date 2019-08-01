@@ -30,7 +30,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -64,10 +63,7 @@ abstract public class AbstractAntennaFrontendTest {
             throw new RuntimeException("The folder '" + absolutePathToP2Product + "' should be found by AbstractAntennaFrontendTest. Maybe the Path is outdated.");
         }
 
-        if (Paths.get(
-                ClassCodeSourceLocation.getClassCodeSourceLocationAsString(AbstractAntennaFrontendTest.class),
-                relativePathToP2Product,
-                "target/products").normalize().toFile().exists()) {
+        if (new File(absolutePathToP2Product, "target/products").exists()) {
             return Arrays.asList(new Object[][]{
                     {(Supplier<AbstractTestProjectWithExpectations>) MinimalTestProject::new, "minimal configuration"},
                     {(Supplier<AbstractTestProjectWithExpectations>) BasicTestProject::new, "basic configuration"},
@@ -76,6 +72,7 @@ abstract public class AbstractAntennaFrontendTest {
                     {(Supplier<AbstractTestProjectWithExpectations>) P2TestProject::new, "p2 configuration"},
             });
         }
+
         return Arrays.asList(new Object[][]{
                 {(Supplier<AbstractTestProjectWithExpectations>) MinimalTestProject::new, "minimal configuration"},
                 {(Supplier<AbstractTestProjectWithExpectations>) BasicTestProject::new, "basic configuration"},
