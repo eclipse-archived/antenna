@@ -150,7 +150,7 @@ To keep things small and easy, we are going to have only one dependency and this
 
 You can add as many dependency entries (here called components) to the json file.
 To understand the parameters more deeply please read the [JSON Analyzer][jsonanalyzer] guide.
-It is also possible to provide a CSV file instead, or additionally, to the json analyzer(check the [CSV Analzyer][csvanalyzer] guide).
+It is also possible to provide a CSV file instead, or additionally, to the json analyzer(check the [CSV Analyzer][csvanalyzer] guide).
 
 The final project structure after adding the workflow.xml and dependencies.json file should now look like this:
 
@@ -172,7 +172,7 @@ example_project
 
 After the setup and configuration of our project we are ready to build and execute it.
 Like above mentioned we attached ${docNameCap} to be executed in the build step `package`.
-Therefor we can just execute
+Therefore we can just execute
 
 ```
 mvn package
