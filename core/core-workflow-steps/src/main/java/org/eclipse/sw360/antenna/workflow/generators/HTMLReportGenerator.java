@@ -93,6 +93,7 @@ public class HTMLReportGenerator extends AbstractGenerator {
 
         velocityContext.put("artifacts", artifactsForHTMLReport);
         velocityContext.put("licenses", licensesForHtmlReport);
+        velocityContext.put("HTMLReportUtils", HTMLReportUtils.class);
 
         return velocityContext;
     }
