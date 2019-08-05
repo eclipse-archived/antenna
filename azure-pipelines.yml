@@ -36,42 +36,22 @@ steps:
   displayName: 'test example project with maven'
   inputs:
     targetType: 'inline'
-    script: 'tmpdir=$(mktemp -d) &&
-      cp -r example-projects/example-project/ $tmpdir/example-project/ &&
-      rm -rf $tmpdir/example-project/target &&
-      pushd $tmpdir/example-project/ &&
-      mvn package &&
-      popd &&
-      java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject $tmpdir/example-project/target'
+    script: '.ci-scripts/test-ExampleTestProject-with-maven.sh'
 
 - task: Bash@3
   displayName: 'test example project with cli'
   inputs:
     targetType: 'inline'
-    script: 'tmpdir=$(mktemp -d) &&
-      cp -r example-projects/example-project/ $tmpdir/example-project/ &&
-      rm -rf $tmpdir/example-project/target &&
-      .travis/runCLI.sh $tmpdir/example-project &&
-      java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject $tmpdir/example-project/target'
+    script: '.ci-scripts/test-ExampleTestProject-with-CLI.sh'
 
 - task: Bash@3
   displayName: 'test example project with gradle'
   inputs:
     targetType: 'inline'
-    script: 'tmpdir=$(mktemp -d) &&
-      cp -r example-projects/example-project/ $tmpdir/example-project/ &&
-      rm -rf $tmpdir/example-project/target &&
-      rm -rf $tmpdir/example-project/build &&
-      cp assembly/gradle-plugin/gradlew $tmpdir/example-project/ &&
-      cp -r assembly/gradle-plugin/gradle $tmpdir/example-project/ &&
-      pushd $tmpdir/example-project &&
-      ./gradlew analyze &&
-      popd &&
-      java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject $tmpdir/example-project/build'
+    script: '.ci-scripts/test-ExampleTestProject-with-gradle.sh'
 
 - task: Bash@3
   displayName: 'site-tests in antenna-documentation'
   inputs:
     targetType: 'inline'
-    script: 'cd antenna-documentation &&
-      mvn site -Psite-tests'
+    script: '.ci-scripts/test-antenna-documentation-site-tests.sh'
