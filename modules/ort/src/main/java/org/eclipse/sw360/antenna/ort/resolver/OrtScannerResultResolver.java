@@ -74,7 +74,7 @@ public class OrtScannerResultResolver extends AbstractOrtResultResolver {
         return iterateOverLicenseFindingsFromJsonNode(result)
                 .flatMap(s -> s.flatMap(node -> Utils.iteratorToCollection(node.get("copyrights").elements())
                         .stream())
-                        .map(JsonNode::toString)
+                        .map(JsonNode::textValue)
                         .map(CopyrightStatement::new)
                         .reduce(CopyrightStatement::mergeWith)
                 );
