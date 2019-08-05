@@ -27,6 +27,8 @@ import org.mockito.Mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -59,8 +61,8 @@ public class AntennaGradlePluginTest {
 
         when(project.getBuildDir())
                 .thenReturn(projectRoot.resolve("build").toFile());
-        when(project.getBuildFile())
-                .thenReturn(projectRoot.resolve("build.gradle").toFile());
+        when(project.getRootDir())
+                .thenReturn(projectRoot.toFile());
         when(project.getName())
                 .thenReturn(exampleTestProject.getExpectedProjectArtifactId());
     }
@@ -100,14 +102,14 @@ public class AntennaGradlePluginTest {
     }
 
     @Test
-    public void testWithoutGradleSetSystemEnvironmentVariables() throws AntennaException {
-        URL pom = AntennaGradlePluginTest.class.getClassLoader().getResource("pom.xml");
-        URL propertiesFile = AntennaGradlePluginTest.class.getClassLoader().getResource("antennaTestVariable.properties");
+    public void testWithoutGradleSetSystemEnvironmentVariables() throws AntennaException, URISyntaxException {
+        URI pom = AntennaGradlePluginTest.class.getClassLoader().getResource("pom.xml").toURI();
+        URI propertiesFile = AntennaGradlePluginTest.class.getClassLoader().getResource("antennaTestVariable.properties").toURI();
 
         AntennaImpl runner = new AntennaImpl("antenna-maven-plugin",
-                Paths.get(pom.getPath()),
+                Paths.get(pom),
                 project,
-                Paths.get(propertiesFile.getPath()));
+                Paths.get(propertiesFile));
 
         runner.execute();
 
