@@ -39,7 +39,7 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
         try {
             return new WorkflowStepResult(createArtifactList(componentInfoFile));
         } catch (IOException e) {
-            throw new AntennaException("Error reading or parsing the ort result yaml file: " + e.getMessage());
+            throw new AntennaException("Error parsing the ORT result file: " + e.getMessage());
         }
     }
 
