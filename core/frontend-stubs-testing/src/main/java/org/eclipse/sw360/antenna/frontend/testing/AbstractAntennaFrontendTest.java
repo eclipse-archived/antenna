@@ -30,7 +30,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -55,17 +54,16 @@ abstract public class AbstractAntennaFrontendTest {
     protected boolean runExecutionTest;
 
     @Parameterized.Parameters(name = "{index}: Test data = {1}")
-    public static Collection<Object[]> data() throws URISyntaxException {
+    public static Collection<Object[]> data() throws IOException, URISyntaxException {
+        String p2ProductPath = ClassCodeSourceLocation.getClassCodeSourceLocationAsString(AbstractAntennaFrontendTest.class);
         String relativePathToP2Product = "../../../../modules/p2/p2-product/repository_manager";
-        if (! Paths.get(ClassCodeSourceLocation.getClassCodeSourceLocationAsString(AbstractAntennaFrontendTest.class),
-                relativePathToP2Product).normalize().toFile().exists()) {
-            throw new RuntimeException("The folder " + relativePathToP2Product + " should be found by AbstractAntennaFrontendTest. Maybe the Path is outdated.");
+        File absolutePathToP2Product = new File(p2ProductPath, relativePathToP2Product).getCanonicalFile();
+
+        if (!absolutePathToP2Product.isDirectory()) {
+            throw new RuntimeException("The folder '" + absolutePathToP2Product + "' should be found by AbstractAntennaFrontendTest. Maybe the Path is outdated.");
         }
 
-        if (Paths.get(
-                ClassCodeSourceLocation.getClassCodeSourceLocationAsString(AbstractAntennaFrontendTest.class),
-                relativePathToP2Product,
-                "target/products").normalize().toFile().exists()) {
+        if (new File(absolutePathToP2Product, "target/products").isDirectory()) {
             return Arrays.asList(new Object[][]{
                     {(Supplier<AbstractTestProjectWithExpectations>) MinimalTestProject::new, "minimal configuration"},
                     {(Supplier<AbstractTestProjectWithExpectations>) BasicTestProject::new, "basic configuration"},
@@ -74,6 +72,7 @@ abstract public class AbstractAntennaFrontendTest {
                     {(Supplier<AbstractTestProjectWithExpectations>) P2TestProject::new, "p2 configuration"},
             });
         }
+
         return Arrays.asList(new Object[][]{
                 {(Supplier<AbstractTestProjectWithExpectations>) MinimalTestProject::new, "minimal configuration"},
                 {(Supplier<AbstractTestProjectWithExpectations>) BasicTestProject::new, "basic configuration"},
