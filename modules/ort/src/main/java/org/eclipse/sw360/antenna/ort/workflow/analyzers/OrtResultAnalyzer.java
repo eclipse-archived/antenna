@@ -61,7 +61,7 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
         }
 
         JsonNode ortResult = mapper.readTree(ortResultFile);
-        LOGGER.debug("Create artifact list from input stream");
+        LOGGER.debug("Create artifact list from Ort Result File");
 
         Optional<JsonNode> optionalScanResults = Optional.ofNullable(ortResult.get("scanner"))
                 .filter(j -> !j.isNull())
@@ -70,10 +70,8 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
         if (!ortResult.get("analyzer").isNull() &&
                 ortResult.get("analyzer").get("result").get("packages") != null) {
             return getArtifactListFromAnalyzerResult(ortResult.get("analyzer").get("result").get("packages"), optionalScanResults);
-
-        } else if (optionalScanResults.isPresent()) {
-            return getArtifactListFromScanResult(optionalScanResults.get());
         }
+
         return Collections.emptyList();
     }
 
@@ -87,16 +85,6 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
                         artifacts.add(mapAnalyzerArtifact(ortPackage, scanResult));
                     }
             );
-        }
-        return artifacts;
-    }
-
-    private List<Artifact> getArtifactListFromScanResult(JsonNode scanResults) {
-        List<Artifact> artifacts = new ArrayList<>();
-
-        Iterator<JsonNode> scanResultsIterator = scanResults.elements();
-        while (scanResultsIterator.hasNext()) {
-            artifacts.add(new OrtScannerResultResolver().apply(scanResultsIterator.next()));
         }
         return artifacts;
     }
