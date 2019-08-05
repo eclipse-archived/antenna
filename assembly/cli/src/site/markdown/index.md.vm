@@ -14,7 +14,7 @@ This means that some functionality provided by Maven cannot be relied upon.
 Here are some pointers on writing a configuration file for ${docNameCap} CLI:
 
 * Unlike the Maven plugin frontend, the CLI frontend won't copy the 
-project's artifacts into place, so your `<filesToScanPattern>` section 
+project's artifacts into place, so your `<scan.patterns>` section
 must describe the original locations of your source artifacts.
 
 * All paths must be absolute.
