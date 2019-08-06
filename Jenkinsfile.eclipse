@@ -129,7 +129,7 @@ spec:
                       mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                           --batch-mode \
                           install -DskipTests ${params.SIGNING_COMMAND} deploy \
-                          -pl "!antenna-testing,!antenna-testing/antenna-core-common-testing,!antenna-testing/antenna-frontend-stubs-testing,!antenna-testing/antenna-rule-engine-testing" \
+                          -pl '!core/model-testing,!core/frontend-stubs-testing,!modules/drools/rule-engine-testing' \
                           -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
                     """
                 }
@@ -151,45 +151,20 @@ spec:
                         --batch-mode \
                         test
                     '''
-
                     // test as maven plugin
-                    sh '''
-                      tmpdir="$(mktemp -d)"
-                      locRep="$(readlink -f localRepository)"
-                      cp -r example-projects/example-project $tmpdir
-                      cd $tmpdir/example-project
-                      mvn -Dmaven.repo.local="$locRep" \
-                        --batch-mode \
-                        package
-                      cd -
-                    '''
-
+                    sh 'MAVEN_OPTS="-Dmaven.repo.local=$(readlink -f ./repository)" .ci-scripts/test-ExampleTestProject-with-maven.sh'
                     // run SW360 integration tests, if corresponding sqldump is present
                     sh '''
                       if [[ -f modules/sw360/src/test/resources/postgres/sw360pgdb.sql ]]; then
-                          cd modules/sw360
-                          mvn clean verify -DskipTests -P integration-test
-                          cd -
+                          .ci-scripts/test-sw360-integration-test.sh
                       fi
                     '''
-
                     // test as CLI tool
-                    sh '''
-                      tmpdir="$(mktemp -d)"
-                      cp -r example-projects/example-project $tmpdir
-                      .travis/runCLI.sh $tmpdir/example-project
-                      java -jar antenna-testing/antenna-frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject $tmpdir/example-project/target
-                    '''
-
+                    sh '.ci-scripts/test-ExampleTestProject-with-CLI.sh'
+                    // test as gradle plugin
+                    sh 'M2_REPOSITORY="$(readlink -f ./repository)" .ci-scripts/test-ExampleTestProject-with-gradle.sh'
                     // test the antenna site
-                    dir("antenna-documentation") {
-                        sh '''
-                          mvn -Dmaven.repo.local=$(readlink -f ../localRepository) \
-                            --batch-mode \
-                            site -Psite-tests
-                        '''
-                    }
-
+                    sh 'MAVEN_OPTS="-Dmaven.repo.local=$(readlink -f ./repository)" .ci-scripts/test-antenna-documentation-site-tests.sh'
                     // run static code analysis
                     sh '''
                       mvn install -DskipTests pmd:pmd checkstyle:checkstyle-aggregate spotbugs:check -Dmaven.repo.local=$(readlink -f localRepository)
@@ -233,7 +208,7 @@ spec:
                           genie.antenna@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/antenna/snapshots
                     '''
                 }
-                sh 'Snapshot release is published at https://download.eclipse.org/antenna/snapshots'
+                echo 'Snapshot release is published at https://download.eclipse.org/antenna/snapshots'
             }
         }
         stage ('push repository to download.eclipse.org to antenna/releases') {
@@ -263,7 +238,7 @@ spec:
                           genie.antenna@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/antenna/releases
                     '''
                 }
-                sh 'Release is published at https://download.eclipse.org/antenna/releases'
+                echo 'Release is published at https://download.eclipse.org/antenna/releases'
             }
         }
     }

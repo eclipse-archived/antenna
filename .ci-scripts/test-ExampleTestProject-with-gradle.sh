@@ -17,7 +17,12 @@ trap 'rm -rf $tmpdir' EXIT
 cp -r example-projects/example-project/ $tmpdir/example-project/
 cp assembly/gradle-plugin/gradlew $tmpdir/example-project/
 cp -r assembly/gradle-plugin/gradle $tmpdir/example-project/
+if [[ $M2_REPOSITORY ]]; then
+    sed -i.bak "s%mavenLocal()%maven {url '${M2_REPOSITORY}'}%" $tmpdir/example-project/build.gradle
+fi
+
 pushd $tmpdir/example-project
 ./gradlew cleanAnalyze analyze
 popd
+
 java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject $tmpdir/example-project/build

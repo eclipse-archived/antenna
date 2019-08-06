@@ -81,48 +81,20 @@ pipeline {
                         --batch-mode \
                         test
                     '''
-
                     // test as maven plugin
-                    sh '''
-                      tmpdir="$(mktemp -d)"
-                      locRep="$(readlink -f localRepository)"
-                      cp -r example-projects/example-project $tmpdir
-                      cd $tmpdir/example-project
-                      mvn -Dmaven.repo.local="$locRep" \
-                        --batch-mode \
-                        package
-                      cd -
-                      rm -r "$tmpdir"
-                    '''
-
+                    sh 'MAVEN_OPTS="-Dmaven.repo.local=$(readlink -f ./repository)" .ci-scripts/test-ExampleTestProject-with-maven.sh'
                     // run SW360 integration tests, if corresponding sqldump is present
                     sh '''
                       if [[ -f modules/sw360/src/test/resources/postgres/sw360pgdb.sql ]]; then
-                          cd modules/sw360
-                          mvn clean verify -DskipTests -P integration-test
-                          cd -
+                          .ci-scripts/test-sw360-integration-test.sh
                       fi
                     '''
-
-/* Diable CLI test on Jenkins for now, since it is not working
                     // test as CLI tool
-                    sh '''
-                      tmpdir="$(mktemp -d)"
-                      cp -r example-projects/example-project $tmpdir
-                      .travis/sh $tmpdir/example-project
-                      java -jar antenna-testing/antenna-frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject $tmpdir/example-project/target
-                      rm -r "$tmpdir"
-                    '''
-*/
+                    sh '.ci-scripts/test-ExampleTestProject-with-CLI.sh'
+                    // test as gradle plugin
+                    sh 'M2_REPOSITORY="$(readlink -f ./repository)" .ci-scripts/test-ExampleTestProject-with-gradle.sh'
                     // test the antenna site
-                    dir("antenna-documentation") {
-                        sh '''
-                          mvn -Dmaven.repo.local=$(readlink -f ../localRepository) \
-                            --batch-mode \
-                            site -Psite-tests
-                        '''
-                    }
-
+                    sh 'MAVEN_OPTS="-Dmaven.repo.local=$(readlink -f ./repository)" .ci-scripts/test-antenna-documentation-site-tests.sh'
                     // run static code analysis
                     sh '''
                       mvn install -DskipTests pmd:pmd checkstyle:checkstyle-aggregate spotbugs:check -Dmaven.repo.local=$(readlink -f localRepository)
