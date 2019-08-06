@@ -8,6 +8,8 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 
+set -e
+
 cd "$(dirname $0)/.."
 
 failure=false

@@ -56,36 +56,25 @@ jobs:
 
     # test CLI
     - name: cli frontend test
-      script:
-        - set -e
-        - .travis/runCLI.sh example-projects/example-project
-        - java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject example-projects/example-project/target
+      script: .ci-scripts/test-ExampleTestProject-with-CLI.sh
 
     # test Gradle
     - name: gradle frontend test
-      script:
-        - set -e
-        - cd example-projects/example-project
-        - gradle analyze
-        - java -jar ../../core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject build
+      script: .ci-scripts/test-ExampleTestProject-with-gradle.sh
     
     # test P2
     - name: p2Test
-      script:
-        - .travis/p2e2etest.sh
+      script: .ci-scripts/test-p2-end2end.sh
 
     # run site tests (for instance: all links work correctly)
     - name: siteTest
-      script:
-        - set -e
-        - cd antenna-documentation
-        - mvn site -Psite-tests
+      script: .ci-scripts/test-antenna-documentation-site-tests.sh
 
     # Test for license headers
     - name: test for license headers
       before_install: true
       install: true
-      script: .travis/testForLicenseHeaders.sh
+      script: .ci-scripts/test-for-licenseHeaders.sh
 
   allow_failures:
     - name: build & test with openjdk11
