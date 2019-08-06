@@ -30,7 +30,7 @@
         </repository>
     </repositories>
     <properties>
-        <org.eclipse.sw360.antenna.version>1.0.0-RC5</org.eclipse.sw360.antenna.version>
+        <org.eclipse.sw360.antenna.version>1.0.0-SNAPSHOT</org.eclipse.sw360.antenna.version>
         <tycho-version>1.0.0</tycho-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
