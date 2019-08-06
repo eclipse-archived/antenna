@@ -21,6 +21,8 @@ pool:
 container: 'maven:3.6-jdk-8-slim'
 
 steps:
+  # The following task is currently in beta state and actually not recommended for productive use
+  # related documentation: https://docs.microsoft.com/en-us/azure/devops/pipelines/caching/?view=azure-devops#maven
 - task: CacheBeta@0
   displayName: Cache Maven local repo
   inputs:

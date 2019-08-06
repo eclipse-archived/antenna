@@ -15,8 +15,5 @@ cd "$(dirname "$0")/.."
 tmpdir=$(mktemp -d)
 trap 'rm -rf $tmpdir' EXIT
 cp -r example-projects/example-project/ $tmpdir/example-project/
-rm -rf $tmpdir/example-project/target
-pushd $tmpdir/example-project/
-mvn package
-popd
+mvn -f $tmpdir/example-project/pom.xml clean package
 java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject $tmpdir/example-project/target
