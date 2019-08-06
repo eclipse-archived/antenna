@@ -149,7 +149,7 @@ public class OrtResultAnalyzerTest {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .flatMap(s -> Stream.of(s.split("\n"))).toArray())
-                .contains("\"" + "Copyright (c) 2014-2017 Teist Peirson2 <teist.peirson@2.com>" + "\"");
+                .contains("Copyright (c) 2014-2017 Teist Peirson2 <teist.peirson@2.com>");
 
         assertThat(artifacts.stream()
                 .map(artifact -> artifact.askForGet(CopyrightStatement.class))
