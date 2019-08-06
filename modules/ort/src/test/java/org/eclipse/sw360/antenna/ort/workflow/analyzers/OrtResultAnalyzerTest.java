@@ -128,6 +128,7 @@ public class OrtResultAnalyzerTest {
     @Test
     public void testParseOrtDataWithScanResultsToArtifacts() throws URISyntaxException, IOException {
         List<Artifact> artifacts = init("scan-result.yml");
+        List<String> sourceUrls = makeListOfSourceUrlStrings(artifacts);
 
         assertThat(artifacts.stream()
                 .map(artifact -> artifact.askForGet(ObservedLicenseInformation.class))
@@ -157,9 +158,9 @@ public class OrtResultAnalyzerTest {
                 .flatMap(s -> Stream.of(s.split("\n"))).toArray())
                 .hasSize(4);
 
-        assertThat(makeListOfSourceUrlStrings(artifacts)).hasSize(1);
+        assertThat(sourceUrls).hasSize(1);
 
-        assertThat(makeListOfSourceUrlStrings(artifacts)).contains("https://github.com/babel/babel.git");
+        assertThat(sourceUrls).contains("https://github.com/babel/babel.git");
     }
 
     private List<String> makeListOfSourceUrlStrings(List<Artifact> artifacts) {
