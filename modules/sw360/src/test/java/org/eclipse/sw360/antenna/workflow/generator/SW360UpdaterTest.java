@@ -16,6 +16,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
@@ -127,6 +128,22 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         artifact.addFact(new CopyrightStatement(copyrights));
 
         return artifact;
+    }
+
+    @Test
+    public void testMainLicenseIsEmptyAndFinalLicenseNull() {
+        Artifact artifact = new Artifact("JSON");
+        artifact.setProprietary(false);
+        artifact.addFact(new MavenCoordinates("artifactId(test)", "org.group.id", "1.2.3"));
+        artifact.addFact(new DeclaredLicenseInformation(new LicenseStatement()));
+
+        SW360Release release = new SW360Release();
+        SW360Component sw360Component = new SW360Component();
+        sw360Component.setName("artifactId(test)");
+        SW360ReleaseAdapterUtils.prepareRelease(release, sw360Component, Collections.EMPTY_SET, artifact);
+
+        assertThat(release.getFinalLicense()).isNull();
+        assertThat(release.getMainLicenseIds().isEmpty()).isTrue();
     }
 
 }

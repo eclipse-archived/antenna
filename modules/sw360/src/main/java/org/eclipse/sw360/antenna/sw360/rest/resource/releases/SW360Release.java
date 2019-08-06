@@ -12,10 +12,13 @@ package org.eclipse.sw360.antenna.sw360.rest.resource.releases;
 
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW360ReleaseEmbedded> {
     private String componentId;
@@ -175,7 +178,13 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     }
 
     public Map<String, String> getExternalIds() {
-        return externalIds;
+        return Optional.ofNullable(externalIds)
+                .map(Map::entrySet)
+                .map(Collection::stream)
+                .orElse(Stream.empty())
+                .filter(entry -> !entry.getValue().equals(""))
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        Map.Entry::getValue));
     }
 
     public SW360Release setExternalIds(Map<String, String> externalIds) {

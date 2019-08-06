@@ -96,7 +96,7 @@ public class SW360Enricher extends AbstractProcessor {
     }
 
     private void mapExternalIdsOnSW360Release(SW360Release sw360Release, Artifact artifact) {
-        if (sw360Release.getExternalIds() != null) {
+        if (!sw360Release.getExternalIds().isEmpty()) {
 
             mapCoordinates(sw360Release, artifact);
             mapDeclaredLicense(sw360Release, artifact);
