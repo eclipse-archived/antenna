@@ -12,10 +12,8 @@ package org.eclipse.sw360.antenna.ort.workflow.analyzers;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -48,15 +46,6 @@ public class OrtResultAnalyzerTest {
     }
 
     @Test
-    public void testMapLicenses() throws URISyntaxException, IOException {
-        List<Artifact> artifacts = init("single_package.yml");
-
-        assertThat(artifacts.get(0).askForGet(DeclaredLicenseInformation.class).get().evaluate()).isEqualTo("ISC");
-
-        assertThat(artifacts.get(2).askForGet(DeclaredLicenseInformation.class).get().evaluate()).isEqualTo("( Apache License 2.0 AND ( LGPL 2.1 AND MPL 1.1 ) )");
-    }
-
-    @Test
     public void testParseOrtDataToArtifacts() throws URISyntaxException, IOException {
         List<Artifact> artifacts = init("analyzer-result.yml");
 
@@ -68,61 +57,6 @@ public class OrtResultAnalyzerTest {
                 .contains("MIT");
         assertThat(artifacts.stream()
                 .map(Artifact::getAnalysisSource)).contains("OrtResult");
-    }
-
-    @Test
-    public void testMapCoordinates() throws URISyntaxException, IOException {
-        List<Artifact> artifacts = init("single_package.yml");
-
-        Optional<JavaScriptCoordinates> optionalJavaScriptCoordinates = artifacts.stream()
-                .map(artifact -> artifact.askFor(JavaScriptCoordinates.class))
-                .filter(Optional::isPresent)
-                .findAny()
-                .map(Optional::get);
-
-        assertThat(optionalJavaScriptCoordinates.isPresent()).isTrue();
-        JavaScriptCoordinates javaScriptCoordinates = optionalJavaScriptCoordinates.get();
-        assertThat(javaScriptCoordinates.getName()).isEqualTo("abbrev");
-        assertThat(javaScriptCoordinates.getVersion()).isEqualTo("1.0.9");
-        assertThat(javaScriptCoordinates.getArtifactId()).isEqualTo("abbrev-1.0.9");
-
-
-        Optional<DotNetCoordinates> optionalDotNetCoordinates = artifacts.stream()
-                .map(artifact -> artifact.askFor(DotNetCoordinates.class))
-                .filter(Optional::isPresent)
-                .findAny()
-                .map(Optional::get);
-
-        assertThat(optionalDotNetCoordinates.isPresent()).isTrue();
-        DotNetCoordinates dotNetCoordinates = optionalDotNetCoordinates.get();
-        assertThat(dotNetCoordinates.getPackageId()).isEqualTo("Newtonsoft.Json.Bson");
-        assertThat(dotNetCoordinates.getVersion()).isEqualTo("1.0.1");
-
-
-        Optional<MavenCoordinates> optionalMavenCoordinates = artifacts.stream()
-                .map(artifact -> artifact.askFor(MavenCoordinates.class))
-                .filter(Optional::isPresent)
-                .findAny()
-                .map(Optional::get);
-
-        assertThat(optionalMavenCoordinates.isPresent()).isTrue();
-        MavenCoordinates mavenCoordinates = optionalMavenCoordinates.get();
-        assertThat(mavenCoordinates.getGroupId()).isEqualTo("org.javassist");
-        assertThat(mavenCoordinates.getArtifactId()).isEqualTo("javassist");
-        assertThat(mavenCoordinates.getVersion()).isEqualTo("3.21.0-GA");
-
-    }
-
-    @Test
-    public void testAnalyzerOrtDataToArtifact() throws IOException, URISyntaxException {
-        List<Artifact> artifacts = init("single_package.yml");
-
-        assertThat(artifacts.stream()
-                .map(artifact -> artifact.askForGet(ArtifactHomepage.class))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .filter(s -> !"".equals(s))
-                .collect(Collectors.toList())).contains("http://www.newtonsoft.com/json");
     }
 
     @Test
