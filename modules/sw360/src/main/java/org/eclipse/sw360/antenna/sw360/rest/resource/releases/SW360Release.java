@@ -10,17 +10,17 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resource.releases;
 
+import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
+import org.eclipse.sw360.antenna.sw360.rest.resource.SW360CoordinateKeysToArtifactCoordinates;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW360ReleaseEmbedded> {
+    private String releaseId;
     private String componentId;
     private String name;
     private String version;
@@ -41,6 +41,14 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
 
     private Map<String, String> externalIds;
 
+    public String getReleaseId() {
+        return releaseId;
+    }
+
+    public SW360Release setReleaseId(String releaseId) {
+        this.releaseId = releaseId;
+        return this;
+    }
 
     public String getComponentId() {
         return componentId;
@@ -172,6 +180,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
         return changeStatus;
     }
 
+
     public SW360Release setChangeStatus(String changeStatus) {
         this.changeStatus = changeStatus;
         return this;
@@ -189,6 +198,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
 
     public SW360Release setExternalIds(Map<String, String> externalIds) {
         this.externalIds = externalIds;
+        mapExternalIdsOnVariable();
         return this;
     }
 
@@ -201,28 +211,75 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     }
 
     public boolean shareIdentifier(SW360Release releaseCompare) {
-        return this.componentId.equals(releaseCompare.getComponentId())
-                && this.name.equals(releaseCompare.getName())
-                && this.version.equals(releaseCompare.getVersion());
+        return this.name.equals(Optional.of(releaseCompare.getName()).orElse(""))
+                && this.version.equals(Optional.of(releaseCompare.getVersion()).orElse(""));
+    }
+
+    private SW360Release mapExternalIdsOnVariable() {
+        externalIds.forEach((key, value) -> {
+            switch (key) {
+                case SW360Attributes.RELEASE_EXTERNAL_ID_FLICENSES:
+                    finalLicense = value;
+                    break;
+                case SW360Attributes.RELEASE_EXTERNAL_ID_DLICENSES:
+                    declaredLicense = value;
+                    break;
+                case SW360Attributes.RELEASE_EXTERNAL_ID_OLICENSES:
+                    observedLicense = value;
+                    break;
+                case SW360Attributes.RELEASE_EXTERNAL_ID_OREPO:
+                    releaseTagUrl = value;
+                    break;
+                case SW360Attributes.RELEASE_EXTERNAL_ID_SWHID:
+                    softwareHeritageId = value;
+                    break;
+                case SW360Attributes.RELEASE_EXTERNAL_ID_CHANGESTATUS:
+                    changeStatus = value;
+                    break;
+                case SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS:
+                    copyrights = value;
+                    break;
+                default:
+                    if (key.startsWith(SW360Attributes.RELEASE_EXTERNAL_ID_HASHES)) {
+                        if(hashes == null) {
+                            hashes = Collections.singleton(value);
+                        } else {
+                            hashes.add(value);
+                        }
+                    } else if (SW360CoordinateKeysToArtifactCoordinates.getValues().contains(key)) {
+                        if(coordinates == null) {
+                            coordinates = new HashMap<>();
+                            coordinates.put(key, value);
+                        } else {
+                            coordinates.put(key, value);
+                        }
+                    }
+            }
+        });
+        return this;
     }
 
     public SW360Release mergeWith(SW360Release releaseWithPrecedence) {
-        cpeid = Optional.of(releaseWithPrecedence.getCpeid()).orElse(cpeid);
-        downloadurl = Optional.of(releaseWithPrecedence.getDownloadurl()).orElse(downloadurl);
-        mainLicenseIds = Optional.of(releaseWithPrecedence.getMainLicenseIds()).orElse(mainLicenseIds);
-        coordinates = Optional.of(releaseWithPrecedence.getCoordinates()).orElse(coordinates);
-        finalLicense = Optional.of(releaseWithPrecedence.getFinalLicense()).orElse(finalLicense);
-        declaredLicense = Optional.of(releaseWithPrecedence.getDeclaredLicense()).orElse(declaredLicense);
-        observedLicense = Optional.of(releaseWithPrecedence.getObservedLicense()).orElse(observedLicense);
-        releaseTagUrl = Optional.of(releaseWithPrecedence.getReleaseTagUrl()).orElse(releaseTagUrl);
-        softwareHeritageId = Optional.of(releaseWithPrecedence.getSoftwareHeritageId()).orElse(softwareHeritageId);
-        hashes = Optional.of(releaseWithPrecedence.getHashes()).orElse(hashes);
-        clearingState = Optional.of(releaseWithPrecedence.getClearingState()).orElse(clearingState);
-        changeStatus = Optional.of(releaseWithPrecedence.getChangeStatus()).orElse(changeStatus);
-        copyrights = Optional.of(releaseWithPrecedence.getCopyrights()).orElse(copyrights);
-        externalIds = Optional.of(releaseWithPrecedence.getExternalIds()).orElse(externalIds);
+        cpeid = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getCpeid);
+        downloadurl = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getDownloadurl);
+        mainLicenseIds = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getMainLicenseIds);
+        coordinates = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getCoordinates);
+        finalLicense = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getFinalLicense);
+        declaredLicense = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getDeclaredLicense);
+        observedLicense = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getObservedLicense);
+        releaseTagUrl = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getReleaseTagUrl);
+        softwareHeritageId = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getSoftwareHeritageId);
+        hashes = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getHashes);
+        clearingState = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getClearingState);
+        changeStatus = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getChangeStatus);
+        copyrights =  getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getCopyrights);
 
         return this;
+    }
+
+    private <T> T getDominantGetterFromVariableMergeOrNull(SW360Release release, Function<SW360Release, T> getter) {
+        return Optional.ofNullable(getter.apply(release))
+                .orElse(getter.apply(this));
     }
 
     @Override

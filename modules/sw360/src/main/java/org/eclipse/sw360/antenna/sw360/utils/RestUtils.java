@@ -23,10 +23,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class RestUtils {
     private static ObjectMapper objectMapper = new ObjectMapper();
@@ -74,13 +71,14 @@ public class RestUtils {
 
         Map<String, Object> release = new HashMap<>();
         release.put(SW360Attributes.RELEASE_COMPONENT_ID, componentId);
+        release.put(SW360Attributes.RELEASE_ID, sw360Release.getReleaseId());
         release.put(SW360Attributes.RELEASE_NAME, sw360Release.getName());
         release.put(SW360Attributes.RELEASE_VERSION, sw360Release.getVersion());
-        release.put(SW360Attributes.RELEASE_CPE_ID, sw360Release.getCpeid());
-        release.put(SW360Attributes.RELEASE_SOURCES, sw360Release.getDownloadurl());
-        release.put(SW360Attributes.RELEASE_CLEARINGSTATE, sw360Release.getClearingState());
-        release.put(SW360Attributes.RELEASE_MAIN_LICENSE_IDS, sw360Release.getMainLicenseIds());
-        release.put(SW360Attributes.RELEASE_EXTERNAL_IDS, convertSW360ExternalIdsToMapOfStrings(sw360Release));
+        Optional.ofNullable(sw360Release.getCpeid()).ifPresent(cpeId -> release.put(SW360Attributes.RELEASE_CPE_ID, cpeId));
+        Optional.ofNullable(sw360Release.getDownloadurl()).ifPresent(downloadurl -> release.put(SW360Attributes.RELEASE_SOURCES, downloadurl));
+        Optional.ofNullable(sw360Release.getClearingState()).ifPresent(clearingState -> release.put(SW360Attributes.RELEASE_CLEARINGSTATE, clearingState));
+        Optional.ofNullable(sw360Release.getMainLicenseIds()).ifPresent(mainLicenseIds -> release.put(SW360Attributes.RELEASE_MAIN_LICENSE_IDS, mainLicenseIds));
+        Optional.ofNullable(convertSW360ExternalIdsToMapOfStrings(sw360Release)).ifPresent(externalIDs -> release.put(SW360Attributes.RELEASE_EXTERNAL_IDS, externalIDs));
         return getHttpEntity(release, header);
     }
 
@@ -96,8 +94,11 @@ public class RestUtils {
     }
 
     private static Map<String, String> convertSW360ExternalIdsToMapOfStrings(SW360Release sw360Release) {
-        Map<String, String> externalIds = new HashMap<>(sw360Release.getCoordinates());
+        Map<String, String> externalIds = new HashMap<>();
 
+        if(sw360Release.getCoordinates() != null) {
+            externalIds.putAll(sw360Release.getCoordinates());
+        }
         if(sw360Release.getFinalLicense() != null) {
             externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_FLICENSES, sw360Release.getFinalLicense());
         }
@@ -123,6 +124,9 @@ public class RestUtils {
             externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS, sw360Release.getCopyrights());
         }
 
+        if(externalIds.isEmpty()) {
+            return null;
+        }
         return externalIds;
     }
 

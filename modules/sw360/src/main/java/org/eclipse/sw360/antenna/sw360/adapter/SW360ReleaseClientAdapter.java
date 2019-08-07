@@ -41,7 +41,7 @@ public class SW360ReleaseClientAdapter {
 
     public SW360Release updateRelease(SW360Release release, Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws AntennaException {
         SW360Release sw360ReleaseFromArtifact = new SW360Release();
-        SW360ReleaseAdapterUtils.prepareRelease(release, sw360Component, sw360LicenseIds, artifact);
+        SW360ReleaseAdapterUtils.prepareRelease(sw360ReleaseFromArtifact, sw360Component, sw360LicenseIds, artifact);
 
         if (release.equals(sw360ReleaseFromArtifact)) {
             return release;

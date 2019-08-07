@@ -88,7 +88,7 @@ public class SW360MetaDataUpdater {
             Optional<SW360Release> release = releaseClientAdapter.getReleaseByArtifact(component, artifact, header);
             if (release.isPresent()) {
                 if(updateReleases) {
-                    return releaseClientAdapter.addRelease(artifact, component, licenseIds, header);
+                    return releaseClientAdapter.updateRelease(release.get(), artifact, component, licenseIds, header);
                 } else {
                     return release.get();
                 }
