@@ -9,59 +9,61 @@
 # SPDX-License-Identifier: EPL-2.0
 #!/usr/bin/env bash
 set -e
+set -o pipefail
 trap times EXIT
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-logHeader() {
-    set +x
+runWithScope() {
+    local msg="$1"
+    shift
     echo "################################################################################"
-    echo "## $@"
+    echo "## $msg"
     echo "################################################################################"
-    set -x
+    time \
+        $@ |
+        sed -e 's/^/['"$msg"'] /'
 }
 
 have() { type "$1" &> /dev/null; }
 
-set -x
-
 WITH_P2="false"
 if [[ "$1" == "--p2" ]]; then
     WITH_P2="true"
-    modules/p2/prepareDependenciesForP2.sh
+    runWithScope "prepare p2 dependencies"  \
+        modules/p2/prepareDependenciesForP2.sh
 elif [[ "$1" == "--no-p2" ]]; then
-    modules/p2/cleanupDependenciesForP2.sh
+    runWithScope "cleanup p2 dependencies"  \
+        modules/p2/cleanupDependenciesForP2.sh
 fi
 
-logHeader "mvn install"
-mvn clean install
+runWithScope "mvn install"  \
+    mvn --batch-mode clean install
 
-set +x
+runWithScope "static code analysis" \
+    .ci-scripts/test-run-all-static-code-analysis.sh
 
-# logHeader "do static code analysis"
-# mvn install -DskipTests pmd:pmd checkstyle:checkstyle-aggregate spotbugs:check
+runWithScope "integration test maven" \
+    .ci-scripts/test-ExampleTestProject-with-maven.sh
 
-logHeader "test maven"
-.ci-scripts/test-ExampleTestProject-with-maven.sh
+runWithScope "integration test cli" \
+    .ci-scripts/test-ExampleTestProject-with-CLI.sh
 
-logHeader "test cli"
-.ci-scripts/test-ExampleTestProject-with-CLI.sh
-
-logHeader "test gradle"
-.ci-scripts/test-ExampleTestProject-with-gradle.sh
+runWithScope "integration test gradle" \
+    .ci-scripts/test-ExampleTestProject-with-gradle.sh
 
 if [[ WITH_P2 == "true" ]]; then
-    logHeader "test p2"
-    .ci-scripts/test-p2-end2end.sh
+    runWithScope "integration test p2" \
+        .ci-scripts/test-p2-end2end.sh
 fi
 
 if [[ -f modules/sw360/src/test/resources/postgres/sw360pgdb.sql ]]; then
-    logHeader "test sw360 integration"
-    .ci-scripts/test-sw360-integration-test.sh
+    runWithScope "integration test sw360" \
+        .ci-scripts/test-sw360-integration-test.sh
 fi
 
-logHeader "test site"
-.ci-scripts/test-antenna-documentation-site-tests.sh
+runWithScope "documentation site test" \
+    .ci-scripts/test-antenna-documentation-site-tests.sh
 
-logHeader "test for license headers"
-.ci-scripts/test-for-licenseHeaders.sh
+runWithScope "test for license headers" \
+    .ci-scripts/test-for-licenseHeaders.sh
 
