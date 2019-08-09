@@ -15,6 +15,8 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 
+import java.util.Objects;
+
 public class SW360License extends SW360HalResource<LinkObjects, Embedded> {
     private String text;
     private String shortName;
@@ -53,5 +55,21 @@ public class SW360License extends SW360HalResource<LinkObjects, Embedded> {
     public SW360License setFullName(String fullName) {
         this.fullName = fullName;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SW360License that = (SW360License) o;
+        return Objects.equals(text, that.text) &&
+                Objects.equals(shortName, that.shortName) &&
+                Objects.equals(fullName, that.fullName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), text, shortName, fullName);
     }
 }

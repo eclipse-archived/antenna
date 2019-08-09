@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 
 import java.net.MalformedURLException;
@@ -18,6 +19,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Optional;
 
 public class AntennaUtils {
 
@@ -86,22 +88,30 @@ public class AntennaUtils {
         }
         Path cleanedUp = jarPathIterator.next();
         while(jarPathIterator.hasNext()){
-            String basename = cleanedUp.getFileName().toString();
+            final String basename = Optional.ofNullable(cleanedUp.getFileName())
+                    .orElseThrow(() -> new AntennaExecutionException("Error in computeInnerReplacementJarPath"))
+                    .toString();
+            final String parent = Optional.ofNullable(cleanedUp.getParent())
+                    .orElseThrow(() -> new AntennaExecutionException("Error in computeInnerReplacementJarPath"))
+                    .toString();
+
             String cleanedUpBasename = replaceDotInJarExtension(basename);
-            cleanedUp = Paths.get(cleanedUp.getParent().toString(), cleanedUpBasename, jarPathIterator.next().toString());
+            cleanedUp = Paths.get(parent, cleanedUpBasename, jarPathIterator.next().toString());
         }
         return cleanedUp;
     }
 
+    @SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
     private static class TillJarGroupingIterator implements Iterator<Path> {
         private Iterator<Path> pathIterator;
-        private Path root;
+        private Path currentRoot;
+        private final Path root = Paths.get("/");
 
         TillJarGroupingIterator(Path path) {
             pathIterator = path.toAbsolutePath().iterator();
-            root = path.getRoot();
-            if(root == null) {
-                root = Paths.get(".");
+            currentRoot = path.getRoot();
+            if(currentRoot == null) {
+                currentRoot = Paths.get(".");
             }
         }
 
@@ -116,13 +126,13 @@ public class AntennaUtils {
 
         @Override
         public Path next() {
-            Path next = root;
+            Path next = currentRoot;
 
             while(pathIterator.hasNext() && isNotAnArchive(next)){
                 next = next.resolve(pathIterator.next());
             }
 
-            root = Paths.get("/");
+            currentRoot = root;
             return next;
         }
     }

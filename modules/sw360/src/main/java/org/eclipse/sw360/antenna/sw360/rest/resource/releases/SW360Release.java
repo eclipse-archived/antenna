@@ -14,6 +14,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 
 public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW360ReleaseEmbedded> {
@@ -213,5 +214,35 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
         externalIds = Optional.of(releaseWithPrecedence.getExternalIds()).orElse(externalIds);
 
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SW360Release that = (SW360Release) o;
+        return Objects.equals(componentId, that.componentId) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(version, that.version) &&
+                Objects.equals(cpeid, that.cpeid) &&
+                Objects.equals(downloadurl, that.downloadurl) &&
+                Objects.equals(mainLicenseIds, that.mainLicenseIds) &&
+                Objects.equals(coordinates, that.coordinates) &&
+                Objects.equals(finalLicense, that.finalLicense) &&
+                Objects.equals(declaredLicense, that.declaredLicense) &&
+                Objects.equals(observedLicense, that.observedLicense) &&
+                Objects.equals(releaseTagUrl, that.releaseTagUrl) &&
+                Objects.equals(softwareHeritageId, that.softwareHeritageId) &&
+                Objects.equals(hashes, that.hashes) &&
+                Objects.equals(clearingState, that.clearingState) &&
+                Objects.equals(changeStatus, that.changeStatus) &&
+                Objects.equals(copyrights, that.copyrights) &&
+                Objects.equals(externalIds, that.externalIds);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), componentId, name, version, cpeid, downloadurl, mainLicenseIds, coordinates, finalLicense, declaredLicense, observedLicense, releaseTagUrl, softwareHeritageId, hashes, clearingState, changeStatus, copyrights, externalIds);
     }
 }

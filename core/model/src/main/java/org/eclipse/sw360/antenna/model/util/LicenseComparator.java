@@ -13,13 +13,14 @@ package org.eclipse.sw360.antenna.model.util;
 
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * Can be used to compare the names of two licenses. Uses the compare method of
  * string.
  */
-public class LicenseComparator implements Comparator<LicenseInformation> {
+public class LicenseComparator implements Comparator<LicenseInformation>, Serializable {
 
     /**
      * Compares the names of the two license using String.compareTo().

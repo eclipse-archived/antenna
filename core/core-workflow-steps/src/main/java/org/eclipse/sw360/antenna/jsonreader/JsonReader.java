@@ -15,6 +15,7 @@ import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
@@ -43,20 +44,18 @@ import java.util.stream.StreamSupport;
 public class JsonReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonReader.class);
     private static final String COMPONENTS = "components";
-    protected final Charset encoding;
-    protected final Path recordingFile;
+    private final Charset encoding;
+    private final Path recordingFile;
     private final Path dependencyDir;
 
-    public static final Map<String, MissingLicenseReasons> SPECIAL_INFORMATION;
-    static {
-        SPECIAL_INFORMATION = new HashMap<>();
-        SPECIAL_INFORMATION.put("No-Sources", MissingLicenseReasons.NO_SOURCES);
-        SPECIAL_INFORMATION.put("No-Source-License", MissingLicenseReasons.NO_LICENSE_IN_SOURCES);
-        SPECIAL_INFORMATION.put("Not-Declared", MissingLicenseReasons.NOT_DECLARED);
-        SPECIAL_INFORMATION.put("Not-Provided", MissingLicenseReasons.NOT_PROVIDED);
-        SPECIAL_INFORMATION.put("Not-Supported", MissingLicenseReasons.NOT_SUPPORTED);
-        SPECIAL_INFORMATION.put("Non-Standard", MissingLicenseReasons.NON_STANDARD);
-    }
+    private static final Map<String, MissingLicenseReasons> SPECIAL_INFORMATION = Stream.of(new Object[][] {
+                {"No-Sources", MissingLicenseReasons.NO_SOURCES},
+                {"No-Source-License", MissingLicenseReasons.NO_LICENSE_IN_SOURCES},
+                {"Not-Declared", MissingLicenseReasons.NOT_DECLARED},
+                {"Not-Provided", MissingLicenseReasons.NOT_PROVIDED},
+                {"Not-Supported", MissingLicenseReasons.NOT_SUPPORTED},
+                {"Non-Standard", MissingLicenseReasons.NON_STANDARD}})
+                .collect(Collectors.toMap(data -> (String) data[0], data -> (MissingLicenseReasons) data[1]));
 
     public JsonReader(Path recordingFile, Path dependencyDir, Charset encoding) {
         this.recordingFile = recordingFile;
@@ -82,6 +81,7 @@ public class JsonReader {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     protected List<Artifact> createArtifactsList(InputStream stream, List<String> filterStrings) {
         LOGGER.debug("Create artifacts list from input stream.");
         List<Artifact> artifacts = new ArrayList<>();
@@ -202,7 +202,9 @@ public class JsonReader {
         if(obj.containsKey("pathnames")) {
             final JsonArray pathnames = (JsonArray) obj.get("pathnames");
             if (pathnames.size() == 1) {
-                String filename = Paths.get(pathnames.getString(0)).getFileName().toString();
+                String filename = Optional.ofNullable(Paths.get(pathnames.getString(0)).getFileName())
+                        .orElseThrow(() -> new AntennaExecutionException("Getting Path of [" + pathnames.getString(0) + "] returned null"))
+                        .toString();
                 return new ArtifactFilename(filename, hash);
             }
         }
@@ -302,5 +304,13 @@ public class JsonReader {
 
     private String mapArtifactDownloadurl(JsonObject obj) {
         return (String) obj.get("downloadurl");
+    }
+
+    public Charset getEncoding() {
+        return encoding;
+    }
+
+    public Path getRecordingFile() {
+        return recordingFile;
     }
 }

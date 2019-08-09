@@ -195,16 +195,16 @@ public class MultipleConfigsResolver {
         Map<ArtifactSelector, LicenseInformation> mergedFinalLicenses = new HashMap<>();
         for (Configuration configuration : configurations) {
             Map<ArtifactSelector, LicenseInformation> setFinalLicense = configuration.getFinalLicenses();
-            for (ArtifactSelector selector : setFinalLicense.keySet()) {
-                if (!mergedFinalLicenses.containsKey(selector)) {
-                    mergedFinalLicenses.put(selector, setFinalLicense.get(selector));
+            for (Map.Entry<ArtifactSelector, LicenseInformation> selectorEntry : setFinalLicense.entrySet()) {
+                if (!mergedFinalLicenses.containsKey(selectorEntry.getKey())) {
+                    mergedFinalLicenses.put(selectorEntry.getKey(), selectorEntry.getValue());
                 } else {
-                    LicenseInformation merged = mergedFinalLicenses.get(selector);
-                    LicenseInformation actual = setFinalLicense.get(selector);
+                    LicenseInformation merged = mergedFinalLicenses.get(selectorEntry.getKey());
+                    LicenseInformation actual = setFinalLicense.get(selectorEntry.getKey());
                     if (!merged.equals(actual)) {
                         tempReporter.add(MessageType.CONFLICTING_CONFIGURATIONS,
                                 "Conflicting configurations in the \"set final license\" section, the declared licenses are not the same. " +
-                                        "(artifact selector was=[" + selector.toString() + "])");
+                                        "(artifact selector was=[" + selectorEntry.getKey().toString() + "])");
                     }
                 }
             }
@@ -265,19 +265,18 @@ public class MultipleConfigsResolver {
         Map<ArtifactSelector, Artifact> mergedOverride = new HashMap<>();
         for (Configuration configuration : configurations) {
             Map<ArtifactSelector, Artifact> override = configuration.getOverride();
-            Set<ArtifactSelector> keySet = override.keySet();
-            for (ArtifactSelector artifactSelector : keySet) {
-                Artifact compare = override.get(artifactSelector);
-                if (mergedOverride.containsKey(artifactSelector)) {
-                    Artifact generatedArtifact = mergedOverride.get(artifactSelector);
+            for (Map.Entry<ArtifactSelector, Artifact> selectorEntry : override.entrySet()) {
+                Artifact compare = selectorEntry.getValue();
+                if (mergedOverride.containsKey(selectorEntry.getKey())) {
+                    Artifact generatedArtifact = mergedOverride.get(selectorEntry.getKey());
                     if (!generatedArtifact.equals(compare)) {
                         tempReporter.add(MessageType.CONFLICTING_CONFIGURATIONS,
                                 "Conflicting configurations in the override section at artifact: "
-                                        + "the override values are not equal. (artifact selector was=[" + artifactSelector.toString() + "])");
+                                        + "the override values are not equal. (artifact selector was=[" + selectorEntry.getKey().toString() + "])");
                         return;
                     }
                 } else {
-                    mergedOverride.put(artifactSelector, compare);
+                    mergedOverride.put(selectorEntry.getKey(), compare);
                 }
             }
         }

@@ -40,7 +40,7 @@ jobs:
     # run static code analysis
     - name: static code analysis
       script:
-        - mvn pmd:pmd
+        - mvn install -DskipTests pmd:pmd checkstyle:checkstyle-aggregate spotbugs:check
 
     # compile with JDK8 and execute with other JDK
     - &differentJDK-test

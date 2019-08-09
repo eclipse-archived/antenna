@@ -15,6 +15,8 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 
+import java.util.Objects;
+
 public class SW360SparseUser extends SW360HalResource<LinkObjects, Embedded> {
     private String email;
 
@@ -25,5 +27,19 @@ public class SW360SparseUser extends SW360HalResource<LinkObjects, Embedded> {
     public SW360SparseUser setEmail(String email) {
         this.email = email;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SW360SparseUser that = (SW360SparseUser) o;
+        return Objects.equals(email, that.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), email);
     }
 }

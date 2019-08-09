@@ -18,6 +18,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
 
+import java.util.Optional;
+
 public class SW360UserClient extends SW360Client {
     private static final String USERS_ENDPOINT = "/users";
 
@@ -33,7 +35,9 @@ public class SW360UserClient extends SW360Client {
                 new ParameterizedTypeReference<Resource<SW360User>>() {});
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody().getContent();
+            return Optional.ofNullable(response.getBody())
+                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .getContent();
         }
         else {
             throw new AntennaException("Request to get user " + email + " failed with "

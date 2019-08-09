@@ -20,6 +20,7 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.core.AntennaCore;
 import org.eclipse.sw360.antenna.frontend.AntennaFrontend;
 import org.eclipse.sw360.antenna.frontend.AntennaFrontendHelper;
+import org.eclipse.sw360.antenna.model.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,12 +54,14 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend<Meta
     protected abstract String getPluginDescendantArtifactIdName();
 
     private Path getSourceDirFromPomFile(File pomFile) {
-        Path parent = pomFile.toPath().getParent();
+        Path parent = Utils.getParent(pomFile.toPath())
+                .orElseThrow(() -> new IllegalArgumentException("Could not get source dir from pomFile=[" + pomFile + "]"));
         return parent.resolve("src");
     }
 
     private Path getBuildDirFromPomFile(File pomFile) {
-        Path parent = pomFile.toPath().getParent();
+        Path parent = Utils.getParent(pomFile.toPath())
+                .orElseThrow(() -> new IllegalArgumentException("Could not get build dir from pomFile=[" + pomFile + "]"));
         return getBuildDirFromFolder(parent);
     }
 

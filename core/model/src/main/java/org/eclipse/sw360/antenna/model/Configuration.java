@@ -40,7 +40,7 @@ public class Configuration {
     private boolean failOnMissingSources = false;
     private SW360ProjectCoordinates project;
 
-    public static BinaryOperator<Map<ArtifactSelector,GregorianCalendar>> suppressedSecurityIssuesConflictResolver =
+    public final static BinaryOperator<Map<ArtifactSelector,GregorianCalendar>> suppressedSecurityIssuesConflictResolver =
             (suppressMap1,suppressMap2) -> Stream.concat(
                     suppressMap1.entrySet().stream(),
                     suppressMap2.entrySet().stream())

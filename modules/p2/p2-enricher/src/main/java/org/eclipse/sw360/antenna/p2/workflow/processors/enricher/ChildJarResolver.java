@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.p2.workflow.processors.enricher;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
@@ -150,7 +151,12 @@ public class ChildJarResolver extends AbstractProcessor {
      * @return Pathname of the parentJar.
      */
     private String getParentJarBaseName(Path path) {
-        return AntennaUtils.getJarPath(path).getFileName().toString();
+        return Optional.ofNullable(
+                Optional.ofNullable(AntennaUtils.getJarPath(path))
+                        .orElseThrow(() -> new AntennaExecutionException("parent should exists"))
+                        .getFileName())
+                .orElseThrow(() -> new AntennaExecutionException("Path had no elements"))
+                .toString();
     }
 
     private boolean isPathContainingInnerJars(Path jarPath) {

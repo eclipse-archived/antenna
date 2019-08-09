@@ -16,6 +16,7 @@ import org.springframework.hateoas.ResourceSupport;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class SW360HalResource<L extends LinkObjects, E extends Embedded> extends ResourceSupport {
     @JsonProperty("_links")
@@ -48,5 +49,21 @@ public class SW360HalResource<L extends LinkObjects, E extends Embedded> extends
 
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SW360HalResource<?, ?> that = (SW360HalResource<?, ?>) o;
+        return Objects.equals(_links, that._links) &&
+                Objects.equals(_embedded, that._embedded) &&
+                Objects.equals(additionalProperties, that.additionalProperties);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), _links, _embedded, additionalProperties);
     }
 }

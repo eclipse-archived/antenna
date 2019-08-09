@@ -16,14 +16,10 @@ import java.io.File;
 
 public abstract class MetaDataStoringProject implements IProject {
     protected File propertiesFile;
-    protected Build build;
 
     public abstract void setProjectId(String id);
     public abstract void setVersion(String version);
-
-    public Build getBuild() {
-        return build;
-    }
+    public abstract Build getBuild();
 
     public String getArtifactId() {
         return getProjectId();

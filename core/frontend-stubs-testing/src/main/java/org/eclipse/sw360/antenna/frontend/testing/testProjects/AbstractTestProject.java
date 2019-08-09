@@ -10,7 +10,9 @@
  */
 package org.eclipse.sw360.antenna.frontend.testing.testProjects;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.sw360.antenna.model.util.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,25 +62,31 @@ abstract public class AbstractTestProject {
         copyFilesToTemporaryRoot(projectResourcesRoot, getOutOfProjectFilesToCopy());
     }
 
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     private void copyFilesToTemporaryRoot(String projectResourcesRoot, List<String> filesToCopy) throws IOException {
         for (String fileToCopy : filesToCopy) {
             try (InputStream resource = AbstractTestProject.class.getResourceAsStream(
                     Paths.get(projectResourcesRoot, fileToCopy).normalize().toString())) {
                 if (resource != null) {
                     Path destination = projectRoot.resolve(fileToCopy).normalize();
-                    destination.getParent().toFile().mkdirs();
+                    Utils.getParent(destination)
+                            .orElseThrow(IllegalArgumentException::new)
+                            .toFile().mkdirs();
                     Files.copy(resource, destination);
                 }
             }
         }
     }
 
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     private void copyFilesToProjectRoot(String projectResourcesRoot, List<String> filesToCopy) throws IOException {
         for (String fileToCopy : filesToCopy) {
             try (InputStream resource = AbstractTestProject.class.getResourceAsStream(projectResourcesRoot + "/" + fileToCopy)) {
                 if (resource != null) {
                     Path destination = projectRoot.resolve(fileToCopy);
-                    destination.getParent().toFile().mkdirs();
+                    Utils.getParent(destination)
+                            .orElseThrow(IllegalArgumentException::new)
+                            .toFile().mkdirs();
                     Files.copy(resource, destination);
                 }
             }

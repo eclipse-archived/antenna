@@ -11,6 +11,7 @@
 
 package org.eclipse.sw360.antenna.maven.workflow.processors.enricher;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
@@ -60,6 +61,7 @@ public class MavenArtifactResolver extends AbstractProcessor {
      *
      * @param artifacts to be resolved
      */
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     private void resolveArtifacts(Collection<Artifact> artifacts) throws AntennaException {
         // Check directory exists
         File dir = dependencyTargetDirectory.toFile();

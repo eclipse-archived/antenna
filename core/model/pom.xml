@@ -140,6 +140,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- ################################ static code analysis ################################ -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
@@ -147,6 +148,14 @@
                     <excludeRoots>
                         <excludeRoot>${project.build.directory}/generated-sources</excludeRoot>
                     </excludeRoots>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <configuration>
+                    <excludeFilterFile>${project.basedir}/src/test/resources/spotbugs-exclude.xml</excludeFilterFile>
+<!--                    <includeFilterFile>${project.basedir}/src/test/resources/spotbugs-exclude.xml</includeFilterFile>-->
                 </configuration>
             </plugin>
         </plugins>

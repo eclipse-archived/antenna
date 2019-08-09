@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.testing;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
@@ -25,6 +26,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.Mockito.*;
 
+@SuppressFBWarnings({"RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"})
 @RunWith(MockitoJUnitRunner.Silent.class)
 public abstract class AntennaTestWithMockedContext {
     @Rule

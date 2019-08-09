@@ -11,6 +11,7 @@
 
 package org.eclipse.sw360.antenna.p2resolver;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.util.ClassCodeSourceLocation;
 import org.eclipse.sw360.antenna.util.ZipExtractor;
@@ -48,6 +49,7 @@ public final class P2RepositoryExtractor {
         }
     }
 
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     public static void extractProductFromJar(String extractionLocation, String jarPath) throws AntennaException {
         String extractedFolder = extractionLocation + File.separator + "extracted";
         new File(extractedFolder).mkdir();

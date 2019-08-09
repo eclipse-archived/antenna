@@ -13,6 +13,8 @@ package org.eclipse.sw360.antenna.sw360.rest.resource.components;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 
+import java.util.Objects;
+
 public class SW360Component extends SW360HalResource<LinkObjects, SW360ComponentEmbedded> {
     private String name;
     private SW360ComponentType componentType;
@@ -63,5 +65,23 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
     public SW360Component setHomepage(String homepage) {
         this.homepage = homepage;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        SW360Component that = (SW360Component) o;
+        return Objects.equals(name, that.name) &&
+                componentType == that.componentType &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(createdOn, that.createdOn) &&
+                Objects.equals(homepage, that.homepage);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), name, componentType, type, createdOn, homepage);
     }
 }

@@ -12,6 +12,7 @@
 package org.eclipse.sw360.antenna.p2.workflow.processors.enricher;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
@@ -101,7 +102,8 @@ public class ManifestResolver extends AbstractProcessor {
         }
 
         Path targetJar = computeFinalJarFileName(jarPath);
-        Files.createDirectories(targetJar.getParent());
+        Files.createDirectories(Optional.ofNullable(targetJar.getParent())
+                .orElseThrow(() -> new AntennaExecutionException("parent of " + jarPath + " should exists")));
         try(FileInputStream fis = new FileInputStream(topLevelJar.toFile())){
             extractDeepNestedJar(fis, jarPaths, targetJar);
         }
