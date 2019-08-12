@@ -12,13 +12,13 @@
 repository:
   vcs:
     type: "Git"
-    url: "https://github.com/jshttp/mime-types.git"
-    revision: "076f7902e3a730970ea96cd0b9c09bb6110f1127"
+    url: "https://github.com/jshttp/mime-db.git"
+    revision: "e7c849b1c70ff745a4ae456a0cd5e6be8b05c2fb"
     path: ""
   vcs_processed:
     type: "git"
-    url: "https://github.com/jshttp/mime-types.git"
-    revision: "076f7902e3a730970ea96cd0b9c09bb6110f1127"
+    url: "https://github.com/jshttp/mime-db.git"
+    revision: "e7c849b1c70ff745a4ae456a0cd5e6be8b05c2fb"
     path: ""
   config: {}
 analyzer:
