@@ -111,16 +111,19 @@ public class JavaScriptCoordinates extends ArtifactCoordinates<JavaScriptCoordin
         protected String name;
         protected String version;
 
-        public void setArtifactId(String value) {
+        public JavaScriptCoordinatesBuilder setArtifactId(String value) {
             this.artifactId = value;
+            return this;
         }
 
-        public void setName(String value) {
+        public JavaScriptCoordinatesBuilder setName(String value) {
             this.name = value;
+            return this;
         }
 
-        public void setVersion(String value) {
+        public JavaScriptCoordinatesBuilder setVersion(String value) {
             this.version = value;
+            return this;
         }
 
         @Override

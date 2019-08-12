@@ -110,16 +110,19 @@ public class MavenCoordinates extends JavaCoordinates<MavenCoordinates> {
         private String groupId;
         private String version;
 
-        public void setArtifactId(String value) {
+        public MavenCoordinatesBuilder setArtifactId(String value) {
             this.artifactId = value;
+            return this;
         }
 
-        public void setGroupId(String value) {
+        public MavenCoordinatesBuilder setGroupId(String value) {
             this.groupId = value;
+            return this;
         }
 
-        public void setVersion(String value) {
+        public MavenCoordinatesBuilder setVersion(String value) {
             this.version = value;
+            return this;
         }
 
         @Override

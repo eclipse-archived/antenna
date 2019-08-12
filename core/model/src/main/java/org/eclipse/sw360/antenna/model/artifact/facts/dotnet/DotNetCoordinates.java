@@ -78,12 +78,14 @@ public class DotNetCoordinates extends ArtifactCoordinates<DotNetCoordinates> {
         protected String packageId;
         protected String version;
 
-        public void setPackageId(String value) {
+        public DotNetCoordinatesBuilder setPackageId(String value) {
             this.packageId = value;
+            return this;
         }
 
-        public void setVersion(String value) {
+        public DotNetCoordinatesBuilder setVersion(String value) {
             this.version = value;
+            return this;
         }
 
         @Override
