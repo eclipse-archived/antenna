@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/deo1imb/playground/_apis/build/status/bsinno.antenna?branchName=master)](https://dev.azure.com/deo1imb/playground/_build/latest?definitionId=1&branchName=master)
+
 # Antenna
 
 Antenna scans artifacts of a project, downloads sources for dependencies, 

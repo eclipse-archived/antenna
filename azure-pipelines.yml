@@ -11,18 +11,27 @@ trigger:
     include:
       - '*'
 
+strategy:
+  matrix:
+    Linux:
+      imageName: 'ubuntu-latest'
+    Windows:
+      imageName: 'win1803'
+    macOS:
+      imageName: 'macOS-latest'
+
 variables:
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
-  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER) -Xmx8g'
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: $(imageName)
 
 container: 'maven:3.6-jdk-8-slim'
 
 steps:
-  # The following task is currently in beta state and actually not recommended for productive use
-  # related documentation: https://docs.microsoft.com/en-us/azure/devops/pipelines/caching/?view=azure-devops#maven
+# The following task is currently in beta state and actually not recommended for productive use
+# related documentation: https://docs.microsoft.com/en-us/azure/devops/pipelines/caching/?view=azure-devops#maven
 - task: CacheBeta@0
   displayName: Cache Maven local repo
   inputs:
@@ -40,7 +49,6 @@ steps:
       echo '</settings>' >> $HOME/.m2/settings.xml
 
 - task: Maven@3
-  displayName: 'mvn install'
   inputs:
     mavenPomFile: 'pom.xml'
     goals: 'install'
