@@ -50,6 +50,7 @@ public class XmlSettingsReader {
      */
     public XmlSettingsReader(String xmlString) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilder dBuilder = initDocumentBuilder();
+        dBuilder.setErrorHandler(null);
         this.doc = dBuilder.parse(new ByteArrayInputStream(xmlString.getBytes(StandardCharsets.UTF_8)));
         doc.getDocumentElement().normalize();
         xpath = initXPath();
