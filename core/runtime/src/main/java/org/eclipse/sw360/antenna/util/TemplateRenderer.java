@@ -206,7 +206,7 @@ public class TemplateRenderer {
         } catch (ParserConfigurationException | IOException | SAXException e) {
             String msg = "Error in second stage while rendering template. This also means that first stage result is invalid.";
             LOGGER.error(msg, e);
-            throw new AntennaExecutionException(msg,e);
+            throw new AntennaExecutionException(msg, e);
         }
         return result;
     }
