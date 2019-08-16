@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.util;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.junit.Before;
 import org.junit.Rule;
@@ -218,14 +219,12 @@ public class TemplateRendererTest {
         assertThat(result).contains("<test" + propertyWithDotValue + ">" + propertyWithDotValue + "</test" + propertyWithDotValue + ">");
     }
 
-    @Test(expected = Exception.class)
+    @Test(expected = AntennaExecutionException.class)
     public void testRenderTemplateFileShouldNotReturnInvalidXmlIfTemplateWasInvalid() throws IOException {
         String invalidXmlTemplate = "<invalid xml";
         File file = writeTemplateFromString(invalidXmlTemplate);
 
-        String result = tr.renderTemplateFile(file);
-
-        assertThat(result).isNotEqualTo(invalidXmlTemplate);
+        tr.renderTemplateFile(file);
     }
 
     // This class is needed to resolve properties with dots.
