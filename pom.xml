@@ -55,6 +55,7 @@
         <module>modules/maven</module>
         <module>modules/sw360</module>
         <module>modules/drools</module>
+        <module>modules/policy</module>
         <module>modules/simple-validators</module>
         <module>modules/p2</module>
         <module>modules/ort</module>
@@ -289,6 +290,12 @@
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>4.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
