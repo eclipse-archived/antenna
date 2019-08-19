@@ -62,7 +62,7 @@ public class AntennaSW360IntegrationTest {
     private String accessToken;
 
     private static DockerComposeContainer sw360_deployment =
-            new DockerComposeContainer(new File("src/test/resources/docker-compose.yml"))
+            new DockerComposeContainer(new File("src/integrationtest/resources/docker-compose.yml"))
                     .withExposedService("test_sw360", SW360_PORT,
                             Wait.forHttp(SW360_RESOURCE_ENDPOINT)
                                     .forStatusCode(200)
@@ -78,15 +78,15 @@ public class AntennaSW360IntegrationTest {
          * and then dump the postgres database to a file.
          *
          * Dump database one-liner:
-         * >  pg_dump -h {HOST} -p {PORT} -U {USER} sw360pgdb > src/test/resources/postgres/sw360pgdb.sql
+         * >  pg_dump -h {HOST} -p {PORT} -U {USER} sw360pgdb > src/integrationtest/resources/postgres/sw360pgdb.sql
          *
          */
-        assumeTrue("Liferay PostgreSQL dump at 'src/test/resources/postgres/sw360pgdb.sql' does not exist", new File("src/test/resources/postgres/sw360pgdb.sql").exists());
+        assumeTrue("Liferay PostgreSQL dump at 'src/integrationtest/resources/postgres/sw360pgdb.sql' does not exist", new File("src/integrationtest/resources/postgres/sw360pgdb.sql").exists());
 
         sw360_deployment.start();
 
         project = new ExampleTestProject();
-        project.addAndOverwriteFile(new FileInputStream(new File("src/test/resources/pom.xml")), "pom.xml");
+        project.addAndOverwriteFile(new FileInputStream(new File("src/integrationtest/resources/pom.xml")), "pom.xml");
     }
 
     @AfterClass

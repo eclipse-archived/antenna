@@ -10,6 +10,18 @@ their licenses,
 
 Learn more about Antenna in [What Antenna Does](antenna-documentation/src/site/markdown/index.md.vm).
 
+### Modules
+
+The Antenna project consists of a core and multiple modules in `./modules`, which encapsulate related functionality.
+
+Some of these folders contain their own `README.md`, like e.g. `./modules/sw360/README.md` which contain module specific information.
+
+#### Optional Modules
+Most of the modules are activated and used by default, but the p2-resolver in `./modules/p2/p2-resolver/`, which resolves OSGi sources via P2 repositories, is excluded from the build (since it complicates the build and is unnecessary in most cases).
+To enable it, one can call the corresponding prepare script `./modules/p2/prepareDependenciesForP2.sh` (without Bash support one has to follow the steps in the script by hand).
+To remove the P2 dependencies again you can use the script `./modules/p2/cleanupDependenciesForP2.sh`.
+
+
 ### Install and build Antenna
 
 Please note that some dependencies of SW360antenna are only available for Java 8. So you need to use Java 8 to build the project.
@@ -24,13 +36,8 @@ By default, this will run tests. If you want to skip running tests use
 
 #### Optional Profiles
 You can activate the following optional profiles:
-- `-P integration-test`: activates also the optional profile for integration testing in the sw360 module
+- `-P integration-test`: activates also the optional profile for integration testing in the sw360 module (see also `./modules/sw360/README.md`)
 - `-P site-tests`: which activates the site tests in `./documentation/`
-
-#### Optional Modules
-By default the p2-resolver in `./modules/p2/p2-resolver/`, which resolves OSGi sources via P2 repositories, is excluded from the build (since it complicates the build and is unnecessary in most cases).
-To enable it, one can call the corresponding prepare script `./modules/p2/prepareDependenciesForP2.sh` (without Bash support one has to follow the steps in the script by hand).
-To remove the P2 dependencies again you can use the script `./modules/p2/cleanupDependenciesForP2.sh`.
 
 ### Configure Antenna
 Antenna can be used as a Maven plugin, with  Gradle or standalone executable.
