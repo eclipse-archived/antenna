@@ -27,5 +27,6 @@
     <modules>
         <module>drools-checker</module>
         <module>rule-engine-testing</module>
+        <module>rules-test-development-project</module>
     </modules>
 </project>

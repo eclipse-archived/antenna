@@ -15,9 +15,7 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.drools.DroolsEvaluationResult;
 
-import java.util.List;
-
-rule "Unkown artifact"
+rule "Unknown artifact"
 no-loop true
 when
     a : Artifact( getMatchState() == MatchState.UNKNOWN,
