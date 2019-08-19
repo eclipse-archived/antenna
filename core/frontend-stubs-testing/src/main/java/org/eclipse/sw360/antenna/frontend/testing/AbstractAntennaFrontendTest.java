@@ -60,7 +60,8 @@ abstract public class AbstractAntennaFrontendTest {
         File absolutePathToP2Product = new File(p2ProductPath, relativePathToP2Product).getCanonicalFile();
 
         if (!absolutePathToP2Product.isDirectory()) {
-            throw new RuntimeException("The folder '" + absolutePathToP2Product + "' should be found by AbstractAntennaFrontendTest. Maybe the Path is outdated.");
+            throw new RuntimeException("AbstractAntennaFrontendTest cannot find the '" + absolutePathToP2Product +
+                    "' directory. The root path used was '" + p2ProductPath + "'. Maybe the path is outdated?");
         }
 
         if (new File(absolutePathToP2Product, "target/products").isDirectory()) {
