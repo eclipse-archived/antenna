@@ -10,30 +10,15 @@
  */
 package org.eclipse.sw360.antenna.model.util;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
 
 public class ClassCodeSourceLocation {
-
     public static String getClassCodeSourceLocationAsString(Class<?> clazz) throws URISyntaxException {
         URI codeSourceLocationUri = getClassCodeSourceLocationURI(clazz);
-
-        String os = System.getProperty("os.name").toLowerCase();
-        String path = codeSourceLocationUri.getPath();
-        if(os.contains("win")) {
-            try {
-                Paths.get(path);
-                return path;
-            } catch (InvalidPathException e) {
-                return path.replaceFirst("/", "");
-            }
-        } else {
-            return path;
-        }
+        return new File(codeSourceLocationUri).getPath();
     }
-
 
     public static URI getClassCodeSourceLocationURI(Class<?> clazz) throws URISyntaxException {
         return clazz.getProtectionDomain().getCodeSource().getLocation().toURI();
