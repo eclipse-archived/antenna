@@ -50,4 +50,14 @@ public class SW360ProjectAdapterUtils {
         sw360Project.setProjectType(SW360ProjectType.PRODUCT);
         sw360Project.setVisibility(SW360Visibility.BUISNESSUNIT_AND_MODERATORS);
     }
+
+    public static boolean isValidProject(SW360Project project) {
+        if(project.getName() == null || project.getName().isEmpty()) {
+            return false;
+        }
+        if(project.getVersion() == null || project.getVersion().isEmpty()) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
@@ -71,14 +72,21 @@ public class RestUtils {
 
         Map<String, Object> release = new HashMap<>();
         release.put(SW360Attributes.RELEASE_COMPONENT_ID, componentId);
-        release.put(SW360Attributes.RELEASE_ID, sw360Release.getReleaseId());
+        if (sw360Release.getReleaseId() != null) {
+            release.put(SW360Attributes.RELEASE_ID, sw360Release.getReleaseId());
+        }
         release.put(SW360Attributes.RELEASE_NAME, sw360Release.getName());
         release.put(SW360Attributes.RELEASE_VERSION, sw360Release.getVersion());
-        Optional.ofNullable(sw360Release.getCpeid()).ifPresent(cpeId -> release.put(SW360Attributes.RELEASE_CPE_ID, cpeId));
-        Optional.ofNullable(sw360Release.getDownloadurl()).ifPresent(downloadurl -> release.put(SW360Attributes.RELEASE_SOURCES, downloadurl));
-        Optional.ofNullable(sw360Release.getClearingState()).ifPresent(clearingState -> release.put(SW360Attributes.RELEASE_CLEARINGSTATE, clearingState));
-        Optional.ofNullable(sw360Release.getMainLicenseIds()).ifPresent(mainLicenseIds -> release.put(SW360Attributes.RELEASE_MAIN_LICENSE_IDS, mainLicenseIds));
-        Optional.ofNullable(convertSW360ExternalIdsToMapOfStrings(sw360Release)).ifPresent(externalIDs -> release.put(SW360Attributes.RELEASE_EXTERNAL_IDS, externalIDs));
+        Optional.ofNullable(sw360Release.getCpeid())
+                .ifPresent(cpeId -> release.put(SW360Attributes.RELEASE_CPE_ID, cpeId));
+        Optional.ofNullable(sw360Release.getDownloadurl())
+                .ifPresent(downloadurl -> release.put(SW360Attributes.RELEASE_SOURCES, downloadurl));
+        Optional.ofNullable(sw360Release.getMainLicenseIds())
+                .filter(l -> ! l.isEmpty())
+                .ifPresent(mainLicenseIds -> release.put(SW360Attributes.RELEASE_MAIN_LICENSE_IDS, mainLicenseIds));
+        Optional.ofNullable(convertSW360ExternalIdsToMapOfStrings(sw360Release))
+                .filter(m -> ! m.isEmpty())
+                .ifPresent(externalIDs -> release.put(SW360Attributes.RELEASE_EXTERNAL_IDS, externalIDs));
         return getHttpEntity(release, header);
     }
 
@@ -91,6 +99,14 @@ public class RestUtils {
         license.put(SW360Attributes.LICENSE_SHORT_NAME, shortName);
         license.put(SW360Attributes.LICENSE_TEXT, sw360License.getText());
         return getHttpEntity(license, header);
+    }
+
+    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Attachment sw360Attachment, HttpHeaders header) throws AntennaException {
+        Map<String, Object> attachment = new HashMap<>();
+        attachment.put("filename", sw360Attachment.getFilename());
+        attachment.put("attachmentType", sw360Attachment.getAttachmentType());
+        attachment.put("checkStatus", "NOTCHECKED");
+        return getHttpEntity(attachment, header);
     }
 
     private static Map<String, String> convertSW360ExternalIdsToMapOfStrings(SW360Release sw360Release) {
@@ -114,7 +130,7 @@ public class RestUtils {
         if(sw360Release.getSoftwareHeritageId() != null) {
             externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_SWHID, sw360Release.getSoftwareHeritageId());
         }
-        if(sw360Release.getHashes() != null) {
+        if(sw360Release.getHashes() != null && sw360Release.getHashes().size() > 0) {
             externalIds.putAll(convertSetOfStringsOfHashesToMapOfStrings(sw360Release.getHashes()));
         }
         if(sw360Release.getChangeStatus() != null) {
@@ -122,6 +138,9 @@ public class RestUtils {
         }
         if(sw360Release.getCopyrights() != null) {
             externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS, sw360Release.getCopyrights());
+        }
+        if(sw360Release.getClearingState() != null){
+            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_CLEARINGSTATE, sw360Release.getClearingState());
         }
 
         if(externalIds.isEmpty()) {
@@ -135,9 +154,20 @@ public class RestUtils {
         int i = 1;
         Iterator<String> it = stringSet.iterator();
         while(it.hasNext()){
-            setMap.put(SW360Attributes.RELEASE_EXTERNAL_ID_HASHES + i, it.next());
-            i++;
+            final String next = it.next();
+            if(next != null && ! next.isEmpty()) {
+                setMap.put(SW360Attributes.RELEASE_EXTERNAL_ID_HASHES + i, next);
+                i++;
+            }
         }
         return setMap;
+    }
+
+    public static HttpHeaders deepCopyHeaders(HttpHeaders header) {
+        return header.entrySet()
+                .stream()
+                .collect(HttpHeaders::new,
+                        (h, e) -> e.getValue().forEach( v -> h.add(e.getKey(), v)),
+                        (h1, h2) -> {throw new RuntimeException("Unsuported operation");});
     }
 }

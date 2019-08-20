@@ -219,7 +219,7 @@ public class SW360Enricher extends AbstractProcessor {
         List<SW360SparseLicense> releaseLicenses = embedded.getLicenses();
 
         if (!artifactLicenses.isEmpty()) {
-            if (releaseLicenses.isEmpty()) {
+            if (releaseLicenses == null || releaseLicenses.isEmpty()) {
                 LOGGER.info("License information available in antenna but not in SW360.");
             } else {
                 if (hasDifferentLicenses(artifactLicenses, releaseLicenses)) {

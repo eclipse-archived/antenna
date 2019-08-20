@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.sw360.adapter;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.sw360.adapter.commonComparisonProperties.ArtifactCommons;
 import org.eclipse.sw360.antenna.sw360.adapter.commonComparisonProperties.SW360ComponentCommons;
 import org.eclipse.sw360.antenna.sw360.rest.SW360ReleaseClient;
@@ -22,6 +23,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease
 import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
 import org.springframework.http.HttpHeaders;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,9 +38,21 @@ public class SW360ReleaseClientAdapter {
     public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws AntennaException {
         SW360Release release = new SW360Release();
         SW360ReleaseAdapterUtils.prepareRelease(release, sw360Component, sw360LicenseIds, artifact);
-        return releaseClient.createRelease(release, header);
-    }
 
+        if (! SW360ReleaseAdapterUtils.isValidRelease(release)) {
+            throw new AntennaException("Can not write invalid release for " + artifact.toString());
+        }
+
+
+        final SW360Release release1 = releaseClient.createRelease(release, header);
+
+        final Optional<Path> sourceFile = artifact.askForGet(ArtifactSourceFile.class);
+        if (sourceFile.isPresent()) {
+            return releaseClient.uploadAndAttachAttachment(release1, sourceFile.get(), "SOURCE", header);
+        } else {
+            return release1;
+        }
+    }
     public SW360Release updateRelease(SW360Release release, Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws AntennaException {
         SW360Release sw360ReleaseFromArtifact = new SW360Release();
         SW360ReleaseAdapterUtils.prepareRelease(sw360ReleaseFromArtifact, sw360Component, sw360LicenseIds, artifact);

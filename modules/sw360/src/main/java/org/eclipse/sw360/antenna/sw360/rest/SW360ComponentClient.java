@@ -31,19 +31,23 @@ import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSw360Spar
 
 public class SW360ComponentClient extends SW360Client {
     private static final String COMPONENTS_ENDPOINT = "/components";
-
-    private final String componentsRestUrl;
+    private final String restUrl;
 
     public SW360ComponentClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
         super(proxyUse, proxyHost, proxyPort);
-        this.componentsRestUrl = restUrl + COMPONENTS_ENDPOINT;
+        this.restUrl = restUrl;
+    }
+
+    @Override
+    public String getEndpoint() {
+        return restUrl + COMPONENTS_ENDPOINT;
     }
 
     public SW360Component getComponent(String componentId, HttpHeaders header) throws AntennaException {
-        ResponseEntity<Resource<SW360Component>> response = doRestGET(this.componentsRestUrl + "/" + componentId, header,
+        ResponseEntity<Resource<SW360Component>> response = doRestGET(getEndpoint() + "/" + componentId, header,
                 new ParameterizedTypeReference<Resource<SW360Component>>() {});
 
-        if (response.getStatusCode() == HttpStatus.OK) {
+        if (response.getStatusCode().is2xxSuccessful()) {
             return Optional.ofNullable(response.getBody())
                     .orElseThrow(() -> new AntennaException("Request to get component " + componentId + " returned empty body"))
                     .getContent();
@@ -54,10 +58,10 @@ public class SW360ComponentClient extends SW360Client {
     }
 
     public List<SW360SparseComponent> getComponents(HttpHeaders header) throws AntennaException {
-        ResponseEntity<Resource<SW360ComponentList>> response = doRestGET(this.componentsRestUrl, header,
+        ResponseEntity<Resource<SW360ComponentList>> response = doRestGET(getEndpoint(), header,
                 new ParameterizedTypeReference<Resource<SW360ComponentList>>() {});
 
-        if (response.getStatusCode() == HttpStatus.OK) {
+        if (response.getStatusCode().is2xxSuccessful()) {
             return getSw360SparseComponents(response);
         } else {
             throw new AntennaException("Request to get all components failed with " + response.getStatusCode());
@@ -66,13 +70,13 @@ public class SW360ComponentClient extends SW360Client {
 
     public List<SW360SparseComponent> searchByName(String name, HttpHeaders header) throws AntennaException {
         UriComponentsBuilder builder = UriComponentsBuilder
-                .fromUriString(componentsRestUrl)
+                .fromUriString(getEndpoint())
                 .queryParam(SW360Attributes.COMPONENT_SEARCH_BY_NAME, name);
 
         ResponseEntity<Resource<SW360ComponentList>> response = doRestGET(builder.build(false).toUriString(), header,
                 new ParameterizedTypeReference<Resource<SW360ComponentList>>() {});
 
-        if (response.getStatusCode() == HttpStatus.OK) {
+        if (response.getStatusCode().is2xxSuccessful()) {
             return getSw360SparseComponents(response);
         }
         else {
@@ -85,7 +89,7 @@ public class SW360ComponentClient extends SW360Client {
 
         ResponseEntity<Resource<SW360Component>> response;
         try {
-            response = doRestPOST(this.componentsRestUrl, httpEntity,
+            response = doRestPOST(getEndpoint(), httpEntity,
                 new ParameterizedTypeReference<Resource<SW360Component>>() {});
         } catch(HttpServerErrorException e) {
             throw new AntennaException("Request to create component " + sw360Component.getName() + " failed with "

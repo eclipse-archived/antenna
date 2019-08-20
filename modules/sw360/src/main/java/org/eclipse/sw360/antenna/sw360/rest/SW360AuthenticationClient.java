@@ -39,10 +39,13 @@ public class SW360AuthenticationClient extends SW360Client {
         this.authServerUrl = authServerUrl;
     }
 
+    @Override
+    public String getEndpoint() {
+        return authServerUrl + GET_ACCESS_TOKEN_ENDPOINT;
+    }
+
     public String getOAuth2AccessToken(String username, String password, String clientId, String clientPassword)
             throws AntennaException {
-        String requestUrl = authServerUrl + GET_ACCESS_TOKEN_ENDPOINT;
-
         String body = String.format("%s=%s&%s=%s&%s=%s", SW360Attributes.AUTHENTICATOR_GRANT_TYPE, GRANT_TYPE_VALUE,
                 SW360Attributes.AUTHENTICATOR_USERNAME, username, SW360Attributes.AUTHENTICATOR_PASSWORD, password);
 
@@ -51,7 +54,7 @@ public class SW360AuthenticationClient extends SW360Client {
         headers.add(HttpHeaders.CONTENT_TYPE, TOKEN_CONTENT_TYPE);
 
         HttpEntity<String> httpEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<String> response = doRestCall(requestUrl, HttpMethod.POST, httpEntity, String.class);
+        ResponseEntity<String> response = doRestCall(getEndpoint(), HttpMethod.POST, httpEntity, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
             try {

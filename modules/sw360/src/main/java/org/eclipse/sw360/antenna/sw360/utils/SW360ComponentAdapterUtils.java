@@ -71,6 +71,8 @@ public class SW360ComponentAdapterUtils {
         final String name = createComponentName(artifact);
         if (!name.isEmpty()) {
             component.setName(name);
+        } else {
+            component.setName(artifact.toString()); // TODO: ugly hack
         }
     }
 
@@ -92,5 +94,12 @@ public class SW360ComponentAdapterUtils {
         SW360ComponentAdapterUtils.setName(component, artifact);
         SW360ComponentAdapterUtils.setComponentType(component, artifact);
         SW360ComponentAdapterUtils.setHomePage(component, artifact);
+    }
+
+    public static boolean isValidComponent(SW360Component component) {
+        if(component.getName() == null || component.getName().isEmpty()) {
+            return false;
+        }
+        return true;
     }
 }

@@ -30,6 +30,8 @@ public abstract class SW360Client {
     private final boolean proxyUse;
     protected RestTemplate restTemplate;
 
+    public abstract String getEndpoint();
+
     public SW360Client(boolean proxyUse, String proxyHost, int proxyPort) {
         this.proxyUse = proxyUse && proxyHost != null;
         if (proxyUse && proxyHost != null) {

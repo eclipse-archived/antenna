@@ -22,19 +22,23 @@ import java.util.Optional;
 
 public class SW360UserClient extends SW360Client {
     private static final String USERS_ENDPOINT = "/users";
-
-    private final String usersRestUrl;
+    private final String restUrl;
 
     public SW360UserClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
         super(proxyUse, proxyHost, proxyPort);
-        usersRestUrl = restUrl + USERS_ENDPOINT;
+        this.restUrl = restUrl;
+    }
+
+    @Override
+    public String getEndpoint() {
+        return restUrl + USERS_ENDPOINT;
     }
 
     public SW360User getUserByEmail(String email, HttpHeaders header) throws AntennaException {
-        ResponseEntity<Resource<SW360User>> response = doRestGET(this.usersRestUrl + "/" + email, header,
+        ResponseEntity<Resource<SW360User>> response = doRestGET(getEndpoint() + "/" + email, header,
                 new ParameterizedTypeReference<Resource<SW360User>>() {});
 
-        if (response.getStatusCode() == HttpStatus.OK) {
+        if (response.getStatusCode().is2xxSuccessful()) {
             return Optional.ofNullable(response.getBody())
                     .orElseThrow(() -> new AntennaException("Body was null"))
                     .getContent();

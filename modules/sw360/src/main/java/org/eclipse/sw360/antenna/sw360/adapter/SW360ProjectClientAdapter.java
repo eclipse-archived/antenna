@@ -55,6 +55,11 @@ public class SW360ProjectClientAdapter {
     public String addProject(String projectName, String projectVersion, HttpHeaders header) throws AntennaException, JsonProcessingException {
         SW360Project sw360Project = new SW360Project();
         SW360ProjectAdapterUtils.prepareProject(sw360Project, projectName, projectVersion);
+
+        if (! SW360ProjectAdapterUtils.isValidProject(sw360Project)) {
+            throw new AntennaException("Can not write invalid project with name=" + projectName + " and version=" + projectVersion);
+        }
+
         SW360Project responseProject = projectClient.createProject(sw360Project, header);
 
         return SW360HalResourceUtility.getLastIndexOfLinkObject(responseProject.get_Links()).orElse("");

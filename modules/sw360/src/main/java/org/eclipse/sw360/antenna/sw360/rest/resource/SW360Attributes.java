@@ -50,7 +50,6 @@ public class SW360Attributes {
     public static final String RELEASE_COMPONENT_ID = "componentId";
     public static final String RELEASE_NAME = "name";
     public static final String RELEASE_VERSION = "version";
-    public static final String RELEASE_CLEARINGSTATE = "clearingState";
     public static final String RELEASE_CPE_ID = "cpeid";
     public static final String RELEASE_SOURCES = "downloadurl";
     public static final String RELEASE_MAIN_LICENSE_IDS = "mainLicenseIds";
@@ -63,6 +62,7 @@ public class SW360Attributes {
     public static final String RELEASE_EXTERNAL_ID_HASHES = "hash_";
     public static final String RELEASE_EXTERNAL_ID_CHANGESTATUS = "change_status";
     public static final String RELEASE_EXTERNAL_ID_COPYRIGHTS = "copyrights";
+    public static final String RELEASE_EXTERNAL_ID_CLEARINGSTATE = "clearingState";
 
     // Attributes of Sw360Attachment
     public static final String ATTACHMENT_ATTACHMENT_TYPE = "attachmentType";

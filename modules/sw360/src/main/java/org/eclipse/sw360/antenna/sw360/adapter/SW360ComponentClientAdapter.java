@@ -34,7 +34,9 @@ public class SW360ComponentClientAdapter {
     public SW360Component addComponent(Artifact artifact, HttpHeaders header) throws AntennaException {
         SW360Component component = new SW360Component();
         SW360ComponentAdapterUtils.prepareComponent(component, artifact);
-
+        if(!SW360ComponentAdapterUtils.isValidComponent(component)) {
+            throw new AntennaException("Can not write invalid component for " + artifact.toString());
+        }
         return componentClient.createComponent(component, header);
     }
 
