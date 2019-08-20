@@ -15,7 +15,6 @@ import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.frontend.AntennaFrontend;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.*;
-import org.eclipse.sw360.antenna.model.util.ClassCodeSourceLocation;
 import org.eclipse.sw360.antenna.model.util.WorkflowComparator;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
@@ -55,13 +54,13 @@ abstract public class AbstractAntennaFrontendTest {
 
     @Parameterized.Parameters(name = "{index}: Test data = {1}")
     public static Collection<Object[]> data() throws IOException, URISyntaxException {
-        String p2ProductPath = ClassCodeSourceLocation.getClassCodeSourceLocationAsString(AbstractAntennaFrontendTest.class);
-        String relativePathToP2Product = "../../../../modules/p2/p2-product/repository_manager";
-        File absolutePathToP2Product = new File(p2ProductPath, relativePathToP2Product).getCanonicalFile();
+        // The current working directory is expected to be "<antenna root directory>/assembly/cli".
+        String relativePathToP2Product = "../../modules/p2/p2-product/repository_manager";
+        File absolutePathToP2Product = new File(relativePathToP2Product).getCanonicalFile();
 
         if (!absolutePathToP2Product.isDirectory()) {
             throw new RuntimeException("AbstractAntennaFrontendTest cannot find the '" + absolutePathToP2Product +
-                    "' directory. The root path used was '" + p2ProductPath + "'. Maybe the path is outdated?");
+                    "' directory. Please ensure to run tests from the Antenna root directory.");
         }
 
         if (new File(absolutePathToP2Product, "target/products").isDirectory()) {
