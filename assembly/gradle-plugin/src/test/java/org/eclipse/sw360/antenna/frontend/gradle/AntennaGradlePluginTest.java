@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -57,7 +58,7 @@ public class AntennaGradlePluginTest {
 
         String buildGradle = "plugins {\nid 'org.eclipse.sw360.antenna'\n}\n" +
                 "AntennaConfiguration{\npomPath '" + exampleTestProject.getProjectPom() + "'\n}";
-        FileUtils.writeStringToFile(projectRoot.resolve("build.gradle").toFile(), buildGradle);
+        FileUtils.writeStringToFile(projectRoot.resolve("build.gradle").toFile(), buildGradle, StandardCharsets.UTF_8);
 
         when(project.getBuildDir())
                 .thenReturn(projectRoot.resolve("build").toFile());
