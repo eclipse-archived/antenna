@@ -11,22 +11,26 @@
 package org.eclipse.sw360.antenna.policy.engine.testdata;
 
 import org.eclipse.sw360.antenna.policy.engine.Rule;
-import org.eclipse.sw360.antenna.policy.engine.RuleSet;
+import org.eclipse.sw360.antenna.policy.engine.Ruleset;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-public class TestRuleSet implements RuleSet {
+public class FailingRuleset implements Ruleset {
     @Override
-    public String name() { return "TestRuleSet"; }
+    public String getName() {
+        return "FailingRuleset";
+    }
 
     @Override
-    public String version() {
+    public String getVersion() {
         return "1.0.0";
     }
 
     @Override
-    public Collection<Rule> rules() {
-        return Arrays.asList(new AlwaysViolationRule(this), new NeverViolationRule(this));
+    public Collection<Rule> getRules() {
+        return Arrays.asList(new AlwaysViolationRule(this),
+                new NeverViolationRule(this),
+                new TestRule(this));
     }
 }

@@ -16,10 +16,16 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class PolicyEngineTestdata {
-    public static final String RULESETCLASS = TestRuleSet.class.getName();
-    public static final String FAILINGRULESETCLASS = FailingRuleSet.class.getName();
+    public static final String ALWAYSVIOLATEDID = "AV";
+    public static final String NEVERVIOLATEDID = "NV";
+
+    public static final String RULESETCLASS = TestRuleset.class.getName();
+    public static final String FAILINGRULESETCLASS = FailingRuleset.class.getName();
 
     public static final Collection<String> RULESETCONFIG = Arrays.asList(RULESETCLASS);
     public static final Collection<String> FAILINGRULESETCONFIG = Arrays.asList(FAILINGRULESETCLASS);
-    public static final Collection<ThirdPartyArtifact> ARTIFACTS = Arrays.asList(new TestArtifact(), new TestArtifact());
+    public static final Collection<String> NORULESETCLASSCONFIG = Arrays.asList(TestArtifact.class.getName());
+
+    public static final Collection<ThirdPartyArtifact> ARTIFACTS = Arrays.asList(new TestArtifact(),
+            new TestArtifact());
 }

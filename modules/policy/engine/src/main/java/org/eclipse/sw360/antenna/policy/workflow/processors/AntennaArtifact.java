@@ -8,9 +8,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.policy.antenna.workflow.processors;
+package org.eclipse.sw360.antenna.policy.workflow.processors;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
+import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.policy.engine.ThirdPartyArtifact;
 
 /**
@@ -26,5 +29,25 @@ class AntennaArtifact implements ThirdPartyArtifact {
 
     Artifact getArtifact() {
         return artifact;
+    }
+
+    @Override
+    public boolean isIdentified() {
+        return artifact.getMatchState() == MatchState.EXACT;
+    }
+
+    @Override
+    public boolean hasLicense(String licenseRegex) {
+        return ArtifactLicenseUtils.getFinalLicenses(artifact)
+                .getLicenses()
+                .stream()
+                .map(License::getName)
+                .anyMatch(license -> license.matches(licenseRegex));
+    }
+
+    @Override
+    public String getPurl() {
+        // ToDo: I have to check how I can extract the information for the purl ideally.
+        return artifact.prettyPrint();
     }
 }

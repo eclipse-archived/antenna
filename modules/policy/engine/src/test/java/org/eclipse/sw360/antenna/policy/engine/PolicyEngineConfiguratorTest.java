@@ -10,55 +10,84 @@
  */
 package org.eclipse.sw360.antenna.policy.engine;
 
-import org.apache.commons.collections4.IterableUtils;
 import org.eclipse.sw360.antenna.policy.engine.testdata.PolicyEngineTestdata;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PolicyEngineConfiguratorTest {
     @Test
-    public void testPolicyEngineConfigurator () throws NoSuchFieldException, IllegalAccessException {
+    public void testProperConfiguration() throws NoSuchFieldException, IllegalAccessException {
         PolicyEngine testResult = PolicyEngineConfigurator.configure(PolicyEngineTestdata.RULESETCONFIG);
         assertThat(testResult).isNotNull();
         Collection<RuleExecutor> createdExecutor = extractExecutor(testResult);
         assertThat(createdExecutor.size()).isEqualTo(1);
-        assertThat(IterableUtils.get(createdExecutor, 0)).isInstanceOf(SingleArtifactExecutor.class);
+        assertThat(identifyExecutors(createdExecutor, SingleArtifactExecutor.class.getName())).isTrue();
+        assertThat(identifyExecutors(createdExecutor, CompareArtifactExecutor.class.getName())).isFalse();
         Collection<Rule> createdRules = extractRules(createdExecutor);
         assertThat(createdRules.size()).isEqualTo(2);
-        assertThat(IterableUtils.get(createdRules,0)).isInstanceOf(SingleArtifactRule.class);
-        assertThat(IterableUtils.get(createdRules,1)).isInstanceOf(SingleArtifactRule.class);
+        createdRules.forEach(rule  -> assertThat(rule).isInstanceOf(SingleArtifactRule.class));
     }
 
-    private Collection<Rule> extractRules(final Collection<RuleExecutor> testResult) throws IllegalAccessException, NoSuchFieldException {
-        final SingleArtifactExecutor relevantExecutor = (SingleArtifactExecutor) IterableUtils.get(testResult, 0);
-        final Field ruleField = SingleArtifactExecutor.class.getDeclaredField("rules");
-        ruleField.setAccessible(true);
-        return (Collection<Rule>) ruleField.get(relevantExecutor);
+    private boolean identifyExecutors(Collection<RuleExecutor> createdExecutors, String requestedType) {
+        return createdExecutors.stream()
+                .anyMatch(executor -> executor.getClass().getName().equals(requestedType));
     }
 
-    private Collection<RuleExecutor> extractExecutor(final PolicyEngine testResult) throws IllegalAccessException, NoSuchFieldException {
+    private Collection<Rule> extractRules(final Collection<RuleExecutor> testResult) {
+        return testResult.stream()
+                .map(executor -> accessRules(executor))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    private Collection<Rule> accessRules(RuleExecutor executor) {
+        try {
+            final Field ruleField = executor.getClass().getDeclaredField("rules");
+            ruleField.setAccessible(true);
+            return (Collection<Rule>) ruleField.get(executor);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private Collection<RuleExecutor> extractExecutor(
+            final PolicyEngine testResult) throws IllegalAccessException, NoSuchFieldException {
         final Field executorField = PolicyEngine.class.getDeclaredField("executors");
         executorField.setAccessible(true);
         return (Collection<RuleExecutor>) executorField.get(testResult);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testPolicyEngineConfiguratorWrongClassname () {
-        Collection<String> rules = new ArrayList<>();
-        rules.addAll(PolicyEngineTestdata.RULESETCONFIG);
-        rules.add("org.eclipse.sw360.antenna.policy.engine.DummyClass");
-        PolicyEngineConfigurator.configure(rules);
+    public void testWrongClassname() {
+        Collection<String> ruleSets = new ArrayList<>();
+        ruleSets.addAll(PolicyEngineTestdata.RULESETCONFIG);
+        ruleSets.add("org.eclipse.sw360.antenna.policy.engine.DummyClass");
+        PolicyEngineConfigurator.configure(ruleSets);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testPolicyEngineConfiguratorRuleWithoutExecutor () {
-        Collection<String> rules = new ArrayList<>();
-        rules.addAll(PolicyEngineTestdata.FAILINGRULESETCONFIG);
-        PolicyEngineConfigurator.configure(rules);
+    public void testRuleWithoutExecutor() {
+        PolicyEngineConfigurator.configure(PolicyEngineTestdata.FAILINGRULESETCONFIG);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNoRulesets() {
+        PolicyEngineConfigurator.configure(new ArrayList<>());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullParam() {
+        PolicyEngineConfigurator.configure(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNotRulesetClass() {
+        PolicyEngineConfigurator.configure(PolicyEngineTestdata.NORULESETCLASSCONFIG);
     }
 }

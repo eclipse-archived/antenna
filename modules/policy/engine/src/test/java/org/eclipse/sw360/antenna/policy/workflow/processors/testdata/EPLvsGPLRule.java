@@ -8,34 +8,44 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.policy.engine.testdata;
+package org.eclipse.sw360.antenna.policy.workflow.processors.testdata;
 
 import org.eclipse.sw360.antenna.policy.engine.*;
 
 import java.util.Optional;
 
+import static org.eclipse.sw360.antenna.policy.engine.RuleUtils.artifactAppliesToRule;
 import static org.eclipse.sw360.antenna.policy.engine.RuleUtils.artifactRaisesPolicyViolation;
 
-public class AlwaysViolationRule implements SingleArtifactRule {
+public class EPLvsGPLRule implements CompareArtifactRule {
     private final Ruleset ruleSet;
 
-    public AlwaysViolationRule(Ruleset ruleSet) {
+    public EPLvsGPLRule(final Ruleset ruleSet) {
         this.ruleSet = ruleSet;
     }
 
     @Override
+    public Optional<PolicyViolation> evaluate(final ThirdPartyArtifact leftArtifact,
+            final ThirdPartyArtifact rightArtifact) {
+        if(leftArtifact.hasLicense("EPL.*") && rightArtifact.hasLicense("GPL.*")) {
+            return artifactRaisesPolicyViolation(this, leftArtifact, rightArtifact);
+        }
+        return artifactAppliesToRule(this, leftArtifact, rightArtifact);
+    }
+
+    @Override
     public String getId() {
-        return PolicyEngineTestdata.ALWAYSVIOLATEDID;
+        return AntennaTestdata.EPLVSGPLID;
     }
 
     @Override
     public String getName() {
-        return "Always Violation Rule";
+        return "EPL vs GPL rule";
     }
 
     @Override
     public String getDescription() {
-        return "Rule is always violated";
+        return "The project contains both EPL and GPL licensed components, although the two license groups are incompatible";
     }
 
     @Override
@@ -46,10 +56,5 @@ public class AlwaysViolationRule implements SingleArtifactRule {
     @Override
     public Ruleset getRuleset() {
         return ruleSet;
-    }
-
-    @Override
-    public Optional<PolicyViolation> evaluate(ThirdPartyArtifact artifact) {
-        return artifactRaisesPolicyViolation(this, artifact);
     }
 }

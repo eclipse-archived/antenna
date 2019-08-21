@@ -22,12 +22,14 @@ public class PolicyEngineTest {
     private PolicyEngine testee = PolicyEngineConfigurator.configure(PolicyEngineTestdata.RULESETCONFIG);
 
     @Test
-    public void runPolicyEngineTest() {
-        Collection<ViolationIssue> result = testee.evaluate(PolicyEngineTestdata.ARTIFACTS);
+    public void testRuleEvaluationRun() {
+        Collection<PolicyViolation> result = testee.evaluate(PolicyEngineTestdata.ARTIFACTS);
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(2);
-        Collection<String> ruleIds = result.stream().map(violation -> violation.getId()).distinct().collect(Collectors.toList());
+        Collection<String> ruleIds = result.stream().map(PolicyViolation::getId).distinct().collect(
+                Collectors.toList());
         assertThat(ruleIds.size()).isEqualTo(1);
-        assertThat(ruleIds.iterator().next()).isEqualTo("AV");
+        ruleIds.forEach(ruleId -> assertThat(ruleId).isEqualTo(PolicyEngineTestdata.ALWAYSVIOLATEDID));
+        result.stream().forEach(hashbase -> assertThat(hashbase.getViolationHash()).isEqualTo("QDUDZYo/ZbbqL+D3fAOa0w=="));
     }
 }

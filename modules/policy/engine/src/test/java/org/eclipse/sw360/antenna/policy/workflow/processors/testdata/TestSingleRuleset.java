@@ -8,27 +8,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.policy.engine.testdata;
+package org.eclipse.sw360.antenna.policy.workflow.processors.testdata;
 
 import org.eclipse.sw360.antenna.policy.engine.Rule;
-import org.eclipse.sw360.antenna.policy.engine.RuleSet;
+import org.eclipse.sw360.antenna.policy.engine.Ruleset;
 
 import java.util.Arrays;
 import java.util.Collection;
 
-public class FailingRuleSet implements RuleSet {
+public class TestSingleRuleset implements Ruleset {
     @Override
-    public String name() { return "FailingRuleSet"; }
+    public String getName() {
+        return "TestSingleRuleset";
+    }
 
     @Override
-    public String version() {
+    public String getVersion() {
         return "1.0.0";
     }
 
     @Override
-    public Collection<Rule> rules() {
-        return Arrays.asList(new AlwaysViolationRule(this),
-                             new NeverViolationRule(this),
-                             new TestRule(this));
+    public Collection<Rule> getRules() {
+        return Arrays.asList(new UnknownArtifactRule(this));
     }
 }

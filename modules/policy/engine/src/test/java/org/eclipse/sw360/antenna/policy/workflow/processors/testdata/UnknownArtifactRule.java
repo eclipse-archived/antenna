@@ -8,34 +8,43 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.policy.engine.testdata;
+package org.eclipse.sw360.antenna.policy.workflow.processors.testdata;
 
 import org.eclipse.sw360.antenna.policy.engine.*;
 
 import java.util.Optional;
 
 import static org.eclipse.sw360.antenna.policy.engine.RuleUtils.artifactAppliesToRule;
+import static org.eclipse.sw360.antenna.policy.engine.RuleUtils.artifactRaisesPolicyViolation;
 
-public class NeverViolationRule implements SingleArtifactRule {
+public class UnknownArtifactRule implements SingleArtifactRule {
     private final Ruleset ruleSet;
 
-    public NeverViolationRule(Ruleset ruleSet) {
+    public UnknownArtifactRule(final Ruleset ruleSet) {
         this.ruleSet = ruleSet;
     }
 
     @Override
+    public Optional<PolicyViolation> evaluate(final ThirdPartyArtifact thirdPartyArtifact) {
+        if(!thirdPartyArtifact.isIdentified()) {
+            return artifactRaisesPolicyViolation(this, thirdPartyArtifact);
+        }
+        return artifactAppliesToRule(this, thirdPartyArtifact);
+    }
+
+    @Override
     public String getId() {
-        return PolicyEngineTestdata.NEVERVIOLATEDID;
+        return AntennaTestdata.UNKNOWNARTIFACTID;
     }
 
     @Override
     public String getName() {
-        return "Never violated Rule";
+        return "Unknown Artifact";
     }
 
     @Override
     public String getDescription() {
-        return "Rule is never violated";
+        return "Artifact could not be identified, check with the OS service for identification";
     }
 
     @Override
@@ -46,10 +55,5 @@ public class NeverViolationRule implements SingleArtifactRule {
     @Override
     public Ruleset getRuleset() {
         return ruleSet;
-    }
-
-    @Override
-    public Optional<PolicyViolation> evaluate(ThirdPartyArtifact artifact) {
-        return artifactAppliesToRule(this, artifact);
     }
 }

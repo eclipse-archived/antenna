@@ -20,7 +20,7 @@ public interface Rule {
     String getId();
 
     /**
-     * @return The business name of the rule defined by the policy responsible
+     * @return The business getName of the rule defined by the policy responsible
      */
     String getName();
 
@@ -35,7 +35,7 @@ public interface Rule {
     RuleSeverity getSeverity();
 
     /**
-     * @return The associated {@link RuleSet} from which the rule originates
+     * @return The associated {@link Ruleset} from which the rule originates
      */
-    RuleSet getRuleSet();
+    Ruleset getRuleset();
 }

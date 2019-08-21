@@ -14,4 +14,18 @@ import org.eclipse.sw360.antenna.policy.engine.ThirdPartyArtifact;
 
 public class TestArtifact implements ThirdPartyArtifact {
 
+    @Override
+    public boolean isIdentified() {
+        return true;
+    }
+
+    @Override
+    public boolean hasLicense(String licenseRegex) {
+        return false;
+    }
+
+    @Override
+    public String getPurl() {
+        return "This is my strange purl";
+    }
 }

@@ -11,38 +11,24 @@
 package org.eclipse.sw360.antenna.policy.engine.testdata;
 
 import org.eclipse.sw360.antenna.policy.engine.Rule;
-import org.eclipse.sw360.antenna.policy.engine.RuleSeverity;
 import org.eclipse.sw360.antenna.policy.engine.Ruleset;
 
-public class TestRule implements Rule {
-    private final Ruleset ruleSet;
+import java.util.Arrays;
+import java.util.Collection;
 
-    public TestRule(Ruleset ruleSet) {
-        this.ruleSet = ruleSet;
-    }
-
-    @Override
-    public String getId() {
-        return "TST";
-    }
-
+public class TestRuleset implements Ruleset {
     @Override
     public String getName() {
-        return "Test Rule";
+        return "TestRuleset";
     }
 
     @Override
-    public String getDescription() {
-        return "Nothing";
+    public String getVersion() {
+        return "1.0.0";
     }
 
     @Override
-    public RuleSeverity getSeverity() {
-        return RuleSeverity.INFO;
-    }
-
-    @Override
-    public Ruleset getRuleset() {
-        return ruleSet;
+    public Collection<Rule> getRules() {
+        return Arrays.asList(new AlwaysViolationRule(this), new NeverViolationRule(this));
     }
 }

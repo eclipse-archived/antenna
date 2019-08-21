@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.policy.antenna.workflow.processors;
+package org.eclipse.sw360.antenna.policy.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * The workspace step which integrates the {@link PolicyEngine} into the Antenna workflow engine
  */
 public class PolicyEngineProcessor extends AbstractComplianceChecker {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PolicyEngineConfigurator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PolicyEngineProcessor.class);
 
     private PolicyEngine policyEngine;
 
@@ -77,7 +77,7 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
                 .map(AntennaArtifact::new)
                 .collect(Collectors.toList());
 
-        final Collection<ViolationIssue> results = policyEngine.evaluate(polengArtifacts);
+        final Collection<PolicyViolation> results = policyEngine.evaluate(polengArtifacts);
 
         return new PolicyEvaluation(results);
     }
@@ -89,8 +89,8 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
         return resultString.toString();
     }
 
-    private String prepareRuleSetInfo(RuleSet ruleSet) {
-        return String.format(" - Rule set %s in version %s", ruleSet.name(), ruleSet.version());
+    private String prepareRuleSetInfo(Ruleset ruleSet) {
+        return String.format(" - Rule set %s in version %s%n", ruleSet.getName(), ruleSet.getVersion());
     }
 }
 
@@ -100,7 +100,7 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
 class PolicyEvaluation implements IPolicyEvaluation {
     private final Set<IEvaluationResult> evalResults;
 
-    PolicyEvaluation(final Collection<ViolationIssue> data) {
+    PolicyEvaluation(final Collection<PolicyViolation> data) {
         evalResults = data.stream().map(AntennaEvaluationResult::new).collect(Collectors.toSet());
     }
 
@@ -114,9 +114,9 @@ class PolicyEvaluation implements IPolicyEvaluation {
  * Implementation for the Antenna {@link IEvaluationResult} result based on the {@link PolicyEngine} result data
  */
 class AntennaEvaluationResult implements IEvaluationResult {
-    private final ViolationIssue violation;
+    private final PolicyViolation violation;
 
-    AntennaEvaluationResult(final ViolationIssue violation) {
+    AntennaEvaluationResult(final PolicyViolation violation) {
         this.violation = violation;
     }
 
@@ -146,9 +146,9 @@ class AntennaEvaluationResult implements IEvaluationResult {
 
     @Override
     public Set<Artifact> getFailedArtifacts() {
-        return violation.getFailedArtifacts()
-                         .stream()
-                         .map(element -> ((AntennaArtifact)element).getArtifact())
-                         .collect(Collectors.toSet());
+        return violation.getFailingArtifacts()
+                .stream()
+                .map(element -> ((AntennaArtifact) element).getArtifact())
+                .collect(Collectors.toSet());
     }
 }

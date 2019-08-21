@@ -28,21 +28,21 @@ public class PolicyEngine {
         this.executors = executors;
     }
 
-    public Collection<ViolationIssue> evaluate (final Collection<ThirdPartyArtifact> thirdPartyArtifacts) {
+    public Collection<PolicyViolation> evaluate (final Collection<ThirdPartyArtifact> thirdPartyArtifacts) {
         LOGGER.info("Start policy engine run");
         LOGGER.debug("Artifacts are" + thirdPartyArtifacts.toString());
 
         return executors
                 .parallelStream()
                 .map(executor -> executor.executeRules(thirdPartyArtifacts))
-                .flatMap(results -> results.stream())
-                .collect(Collectors.toSet());
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
-    public Collection<RuleSet> getRuleSets() {
+    public Collection<Ruleset> getRuleSets() {
         return executors.stream()
                         .map(RuleExecutor::getRuleSets)
-                        .flatMap(col -> col.stream())
+                        .flatMap(Collection::stream)
                         .collect(Collectors.toSet());
     }
 }

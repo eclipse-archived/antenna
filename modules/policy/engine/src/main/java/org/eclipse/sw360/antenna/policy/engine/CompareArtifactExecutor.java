@@ -15,27 +15,37 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of the {@link RuleExecutor} for rules of type {@link SingleArtifactRule}.
+ * Implementation of the {@link RuleExecutor} for getRules of type {@link CompareArtifactRule}.
  */
-class SingleArtifactExecutor implements RuleExecutor {
-    private final Collection<SingleArtifactRule> rules;
+class CompareArtifactExecutor implements RuleExecutor {
+    private final Collection<CompareArtifactRule> rules;
 
-    SingleArtifactExecutor(final Collection<SingleArtifactRule> rules) {
+    public CompareArtifactExecutor(final Collection<CompareArtifactRule> rules) {
         this.rules = rules;
     }
 
     @Override
     public Collection<PolicyViolation> executeRules(final Collection<ThirdPartyArtifact> thirdPartyArtifacts) {
         return rules.parallelStream()
-                .map(rule -> executeRuleOnElements(rule, thirdPartyArtifacts))
+                .map(rule -> executeRuleOnArtifacts(rule, thirdPartyArtifacts))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
-    private Collection<PolicyViolation> executeRuleOnElements(final SingleArtifactRule rule,
+    private Collection<PolicyViolation> executeRuleOnArtifacts(final CompareArtifactRule rule,
             final Collection<ThirdPartyArtifact> thirdPartyArtifacts) {
+
         return thirdPartyArtifacts.stream()
-                .map(artifact -> rule.evaluate(artifact))
+                .map(artifact -> findViolationsForLeftHandSide(rule, artifact, thirdPartyArtifacts))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    private Collection<PolicyViolation> findViolationsForLeftHandSide(final CompareArtifactRule rule,
+            final ThirdPartyArtifact leftHandSide, final Collection<ThirdPartyArtifact> rightHandSides) {
+
+        return rightHandSides.stream()
+                .map(rightHandSide -> rule.evaluate(leftHandSide, rightHandSide))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -45,5 +55,4 @@ class SingleArtifactExecutor implements RuleExecutor {
     public Collection<Ruleset> getRuleSets() {
         return rules.stream().map(Rule::getRuleset).collect(Collectors.toSet());
     }
-
 }

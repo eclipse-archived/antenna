@@ -10,10 +10,14 @@
  */
 package org.eclipse.sw360.antenna.policy.engine;
 
+import java.util.Collection;
+
 /**
- * Policy {@link Rule} execution in a {@link RuleExecutor} ends with this exception if a policy violation is found.
+ * This is a collection of {@link Rule} objects within a common context. The configuration of the {@link PolicyEngine}
+ * in the {@link PolicyEngineConfigurator} allows to give several rule sets to set up the policies.
  */
-public class PolicyException extends Exception {
-    public PolicyException() {
-    }
+public interface Ruleset {
+    String getName();
+    String getVersion();
+    Collection<Rule> getRules();
 }

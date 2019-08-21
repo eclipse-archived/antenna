@@ -13,13 +13,14 @@ package org.eclipse.sw360.antenna.policy.engine;
 import java.util.Optional;
 
 /**
- * {@link Rule} type that iterates through all {@link ThirdPartyArtifact} objects and allows to define
- * a local property check on the associated metadata.
+ * {@link Rule} type that iterates through all {@link ThirdPartyArtifact} objects and allows to compare properties
+ * of the artifact to the property of all other artifacts
  */
-public interface SingleArtifactRule extends Rule {
+public interface CompareArtifactRule extends Rule {
     /**
-     * @param thirdPartyArtifact The {@link ThirdPartyArtifact} for which a property check is executed
+     * @param leftArtifact Left side {@link ThirdPartyArtifact} of the comparison
+     * @param rightArtifact Right side {@link ThirdPartyArtifact} of the comparison
      * @return {@link PolicyViolation} as {@link Optional}, if a policy violation is found an empty Optional if not
      */
-    Optional<PolicyViolation> evaluate(ThirdPartyArtifact thirdPartyArtifact);
+    Optional<PolicyViolation> evaluate(ThirdPartyArtifact leftArtifact, ThirdPartyArtifact rightArtifact);
 }

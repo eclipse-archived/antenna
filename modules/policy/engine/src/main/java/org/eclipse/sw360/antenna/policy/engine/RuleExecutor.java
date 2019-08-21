@@ -15,11 +15,11 @@ import java.util.Collection;
 /**
  * Interface that implements an executor that goes through all {@link Rule} instances of the corresponding type and
  * applies the rule on the available data. The design pattern is, that every type of rules has a corresponding executor.
- * The rule is reduced to a function that checks a condition. If the condition is false, the rule throws a
- * {@link PolicyException} that allows the executor to identify failing artifacts.
+ * The rule is reduced to a function that checks a condition. If the condition is false, the rule returns a
+ * {@link PolicyViolation} that allows the executor to identify failing artifacts.
  */
 interface RuleExecutor {
-    Collection<ViolationIssue> executeRules(Collection<ThirdPartyArtifact> thirdPartyArtifacts);
+    Collection<PolicyViolation> executeRules(Collection<ThirdPartyArtifact> thirdPartyArtifacts);
 
-    Collection<RuleSet> getRuleSets();
+    Collection<Ruleset> getRuleSets();
 }

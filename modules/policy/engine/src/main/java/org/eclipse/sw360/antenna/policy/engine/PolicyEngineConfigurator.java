@@ -13,85 +13,110 @@ package org.eclipse.sw360.antenna.policy.engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Wiring class for the {@link PolicyEngine}. It expects a list of qualified class names implementing a {@link RuleSet}
+ * Wiring class for the {@link PolicyEngine}. It expects a list of qualified class names implementing a {@link Ruleset}
  * and instantiates the {@link PolicyEngine} infrastructure with the {@link Rule} objects defined in them.
  */
 public class PolicyEngineConfigurator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PolicyEngineConfigurator.class);
 
+    private static final String SINGLE_ARTIFACT_EXECUTOR = SingleArtifactExecutor.class.getName();
+    private static final String COMPARE_ARTIFACT_EXECUTOR = CompareArtifactExecutor.class.getName();
+
     /**
      * The general configuration method for the {@link PolicyEngine}, it instantiates the infrastructure and returns the
      * entry point for policy evaluations.
      *
-     * @param ruleSetRefs List of {@link RuleSet} implementations as qualified class name. The classes need to be
-     *                     available of the classpath.
-     * @return The {@link PolicyEngine} instance to start policy evaluations.
-     * @throws IllegalArgumentException If not all classes could be found on the classpath.
+     * @param ruleSetRefs List of {@link Ruleset} implementations as qualified class name. The classes need to be
+     *                    available of the classpath.
+     * @return The {@link PolicyEngine} instance to start policy evaluations
+     * @throws IllegalArgumentException If no rule set given or not all classes could be found on the classpath
      */
     public static PolicyEngine configure(final Collection<String> ruleSetRefs) throws IllegalArgumentException {
+        if (ruleSetRefs == null || ruleSetRefs.isEmpty()) {
+            throw new IllegalArgumentException("Configuration Error: No rule set reference given");
+        }
+
         LOGGER.debug("Configuring the policy engine with ruleSetRefs " + ruleSetRefs.toString());
 
-        final Map<String, Collection<Rule>> ruleToExecutorMapping = new HashMap<>();
-
-        ruleSetRefs.stream()
+        final Map<String, Set<Rule>> executorToRuleMapping = ruleSetRefs.stream()
                 .map(PolicyEngineConfigurator::createRuleSet)
-                .flatMap(rs -> rs.rules().stream())
+                .map(Ruleset::getRules)
+                .flatMap(Collection::stream)
                 .map(PolicyEngineConfigurator::mapRuleToExecutor)
-                .forEach(data -> addRuleToExecutor(ruleToExecutorMapping, data.executorClass, data.rule));
+                .collect(Collectors.groupingBy(RuleToExecutor::getExecutorClass,
+                        Collectors.mapping(RuleToExecutor::getRule, Collectors.toSet())));
 
-        PolicyEngine resultEngine = new PolicyEngine(createExecutors(ruleToExecutorMapping));
+        PolicyEngine resultEngine = new PolicyEngine(createExecutors(executorToRuleMapping));
 
         LOGGER.debug("Policy engine created");
 
         return resultEngine;
     }
 
-    private static RuleSet createRuleSet(final String ruleClassRef) {
+    private static Ruleset createRuleSet(final String ruleClassRef) throws IllegalArgumentException {
         try {
-            return (RuleSet) Class.forName(ruleClassRef).newInstance();
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            throw new IllegalArgumentException("Configuration Error: Instantiation of rule type failed: " + ruleClassRef, e);
+            return (Ruleset) Class.forName(ruleClassRef).getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException |
+                NoSuchMethodException | InvocationTargetException | ClassCastException e) {
+            throw new IllegalArgumentException(
+                    "Configuration Error: Instantiation of rule type failed: " + ruleClassRef, e);
         }
     }
 
-    private static class RuleToExecutor {
+    static class RuleToExecutor {
         private final Rule rule;
         private final String executorClass;
 
-        private RuleToExecutor(final Rule rule, final String executorClazz) {
+        private RuleToExecutor(final Rule rule, final String executorClass) {
             this.rule = rule;
-            this.executorClass = executorClazz;
+            this.executorClass = executorClass;
+        }
+
+        Rule getRule() {
+            return rule;
+        }
+
+        String getExecutorClass() {
+            return executorClass;
         }
     }
 
     private static RuleToExecutor mapRuleToExecutor(final Rule rule) {
         if (rule instanceof SingleArtifactRule) {
-            return new RuleToExecutor(rule, SingleArtifactExecutor.class.getName());
+            return new RuleToExecutor(rule, SINGLE_ARTIFACT_EXECUTOR);
+        } else if (rule instanceof CompareArtifactRule) {
+            return new RuleToExecutor(rule, COMPARE_ARTIFACT_EXECUTOR);
         }
-        throw new IllegalStateException("Programming Error: Rule type defined without Executor: " + rule.getClass().getName());
+        throw new IllegalStateException("Programming Error: Rule type defined without Executor: "
+                + rule.getClass().getName());
     }
 
-    private static void addRuleToExecutor(final Map<String, Collection<Rule>> ruleToExecutorMapping,
-                                          final String executor, final Rule rule) {
-        final Collection<Rule> listOfRules = Optional.ofNullable(ruleToExecutorMapping.get(executor)).orElse(new ArrayList<>());
-        listOfRules.add(rule);
-        ruleToExecutorMapping.put(executor, listOfRules);
-    }
-
-    private static Collection<RuleExecutor> createExecutors(final Map<String, Collection<Rule>> ruleToExecutorMapping) {
-        final Collection<RuleExecutor> executors = new ArrayList<>();
-        executors.add(new SingleArtifactExecutor(ruleToSingleElementRule(ruleToExecutorMapping)));
-        return executors;
-    }
-
-    private static Collection<SingleArtifactRule> ruleToSingleElementRule(final Map<String, Collection<Rule>> ruleToExecutorMapping) {
-        return ruleToExecutorMapping.get(SingleArtifactExecutor.class.getName())
+    private static Collection<RuleExecutor> createExecutors(final Map<String, Set<Rule>> executorToRuleMapping) {
+        return executorToRuleMapping.entrySet()
                 .stream()
-                .map(rule -> (SingleArtifactRule) rule)
+                .map(entry -> createExecutor(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    private static RuleExecutor createExecutor(String executorClass, Collection<Rule> rules) {
+        if (SINGLE_ARTIFACT_EXECUTOR.equals(executorClass)) {
+            return new SingleArtifactExecutor(ruleToSpecialArtifactRule(rules));
+        } else if (COMPARE_ARTIFACT_EXECUTOR.equals(executorClass)) {
+            return new CompareArtifactExecutor(ruleToSpecialArtifactRule(rules));
+        }
+        throw new IllegalStateException("Programming Error: Unknown executor class");
+    }
+
+    private static <R> Collection<R> ruleToSpecialArtifactRule(final Collection<Rule> rules) {
+        return rules.stream()
+                .map(rule -> (R) rule)
                 .collect(Collectors.toList());
     }
 }
