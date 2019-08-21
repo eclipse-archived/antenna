@@ -20,6 +20,20 @@
     <artifactId>maven-frontend-stub</artifactId>
     <name>maven-frontend-stub</name>
 
+    <repositories>
+        <!-- For ch.frankel.log4k used by ORT -->
+        <repository>
+            <id>jcenter</id>
+            <url>http://jcenter.bintray.com</url>
+        </repository>
+
+        <!-- For ORT -->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
@@ -163,6 +177,10 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+            <artifactId>model</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.hateoas</groupId>

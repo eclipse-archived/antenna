@@ -10,22 +10,23 @@
  */
 package org.eclipse.sw360.antenna.ort.workflow.analyzers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.here.ort.model.AnalyzerRun;
+import com.here.ort.model.OrtResult;
+import com.here.ort.model.OutputFormatKt;
+
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.ort.resolver.OrtAnalyzerResultResolver;
-import org.eclipse.sw360.antenna.ort.resolver.OrtScannerResultResolver;
+import org.eclipse.sw360.antenna.ort.resolver.OrtResultArtifactResolver;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.StreamSupport;
+import java.util.stream.Collectors;
 
 public class OrtResultAnalyzer extends ManualAnalyzer {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrtResultAnalyzer.class);
@@ -49,60 +50,13 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
     }
 
     Collection<Artifact> createArtifactList(File ortResultFile) throws IOException {
-        Optional<String> extension = Optional.ofNullable(ortResultFile.getName())
-                .filter(f -> f.contains("."))
-                .map(f -> f.substring(f.lastIndexOf(".") + 1));
-
-        ObjectMapper mapper;
-        switch (extension.get()) {
-            case "json": mapper = new ObjectMapper(); break;
-            case "yml": mapper = new YAMLMapper(); break;
-            default: throw new IOException("Ort Result File is not in a supported format.");
-        }
-
-        JsonNode ortResult = mapper.readTree(ortResultFile);
-        LOGGER.debug("Create artifact list from Ort Result File");
-
-        Optional<JsonNode> optionalScanResults = Optional.ofNullable(ortResult.get("scanner"))
-                .filter(j -> !j.isNull())
-                .map(v -> v.get("results").get("scan_results"));
-
-        if (!ortResult.get("analyzer").isNull() &&
-                ortResult.get("analyzer").get("result").get("packages") != null) {
-            return getArtifactListFromAnalyzerResult(ortResult.get("analyzer").get("result").get("packages"), optionalScanResults);
-        }
-
-        return Collections.emptyList();
-    }
-
-    private List<Artifact> getArtifactListFromAnalyzerResult(JsonNode ortPackages, Optional<JsonNode> optionalScanResults) {
-        List<Artifact> artifacts = new ArrayList<>();
-
-        Iterator<JsonNode> ortPackageIterator = ortPackages.elements();
-        while (ortPackageIterator.hasNext()) {
-            Optional.ofNullable(ortPackageIterator.next().get("package")).ifPresent(ortPackage -> {
-                        Optional<JsonNode> scanResult = getScanResultWithId(ortPackage, optionalScanResults);
-                        artifacts.add(mapAnalyzerArtifact(ortPackage, scanResult));
-                    }
-            );
-        }
-        return artifacts;
-    }
-
-    private Optional<JsonNode> getScanResultWithId(JsonNode ortPackage, Optional<JsonNode> scanResult) {
-        JsonNode pkgId = ortPackage.get("id");
-
-        return scanResult.flatMap(jsonNode -> StreamSupport.stream(jsonNode.spliterator(), false)
-                .filter(currentScanResult -> currentScanResult.get("id").equals(pkgId))
-                .findFirst());
-    }
-
-    private Artifact mapAnalyzerArtifact(JsonNode analyzerResult, Optional<JsonNode> scanResult) {
-        Artifact artifact = new OrtAnalyzerResultResolver().apply(analyzerResult);
-
-        scanResult.map(new OrtScannerResultResolver())
-                .ifPresent(artifact::overrideWith);
-
-        return artifact;
+        LOGGER.debug("Creating artifact list from ORT result file '" + ortResultFile + "'.");
+        OrtResult result = OutputFormatKt.mapper(ortResultFile).readValue(ortResultFile, OrtResult.class);
+        OrtResultArtifactResolver resolver = new OrtResultArtifactResolver(result);
+        AnalyzerRun analyzerRun = Optional.of(result.getAnalyzer())
+                .orElseThrow(() -> new IOException("No analyzer run found in ORT result file."));
+        return analyzerRun.getResult().getPackages().stream()
+                .map(p -> resolver.apply(p.getPkg()))
+                .collect(Collectors.toSet());
     }
 }
