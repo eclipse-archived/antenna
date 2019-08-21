@@ -17,6 +17,7 @@ import java.util.Collection;
  * in the {@link PolicyEngineConfigurator} allows to give several rule sets to set up the policies.
  */
 public interface RuleSet {
+    String name();
     String version();
     Collection<Rule> rules();
 }

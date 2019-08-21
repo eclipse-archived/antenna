@@ -53,4 +53,10 @@ class SingleArtifactExecutor implements RuleExecutor {
         }
         return false;
     }
+
+    @Override
+    public Collection<RuleSet> getRuleSets() {
+        return rules.stream().map(Rule::getRuleSet).collect(Collectors.toSet());
+    }
+
 }

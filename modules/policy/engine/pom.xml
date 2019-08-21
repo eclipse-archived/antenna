@@ -29,7 +29,11 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <scope>compile</scope>
+	    </dependency>
+	    <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>runtime</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <!-- ################################ testing dependencies ################################ -->
         <dependency>

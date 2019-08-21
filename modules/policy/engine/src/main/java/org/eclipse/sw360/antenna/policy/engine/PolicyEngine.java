@@ -38,5 +38,12 @@ public class PolicyEngine {
                 .flatMap(results -> results.stream())
                 .collect(Collectors.toSet());
     }
+
+    public Collection<RuleSet> getRuleSets() {
+        return executors.stream()
+                        .map(RuleExecutor::getRuleSets)
+                        .flatMap(col -> col.stream())
+                        .collect(Collectors.toSet());
+    }
 }
 

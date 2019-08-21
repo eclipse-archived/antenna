@@ -18,6 +18,9 @@ import java.util.Collection;
 
 public class FailingRuleSet implements RuleSet {
     @Override
+    public String name() { return "FailingRuleSet"; }
+
+    @Override
     public String version() {
         return "1.0.0";
     }

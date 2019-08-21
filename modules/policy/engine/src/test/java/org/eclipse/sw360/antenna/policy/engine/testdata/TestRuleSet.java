@@ -18,6 +18,9 @@ import java.util.Collection;
 
 public class TestRuleSet implements RuleSet {
     @Override
+    public String name() { return "TestRuleSet"; }
+
+    @Override
     public String version() {
         return "1.0.0";
     }

@@ -11,8 +11,8 @@
 package org.eclipse.sw360.antenna.policy.engine;
 
 /**
- * This interface is a facade to a third party artifact. It covers the viewpoint needed for policy
- * evaluations that can be fed by different models through implementing this interface.
+ * This interface is a facade to a third party artifact. It defines a lightweight dsl needed for policy
+ * evaluations that can be implemented for different models through implementing this interface.
  */
 public interface ThirdPartyArtifact {
 }

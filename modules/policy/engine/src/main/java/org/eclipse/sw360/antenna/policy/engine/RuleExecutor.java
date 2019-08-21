@@ -20,4 +20,6 @@ import java.util.Collection;
  */
 interface RuleExecutor {
     Collection<ViolationIssue> executeRules(Collection<ThirdPartyArtifact> thirdPartyArtifacts);
+
+    Collection<RuleSet> getRuleSets();
 }
