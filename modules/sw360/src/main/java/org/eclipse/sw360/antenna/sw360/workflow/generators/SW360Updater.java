@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2017-2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2017-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -19,12 +19,11 @@ import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.model.SW360ProjectCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 
 public class SW360Updater extends AbstractGenerator {
     private static final String UPDATE_RELEASES = "update_releases";
@@ -65,19 +64,8 @@ public class SW360Updater extends AbstractGenerator {
 
     @Override
     public Map<String, IAttachable> produce(Collection<Artifact> intermediates) throws AntennaException {
-
-        try {
-            List<SW360Release> releases = new ArrayList<>();
-            for (Artifact artifact : intermediates) {
-                Set<String> licenses = sw360MetaDataUpdater.getOrCreateLicenses(artifact);
-                SW360Component component = sw360MetaDataUpdater.getOrCreateComponent(artifact);
-                releases.add(sw360MetaDataUpdater.getOrCreateRelease(artifact, licenses, component));
-            }
-            sw360MetaDataUpdater.createProject(projectName, projectVersion, releases);
-        } catch (IOException e) {
-            throw new AntennaException("Problem occurred during updating SW360.", e);
-        }
-        return Collections.emptyMap();
+        return new SW360UpdaterImpl(sw360MetaDataUpdater,projectName, projectVersion)
+                .produce(intermediates);
     }
 
     private String retrieveName(Optional<SW360ProjectCoordinates> sw360ProjectCoordinates) {
@@ -91,4 +79,5 @@ public class SW360Updater extends AbstractGenerator {
                 .orElse(context.getProject()
                         .getVersion());
     }
+
 }
