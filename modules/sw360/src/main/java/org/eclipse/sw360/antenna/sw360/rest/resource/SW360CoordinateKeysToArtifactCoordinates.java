@@ -64,6 +64,12 @@ public enum SW360CoordinateKeysToArtifactCoordinates {
                 .collect(Collectors.toSet());
     }
 
+    public static Set<String> getValues() {
+        return VALUES.stream()
+                .map(e -> e.value)
+                .collect(Collectors.toSet());
+    }
+
     public static ArtifactCoordinates createArtifactCoordinates(String group, String name, String version, Class<?extends ArtifactCoordinates> coordinateClass) {
         try {
             Object object = null;

@@ -18,6 +18,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,9 +27,11 @@ import java.net.Proxy;
 import java.util.Collections;
 
 public abstract class SW360Client {
+    private final boolean proxyUse;
     protected RestTemplate restTemplate;
 
     public SW360Client(boolean proxyUse, String proxyHost, int proxyPort) {
+        this.proxyUse = proxyUse && proxyHost != null;
         if (proxyUse && proxyHost != null) {
             SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
@@ -65,6 +68,14 @@ public abstract class SW360Client {
     }
 
     protected <T> ResponseEntity<T> doRestPATCH(String url, HttpEntity<?> httpEntity, ParameterizedTypeReference<T> responseType) {
-        return doRestCall(url, HttpMethod.PATCH, httpEntity, responseType);
+        if(proxyUse) {
+            throw new UnsupportedOperationException("The patch functionality used when updating releases does not support proxy use");
+        }
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        restTemplate.setRequestFactory(requestFactory);
+
+        return restTemplate.exchange(url, HttpMethod.PATCH, httpEntity, responseType);
     }
 }

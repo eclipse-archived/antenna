@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.sw360.rest.workflow.processors;
+package org.eclipse.sw360.antenna.sw360.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
