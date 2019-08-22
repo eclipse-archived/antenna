@@ -24,7 +24,7 @@ SCRIPT
 
 $install = <<SCRIPT
 set -ex
-cd /bsinno-osm-antenna
+cd /antenna
 ./run_all_tests.sh --p2
 SCRIPT
 
@@ -46,7 +46,7 @@ Vagrant.configure("2") do |config|
                       inline: $runCleanup,
                       run: "always",
                       privileged: false
-  config.vm.synced_folder "..", "/bsinno-osm-antenna"
+  config.vm.synced_folder "..", "/antenna"
   config.vm.provision "shell",
                       inline: $install,
                       run: "always",

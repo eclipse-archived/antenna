@@ -11,4 +11,4 @@
 set -ex
 
 cd "$(dirname "$0")/../antenna-documentation"
-mvn site -Psite-tests
+mvn --batch-mode $MAVEN_OPTS site -Psite-tests

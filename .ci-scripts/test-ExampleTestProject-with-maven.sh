@@ -15,7 +15,7 @@ cd "$(dirname "$0")/.."
 tmpdir=$(mktemp -d)
 trap 'rm -rf $tmpdir' EXIT
 cp -r example-projects/example-project/ $tmpdir/example-project/
-mvn --batch-mode \
+mvn --batch-mode $MAVEN_OPTS \
     -f $tmpdir/example-project/pom.xml \
     clean package
 java -jar core/frontend-stubs-testing/target/antenna-test-project-asserter.jar ExampleTestProject $tmpdir/example-project/target

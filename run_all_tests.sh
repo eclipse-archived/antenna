@@ -26,12 +26,20 @@ runWithScope() {
 
 have() { type "$1" &> /dev/null; }
 
+if [[ "$1" == "--custom-repository" ]]; then
+    export M2_REPOSITORY="/tmp/run_all_tests.repository"
+    mkdir -p $M2_REPOSITORY
+    export MAVEN_OPTS="-Dmaven.repo.local=$M2_REPOSITORY"
+fi
+
 WITH_P2="false"
 if [[ "$1" == "--p2" ]]; then
+    shift
     WITH_P2="true"
     runWithScope "prepare p2 dependencies"  \
         modules/p2/prepareDependenciesForP2.sh
 elif [[ "$1" == "--no-p2" ]]; then
+    shift
     runWithScope "cleanup p2 dependencies"  \
         modules/p2/cleanupDependenciesForP2.sh
 fi
