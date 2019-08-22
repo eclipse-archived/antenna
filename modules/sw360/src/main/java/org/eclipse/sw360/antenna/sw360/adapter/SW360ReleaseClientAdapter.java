@@ -35,7 +35,7 @@ public class SW360ReleaseClientAdapter {
         this.releaseClient = new SW360ReleaseClient(restUrl, proxyUse, proxyHost, proxyPort);
     }
 
-    public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws AntennaException {
+    public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, boolean uploadSource, HttpHeaders header) throws AntennaException {
         SW360Release release = new SW360Release();
         SW360ReleaseAdapterUtils.prepareRelease(release, sw360Component, sw360LicenseIds, artifact);
 
@@ -47,7 +47,7 @@ public class SW360ReleaseClientAdapter {
         final SW360Release release1 = releaseClient.createRelease(release, header);
 
         final Optional<Path> sourceFile = artifact.askForGet(ArtifactSourceFile.class);
-        if (sourceFile.isPresent()) {
+        if (uploadSource && sourceFile.isPresent()) {
             return releaseClient.uploadAndAttachAttachment(release1, sourceFile.get(), "SOURCE", header);
         } else {
             return release1;

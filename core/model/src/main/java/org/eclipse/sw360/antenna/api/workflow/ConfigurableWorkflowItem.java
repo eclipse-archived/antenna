@@ -76,6 +76,10 @@ public abstract class ConfigurableWorkflowItem {
         return result;
     }
 
+    public Boolean getBooleanConfigValue(String key, Map<String, String> configMap) throws AntennaConfigurationException {
+        return "true".equals(getConfigValue(key, configMap, "false").toLowerCase());
+    }
+
     public List<String> getCommaSeparatedConfigValue(String key, Map<String,String> configMap) throws  AntennaConfigurationException {
         final String configValue = getConfigValue(key, configMap, "");
         if ("".equals(configValue)) {
