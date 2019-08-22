@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class IArtifactRequesterTest extends AntennaTestWithMockedContext {
 
-    private IArtifactRequester artifactRequester = new IArtifactRequester(antennaContextMock) {
+    private IArtifactRequester artifactRequester = new IArtifactRequester() {
         @Override
         public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation) {
             return Optional.empty();

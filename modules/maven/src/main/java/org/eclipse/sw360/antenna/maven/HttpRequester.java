@@ -10,10 +10,10 @@
  */
 package org.eclipse.sw360.antenna.maven;
 
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.exceptions.FailedToDownloadException;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.util.HttpHelper;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,15 +36,15 @@ public class HttpRequester extends IArtifactRequester {
     private HttpHelper httpHelper;
     private Optional<URL> sourceRepositoryUrl;
 
-    public HttpRequester(AntennaContext context, URL sourceRepositoryUrl) {
-        super(context);
-        httpHelper = new HttpHelper(context);
+    public HttpRequester(ProxySettings proxySettings, URL sourceRepositoryUrl) {
+        super();
+        httpHelper = new HttpHelper(proxySettings);
         this.sourceRepositoryUrl = Optional.of(sourceRepositoryUrl);
     }
 
-    public HttpRequester(AntennaContext context) {
-        super(context);
-        httpHelper = new HttpHelper(context);
+    public HttpRequester(ProxySettings proxySettings) {
+        super();
+        httpHelper = new HttpHelper(proxySettings);
         this.sourceRepositoryUrl = Optional.empty();
     }
 

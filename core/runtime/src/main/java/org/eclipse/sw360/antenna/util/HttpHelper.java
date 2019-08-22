@@ -18,8 +18,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.exceptions.FailedToDownloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +31,8 @@ public class HttpHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpHelper.class);
     private CloseableHttpClient httpClient;
 
-    public HttpHelper(AntennaContext context) {
-        httpClient = getConfiguredHttpClient(context);
+    public HttpHelper(ProxySettings proxySettings) {
+        httpClient = getConfiguredHttpClient(proxySettings);
     }
 
     public File downloadFile(String url, Path targetDirectory) throws IOException, FailedToDownloadException {
@@ -46,8 +44,8 @@ public class HttpHelper {
         File targetFile = targetDirectory.resolve(filename).toFile();
 
         try (CloseableHttpResponse response = getFromUrl(url)) {
-            if(response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                throw new FailedToDownloadException("File not found on URL=["+url+"]");
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+                throw new FailedToDownloadException("File not found on URL=[" + url + "]");
             } else if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 throw new IOException("Reason: " + response.getStatusLine().getReasonPhrase());
             }
@@ -68,14 +66,12 @@ public class HttpHelper {
         return targetFile;
     }
 
-    private CloseableHttpClient getConfiguredHttpClient(AntennaContext context) {
-        ToolConfiguration tc = context.getToolConfiguration();
-
-        if (tc.useProxy()) {
-            LOGGER.info("Using proxy on host {} and port {}", tc.getProxyHost(), tc.getProxyPort());
+    private CloseableHttpClient getConfiguredHttpClient(ProxySettings proxySettings) {
+        if (proxySettings.isProxyUse()) {
+            LOGGER.info("Using proxy on host {} and port {}", proxySettings.getProxyHost(), proxySettings.getProxyPort());
             return HttpClients.custom()
                     .useSystemProperties()
-                    .setProxy(new HttpHost(tc.getProxyHost(), tc.getProxyPort()))
+                    .setProxy(new HttpHost(proxySettings.getProxyHost(), proxySettings.getProxyPort()))
                     .build();
         } else {
             return HttpClients.createDefault();

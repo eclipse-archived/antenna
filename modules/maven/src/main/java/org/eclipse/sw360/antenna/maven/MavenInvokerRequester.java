@@ -14,7 +14,6 @@ import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.slf4j.Logger;
@@ -44,20 +43,22 @@ public class MavenInvokerRequester extends IArtifactRequester {
     private static final String MVN_ARG_CLASSIFIER = "\"-Dclassifier=%s\"";
     private static final String MVN_ARG_REPOS = "\"-DremoteRepositories=%s\"";
     private static final String MVN_DOWNLOAD_CMD = "dependency:get --quiet";
+    private final File basedir;
 
     private DefaultInvoker defaultInvoker;
     private Optional<URL> sourceRepositoryUrl;
 
-    public MavenInvokerRequester(AntennaContext context) {
-        this(context, new DefaultInvoker(), Optional.empty());
+    public MavenInvokerRequester(File basedir) {
+        this(basedir, new DefaultInvoker(), Optional.empty());
     }
 
-    public MavenInvokerRequester(AntennaContext context, URL sourceRepositoryUrl) {
-        this(context, new DefaultInvoker(), Optional.of(sourceRepositoryUrl));
+    public MavenInvokerRequester(File basedir, URL sourceRepositoryUrl) {
+        this(basedir, new DefaultInvoker(), Optional.of(sourceRepositoryUrl));
     }
 
-    public MavenInvokerRequester(AntennaContext context, DefaultInvoker defaultInvoker, Optional<URL> sourceRepositoryUrl) {
-        super(context);
+    public MavenInvokerRequester(File basedir, DefaultInvoker defaultInvoker, Optional<URL> sourceRepositoryUrl) {
+        super();
+        this.basedir = basedir;
         this.defaultInvoker = defaultInvoker;
         if (System.getenv("M2_HOME") != null) {
             defaultInvoker.setMavenExecutable(new File(System.getenv("M2_HOME")));
@@ -116,7 +117,6 @@ public class MavenInvokerRequester extends IArtifactRequester {
     }
 
     protected File getPomFileFromContext() {
-        final File basedir = context.getProject().getBasedir();
         return new File(basedir, POM_FILENAME);
     }
 

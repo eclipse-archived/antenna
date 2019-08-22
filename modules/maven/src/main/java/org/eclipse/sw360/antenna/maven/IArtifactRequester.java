@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.maven;
 
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 
 import java.io.File;
@@ -21,10 +20,8 @@ import java.util.Optional;
 public abstract class IArtifactRequester {
 
     public static final String JAR_EXTENSION = ".jar";
-    protected AntennaContext context;
 
-    public IArtifactRequester(AntennaContext context) {
-        this.context = context;
+    public IArtifactRequester() {
     }
 
     /**

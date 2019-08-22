@@ -14,11 +14,9 @@ import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.utils.cli.CommandLineException;
-import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,9 +39,6 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Mock
-    private IProject projectMock = Mockito.mock(IProject.class);
-
-    @Mock
     private DefaultInvoker defaultInvokerMock = Mockito.mock(DefaultInvoker.class);
     @Captor
     private
@@ -59,17 +54,9 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
 
         System.setProperty("maven.home", temporaryFolder.newFolder("m2").toString());
 
-        Mockito.when(projectMock.getBasedir())
-                .thenReturn(temporaryFolder.newFile("projectBasedir"));
-        Mockito.when(antennaContextMock.getProject())
-                .thenReturn(projectMock);
+        File basedir = temporaryFolder.newFile("projectBasedir");
 
-        mir = new MavenInvokerRequester(antennaContextMock, defaultInvokerMock, Optional.empty());
-    }
-
-    @After
-    public void assertThatOnlyExpectedMethodsAreCalled() {
-        Mockito.verify(antennaContextMock, Mockito.atLeastOnce()).getProject();
+        mir = new MavenInvokerRequester(basedir, defaultInvokerMock, Optional.empty());
     }
 
     @Test
