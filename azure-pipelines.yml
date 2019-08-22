@@ -21,6 +21,13 @@ pool:
 container: 'maven:3.6-jdk-8-slim'
 
 steps:
+  # this has to be done first on the clean clone
+- task: Bash@3
+  displayName: 'test for licenseHeaders'
+  inputs:
+    targetType: 'inline'
+    script: '.ci-scripts/test-for-licenseHeaders.sh --no-git'
+  
   # The following task is currently in beta state and actually not recommended for productive use
   # related documentation: https://docs.microsoft.com/en-us/azure/devops/pipelines/caching/?view=azure-devops#maven
 - task: CacheBeta@0
