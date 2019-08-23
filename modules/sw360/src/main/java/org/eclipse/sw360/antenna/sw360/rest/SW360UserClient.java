@@ -14,6 +14,7 @@ package org.eclipse.sw360.antenna.sw360.rest;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
@@ -24,8 +25,8 @@ public class SW360UserClient extends SW360Client {
     private static final String USERS_ENDPOINT = "/users";
     private final String restUrl;
 
-    public SW360UserClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
-        super(proxyUse, proxyHost, proxyPort);
+    public SW360UserClient(String restUrl, ProxySettings proxySettings) {
+        super(proxySettings);
         this.restUrl = restUrl;
     }
 

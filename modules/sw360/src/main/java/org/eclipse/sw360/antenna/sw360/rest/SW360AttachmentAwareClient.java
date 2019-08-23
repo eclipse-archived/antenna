@@ -18,6 +18,7 @@ import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
@@ -26,8 +27,8 @@ import org.springframework.util.MultiValueMap;
 public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>> extends SW360Client {
     private static final String ATTACHMENTS_ENDPOINT = "/attachments";
 
-    public SW360AttachmentAwareClient(boolean proxyUse, String proxyHost, int proxyPort) {
-        super(proxyUse, proxyHost, proxyPort);
+    public SW360AttachmentAwareClient(ProxySettings proxySettings) {
+        super(proxySettings);
     }
 
     public abstract Class<T> getHandledClassType();

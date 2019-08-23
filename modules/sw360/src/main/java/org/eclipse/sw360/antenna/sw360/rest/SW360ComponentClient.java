@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
@@ -33,8 +34,8 @@ public class SW360ComponentClient extends SW360Client {
     private static final String COMPONENTS_ENDPOINT = "/components";
     private final String restUrl;
 
-    public SW360ComponentClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
-        super(proxyUse, proxyHost, proxyPort);
+    public SW360ComponentClient(String restUrl, ProxySettings proxySettings) {
+        super(proxySettings);
         this.restUrl = restUrl;
     }
 

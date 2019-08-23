@@ -16,6 +16,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
@@ -29,8 +30,8 @@ public class SW360LicenseClient extends SW360Client {
     private static final String LICENSES_ENDPOINT = "/licenses";
     private final String restUrl;
 
-    public SW360LicenseClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
-        super(proxyUse, proxyHost, proxyPort);
+    public SW360LicenseClient(String restUrl, ProxySettings proxySettings) {
+        super(proxySettings);
         this.restUrl = restUrl;
     }
 

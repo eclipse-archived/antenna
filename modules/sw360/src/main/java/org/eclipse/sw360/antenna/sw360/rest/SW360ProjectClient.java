@@ -19,6 +19,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
@@ -34,8 +35,8 @@ public class SW360ProjectClient extends SW360Client {
     private static final String PROJECTS_ENDPOINT = "/projects";
     private final String restUrl;
 
-    public SW360ProjectClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
-        super(proxyUse, proxyHost, proxyPort);
+    public SW360ProjectClient(String restUrl, ProxySettings proxySettings) {
+        super(proxySettings);
         this.restUrl = restUrl;
     }
 

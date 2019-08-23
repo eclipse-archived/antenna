@@ -14,14 +14,15 @@ package org.eclipse.sw360.antenna.sw360.adapter;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.SW360UserClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.HttpHeaders;
 
 public class SW360UserClientAdapter {
 
     private final SW360UserClient userClient;
 
-    public SW360UserClientAdapter(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
-        this.userClient= new SW360UserClient(restUrl, proxyUse, proxyHost, proxyPort);
+    public SW360UserClientAdapter(String restUrl, ProxySettings proxySettings) {
+        this.userClient= new SW360UserClient(restUrl, proxySettings);
     }
 
     public SW360User getUserByEmail(String userId, HttpHeaders header) throws AntennaException {

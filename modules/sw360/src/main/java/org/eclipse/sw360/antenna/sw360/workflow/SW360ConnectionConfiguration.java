@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) Bosch Software Innovations GmbH 2019.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.eclipse.sw360.antenna.sw360.workflow;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
@@ -7,6 +17,7 @@ import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.rest.SW360AuthenticationClient;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.HttpHeaders;
 
 public class SW360ConnectionConfiguration {
@@ -24,9 +35,7 @@ public class SW360ConnectionConfiguration {
     private final String password;
     private final String clientId;
     private final String clientPassword;
-    private final String proxyHost;
-    private final int proxyPort;
-    private final boolean proxyUse;
+    private final ProxySettings proxySettings;
     private final SW360AuthenticationClient authenticationClient;
 
     public SW360ConnectionConfiguration(Getter<String> getConfigValue, Getter<Boolean> getBooleanConfigValue, String proxyHost, int proxyPort) throws AntennaConfigurationException {
@@ -39,10 +48,8 @@ public class SW360ConnectionConfiguration {
         clientPassword = getConfigValue.apply(SW360ConnectionConfiguration.CLIENT_PASSWORD_KEY);
 
         // Proxy configuration
-        proxyUse = getBooleanConfigValue.apply(SW360ConnectionConfiguration.PROXY_USE);
-
-        this.proxyHost = proxyHost;
-        this.proxyPort = proxyPort;
+        boolean proxyUse = getBooleanConfigValue.apply(SW360ConnectionConfiguration.PROXY_USE);
+        proxySettings = new ProxySettings(proxyUse, proxyHost, proxyPort);
 
         this.authenticationClient = getSW360AuthenticationClient();
     }
@@ -54,31 +61,29 @@ public class SW360ConnectionConfiguration {
         this.password = password;
         this.clientId = clientId;
         this.clientPassword = clientPassword;
-        this.proxyHost = proxyHost;
-        this.proxyPort = proxyPort;
-        this.proxyUse = proxyUse;
+        proxySettings = new ProxySettings(proxyUse, proxyHost, proxyPort);
 
         this.authenticationClient = getSW360AuthenticationClient();
     }
 
     public SW360AuthenticationClient getSW360AuthenticationClient() {
-        return new SW360AuthenticationClient(authServerUrl, proxyUse, proxyHost, proxyPort);
+        return new SW360AuthenticationClient(authServerUrl, proxySettings);
     }
 
     public SW360ComponentClientAdapter getSW360ComponentClientAdapter() {
-        return new SW360ComponentClientAdapter(restServerUrl, proxyUse, proxyHost, proxyPort);
+        return new SW360ComponentClientAdapter(restServerUrl, proxySettings);
     }
 
     public SW360ReleaseClientAdapter getSW360ReleaseClientAdapter() {
-        return new SW360ReleaseClientAdapter(restServerUrl, proxyUse, proxyHost, proxyPort);
+        return new SW360ReleaseClientAdapter(restServerUrl, proxySettings);
     }
 
     public SW360LicenseClientAdapter getSW360LicenseClientAdapter() {
-        return new SW360LicenseClientAdapter(restServerUrl, proxyUse, proxyHost, proxyPort);
+        return new SW360LicenseClientAdapter(restServerUrl, proxySettings);
     }
 
     public SW360ProjectClientAdapter getSW360ProjectClientAdapter() {
-        return new SW360ProjectClientAdapter(restServerUrl, proxyUse, proxyHost, proxyPort);
+        return new SW360ProjectClientAdapter(restServerUrl, proxySettings);
     }
 
     public HttpHeaders getHttpHeaders() throws AntennaException {

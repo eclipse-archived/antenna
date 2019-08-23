@@ -44,7 +44,8 @@ public class SW360ComponentAdapterUtils {
     public static String createComponentName(Artifact artifact) {
         return getMostDominantArtifactCoordinates(artifact)
                 .map(ArtifactCoordinates::getName)
-                .orElse("");
+                .filter(n -> ! n.isEmpty())
+                .orElse(artifact.toString()); // TODO: ugly hack
     }
 
     public static String createComponentVersion(Artifact artifact) {
@@ -53,30 +54,17 @@ public class SW360ComponentAdapterUtils {
                 .orElse("-");
     }
 
-    public static void setCreatedOn(SW360Component component) {
+    private static void setCreatedOn(SW360Component component) {
         final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         final String createdOn = dateFormat.format(new Date());
         component.setCreatedOn(createdOn);
     }
 
-    public static void setCreatedOn(SW360Component component, String date) {
-        if (date != null && !date.isEmpty()) {
-            component.setCreatedOn(date);
-        } else {
-            setCreatedOn(component);
-        }
-    }
-
     public static void setName(SW360Component component, Artifact artifact) {
-        final String name = createComponentName(artifact);
-        if (!name.isEmpty()) {
-            component.setName(name);
-        } else {
-            component.setName(artifact.toString()); // TODO: ugly hack
-        }
+        component.setName(createComponentName(artifact));
     }
 
-    public static void setComponentType(SW360Component component, Artifact artifact) {
+    private static void setComponentType(SW360Component component, Artifact artifact) {
         if (artifact.isProprietary()) {
             component.setComponentType(SW360ComponentType.INTERNAL);
         } else {
@@ -84,7 +72,7 @@ public class SW360ComponentAdapterUtils {
         }
     }
 
-    public static void setHomePage(SW360Component component, Artifact artifact) {
+    private static void setHomePage(SW360Component component, Artifact artifact) {
         artifact.askForGet(ArtifactSourceUrl.class)
                 .ifPresent(component::setHomepage);
     }
@@ -97,9 +85,6 @@ public class SW360ComponentAdapterUtils {
     }
 
     public static boolean isValidComponent(SW360Component component) {
-        if(component.getName() == null || component.getName().isEmpty()) {
-            return false;
-        }
-        return true;
+        return component.getName() != null && !component.getName().isEmpty();
     }
 }

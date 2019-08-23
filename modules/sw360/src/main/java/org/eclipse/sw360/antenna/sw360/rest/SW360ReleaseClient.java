@@ -16,6 +16,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
@@ -29,8 +30,8 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
     private static final String RELEASES_ENDPOINT_APPENDIX = "/releases";
     private final String restUrl;
 
-    public SW360ReleaseClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
-        super(proxyUse, proxyHost, proxyPort);
+    public SW360ReleaseClient(String restUrl, ProxySettings proxySettings) {
+        super(proxySettings);
         this.restUrl = restUrl;
     }
 

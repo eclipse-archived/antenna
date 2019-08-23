@@ -15,6 +15,7 @@ package org.eclipse.sw360.antenna.sw360.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.*;
 
 import java.io.IOException;
@@ -34,8 +35,8 @@ public class SW360AuthenticationClient extends SW360Client {
 
     private final String authServerUrl;
 
-    public SW360AuthenticationClient(String authServerUrl, boolean proxyUse, String proxyHost, int proxyPort) {
-        super(proxyUse, proxyHost, proxyPort);
+    public SW360AuthenticationClient(String authServerUrl, ProxySettings proxySettings) {
+        super(proxySettings);
         this.authServerUrl = authServerUrl;
     }
 

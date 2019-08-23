@@ -21,6 +21,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.HttpHeaders;
 
 import java.nio.file.Path;
@@ -31,8 +32,8 @@ import java.util.Set;
 public class SW360ReleaseClientAdapter {
     private final SW360ReleaseClient releaseClient;
 
-    public SW360ReleaseClientAdapter(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
-        this.releaseClient = new SW360ReleaseClient(restUrl, proxyUse, proxyHost, proxyPort);
+    public SW360ReleaseClientAdapter(String restUrl, ProxySettings proxySettings) {
+        this.releaseClient = new SW360ReleaseClient(restUrl, proxySettings);
     }
 
     public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, boolean uploadSource, HttpHeaders header) throws AntennaException {

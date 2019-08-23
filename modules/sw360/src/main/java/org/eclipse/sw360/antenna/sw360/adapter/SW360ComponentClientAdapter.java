@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ComponentAdapterUtils;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.HttpHeaders;
 
 import java.util.ArrayList;
@@ -27,8 +28,8 @@ import java.util.stream.Collectors;
 public class SW360ComponentClientAdapter {
     private final SW360ComponentClient componentClient;
 
-    public SW360ComponentClientAdapter(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
-        this.componentClient = new SW360ComponentClient(restUrl, proxyUse, proxyHost, proxyPort);
+    public SW360ComponentClientAdapter(String restUrl, ProxySettings proxySettings) {
+        this.componentClient = new SW360ComponentClient(restUrl, proxySettings);
     }
 
     public SW360Component addComponent(Artifact artifact, HttpHeaders header) throws AntennaException {
