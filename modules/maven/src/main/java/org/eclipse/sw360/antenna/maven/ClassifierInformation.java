@@ -8,7 +8,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.eclipse.sw360.antenna.maven;
 
 public class ClassifierInformation {

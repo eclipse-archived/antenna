@@ -44,10 +44,6 @@ public class HttpHelperTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Mock
-    private ToolConfiguration toolConfigMock;
-    @Mock
-    private AntennaContext antennaContextMock;
-    @Mock
     private CloseableHttpClient httpClientMock;
     @Mock
     private CloseableHttpResponse httpResponseMock;
@@ -60,18 +56,15 @@ public class HttpHelperTest {
 
     @Before
     public void setUp() throws Exception {
-        when(toolConfigMock.getAntennaTargetDirectory())
-                .thenReturn(temporaryFolder.newFolder("target").toPath());
-        when(antennaContextMock.getToolConfiguration())
-                .thenReturn(toolConfigMock);
+        ProxySettings proxySettings = new ProxySettings(false, null, 0);
 
-        httpHelper = new HttpHelper(antennaContextMock);
+        httpHelper = new HttpHelper(proxySettings);
         setVariableValueInObject(httpHelper, "httpClient", httpClientMock);
     }
 
     @Test
     public void downloadFileWritesTheFileToDisk() throws Exception {
-        Path targetDirectory = toolConfigMock.getAntennaTargetDirectory();
+        Path targetDirectory = temporaryFolder.newFolder("target").toPath();
         File expectedJarFile = new File(targetDirectory.toFile(), "archive.zip");
 
         when(httpResponseMock.getStatusLine())
@@ -95,7 +88,7 @@ public class HttpHelperTest {
 
     @Test(expected = FailedToDownloadException.class)
     public void downloadFileThrowsExceptionOn404StatusCode() throws Exception {
-        Path targetDirectory = toolConfigMock.getAntennaTargetDirectory();
+        Path targetDirectory = temporaryFolder.newFolder("target").toPath();
 
         when(httpResponseMock.getStatusLine())
                 .thenReturn(statusLine);

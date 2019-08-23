@@ -20,7 +20,6 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.repository.RepositorySystem;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.slf4j.Logger;
@@ -43,8 +42,8 @@ public class MavenRuntimeRequester extends IArtifactRequester {
     private final ArtifactRepository localRepository;
     private final List<ArtifactRepository> remoteRepositories;
 
-    public MavenRuntimeRequester(AntennaContext context, RepositorySystem repositorySystem, ArtifactRepository localRepository, List<ArtifactRepository> remoteRepositories, Optional<URL> sourcesRepositoryUrl) {
-        super(context);
+    public MavenRuntimeRequester(RepositorySystem repositorySystem, ArtifactRepository localRepository, List<ArtifactRepository> remoteRepositories, Optional<URL> sourcesRepositoryUrl) {
+        super();
         if (sourcesRepositoryUrl.isPresent()) {
             List<ArtifactRepository> repositories = new ArrayList<>();
             ArtifactRepository droolsRepo = new MavenArtifactRepository(

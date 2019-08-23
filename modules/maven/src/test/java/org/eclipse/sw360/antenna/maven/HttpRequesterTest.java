@@ -10,10 +10,10 @@
  */
 package org.eclipse.sw360.antenna.maven;
 
-import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.eclipse.sw360.antenna.util.HttpHelper;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,7 +40,6 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private ToolConfiguration toolConfigMock = Mockito.mock(ToolConfiguration.class);
     private HttpHelper httpHelperMock = Mockito.mock(HttpHelper.class);
     private HttpRequester hr;
     private MavenCoordinates mavenCoordinates;
@@ -60,19 +59,15 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
         this.baseBefore();
         mavenCoordinates = new MavenCoordinates("artifactId", "groupId", "version");
 
+        ProxySettings proxySettings = new ProxySettings(false, null, 0);
 
-        when(toolConfigMock.getAntennaTargetDirectory())
-                .thenReturn(temporaryFolder.newFolder("target").toPath());
-        when(antennaContextMock.getToolConfiguration())
-                .thenReturn(toolConfigMock);
-
-        hr = new HttpRequester(antennaContextMock, new URL("http://test.repo"));
+        hr = new HttpRequester(proxySettings, new URL("http://test.repo"));
         setVariableValueInObject(hr, "httpHelper", httpHelperMock);
     }
 
     @Test
     public void requestFileUsesTheCorrectUrl() throws Exception {
-        Path targetDirectory = toolConfigMock.getAntennaTargetDirectory();
+        Path targetDirectory = temporaryFolder.newFolder("target").toPath();
 
         hr.requestFile(mavenCoordinates, targetDirectory, classifierInformation);
 
@@ -82,7 +77,7 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
 
     @Test
     public void requestFileDealsWithExceptionReturningAnEmptyRequest() throws Exception {
-        Path targetDirectory = toolConfigMock.getAntennaTargetDirectory();
+        Path targetDirectory = temporaryFolder.newFolder("target").toPath();
         when(httpHelperMock.downloadFile(anyString(), eq(targetDirectory), anyString())).thenThrow(new IOException("Failed to download"));
 
         Optional<File> file = hr.requestFile(mavenCoordinates, targetDirectory, classifierInformation);
@@ -91,7 +86,7 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
 
     @Test
     public void requestFileDoesNotDownloadIfFileExists() throws Exception {
-        Path targetDirectory = toolConfigMock.getAntennaTargetDirectory();
+        Path targetDirectory = temporaryFolder.newFolder("target").toPath();
         String filename = "artifactId-version" + (classifierInformation.isSource ? "-sources" : "") + ".jar";
         File expectedFile = new File(targetDirectory.toFile(), filename);
 
