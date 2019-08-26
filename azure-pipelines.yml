@@ -74,6 +74,12 @@ steps:
     script: '.ci-scripts/test-ExampleTestProject-with-gradle.sh'
 
 - task: Bash@3
+  displayName: 'static code analysis'
+  inputs:
+    targetType: 'inline'
+    script: '.ci-scripts/test-run-all-static-code-analysis.sh'
+
+- task: Bash@3
   displayName: 'site-tests in antenna-documentation'
   inputs:
     targetType: 'inline'
