@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.sw360.rest;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -30,11 +31,14 @@ public abstract class SW360Client {
     private final boolean proxyUse;
     protected RestTemplate restTemplate;
 
-    public SW360Client(boolean proxyUse, String proxyHost, int proxyPort) {
-        this.proxyUse = proxyUse && proxyHost != null;
-        if (proxyUse && proxyHost != null) {
+    public abstract String getEndpoint();
+
+
+    public SW360Client(ProxySettings proxySettings) {
+        proxyUse = proxySettings.isProxyUse();
+        if (proxyUse) {
             SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxySettings.getProxyHost(), proxySettings.getProxyPort()));
             requestFactory.setProxy(proxy);
             this.restTemplate = new RestTemplate(requestFactory);
         } else {

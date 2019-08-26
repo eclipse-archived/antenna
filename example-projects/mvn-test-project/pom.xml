@@ -129,7 +129,7 @@
                     <!-- The antenna mojo requires the kbase to fetch the license information -->
                     <dependency>
                         <groupId>org.eclipse.sw360.antenna</groupId>
-                        <artifactId>antenna-spdx-license-knowledge-base</artifactId>
+                        <artifactId>spdx-license-knowledge-base</artifactId>
                         <version>${org.eclipse.sw360.antenna.version}</version>
                     </dependency>
                 </dependencies>

@@ -16,6 +16,7 @@ import com.github.cliftonlabs.json_simple.JsonObject;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectType;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
@@ -42,9 +43,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 public class SW360ProjectClientTest {
     private static final String REST_URL = "http://localhost:8080/resource/api";
-    private static final boolean PROXY_ENABLE = false;
-    private static final String PROXY_HOST = "localhost";
-    private static final int PROXY_PORT = 3128;
 
     private static final String PROJECTS_ENDPOINT = REST_URL + "/projects";
     private static final String USERS_ENDPOINT = REST_URL + "/users";
@@ -59,8 +57,6 @@ public class SW360ProjectClientTest {
     private static final String PROJECT_NAME_KEY = "name";
     private static final String PROJECT_PROJECT_TYPE_KEY = "projectType";
     private static final String PROJECT_VERSION_KEY = "version";
-    private static final String PROJECT_TYPE_KEY = "type";
-    private static final String PROJECT_CREATED_ON_KEY = "createdOn";
     private static final String PROJECT_CREATED_BY_KEY = "createdBy";
     private static final String PROJECT_EMAIL_KEY = "email";
 
@@ -75,10 +71,9 @@ public class SW360ProjectClientTest {
     private static final String PROJECT_NAME_VALUE_2 = "test.project.name2";
     private static final String PROJECT_PROJECT_TYPE_VALUE_2 = "SERVICE";
     private static final String PROJECT_VERSION_VALUE_2 = "2.5-RELEASE";
-    private static final String PROJECT_EMAIL_VALUE_2 = "testemail2@any.com";
 
 
-    private SW360ProjectClient client = new SW360ProjectClient(REST_URL, PROXY_ENABLE, PROXY_HOST, PROXY_PORT);
+    private SW360ProjectClient client = new SW360ProjectClient(REST_URL, ProxySettings.empty());
 
     private MockRestServiceServer mockedServer;
 

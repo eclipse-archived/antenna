@@ -22,6 +22,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ProjectAdapterUtils;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
@@ -34,8 +35,8 @@ import java.util.stream.Collectors;
 public class SW360ProjectClientAdapter {
     private final SW360ProjectClient projectClient;
 
-    public SW360ProjectClientAdapter(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
-        this.projectClient = new SW360ProjectClient(restUrl, proxyUse, proxyHost, proxyPort);
+    public SW360ProjectClientAdapter(String restUrl, ProxySettings proxySettings) {
+        this.projectClient = new SW360ProjectClient(restUrl, proxySettings);
     }
 
     public Optional<String> getProjectIdByNameAndVersion(IProject project, HttpHeaders header) throws AntennaException {
@@ -55,6 +56,11 @@ public class SW360ProjectClientAdapter {
     public String addProject(String projectName, String projectVersion, HttpHeaders header) throws AntennaException, JsonProcessingException {
         SW360Project sw360Project = new SW360Project();
         SW360ProjectAdapterUtils.prepareProject(sw360Project, projectName, projectVersion);
+
+        if (! SW360ProjectAdapterUtils.isValidProject(sw360Project)) {
+            throw new AntennaException("Can not write invalid project with name=" + projectName + " and version=" + projectVersion);
+        }
+
         SW360Project responseProject = projectClient.createProject(sw360Project, header);
 
         return SW360HalResourceUtility.getLastIndexOfLinkObject(responseProject.get_Links()).orElse("");

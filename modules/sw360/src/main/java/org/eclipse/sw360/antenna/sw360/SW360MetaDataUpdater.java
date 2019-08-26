@@ -16,10 +16,10 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.sw360.adapter.*;
-import org.eclipse.sw360.antenna.sw360.rest.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -33,36 +33,27 @@ public class SW360MetaDataUpdater {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360MetaDataUpdater.class);
 
     // rest service adapters
-    private SW360AuthenticationClient authenticationClient;
     private SW360ProjectClientAdapter projectClientAdapter;
     private SW360LicenseClientAdapter licenseClientAdapter;
     private SW360ComponentClientAdapter componentClientAdapter;
     private SW360ReleaseClientAdapter releaseClientAdapter;
+    private SW360ConnectionConfiguration sw360ConnectionConfiguration;
 
-    private String userId;
-    private String password;
-    private String clientId;
-    private String clientPassword;
+    private final boolean updateReleases;
+    private final boolean uploadSources;
 
-    private boolean updateReleases = false;
-
-    public SW360MetaDataUpdater(String restServerUrl, String authServerUrl,
-                                String userId, String password, String clientId, String clientPassword,
-                                boolean proxyEnable, String proxyHost, int proxyPort) {
-        this.userId = userId;
-        this.password = password;
-        this.clientId = clientId;
-        this.clientPassword = clientPassword;
-
-        authenticationClient = new SW360AuthenticationClient(authServerUrl, proxyEnable, proxyHost, proxyPort);
-        projectClientAdapter = new SW360ProjectClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
-        licenseClientAdapter = new SW360LicenseClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
-        componentClientAdapter = new SW360ComponentClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
-        releaseClientAdapter = new SW360ReleaseClientAdapter(restServerUrl, proxyEnable, proxyHost, proxyPort);
+    public SW360MetaDataUpdater(SW360ConnectionConfiguration sw360ConnectionConfiguration, boolean updateReleases, boolean uploadSources) {
+        projectClientAdapter = sw360ConnectionConfiguration.getSW360ProjectClientAdapter();
+        licenseClientAdapter = sw360ConnectionConfiguration.getSW360LicenseClientAdapter();
+        componentClientAdapter = sw360ConnectionConfiguration.getSW360ComponentClientAdapter();
+        releaseClientAdapter = sw360ConnectionConfiguration.getSW360ReleaseClientAdapter();
+        this.sw360ConnectionConfiguration = sw360ConnectionConfiguration;
+        this.updateReleases = updateReleases;
+        this.uploadSources = uploadSources;
     }
 
-    public Set<String> getOrCreateLicenses(Artifact artifact) throws IOException, AntennaException {
-        HttpHeaders header = createHttpHeaders(userId, password);
+    public Set<String> getOrCreateLicenses(Artifact artifact) throws AntennaException {
+        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
         Set<String> licenseIds = new HashSet<>();
 
         List<License> licenses = flattenedLicenses(artifact);
@@ -79,11 +70,11 @@ public class SW360MetaDataUpdater {
         return licenseIds;
     }
 
-    public SW360Release getOrCreateRelease(Artifact artifact, Set<String> licenseIds, SW360Component component) throws IOException, AntennaException {
-        HttpHeaders header = createHttpHeaders(userId, password);
+    public SW360Release getOrCreateRelease(Artifact artifact, Set<String> licenseIds, SW360Component component) throws AntennaException {
+        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
 
         if (!releaseClientAdapter.isArtifactAvailableAsRelease(artifact, component, header)) {
-            return releaseClientAdapter.addRelease(artifact, component, licenseIds, header);
+            return releaseClientAdapter.addRelease(artifact, component, licenseIds, uploadSources, header);
         } else {
             Optional<SW360Release> release = releaseClientAdapter.getReleaseByArtifact(component, artifact, header);
             if (release.isPresent()) {
@@ -99,8 +90,8 @@ public class SW360MetaDataUpdater {
         }
     }
 
-    public SW360Component getOrCreateComponent(Artifact artifact) throws IOException, AntennaException {
-        HttpHeaders header = createHttpHeaders(userId, password);
+    public SW360Component getOrCreateComponent(Artifact artifact) throws AntennaException {
+        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
 
         if (!componentClientAdapter.isArtifactAvailableAsComponent(artifact, header)) {
             return componentClientAdapter.addComponent(artifact, header);
@@ -115,16 +106,12 @@ public class SW360MetaDataUpdater {
         }
     }
 
-    public void setUpdateReleases(boolean updateReleases) {
-        this.updateReleases = updateReleases;
-    }
-
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) throws AntennaException, IOException {
-        String id;
-        HttpHeaders header = createHttpHeaders(userId, password);
+        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
 
         Optional<String> projectId = projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion, header);
 
+        String id;
         if (projectId.isPresent()) {
             // TODO: Needs endpoint on sw360 to update project on sw360
             LOGGER.debug("Could not update project " + projectId.get() + ", because the endpoint is not available.");
@@ -143,9 +130,5 @@ public class SW360MetaDataUpdater {
                 .filter(l -> Objects.nonNull(l.getName()))
                 .distinct()
                 .collect(Collectors.toList());
-    }
-
-    private HttpHeaders createHttpHeaders(String userId, String password) throws AntennaException {
-        return authenticationClient.getHeadersWithBearerToken(authenticationClient.getOAuth2AccessToken(userId, password, clientId, clientPassword));
     }
 }

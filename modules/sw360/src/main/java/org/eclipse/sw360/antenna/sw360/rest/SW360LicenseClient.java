@@ -16,6 +16,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
@@ -27,19 +28,23 @@ import java.util.Optional;
 
 public class SW360LicenseClient extends SW360Client {
     private static final String LICENSES_ENDPOINT = "/licenses";
+    private final String restUrl;
 
-    private String licensesRestUrl;
+    public SW360LicenseClient(String restUrl, ProxySettings proxySettings) {
+        super(proxySettings);
+        this.restUrl = restUrl;
+    }
 
-    public SW360LicenseClient(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
-        super(proxyUse, proxyHost, proxyPort);
-        licensesRestUrl = restUrl + LICENSES_ENDPOINT;
+    @Override
+    public String getEndpoint() {
+        return restUrl + LICENSES_ENDPOINT;
     }
 
     public List<SW360SparseLicense> getLicenses(HttpHeaders header) throws AntennaException {
-        ResponseEntity<Resource<SW360LicenseList>> response = doRestGET(this.licensesRestUrl, header,
+        ResponseEntity<Resource<SW360LicenseList>> response = doRestGET(getEndpoint(), header,
                 new ParameterizedTypeReference<Resource<SW360LicenseList>>() {});
 
-        if (response.getStatusCode() == HttpStatus.OK) {
+        if (response.getStatusCode().is2xxSuccessful()) {
             SW360LicenseList resource = Optional.ofNullable(response.getBody())
                     .orElseThrow(() -> new AntennaException("Body was null"))
                     .getContent();
@@ -55,10 +60,10 @@ public class SW360LicenseClient extends SW360Client {
     }
 
     public SW360License getLicenseByName(String name, HttpHeaders header) throws AntennaException {
-        ResponseEntity<Resource<SW360License>> response = doRestGET(this.licensesRestUrl + "/" + name, header,
+        ResponseEntity<Resource<SW360License>> response = doRestGET(getEndpoint() + "/" + name, header,
                 new ParameterizedTypeReference<Resource<SW360License>>() {});
 
-        if (response.getStatusCode() == HttpStatus.OK) {
+        if (response.getStatusCode().is2xxSuccessful()) {
             return Optional.ofNullable(response.getBody())
                     .orElseThrow(() -> new AntennaException("Body was null"))
                     .getContent();
@@ -72,7 +77,7 @@ public class SW360LicenseClient extends SW360Client {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360License, header);
         ResponseEntity<Resource<SW360License>> response;
         try {
-            response = doRestPOST(this.licensesRestUrl, httpEntity,
+            response = doRestPOST(getEndpoint(), httpEntity,
                 new ParameterizedTypeReference<Resource<SW360License>>() {});
         } catch (HttpClientErrorException e) {
             throw new AntennaException("Request to create license " + sw360License.getFullName() + " failed with "

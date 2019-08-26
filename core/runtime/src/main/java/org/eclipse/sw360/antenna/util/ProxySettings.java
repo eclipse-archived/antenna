@@ -21,8 +21,12 @@ public class ProxySettings {
         this.proxyPort = proxyPort;
     }
 
+    public static ProxySettings empty() {
+        return new ProxySettings(false, null, -1);
+    }
+
     public boolean isProxyUse() {
-        return proxyUse;
+        return proxyUse && proxyHost != null && ! proxyHost.isEmpty();
     }
 
     public String getProxyHost() {

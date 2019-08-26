@@ -215,7 +215,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
                 && this.version.equals(Optional.of(releaseCompare.getVersion()).orElse(""));
     }
 
-    private SW360Release mapExternalIdsOnVariable() {
+    private void mapExternalIdsOnVariable() {
         externalIds.forEach((key, value) -> {
             switch (key) {
                 case SW360Attributes.RELEASE_EXTERNAL_ID_FLICENSES:
@@ -239,6 +239,9 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
                 case SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS:
                     copyrights = value;
                     break;
+                case SW360Attributes.RELEASE_EXTERNAL_ID_CLEARINGSTATE:
+                    clearingState = value;
+                    break;
                 default:
                     if (key.startsWith(SW360Attributes.RELEASE_EXTERNAL_ID_HASHES)) {
                         if(hashes == null) {
@@ -256,7 +259,6 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
                     }
             }
         });
-        return this;
     }
 
     public SW360Release mergeWith(SW360Release releaseWithPrecedence) {

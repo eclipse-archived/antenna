@@ -29,6 +29,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
+import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,14 +39,6 @@ import java.util.stream.Collectors;
 public class SW360Enricher extends AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360Enricher.class);
     private IProcessingReporter reporter;
-
-    private static final String REST_SERVER_URL_KEY = "rest.server.url";
-    private static final String AUTH_SERVER_URL_KEY = "auth.server.url";
-    private static final String USERNAME_KEY = "user.id";
-    private static final String PASSWORD_KEY = "user.password";
-    private static final String CLIENT_USER_KEY = "client.id";
-    private static final String CLIENT_PASSWORD_KEY = "client.password";
-    private static final String PROXY_USE = "proxy.use";
 
     private SW360MetaDataReceiver connector;
 
@@ -59,16 +52,15 @@ public class SW360Enricher extends AbstractProcessor {
 
         reporter = context.getProcessingReporter();
 
-        String sw360RestServerUrl = getConfigValue(REST_SERVER_URL_KEY, configMap);
-        String sw360AuthServerUrl = getConfigValue(AUTH_SERVER_URL_KEY, configMap);
-        String sw360User = getConfigValue(USERNAME_KEY, configMap);
-        String sw360Password = getConfigValue(PASSWORD_KEY, configMap);
-        String sw360ClientUser = getConfigValue(CLIENT_USER_KEY, configMap);
-        String sw360ClientPassword = getConfigValue(CLIENT_PASSWORD_KEY, configMap);
-        boolean sw360ProxyUse = Boolean.parseBoolean(getConfigValue(PROXY_USE, configMap, "false"));
+        // Proxy configuration
         String sw360ProxyHost = context.getToolConfiguration().getProxyHost();
         int sw360ProxyPort = context.getToolConfiguration().getProxyPort();
-        connector = new SW360MetaDataReceiver(sw360RestServerUrl, sw360AuthServerUrl, sw360User, sw360Password, sw360ClientUser, sw360ClientPassword, sw360ProxyUse, sw360ProxyHost, sw360ProxyPort);
+
+        SW360ConnectionConfiguration sw360ConnectionConfiguration = new SW360ConnectionConfiguration(key -> getConfigValue(key, configMap),
+                key -> getBooleanConfigValue(key, configMap),
+                sw360ProxyHost, sw360ProxyPort);
+
+        connector = new SW360MetaDataReceiver(sw360ConnectionConfiguration);
     }
 
     @Override
@@ -97,7 +89,6 @@ public class SW360Enricher extends AbstractProcessor {
 
     private void mapExternalIdsOnSW360Release(SW360Release sw360Release, Artifact artifact) {
         if (!sw360Release.getExternalIds().isEmpty()) {
-
             mapCoordinates(sw360Release, artifact);
             mapDeclaredLicense(sw360Release, artifact);
             mapObservedLicense(sw360Release, artifact);
@@ -219,7 +210,7 @@ public class SW360Enricher extends AbstractProcessor {
         List<SW360SparseLicense> releaseLicenses = embedded.getLicenses();
 
         if (!artifactLicenses.isEmpty()) {
-            if (releaseLicenses.isEmpty()) {
+            if (releaseLicenses == null || releaseLicenses.isEmpty()) {
                 LOGGER.info("License information available in antenna but not in SW360.");
             } else {
                 if (hasDifferentLicenses(artifactLicenses, releaseLicenses)) {

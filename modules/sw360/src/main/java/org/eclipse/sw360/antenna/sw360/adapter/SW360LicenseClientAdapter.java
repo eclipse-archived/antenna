@@ -15,6 +15,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.sw360.rest.SW360LicenseClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
+import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.HttpHeaders;
 
 import java.util.List;
@@ -23,8 +24,8 @@ import java.util.Optional;
 public class SW360LicenseClientAdapter {
     private final SW360LicenseClient licenseClient;
 
-    public SW360LicenseClientAdapter(String restUrl, boolean proxyUse, String proxyHost, int proxyPort) {
-        this.licenseClient = new SW360LicenseClient(restUrl, proxyUse, proxyHost, proxyPort);
+    public SW360LicenseClientAdapter(String restUrl, ProxySettings proxySettings) {
+        this.licenseClient = new SW360LicenseClient(restUrl, proxySettings);
     }
 
     public boolean isLicenseOfArtifactAvailable(License license, HttpHeaders header) throws AntennaException {

@@ -46,6 +46,16 @@ public class SW360ReleaseAdapterUtils {
         SW360ReleaseAdapterUtils.setCopyrights(release, artifact);
     }
 
+    public static boolean isValidRelease(SW360Release release) {
+        if(release.getName() == null || release.getName().isEmpty()) {
+            return false;
+        }
+        if(release.getVersion() == null || release.getVersion().isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
     public static String createSW360ReleaseVersion(Artifact artifact) {
         return SW360ComponentAdapterUtils.createComponentVersion(artifact);
     }
