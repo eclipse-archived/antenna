@@ -63,6 +63,11 @@ public class BundleCoordinates extends JavaCoordinates<BundleCoordinates> {
     }
 
     @Override
+    public String getType() {
+        return "p2";
+    }
+
+    @Override
     public boolean matches(ArtifactIdentifier artifactIdentifier) {
         if(artifactIdentifier instanceof BundleCoordinates) {
             final BundleCoordinates bundleCoordinates = (BundleCoordinates) artifactIdentifier;

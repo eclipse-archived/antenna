@@ -46,6 +46,10 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.package-url</groupId>
+            <artifactId>packageurl-java</artifactId>
+        </dependency>
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
             <groupId>junit</groupId>

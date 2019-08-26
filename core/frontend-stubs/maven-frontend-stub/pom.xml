@@ -187,6 +187,10 @@
             <artifactId>spring-hateoas</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.github.package-url</groupId>
+            <artifactId>packageurl-java</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-annotations</artifactId>
             <scope>compile</scope>
