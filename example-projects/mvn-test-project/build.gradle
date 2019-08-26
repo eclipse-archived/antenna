@@ -30,6 +30,6 @@ repositories {
 }
 
 AntennaConfiguration{
-    pomPath 'pom.xml'
+    toolConfigurationPath 'pom.xml'
     debugEnabled = false
 }

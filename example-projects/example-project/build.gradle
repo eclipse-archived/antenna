@@ -36,5 +36,5 @@ repositories {
 version '1.0-SNAPSHOT'
 
 AntennaConfiguration{
-    pomPath 'pom.xml'
+    toolConfigurationPath 'pom.xml'
 }
