@@ -38,6 +38,11 @@ public class GenericArtifactCoordinates extends ArtifactCoordinates {
     }
 
     @Override
+    public String getType() {
+        return "generic";
+    }
+
+    @Override
     public boolean isEmpty() {
         return (name == null || "".equals(name)) &&
                 (version == null || "".equals(version));

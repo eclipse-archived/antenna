@@ -37,6 +37,11 @@ public class DotNetCoordinates extends ArtifactCoordinates<DotNetCoordinates> {
     @Override
     public String getVersion() { return version; }
 
+    @Override
+    public String getType() {
+        return "nuget";
+    }
+
     public String getPackageId() { return packageId; }
 
     @Override

@@ -63,6 +63,11 @@ public class JavaScriptCoordinates extends ArtifactCoordinates<JavaScriptCoordin
     }
 
     @Override
+    public String getType() {
+        return "npm";
+    }
+
+    @Override
     public String toString() {
         return name + ":" + version + " (" + artifactId + ")";
     }

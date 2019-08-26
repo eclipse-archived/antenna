@@ -11,6 +11,7 @@
 
 package org.eclipse.sw360.antenna.model.artifact.facts.java;
 
+import com.github.packageurl.PackageURLBuilder;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactFactBuilder;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 
@@ -59,6 +60,16 @@ public class MavenCoordinates extends JavaCoordinates<MavenCoordinates> {
     @Override
     public String getVersion() {
         return version;
+    }
+
+    @Override
+    public String getType() {
+        return "maven";
+    }
+
+    @Override
+    protected PackageURLBuilder addPurlFacts(PackageURLBuilder builder) {
+        return builder.withNamespace(getGroupId());
     }
 
     @Override
