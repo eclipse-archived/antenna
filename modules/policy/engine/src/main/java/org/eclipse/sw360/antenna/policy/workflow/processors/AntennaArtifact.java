@@ -10,11 +10,16 @@
  */
 package org.eclipse.sw360.antenna.policy.workflow.processors;
 
+import com.github.packageurl.PackageURL;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
+import org.eclipse.sw360.antenna.model.util.ArtifactUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.policy.engine.ThirdPartyArtifact;
+
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  * The facade of the {@link ThirdPartyArtifact} used in the {@link org.eclipse.sw360.antenna.policy.engine.PolicyEngine}
@@ -46,8 +51,7 @@ class AntennaArtifact implements ThirdPartyArtifact {
     }
 
     @Override
-    public String getPurl() {
-        // ToDo: I have to check how I can extract the information for the purl ideally.
-        return artifact.prettyPrint();
+    public Optional<PackageURL> getPurl() {
+        return ArtifactUtils.getMostDominantArtifactCoordinates(Collections.EMPTY_LIST, artifact);
     }
 }

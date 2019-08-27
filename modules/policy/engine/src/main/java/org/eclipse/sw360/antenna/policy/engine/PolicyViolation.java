@@ -10,13 +10,12 @@
  */
 package org.eclipse.sw360.antenna.policy.engine;
 
+import com.github.packageurl.PackageURL;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,11 +24,11 @@ import java.util.stream.Collectors;
  */
 public class PolicyViolation {
     private Rule rule;
-    private Collection<ThirdPartyArtifact> failedArtifacts = new HashSet<>();
+    private Collection<ThirdPartyArtifact> failingArtifacts = new HashSet<>();
 
     PolicyViolation(final Rule rule, final Collection<ThirdPartyArtifact> failingArtifacts) {
         this.rule = rule;
-        this.failedArtifacts.addAll(failingArtifacts);
+        this.failingArtifacts.addAll(failingArtifacts);
     }
 
     /**
@@ -64,8 +63,8 @@ public class PolicyViolation {
      * @return A hash code that uniquely identifies the violation. It is reproducable over different rule evaluations
      */
     public String getViolationHash() {
-        String hashBase = failedArtifacts.stream()
-                .map(ThirdPartyArtifact::getPurl)
+        String hashBase = failingArtifacts.stream()
+                .map(this::getPurlAsString)
                 .collect(Collectors.joining(" : ", rule.getId() + " : ", ""));
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
@@ -74,6 +73,12 @@ public class PolicyViolation {
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             throw new IllegalStateException("Programming Error: Hash algorithm, resp. encoding unknown");
         }
+    }
+
+    private String getPurlAsString(ThirdPartyArtifact artifact) {
+        return artifact.getPurl()
+                .map(PackageURL::canonicalize)
+                .orElse("pkg:generic/unknown@" + artifact.hashCode());
     }
 
     /**
@@ -87,6 +92,6 @@ public class PolicyViolation {
      * @return All artifacts that caused a policy violation
      */
     public Collection<ThirdPartyArtifact> getFailingArtifacts() {
-        return Collections.unmodifiableCollection(failedArtifacts);
+        return Collections.unmodifiableCollection(failingArtifacts);
     }
 }

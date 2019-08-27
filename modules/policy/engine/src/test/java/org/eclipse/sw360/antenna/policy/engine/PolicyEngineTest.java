@@ -30,6 +30,6 @@ public class PolicyEngineTest {
                 Collectors.toList());
         assertThat(ruleIds.size()).isEqualTo(1);
         ruleIds.forEach(ruleId -> assertThat(ruleId).isEqualTo(PolicyEngineTestdata.ALWAYSVIOLATEDID));
-        result.stream().forEach(hashbase -> assertThat(hashbase.getViolationHash()).isEqualTo("QDUDZYo/ZbbqL+D3fAOa0w=="));
+        result.stream().forEach(hashbase -> assertThat(hashbase.getViolationHash()).isEqualTo("msVGMmZSMtsiR8fbvd31Sw=="));
     }
 }

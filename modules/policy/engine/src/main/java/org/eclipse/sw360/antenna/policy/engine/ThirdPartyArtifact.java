@@ -10,6 +10,10 @@
  */
 package org.eclipse.sw360.antenna.policy.engine;
 
+import com.github.packageurl.PackageURL;
+
+import java.util.Optional;
+
 /**
  * This interface is a facade to a third party artifact. It defines a lightweight dsl needed for policy
  * evaluations that can be implemented for different models through implementing this interface.
@@ -29,7 +33,8 @@ public interface ThirdPartyArtifact {
     boolean hasLicense(String licenseRegex);
 
     /**
-     * @return The component coordinates represented as a purl
+     * @return The component coordinates represented as a purl or an empty Optional, if the artifact information is not
+     *         identified and contains not enough information to at least define a basic purl.
      */
-    String getPurl();
+    Optional<PackageURL> getPurl();
 }
