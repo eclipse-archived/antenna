@@ -50,7 +50,7 @@ public class SW360Attributes {
     public static final String RELEASE_COMPONENT_ID = "componentId";
     public static final String RELEASE_NAME = "name";
     public static final String RELEASE_VERSION = "version";
-    public static final String RELEASE_CPE_ID = "cpeid";
+    public static final String RELEASE_CPE_ID = "cpeId";
     public static final String RELEASE_SOURCES = "downloadurl";
     public static final String RELEASE_MAIN_LICENSE_IDS = "mainLicenseIds";
     public static final String RELEASE_EXTERNAL_IDS = "externalIds";
