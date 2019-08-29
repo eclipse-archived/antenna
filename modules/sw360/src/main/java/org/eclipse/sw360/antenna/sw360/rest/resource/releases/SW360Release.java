@@ -262,6 +262,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     }
 
     public SW360Release mergeWith(SW360Release releaseWithPrecedence) {
+        componentId = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getComponentId);
         cpeid = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getCpeid);
         downloadurl = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getDownloadurl);
         mainLicenseIds = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getMainLicenseIds);
@@ -287,11 +288,17 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         SW360Release that = (SW360Release) o;
-        return Objects.equals(componentId, that.componentId) &&
-                Objects.equals(name, that.name) &&
+        return equalsInternallyCreatedSW360Release(that) &&
+                Objects.equals(componentId, that.componentId) &&
+                Objects.equals(externalIds, that.externalIds);
+    }
+
+    public boolean equalsInternallyCreatedSW360Release(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        SW360Release that = (SW360Release) o;
+        return Objects.equals(name, that.name) &&
                 Objects.equals(version, that.version) &&
                 Objects.equals(cpeid, that.cpeid) &&
                 Objects.equals(downloadurl, that.downloadurl) &&
@@ -305,8 +312,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
                 Objects.equals(hashes, that.hashes) &&
                 Objects.equals(clearingState, that.clearingState) &&
                 Objects.equals(changeStatus, that.changeStatus) &&
-                Objects.equals(copyrights, that.copyrights) &&
-                Objects.equals(externalIds, that.externalIds);
+                Objects.equals(copyrights, that.copyrights);
     }
 
     @Override

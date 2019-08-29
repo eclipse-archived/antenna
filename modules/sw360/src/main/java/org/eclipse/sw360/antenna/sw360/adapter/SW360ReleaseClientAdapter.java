@@ -58,7 +58,7 @@ public class SW360ReleaseClientAdapter {
         SW360Release sw360ReleaseFromArtifact = new SW360Release();
         SW360ReleaseAdapterUtils.prepareRelease(sw360ReleaseFromArtifact, sw360Component, sw360LicenseIds, artifact);
 
-        if (release.equals(sw360ReleaseFromArtifact)) {
+        if (release.equalsInternallyCreatedSW360Release(sw360ReleaseFromArtifact)) {
             return release;
         } else if(release.shareIdentifier(sw360ReleaseFromArtifact)) {
             return releaseClient.patchRelease(sw360ReleaseFromArtifact.mergeWith(release), header);
