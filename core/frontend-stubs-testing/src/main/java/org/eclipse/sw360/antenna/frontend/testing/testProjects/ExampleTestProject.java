@@ -151,6 +151,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                     put("client.id", "trusted-sw360-client");
                     put("client.password", "sw360-secret");
                     put("proxy.use", "false");
+                    put("upload_sources", "true");
                 }});
         generator.setDeactivated(true);
         result.add(generator);
