@@ -5,7 +5,7 @@ Currently, the configuration is almost the same for all three types (maven, grad
 It is based on the structure of a Maven pom configuration.
 In what follows, the configuration is described and some hints are given if special means have to be taken into account for certain build systems.
 
-For maven, a possible configuration is:
+Below you can find an example for a possible configuration with maven. For other build systems you would create a file with the same xml content but you can omit the maven coordinates.
 
 ```xml
 <plugin>
@@ -40,7 +40,6 @@ For maven, a possible configuration is:
     </configuration>
 </plugin>
 ```
-For other build systems you would create a file with the same xml content but you can omit the maven coordinates.
 
 #[[###]]# Explanation of parameters
 

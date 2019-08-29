@@ -57,7 +57,7 @@ public class AntennaGradlePluginTest {
         System.setProperty("user.dir", projectRoot.toAbsolutePath().toString());
 
         String buildGradle = "plugins {\nid 'org.eclipse.sw360.antenna'\n}\n" +
-                "AntennaConfiguration{\npomPath '" + exampleTestProject.getProjectPom() + "'\n}";
+        "AntennaConfiguration{\ntoolConfigurationPath '" + exampleTestProject.getProjectPom() + "'\n}";
         FileUtils.writeStringToFile(projectRoot.resolve("build.gradle").toFile(), buildGradle, StandardCharsets.UTF_8);
 
         when(project.getBuildDir())
