@@ -74,6 +74,7 @@
                 <entry key="client.id" value="trusted-sw360-client"/>
                 <entry key="client.password" value="sw360-secret"/>
                 <entry key="proxy.use" value="false"/>
+                <entry key="upload_sources" value="true"/>
             </configuration>
             <deactivated>true</deactivated>
         </step>
