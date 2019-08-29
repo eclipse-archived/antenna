@@ -98,10 +98,10 @@ public class OrtResultArtifactResolver implements Function<Package, Artifact> {
     }
 
     private static Optional<ArtifactSourceUrl> mapSourceUrl(Package pkg) {
-        final Stream<String> urls = Stream.of(pkg.getVcsProcessed().getUrl(), pkg.getSourceArtifact().getUrl());
-
-        return urls.filter(u -> !u.isEmpty())
-                .findFirst()
+        // Antenna does not currently have the concept of VCS-specific clone URLs, so do not take ORT's VCS URL into
+        // account, but only the source artifact URL.
+        return Optional.of(pkg.getSourceArtifact().getUrl())
+                .filter(a -> !a.isEmpty())
                 .map(ArtifactSourceUrl::new);
     }
 
