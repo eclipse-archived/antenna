@@ -22,10 +22,10 @@ import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoord
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
 
+import java.io.File;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class OrtResultArtifactResolver implements Function<Package, Artifact> {
     private SortedMap<Identifier, Map<LicenseFinding, List<PathExclude>>> licenseFindings;
@@ -98,10 +98,10 @@ public class OrtResultArtifactResolver implements Function<Package, Artifact> {
     }
 
     private static Optional<ArtifactSourceUrl> mapSourceUrl(Package pkg) {
-        final Stream<String> urls = Stream.of(pkg.getVcsProcessed().getUrl(), pkg.getSourceArtifact().getUrl());
-
-        return urls.filter(u -> !u.isEmpty())
-                .findFirst()
+        // Antenna does not currently have the concept of VCS-specific clone URLs, so do not take ORT's VCS URL into
+        // account, but only the source artifact URL.
+        return Optional.of(pkg.getSourceArtifact().getUrl())
+                .filter(a -> !a.isEmpty())
                 .map(ArtifactSourceUrl::new);
     }
 
@@ -112,13 +112,12 @@ public class OrtResultArtifactResolver implements Function<Package, Artifact> {
     }
 
     private static Optional<ArtifactFilename> mapFilename(Package pkg) {
-        final Stream<RemoteArtifact> artifacts = Stream.of(pkg.getSourceArtifact(), pkg.getBinaryArtifact());
-
-        return artifacts
+        // Antenna's artifact filename (or filename entries) are meant to refer to binary artifacts, so only use the
+        // filename from ORT's binary artifact URL here.
+        return Optional.of(pkg.getBinaryArtifact())
                 .filter(a -> !a.getUrl().isEmpty())
-                .findFirst()
                 .map(a -> {
-                    String fileName = a.getUrl();
+                    String fileName = new File(a.getUrl()).getName();
                     String hash = a.getHash().getValue();
                     String hashAlgorithm = a.getHash().getAlgorithm().toString();
                     return new ArtifactFilename(fileName, hash, hashAlgorithm);

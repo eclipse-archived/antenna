@@ -94,7 +94,7 @@ public class OrtResultAnalyzerTest {
 
         assertThat(sourceUrls).hasSize(1);
 
-        assertThat(sourceUrls).contains("https://github.com/babel/babel.git");
+        assertThat(sourceUrls).contains("https://registry.npmjs.org/babel-generator/-/babel-generator-6.26.0.tgz");
     }
 
     private List<String> makeListOfSourceUrlStrings(List<Artifact> artifacts) {

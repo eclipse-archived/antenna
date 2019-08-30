@@ -53,7 +53,7 @@ public class OrtResultAnalyzer extends ManualAnalyzer {
         LOGGER.debug("Creating artifact list from ORT result file '" + ortResultFile + "'.");
         OrtResult result = OutputFormatKt.mapper(ortResultFile).readValue(ortResultFile, OrtResult.class);
         OrtResultArtifactResolver resolver = new OrtResultArtifactResolver(result);
-        AnalyzerRun analyzerRun = Optional.of(result.getAnalyzer())
+        AnalyzerRun analyzerRun = Optional.ofNullable(result.getAnalyzer())
                 .orElseThrow(() -> new IOException("No analyzer run found in ORT result file."));
         return analyzerRun.getResult().getPackages().stream()
                 .map(p -> resolver.apply(p.getPkg()))

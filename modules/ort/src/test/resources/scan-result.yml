@@ -63,7 +63,7 @@ analyzer:
           hash: ""
           hash_algorithm: ""
         source_artifact:
-          url: ""
+          url: "https://registry.npmjs.org/babel-generator/-/babel-generator-6.26.0.tgz"
           hash: "ac1ae20070b79f6e3ca1d3269613053774f20dc5"
           hash_algorithm: "SHA-1"
         vcs:
