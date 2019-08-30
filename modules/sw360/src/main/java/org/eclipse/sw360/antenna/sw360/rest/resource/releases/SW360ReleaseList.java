@@ -15,4 +15,13 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 
 public class SW360ReleaseList extends SW360HalResource<LinkObjects, SW360ReleaseListEmbedded> {
 
+    @Override
+    public LinkObjects createEmptyLinks() {
+        return new LinkObjects();
+    }
+
+    @Override
+    public SW360ReleaseListEmbedded createEmptyEmbedded() {
+        return new SW360ReleaseListEmbedded();
+    }
 }

@@ -70,6 +70,16 @@ public class SW360SparseRelease extends SW360HalResource<LinkObjects, Embedded> 
     }
 
     @Override
+    public LinkObjects createEmptyLinks() {
+        return new LinkObjects();
+    }
+
+    @Override
+    public Embedded createEmptyEmbedded() {
+        return new EmptyEmbedded();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

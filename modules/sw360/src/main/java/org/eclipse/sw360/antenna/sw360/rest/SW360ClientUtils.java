@@ -18,9 +18,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease
 import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class SW360ClientUtils {
     private SW360ClientUtils() {

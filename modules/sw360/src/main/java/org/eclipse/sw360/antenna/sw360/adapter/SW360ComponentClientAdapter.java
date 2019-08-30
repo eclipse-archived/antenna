@@ -67,7 +67,7 @@ public class SW360ComponentClientAdapter {
 
         List<String> componentIds = components.stream()
                 .filter(c -> c.getName().equals(componentName))
-                .map(c -> SW360HalResourceUtility.getLastIndexOfLinkObject(c.get_Links()).orElse(""))
+                .map(c -> SW360HalResourceUtility.getLastIndexOfSelfLink(c.get_Links()).orElse(""))
                 .collect(Collectors.toList());
 
         for (String componentId : componentIds) {

@@ -15,18 +15,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 
-import java.util.List;
+import java.util.*;
 
 @JsonDeserialize(as = SW360LicenseListEmbedded.class)
 public class SW360LicenseListEmbedded implements Embedded {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("sw360:licenses")
-    private List<SW360SparseLicense> licenses;
+    private Set<SW360SparseLicense> licenses;
 
-    public List<SW360SparseLicense> getLicenses() { return this.licenses; }
+    public Set<SW360SparseLicense> getLicenses() {
+        return Optional.ofNullable(licenses)
+                .map(HashSet::new)
+                .orElse(new HashSet<>());
+    }
 
     public SW360LicenseListEmbedded setLicenses(List<SW360SparseLicense> licenses) {
-        this.licenses = licenses;
+        this.licenses = new HashSet<>(licenses);
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SW360LicenseListEmbedded that = (SW360LicenseListEmbedded) o;
+        return Objects.equals(licenses, that.licenses);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(licenses);
     }
 }

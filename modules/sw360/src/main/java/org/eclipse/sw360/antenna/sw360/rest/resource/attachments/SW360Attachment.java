@@ -47,6 +47,16 @@ public class SW360Attachment extends SW360HalResource<LinkObjects, Embedded> {
     }
 
     @Override
+    public LinkObjects createEmptyLinks() {
+        return new LinkObjects();
+    }
+
+    @Override
+    public Embedded createEmptyEmbedded() {
+        return new EmptyEmbedded();
+    }
+
+    @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;

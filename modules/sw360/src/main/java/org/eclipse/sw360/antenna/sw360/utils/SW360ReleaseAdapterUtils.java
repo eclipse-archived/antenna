@@ -24,8 +24,9 @@ import java.util.stream.Collectors;
 
 public class SW360ReleaseAdapterUtils {
 
-    public static void prepareRelease(SW360Release release, SW360Component component, Set<String> sw360LicenseIds, Artifact artifact) {
-        String componentId = SW360HalResourceUtility.getLastIndexOfLinkObject(component.get_Links()).orElse("");
+    public static SW360Release prepareRelease(SW360Component component, Set<String> sw360LicenseIds, Artifact artifact) {
+        SW360Release release = new SW360Release();
+        String componentId = SW360HalResourceUtility.getLastIndexOfSelfLink(component.get_Links()).orElse("");
 
         SW360ReleaseAdapterUtils.setVersion(release, artifact);
         SW360ReleaseAdapterUtils.setCPEId(release, artifact);
@@ -44,16 +45,15 @@ public class SW360ReleaseAdapterUtils {
         SW360ReleaseAdapterUtils.setClearingStatus(release,artifact);
         SW360ReleaseAdapterUtils.setChangeStatus(release, artifact);
         SW360ReleaseAdapterUtils.setCopyrights(release, artifact);
+
+        return release;
     }
 
     public static boolean isValidRelease(SW360Release release) {
         if(release.getName() == null || release.getName().isEmpty()) {
             return false;
         }
-        if(release.getVersion() == null || release.getVersion().isEmpty()) {
-            return false;
-        }
-        return true;
+        return release.getVersion() != null && !release.getVersion().isEmpty();
     }
 
     public static String createSW360ReleaseVersion(Artifact artifact) {
@@ -69,7 +69,7 @@ public class SW360ReleaseAdapterUtils {
 
     private static void setCPEId(SW360Release release, Artifact artifact) {
         artifact.askForGet(ArtifactCPE.class)
-                .ifPresent(release::setCpeid);
+                .ifPresent(release::setCpeId);
     }
 
     private static void setCoordinates(SW360Release release, Artifact artifact) {
@@ -88,7 +88,7 @@ public class SW360ReleaseAdapterUtils {
 
     private static void setFinalLicense(SW360Release release, Artifact artifact) {
         LicenseInformation licenseInformation = ArtifactLicenseUtils.getFinalLicenses(artifact);
-        Optional.of(licenseInformation.evaluate())
+        Optional.ofNullable(licenseInformation.evaluate())
                 .filter(evaluatedLicenseInformation -> !"".equals(evaluatedLicenseInformation))
                 .ifPresent(release::setFinalLicense);
     }

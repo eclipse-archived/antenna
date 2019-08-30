@@ -11,8 +11,19 @@
 
 package org.eclipse.sw360.antenna.sw360.rest.resource;
 
-public class Self {
+import java.io.Serializable;
+import java.util.Objects;
+
+public class Self implements Serializable {
     private String href;
+
+    public Self() {
+        // no-òp
+    }
+
+    public Self(String href) {
+        this.href = href;
+    }
 
     public String getHref() {
         return href;
@@ -21,5 +32,18 @@ public class Self {
     public Self setHref(String href) {
         this.href = href;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Self self = (Self) o;
+        return Objects.equals(href, self.href);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(href);
     }
 }

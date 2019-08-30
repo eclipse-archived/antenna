@@ -15,7 +15,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
@@ -59,35 +58,12 @@ public class RestUtils {
     }
 
     public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Release sw360Release, HttpHeaders header) throws AntennaException {
-        String componentId;
-        if (sw360Release.get_Links() != null &&
-                sw360Release.get_Links().getSelfComponent() != null) {
-            componentId = SW360HalResourceUtility.getLastIndexOfLinkObject(sw360Release.get_Links().getSelfComponent()).orElse("");
-        } else if (sw360Release.getComponentId() != null &&
-                !sw360Release.getComponentId().isEmpty()) {
-            componentId = sw360Release.getComponentId();
-        } else {
-            throw new AntennaException("No componentId found for release [" + sw360Release.getName() + "]");
+        try {
+            String jsonBody = objectMapper.writeValueAsString(sw360Release);
+            return new HttpEntity<>(jsonBody, header);
+        } catch (JsonProcessingException e) {
+            throw new AntennaException("Error when attempting to serialise the request body.", e);
         }
-
-        Map<String, Object> release = new HashMap<>();
-        release.put(SW360Attributes.RELEASE_COMPONENT_ID, componentId);
-        if (sw360Release.getReleaseId() != null) {
-            release.put(SW360Attributes.RELEASE_ID, sw360Release.getReleaseId());
-        }
-        release.put(SW360Attributes.RELEASE_NAME, sw360Release.getName());
-        release.put(SW360Attributes.RELEASE_VERSION, sw360Release.getVersion());
-        Optional.ofNullable(sw360Release.getCpeid())
-                .ifPresent(cpeId -> release.put(SW360Attributes.RELEASE_CPE_ID, cpeId));
-        Optional.ofNullable(sw360Release.getDownloadurl())
-                .ifPresent(downloadurl -> release.put(SW360Attributes.RELEASE_SOURCES, downloadurl));
-        Optional.ofNullable(sw360Release.getMainLicenseIds())
-                .filter(l -> ! l.isEmpty())
-                .ifPresent(mainLicenseIds -> release.put(SW360Attributes.RELEASE_MAIN_LICENSE_IDS, mainLicenseIds));
-        Optional.ofNullable(convertSW360ExternalIdsToMapOfStrings(sw360Release))
-                .filter(m -> ! m.isEmpty())
-                .ifPresent(externalIDs -> release.put(SW360Attributes.RELEASE_EXTERNAL_IDS, externalIDs));
-        return getHttpEntity(release, header);
     }
 
     public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360License sw360License, HttpHeaders header) throws AntennaException {
@@ -107,60 +83,6 @@ public class RestUtils {
         attachment.put("attachmentType", sw360Attachment.getAttachmentType());
         attachment.put("checkStatus", "NOTCHECKED");
         return getHttpEntity(attachment, header);
-    }
-
-    private static Map<String, String> convertSW360ExternalIdsToMapOfStrings(SW360Release sw360Release) {
-        Map<String, String> externalIds = new HashMap<>();
-
-        if(sw360Release.getCoordinates() != null) {
-            externalIds.putAll(sw360Release.getCoordinates());
-        }
-        if(sw360Release.getFinalLicense() != null) {
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_FLICENSES, sw360Release.getFinalLicense());
-        }
-        if(sw360Release.getDeclaredLicense() != null) {
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_DLICENSES, sw360Release.getDeclaredLicense());
-        }
-        if(sw360Release.getObservedLicense() != null) {
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_OLICENSES, sw360Release.getObservedLicense());
-        }
-        if(sw360Release.getReleaseTagUrl() != null) {
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_OREPO, sw360Release.getReleaseTagUrl());
-        }
-        if(sw360Release.getSoftwareHeritageId() != null) {
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_SWHID, sw360Release.getSoftwareHeritageId());
-        }
-        if(sw360Release.getHashes() != null && sw360Release.getHashes().size() > 0) {
-            externalIds.putAll(convertSetOfStringsOfHashesToMapOfStrings(sw360Release.getHashes()));
-        }
-        if(sw360Release.getChangeStatus() != null) {
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_CHANGESTATUS, sw360Release.getChangeStatus());
-        }
-        if(sw360Release.getCopyrights() != null) {
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS, sw360Release.getCopyrights());
-        }
-        if(sw360Release.getClearingState() != null){
-            externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_CLEARINGSTATE, sw360Release.getClearingState());
-        }
-
-        if(externalIds.isEmpty()) {
-            return null;
-        }
-        return externalIds;
-    }
-
-    private static Map<String, String> convertSetOfStringsOfHashesToMapOfStrings(Set<String> stringSet) {
-        Map<String, String> setMap = new HashMap<>();
-        int i = 1;
-        Iterator<String> it = stringSet.iterator();
-        while(it.hasNext()){
-            final String next = it.next();
-            if(next != null && ! next.isEmpty()) {
-                setMap.put(SW360Attributes.RELEASE_EXTERNAL_ID_HASHES + i, next);
-                i++;
-            }
-        }
-        return setMap;
     }
 
     public static HttpHeaders deepCopyHeaders(HttpHeaders header) {

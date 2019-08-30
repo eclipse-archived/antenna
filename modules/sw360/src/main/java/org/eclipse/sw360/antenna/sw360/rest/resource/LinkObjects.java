@@ -11,6 +11,8 @@
 
 package org.eclipse.sw360.antenna.sw360.rest.resource;
 
+import java.util.Objects;
+
 public class LinkObjects {
     private Self self;
 
@@ -21,5 +23,18 @@ public class LinkObjects {
     public LinkObjects setSelf(Self self) {
         this.self = self;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LinkObjects that = (LinkObjects) o;
+        return Objects.equals(self, that.self);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(self);
     }
 }

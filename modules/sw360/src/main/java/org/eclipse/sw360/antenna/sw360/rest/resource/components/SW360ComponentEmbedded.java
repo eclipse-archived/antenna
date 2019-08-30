@@ -18,6 +18,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease
 import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
 
 import java.util.List;
+import java.util.Objects;
 
 @JsonDeserialize(as = SW360ComponentEmbedded.class)
 public class SW360ComponentEmbedded implements Embedded {
@@ -40,6 +41,20 @@ public class SW360ComponentEmbedded implements Embedded {
     public SW360ComponentEmbedded setCreatedBy(SW360User createdBy) {
         this.createdBy = createdBy;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SW360ComponentEmbedded that = (SW360ComponentEmbedded) o;
+        return Objects.equals(releases, that.releases) &&
+                Objects.equals(createdBy, that.createdBy);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(releases, createdBy);
     }
 }
 
