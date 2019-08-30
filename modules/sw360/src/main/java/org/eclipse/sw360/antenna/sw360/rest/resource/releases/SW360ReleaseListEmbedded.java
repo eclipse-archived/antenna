@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 
 import java.util.List;
+import java.util.Objects;
 
 @JsonDeserialize(as = SW360ReleaseListEmbedded.class)
 public class SW360ReleaseListEmbedded implements Embedded {
@@ -28,5 +29,18 @@ public class SW360ReleaseListEmbedded implements Embedded {
     public SW360ReleaseListEmbedded setReleases(List<SW360SparseRelease> releases) {
         this.releases = releases;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SW360ReleaseListEmbedded that = (SW360ReleaseListEmbedded) o;
+        return Objects.equals(releases, that.releases);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(releases);
     }
 }

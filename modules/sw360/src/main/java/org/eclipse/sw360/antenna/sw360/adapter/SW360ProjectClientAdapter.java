@@ -50,7 +50,7 @@ public class SW360ProjectClientAdapter {
                 .filter(pr -> hasEqualCoordinates(pr, projectName, projectVersion))
                 .findAny()
                 .map(SW360Project::get_Links)
-                .flatMap(SW360HalResourceUtility::getLastIndexOfLinkObject);
+                .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink);
     }
 
     public String addProject(String projectName, String projectVersion, HttpHeaders header) throws AntennaException, JsonProcessingException {
@@ -63,7 +63,7 @@ public class SW360ProjectClientAdapter {
 
         SW360Project responseProject = projectClient.createProject(sw360Project, header);
 
-        return SW360HalResourceUtility.getLastIndexOfLinkObject(responseProject.get_Links()).orElse("");
+        return SW360HalResourceUtility.getLastIndexOfSelfLink(responseProject.get_Links()).orElse("");
     }
 
     public boolean hasEqualCoordinates(SW360Project sw360Project, String projectName, String projectVersion) {

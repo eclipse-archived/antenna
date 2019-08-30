@@ -18,6 +18,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @JsonDeserialize(as = SW360ProjectListEmbedded.class)
 public class SW360ProjectListEmbedded implements Embedded {
@@ -32,5 +33,18 @@ public class SW360ProjectListEmbedded implements Embedded {
     public SW360ProjectListEmbedded setProjects(List<SW360Project> projects) {
         this.projects = projects;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SW360ProjectListEmbedded that = (SW360ProjectListEmbedded) o;
+        return Objects.equals(projects, that.projects);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(projects);
     }
 }

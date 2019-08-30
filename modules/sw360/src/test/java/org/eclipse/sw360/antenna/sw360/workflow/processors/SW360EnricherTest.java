@@ -234,21 +234,20 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     private SW360Release mkSW360Release(String name) {
         SW360Release sw360Release = new SW360Release();
 
+        sw360Release.setName(name);
+
         sw360Release.setDownloadurl(sourceUrl);
         sw360Release.setClearingState("PROJECT_APPROVED");
 
-        Map<String, String> externalIds = new HashMap<>();
 
-        externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_DLICENSES, "Apache-2.0");
-        externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_OLICENSES, "A Test License");
-        externalIds.put(SW360CoordinateKeysToArtifactCoordinates.get(MavenCoordinates.class), "test:test1:1.2.3");
-        externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_OREPO, releaseTagUrl);
-        externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_SWHID, swhID);
-        externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_HASHES + "1", hashString);
-        externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_CHANGESTATUS, "AS_IS");
-        externalIds.put(SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS, copyrights);
-
-        sw360Release.setExternalIds(externalIds);
+        sw360Release.setDeclaredLicense("Apache-2.0");
+        sw360Release.setObservedLicense("A Test License");
+        sw360Release.setCoordinates(Collections.singletonMap(SW360CoordinateKeysToArtifactCoordinates.get(MavenCoordinates.class), "test:test1:1.2.3"));
+        sw360Release.setReleaseTagUrl(releaseTagUrl);
+        sw360Release.setSoftwareHeritageId(swhID);
+        sw360Release.setHashes(Collections.singleton(hashString));
+        sw360Release.setChangeStatus("AS_IS");
+        sw360Release.setCopyrights(copyrights);
 
         return sw360Release;
     }

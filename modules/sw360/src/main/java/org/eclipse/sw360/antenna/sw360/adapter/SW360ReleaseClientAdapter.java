@@ -37,8 +37,7 @@ public class SW360ReleaseClientAdapter {
     }
 
     public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, boolean uploadSource, HttpHeaders header) throws AntennaException {
-        SW360Release release = new SW360Release();
-        SW360ReleaseAdapterUtils.prepareRelease(release, sw360Component, sw360LicenseIds, artifact);
+        SW360Release release = SW360ReleaseAdapterUtils.prepareRelease(sw360Component, sw360LicenseIds, artifact);
 
         if (! SW360ReleaseAdapterUtils.isValidRelease(release)) {
             throw new AntennaException("Can not write invalid release for " + artifact.toString());
@@ -55,8 +54,7 @@ public class SW360ReleaseClientAdapter {
         }
     }
     public SW360Release updateRelease(SW360Release release, Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws AntennaException {
-        SW360Release sw360ReleaseFromArtifact = new SW360Release();
-        SW360ReleaseAdapterUtils.prepareRelease(sw360ReleaseFromArtifact, sw360Component, sw360LicenseIds, artifact);
+        SW360Release sw360ReleaseFromArtifact = SW360ReleaseAdapterUtils.prepareRelease(sw360Component, sw360LicenseIds, artifact);
 
         if (release.equals(sw360ReleaseFromArtifact)) {
             return release;
@@ -91,7 +89,7 @@ public class SW360ReleaseClientAdapter {
             Optional<String> releaseId = releases.stream()
                     .filter(release -> release.getVersion().equals(releaseVersionOfArtifact))
                     .findFirst()
-                    .flatMap(release -> SW360HalResourceUtility.getLastIndexOfLinkObject(release.get_Links()));
+                    .flatMap(release -> SW360HalResourceUtility.getLastIndexOfSelfLink(release.get_Links()));
             if (releaseId.isPresent()) {
                 return Optional.of(getReleaseById(releaseId.get(), header));
             }
