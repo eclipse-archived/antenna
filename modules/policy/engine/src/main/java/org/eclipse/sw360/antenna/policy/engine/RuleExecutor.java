@@ -21,5 +21,5 @@ import java.util.Collection;
 interface RuleExecutor {
     Collection<PolicyViolation> executeRules(Collection<ThirdPartyArtifact> thirdPartyArtifacts);
 
-    Collection<Ruleset> getRuleSets();
+    Collection<Ruleset> getRulesets();
 }

@@ -10,10 +10,12 @@
  */
 package org.eclipse.sw360.antenna.policy.engine;
 
+import com.github.packageurl.PackageURL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -28,9 +30,14 @@ public class PolicyEngine {
         this.executors = executors;
     }
 
-    public Collection<PolicyViolation> evaluate (final Collection<ThirdPartyArtifact> thirdPartyArtifacts) {
+    public Collection<PolicyViolation> evaluate(final Collection<ThirdPartyArtifact> thirdPartyArtifacts) {
         LOGGER.info("Start policy engine run");
-        LOGGER.debug("Artifacts are" + thirdPartyArtifacts.toString());
+        LOGGER.debug("Artifacts are " + thirdPartyArtifacts.stream()
+                .map(ThirdPartyArtifact::getPurl)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(PackageURL::canonicalize)
+                .collect(Collectors.joining(",", "[", "]")));
 
         return executors
                 .parallelStream()
@@ -39,11 +46,11 @@ public class PolicyEngine {
                 .collect(Collectors.toList());
     }
 
-    public Collection<Ruleset> getRuleSets() {
+    public Collection<Ruleset> getRulesets() {
         return executors.stream()
-                        .map(RuleExecutor::getRuleSets)
-                        .flatMap(Collection::stream)
-                        .collect(Collectors.toSet());
+                .map(RuleExecutor::getRulesets)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
     }
 }
 

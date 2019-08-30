@@ -12,14 +12,16 @@ package org.eclipse.sw360.antenna.policy.workflow.processors;
 
 import com.github.packageurl.PackageURL;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.util.ArtifactUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.policy.engine.ThirdPartyArtifact;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * The facade of the {@link ThirdPartyArtifact} used in the {@link org.eclipse.sw360.antenna.policy.engine.PolicyEngine}
@@ -42,16 +44,18 @@ class AntennaArtifact implements ThirdPartyArtifact {
     }
 
     @Override
-    public boolean hasLicense(String licenseRegex) {
+    public Collection<String> hasLicenses(Collection<String> searchedLicenses) {
         return ArtifactLicenseUtils.getFinalLicenses(artifact)
                 .getLicenses()
                 .stream()
                 .map(License::getName)
-                .anyMatch(license -> license.matches(licenseRegex));
+                .filter(license -> searchedLicenses.contains(license))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Optional<PackageURL> getPurl() {
-        return ArtifactUtils.getMostDominantArtifactCoordinates(Collections.EMPTY_LIST, artifact);
+        return ArtifactUtils.getMostDominantArtifactCoordinates(ArtifactUtils.DEFAULT_PREFERED_COORDINATE_TYPES, artifact)
+                .map(ArtifactCoordinates::getPurl);
     }
 }

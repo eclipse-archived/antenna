@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class PolicyEngineConfiguratorTest {
     @Test
     public void testProperConfiguration() throws NoSuchFieldException, IllegalAccessException {
-        PolicyEngine testResult = PolicyEngineConfigurator.configure(PolicyEngineTestdata.RULESETCONFIG);
+        PolicyEngine testResult = PolicyEngineConfigurator.configure(PolicyEngineTestdata.RULESET_CONFIG);
         assertThat(testResult).isNotNull();
         Collection<RuleExecutor> createdExecutor = extractExecutor(testResult);
         assertThat(createdExecutor.size()).isEqualTo(1);
@@ -65,15 +65,15 @@ public class PolicyEngineConfiguratorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testWrongClassname() {
-        Collection<String> ruleSets = new ArrayList<>();
-        ruleSets.addAll(PolicyEngineTestdata.RULESETCONFIG);
-        ruleSets.add("org.eclipse.sw360.antenna.policy.engine.DummyClass");
-        PolicyEngineConfigurator.configure(ruleSets);
+        Collection<String> rulesets = new ArrayList<>();
+        rulesets.addAll(PolicyEngineTestdata.RULESET_CONFIG);
+        rulesets.add("org.eclipse.sw360.antenna.policy.engine.DummyClass");
+        PolicyEngineConfigurator.configure(rulesets);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testRuleWithoutExecutor() {
-        PolicyEngineConfigurator.configure(PolicyEngineTestdata.FAILINGRULESETCONFIG);
+        PolicyEngineConfigurator.configure(PolicyEngineTestdata.FAILING_RULESET_CONFIG);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -88,6 +88,6 @@ public class PolicyEngineConfiguratorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testNotRulesetClass() {
-        PolicyEngineConfigurator.configure(PolicyEngineTestdata.NORULESETCLASSCONFIG);
+        PolicyEngineConfigurator.configure(PolicyEngineTestdata.NO_RULESET_CLASS_CONFIG);
     }
 }

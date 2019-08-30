@@ -16,15 +16,15 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class PolicyEngineTestdata {
-    public static final String ALWAYSVIOLATEDID = "AV";
-    public static final String NEVERVIOLATEDID = "NV";
+    public static final String ALWAYS_VIOLATED_ID = "AV";
+    public static final String NEVER_VIOLATED_ID = "NV";
 
-    public static final String RULESETCLASS = TestRuleset.class.getName();
-    public static final String FAILINGRULESETCLASS = FailingRuleset.class.getName();
+    public static final String RULESET_CLASS = TestRuleset.class.getName();
+    public static final String FAILING_RULESET_CLASS = FailingRuleset.class.getName();
 
-    public static final Collection<String> RULESETCONFIG = Arrays.asList(RULESETCLASS);
-    public static final Collection<String> FAILINGRULESETCONFIG = Arrays.asList(FAILINGRULESETCLASS);
-    public static final Collection<String> NORULESETCLASSCONFIG = Arrays.asList(TestArtifact.class.getName());
+    public static final Collection<String> RULESET_CONFIG = Arrays.asList(RULESET_CLASS);
+    public static final Collection<String> FAILING_RULESET_CONFIG = Arrays.asList(FAILING_RULESET_CLASS);
+    public static final Collection<String> NO_RULESET_CLASS_CONFIG = Arrays.asList(TestArtifact.class.getName());
 
     public static final Collection<ThirdPartyArtifact> ARTIFACTS = Arrays.asList(new TestArtifact(),
             new TestArtifact());

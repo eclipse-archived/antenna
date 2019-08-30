@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.policy.engine;
 
 import com.github.packageurl.PackageURL;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -21,20 +22,31 @@ import java.util.Optional;
 public interface ThirdPartyArtifact {
     /**
      * @return True, if the artifact is identified as a known Open Source component, False, if the component is not known
-     *         and needs an identification process to clarify the component source
+     * and needs an identification process to clarify the component source.
      */
     boolean isIdentified();
 
     /**
-     * @param licenseRegex A regular expression representing a family of licenses in the form of a SPDX license reference,
-     *                     e.g., "GPL.*" for all GPL strings like GPL-2.0-only
-     * @return True, if a license that matches the pattern is found, False, if the license is not found
+     * @param searchedLicenses A list of licenses in the form of a SPDX license reference, e.g., GPL-2.0-only. The
+     *                         method goes through the licenses of the artifact and returns the intersection between
+     *                         the given list and the licenses found in the artifact.
+     * @return The intersection between the license strings given as search list and the licenses found in the artifact.
      */
-    boolean hasLicense(String licenseRegex);
+    Collection<String> hasLicenses(Collection<String> searchedLicenses);
+
+    /**
+     * @param searchedLicenses A list of licenses in the form of a SPDX license reference, e.g., GPL-2.0-only. The
+     *                         method goes through the licenses of the artifact and returns whether the intersection
+     *                         between the given list and the licenses found in the artifact is not empty.
+     * @return True, if at least on of the given licenses is part of the artifacts license expression, False, if not.
+     */
+    default boolean hasAtLeastOneLicenseOf(Collection<String> searchedLicenses) {
+        return !hasLicenses(searchedLicenses).isEmpty();
+    }
 
     /**
      * @return The component coordinates represented as a purl or an empty Optional, if the artifact information is not
-     *         identified and contains not enough information to at least define a basic purl.
+     * identified and contains not enough information to at least define a basic purl.
      */
     Optional<PackageURL> getPurl();
 }

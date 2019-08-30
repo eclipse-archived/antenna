@@ -15,10 +15,16 @@ import org.eclipse.sw360.antenna.model.artifact.ArtifactFact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.GenericArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ArtifactUtils {
     private ArtifactUtils() {
@@ -26,29 +32,29 @@ public class ArtifactUtils {
     }
 
     public static <T extends ArtifactFact> Optional<T> getMostDominantFact(Class<T> tClass,
-                                                                           List<Class<? extends T>> preferedFactTypes,
-                                                                           Artifact artifact) {
+            List<Class<? extends T>> preferedFactTypes,
+            Artifact artifact) {
         return getMostDominantFact(tClass, preferedFactTypes, a -> Optional.empty(), artifact);
     }
 
     public static <T extends ArtifactFact> Optional<T> getMostDominantFact(Class<T> tClass,
-                                                                           List<Class<? extends T>> preferedFactTypes,
-                                                                           Function<Artifact, Optional<? extends T>> fallback,
-                                                                           Artifact artifact) {
+            List<Class<? extends T>> preferedFactTypes,
+            Function<Artifact, Optional<? extends T>> fallback,
+            Artifact artifact) {
         final Optional<T> prefered = preferedFactTypes.stream()
                 .map(preferedFact -> artifact.askFor(preferedFact)
                         .map(tClass::cast))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findFirst();
-        if(prefered.isPresent()) {
+        if (prefered.isPresent()) {
             return prefered;
         }
 
         final Optional<T> other = artifact.askForAll(tClass)
                 .stream()
                 .findFirst();
-        if(other.isPresent()) {
+        if (other.isPresent()) {
             return other;
         }
 
@@ -56,7 +62,12 @@ public class ArtifactUtils {
                 .map(tClass::cast);
     }
 
-    public static Optional<ArtifactCoordinates> getMostDominantArtifactCoordinates(List<Class<? extends ArtifactCoordinates>> preferedCoordinatesTypes,Artifact artifact) {
+    public static final List<Class<? extends ArtifactCoordinates>> DEFAULT_PREFERED_COORDINATE_TYPES = Stream
+            .of(MavenCoordinates.class, BundleCoordinates.class, JavaScriptCoordinates.class, DotNetCoordinates.class)
+            .collect(Collectors.toList());
+
+    public static Optional<ArtifactCoordinates> getMostDominantArtifactCoordinates(
+            List<Class<? extends ArtifactCoordinates>> preferedCoordinatesTypes, Artifact artifact) {
         return getMostDominantFact(ArtifactCoordinates.class,
                 preferedCoordinatesTypes,
                 a -> a.askFor(ArtifactFilename.class)

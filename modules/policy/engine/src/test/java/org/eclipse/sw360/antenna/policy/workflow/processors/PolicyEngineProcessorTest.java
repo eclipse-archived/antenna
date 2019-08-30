@@ -35,7 +35,7 @@ public class PolicyEngineProcessorTest {
     public void testPolicyEngineIntegration() throws AntennaConfigurationException {
         PolicyEngineProcessor testee = new PolicyEngineProcessor();
         Map<String, String> configMap = new HashMap<>();
-        configMap.put(RULESETCONFIGKEY, PolicyEngineTestdata.RULESETCLASS);
+        configMap.put(RULESETCONFIGKEY, PolicyEngineTestdata.RULESET_CLASS);
         testee.configure(configMap);
 
         Artifact a1 = new Artifact("Source 1");
@@ -49,17 +49,17 @@ public class PolicyEngineProcessorTest {
                 .collect(Collectors.toList());
 
         assertThat(ruleIds.size()).isEqualTo(1);
-        ruleIds.forEach(ruleId -> assertThat(ruleId).isEqualTo(PolicyEngineTestdata.ALWAYSVIOLATEDID));
+        ruleIds.forEach(ruleId -> assertThat(ruleId).isEqualTo(PolicyEngineTestdata.ALWAYS_VIOLATED_ID));
     }
 
     @Test
     public void testPolicyEngineWithMatchStateRule() throws AntennaConfigurationException {
         PolicyEngineProcessor testee = new PolicyEngineProcessor();
         Map<String, String> configMap = new HashMap<>();
-        configMap.put(RULESETCONFIGKEY, AntennaTestdata.SINGLERULESETCLASS);
+        configMap.put(RULESETCONFIGKEY, AntennaTestdata.SINGLE_RULESET_CLASS);
         testee.configure(configMap);
 
-        IPolicyEvaluation result = testee.evaluate(AntennaTestdata.TESTMATCHSTATEARTIFACTS);
+        IPolicyEvaluation result = testee.evaluate(AntennaTestdata.TEST_MATCH_STATE_ARTIFACTS);
         Collection<Artifact> failingArtifacts = result.getEvaluationResults()
                 .stream()
                 .map(IEvaluationResult::getFailedArtifacts)
@@ -74,10 +74,10 @@ public class PolicyEngineProcessorTest {
     public void testPolicyEngineWithLicenseRule() throws AntennaConfigurationException {
         PolicyEngineProcessor testee = new PolicyEngineProcessor();
         Map<String, String> configMap = new HashMap<>();
-        configMap.put(RULESETCONFIGKEY, AntennaTestdata.COMPARERULESETCLASS);
+        configMap.put(RULESETCONFIGKEY, AntennaTestdata.COMPARE_RULESET_CLASS);
         testee.configure(configMap);
 
-        IPolicyEvaluation result = testee.evaluate(AntennaTestdata.TESTLICENSEARTIFACTS);
+        IPolicyEvaluation result = testee.evaluate(AntennaTestdata.TEST_LICENSE_ARTIFACTS);
         assertThat(result.getEvaluationResults().size()).isEqualTo(1);
         Collection<Artifact> failingArtifacts = result.getEvaluationResults()
                 .stream()
@@ -90,10 +90,10 @@ public class PolicyEngineProcessorTest {
     }
 
     @Test
-    public void testTwoRuleSetsAreFound() throws AntennaConfigurationException {
+    public void testTwoRulesetsAreFound() throws AntennaConfigurationException {
         PolicyEngineProcessor testee = new PolicyEngineProcessor();
         Map<String, String> configMap = new HashMap<>();
-        configMap.put(RULESETCONFIGKEY, AntennaTestdata.TESTRULESETSLIST);
+        configMap.put(RULESETCONFIGKEY, AntennaTestdata.TEST_RULESETS_LIST);
         testee.configure(configMap);
 
         String[] description = testee.getRulesetDescription().split("\n");

@@ -19,25 +19,25 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class AntennaTestdata {
-    public static final String UNKNOWNARTIFACTID = "UA";
-    public static final String EPLVSGPLID = "EPLvsGPL";
+    public static final String UNKNOWN_ARTIFACT_ID = "UA";
+    public static final String EPL_VS_GPL_ID = "EPLvsGPL";
 
-    public static final String SINGLERULESETCLASS = TestSingleRuleset.class.getName();
-    public static final String COMPARERULESETCLASS = TestCompareRuleset.class.getName();
+    public static final String SINGLE_RULESET_CLASS = TestSingleRuleset.class.getName();
+    public static final String COMPARE_RULESET_CLASS = TestCompareRuleset.class.getName();
 
-    public static String TESTRULESETSLIST = SINGLERULESETCLASS + ", " + COMPARERULESETCLASS;
+    public static String TEST_RULESETS_LIST = SINGLE_RULESET_CLASS + ", " + COMPARE_RULESET_CLASS;
 
     public static final Artifact UNKNOWN_ARTIFACT = createUnknownArtifact();
     public static final Artifact SIMILAR_ARTIFACT = createSimilarArtifact();
     public static final Artifact EXACT_ARTIFACT = createExactArtifact();
     public static final Artifact EPL_ARTIFACT = createEPLArtifact();
     public static final Artifact GPL_ARTIFACT = createGPLArtifact();
-    public static final Artifact NONASSERTED_ARTIFACT = createArtifactUnknownLicense();
+    public static final Artifact NON_ASSERTED_ARTIFACT = createArtifactUnknownLicense();
 
-    public static Collection<Artifact> TESTMATCHSTATEARTIFACTS = Arrays.asList(UNKNOWN_ARTIFACT, SIMILAR_ARTIFACT,
+    public static Collection<Artifact> TEST_MATCH_STATE_ARTIFACTS = Arrays.asList(UNKNOWN_ARTIFACT, SIMILAR_ARTIFACT,
             EXACT_ARTIFACT);
-    public static Collection<Artifact> TESTLICENSEARTIFACTS = Arrays.asList(EPL_ARTIFACT, GPL_ARTIFACT,
-            NONASSERTED_ARTIFACT);
+    public static Collection<Artifact> TEST_LICENSE_ARTIFACTS = Arrays.asList(EPL_ARTIFACT, GPL_ARTIFACT,
+            NON_ASSERTED_ARTIFACT);
 
     private static Artifact createUnknownArtifact() {
         Artifact artifact = new Artifact("Testdata");
@@ -59,7 +59,7 @@ public class AntennaTestdata {
 
     private static Artifact createEPLArtifact() {
         Artifact artifact = new Artifact("Testdata");
-        artifact.addFact(new DeclaredLicenseInformation(LicenseSupport.mapLicenses(Arrays.asList("EPL-2.0"))));
+        artifact.addFact(new DeclaredLicenseInformation(LicenseSupport.mapLicenses(Arrays.asList("EPL-1.0"))));
         return artifact;
     }
 

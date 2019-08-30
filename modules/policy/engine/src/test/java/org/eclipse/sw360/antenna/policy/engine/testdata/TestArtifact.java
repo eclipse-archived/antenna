@@ -14,6 +14,8 @@ import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import org.eclipse.sw360.antenna.policy.engine.ThirdPartyArtifact;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 public class TestArtifact implements ThirdPartyArtifact {
@@ -24,8 +26,8 @@ public class TestArtifact implements ThirdPartyArtifact {
     }
 
     @Override
-    public boolean hasLicense(String licenseRegex) {
-        return false;
+    public Collection<String> hasLicenses(Collection<String> searchedLicenses) {
+        return Collections.emptyList();
     }
 
     @Override

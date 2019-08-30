@@ -17,15 +17,15 @@ import java.util.Optional;
 import static org.eclipse.sw360.antenna.policy.engine.RuleUtils.artifactRaisesPolicyViolation;
 
 public class AlwaysViolationRule implements SingleArtifactRule {
-    private final Ruleset ruleSet;
+    private final Ruleset ruleset;
 
-    public AlwaysViolationRule(Ruleset ruleSet) {
-        this.ruleSet = ruleSet;
+    public AlwaysViolationRule(Ruleset ruleset) {
+        this.ruleset = ruleset;
     }
 
     @Override
     public String getId() {
-        return PolicyEngineTestdata.ALWAYSVIOLATEDID;
+        return PolicyEngineTestdata.ALWAYS_VIOLATED_ID;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class AlwaysViolationRule implements SingleArtifactRule {
 
     @Override
     public Ruleset getRuleset() {
-        return ruleSet;
+        return ruleset;
     }
 
     @Override

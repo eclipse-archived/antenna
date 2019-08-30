@@ -18,10 +18,10 @@ import static org.eclipse.sw360.antenna.policy.engine.RuleUtils.artifactAppliesT
 import static org.eclipse.sw360.antenna.policy.engine.RuleUtils.artifactRaisesPolicyViolation;
 
 public class UnknownArtifactRule implements SingleArtifactRule {
-    private final Ruleset ruleSet;
+    private final Ruleset ruleset;
 
-    public UnknownArtifactRule(final Ruleset ruleSet) {
-        this.ruleSet = ruleSet;
+    public UnknownArtifactRule(final Ruleset ruleset) {
+        this.ruleset = ruleset;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class UnknownArtifactRule implements SingleArtifactRule {
 
     @Override
     public String getId() {
-        return AntennaTestdata.UNKNOWNARTIFACTID;
+        return AntennaTestdata.UNKNOWN_ARTIFACT_ID;
     }
 
     @Override
@@ -54,6 +54,6 @@ public class UnknownArtifactRule implements SingleArtifactRule {
 
     @Override
     public Ruleset getRuleset() {
-        return ruleSet;
+        return ruleset;
     }
 }

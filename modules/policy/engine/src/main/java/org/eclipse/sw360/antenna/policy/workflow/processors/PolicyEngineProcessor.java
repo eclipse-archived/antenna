@@ -34,7 +34,7 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
 
     private PolicyEngine policyEngine;
 
-    private static final String RULESETPROP = "ruleset.classes";
+    private static final String RULESET_PROP = "ruleset.classes";
 
     public PolicyEngineProcessor() {
         this.workflowStepOrder = VALIDATOR_BASE_ORDER + 11000;
@@ -46,16 +46,15 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
 
         LOGGER.info("Setting up policy engine");
 
-        final String ruleSetClasses = getConfigValue(RULESETPROP, configMap).trim();
-        final Collection<String> ruleSetClassesList = Arrays.asList(ruleSetClasses.split(","))
-                .stream()
+        final String rulesetClasses = getConfigValue(RULESET_PROP, configMap).trim();
+        final Collection<String> rulesetClassesList = Arrays.stream(rulesetClasses.split(","))
                 .map(String::trim)
                 .collect(Collectors.toList());
 
-        LOGGER.debug("Configured rule set classes: " + ruleSetClassesList.toString());
+        LOGGER.debug("Configured rule set classes: " + rulesetClassesList.toString());
 
         try {
-            policyEngine = PolicyEngineConfigurator.configure(ruleSetClassesList);
+            policyEngine = PolicyEngineConfigurator.configure(rulesetClassesList);
         } catch (IllegalStateException | IllegalArgumentException e) {
             throw new AntennaConfigurationException("Could not initialize Policy Engine!", e);
         }
@@ -85,70 +84,69 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
     @Override
     public String getRulesetDescription() {
         StringBuilder resultString = new StringBuilder("Policy Engine, with rule sets:\n");
-        policyEngine.getRuleSets().forEach(rs -> resultString.append(prepareRuleSetInfo(rs)));
+        policyEngine.getRulesets().forEach(rs -> resultString.append(prepareRulesetInfo(rs)));
         return resultString.toString();
     }
 
-    private String prepareRuleSetInfo(Ruleset ruleSet) {
-        return String.format(" - Rule set %s in version %s%n", ruleSet.getName(), ruleSet.getVersion());
-    }
-}
-
-/**
- * Implementation for the Antenna {@link IPolicyEvaluation} result based on the {@link PolicyEngine} data
- */
-class PolicyEvaluation implements IPolicyEvaluation {
-    private final Set<IEvaluationResult> evalResults;
-
-    PolicyEvaluation(final Collection<PolicyViolation> data) {
-        evalResults = data.stream().map(AntennaEvaluationResult::new).collect(Collectors.toSet());
+    private String prepareRulesetInfo(Ruleset ruleset) {
+        return String.format(" - Rule set %s in version %s%n", ruleset.getName(), ruleset.getVersion());
     }
 
-    @Override
-    public Set<IEvaluationResult> getEvaluationResults() {
-        return evalResults;
-    }
-}
+    /**
+     * Implementation for the Antenna {@link IPolicyEvaluation} result based on the {@link PolicyEngine} data
+     */
+    private static class PolicyEvaluation implements IPolicyEvaluation {
+        private final Set<IEvaluationResult> evalResults;
 
-/**
- * Implementation for the Antenna {@link IEvaluationResult} result based on the {@link PolicyEngine} result data
- */
-class AntennaEvaluationResult implements IEvaluationResult {
-    private final PolicyViolation violation;
+        PolicyEvaluation(final Collection<PolicyViolation> data) {
+            evalResults = data.stream().map(AntennaEvaluationResult::new).collect(Collectors.toSet());
+        }
 
-    AntennaEvaluationResult(final PolicyViolation violation) {
-        this.violation = violation;
-    }
-
-    @Override
-    public String getId() {
-        return violation.getId();
-    }
-
-    @Override
-    public String getDescription() {
-        return violation.getDescription();
-    }
-
-    @Override
-    public Severity getSeverity() {
-        switch (violation.getSeverity()) {
-            case INFO:
-                return Severity.INFO;
-            case WARN:
-                return Severity.WARN;
-            case ERROR:
-                return Severity.FAIL;
-            default:
-                throw new IllegalStateException("Programming Error: No other case possible in enum");
+        @Override
+        public Set<IEvaluationResult> getEvaluationResults() {
+            return evalResults;
         }
     }
 
-    @Override
-    public Set<Artifact> getFailedArtifacts() {
-        return violation.getFailingArtifacts()
-                .stream()
-                .map(element -> ((AntennaArtifact) element).getArtifact())
-                .collect(Collectors.toSet());
+    /**
+     * Implementation for the Antenna {@link IEvaluationResult} result based on the {@link PolicyEngine} result data
+     */
+    private static class AntennaEvaluationResult implements IEvaluationResult {
+        private final PolicyViolation violation;
+
+        AntennaEvaluationResult(final PolicyViolation violation) {
+            this.violation = violation;
+        }
+
+        @Override
+        public String getId() {
+            return violation.getId();
+        }
+
+        @Override
+        public String getDescription() {
+            return violation.getDescription();
+        }
+
+        @Override
+        public Severity getSeverity() {
+            switch (violation.getSeverity()) {
+                case INFO:
+                    return Severity.INFO;
+                case WARN:
+                    return Severity.WARN;
+                case ERROR:
+                    return Severity.FAIL;
+                default:
+                    throw new IllegalStateException("Programming Error: No other case possible in enum");
+            }
+        }
+
+        @Override
+        public Set<Artifact> getFailedArtifacts() {
+            return violation.getFailingArtifacts().stream()
+                    .map(element -> ((AntennaArtifact) element).getArtifact())
+                    .collect(Collectors.toSet());
+        }
     }
 }

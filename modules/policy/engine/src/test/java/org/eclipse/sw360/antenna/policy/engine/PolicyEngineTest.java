@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PolicyEngineTest {
-    private PolicyEngine testee = PolicyEngineConfigurator.configure(PolicyEngineTestdata.RULESETCONFIG);
+    private PolicyEngine testee = PolicyEngineConfigurator.configure(PolicyEngineTestdata.RULESET_CONFIG);
 
     @Test
     public void testRuleEvaluationRun() {
@@ -29,7 +29,7 @@ public class PolicyEngineTest {
         Collection<String> ruleIds = result.stream().map(PolicyViolation::getId).distinct().collect(
                 Collectors.toList());
         assertThat(ruleIds.size()).isEqualTo(1);
-        ruleIds.forEach(ruleId -> assertThat(ruleId).isEqualTo(PolicyEngineTestdata.ALWAYSVIOLATEDID));
+        ruleIds.forEach(ruleId -> assertThat(ruleId).isEqualTo(PolicyEngineTestdata.ALWAYS_VIOLATED_ID));
         result.stream().forEach(hashbase -> assertThat(hashbase.getViolationHash()).isEqualTo("msVGMmZSMtsiR8fbvd31Sw=="));
     }
 }

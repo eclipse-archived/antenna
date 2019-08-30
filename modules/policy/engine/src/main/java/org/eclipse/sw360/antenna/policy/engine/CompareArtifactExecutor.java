@@ -52,7 +52,9 @@ class CompareArtifactExecutor implements RuleExecutor {
     }
 
     @Override
-    public Collection<Ruleset> getRuleSets() {
-        return rules.stream().map(Rule::getRuleset).collect(Collectors.toSet());
+    public Collection<Ruleset> getRulesets() {
+        return rules.stream()
+                .map(Rule::getRuleset)
+                .collect(Collectors.toSet());
     }
 }

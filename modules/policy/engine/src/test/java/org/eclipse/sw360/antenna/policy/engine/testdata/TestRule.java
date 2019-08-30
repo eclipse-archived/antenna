@@ -15,10 +15,10 @@ import org.eclipse.sw360.antenna.policy.engine.RuleSeverity;
 import org.eclipse.sw360.antenna.policy.engine.Ruleset;
 
 public class TestRule implements Rule {
-    private final Ruleset ruleSet;
+    private final Ruleset ruleset;
 
-    public TestRule(Ruleset ruleSet) {
-        this.ruleSet = ruleSet;
+    public TestRule(Ruleset ruleset) {
+        this.ruleset = ruleset;
     }
 
     @Override
@@ -43,6 +43,6 @@ public class TestRule implements Rule {
 
     @Override
     public Ruleset getRuleset() {
-        return ruleSet;
+        return ruleset;
     }
 }

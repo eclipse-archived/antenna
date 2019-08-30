@@ -33,20 +33,20 @@ public class PolicyEngineConfigurator {
      * The general configuration method for the {@link PolicyEngine}, it instantiates the infrastructure and returns the
      * entry point for policy evaluations.
      *
-     * @param ruleSetRefs List of {@link Ruleset} implementations as qualified class name. The classes need to be
+     * @param rulesetRefs List of {@link Ruleset} implementations as qualified class name. The classes need to be
      *                    available of the classpath.
      * @return The {@link PolicyEngine} instance to start policy evaluations
      * @throws IllegalArgumentException If no rule set given or not all classes could be found on the classpath
      */
-    public static PolicyEngine configure(final Collection<String> ruleSetRefs) throws IllegalArgumentException {
-        if (ruleSetRefs == null || ruleSetRefs.isEmpty()) {
+    public static PolicyEngine configure(final Collection<String> rulesetRefs) throws IllegalArgumentException {
+        if (rulesetRefs == null || rulesetRefs.isEmpty()) {
             throw new IllegalArgumentException("Configuration Error: No rule set reference given");
         }
 
-        LOGGER.debug("Configuring the policy engine with ruleSetRefs " + ruleSetRefs.toString());
+        LOGGER.debug("Configuring the policy engine with rulesetRefs " + rulesetRefs.toString());
 
-        final Map<String, Set<Rule>> executorToRuleMapping = ruleSetRefs.stream()
-                .map(PolicyEngineConfigurator::createRuleSet)
+        final Map<String, Set<Rule>> executorToRuleMapping = rulesetRefs.stream()
+                .map(PolicyEngineConfigurator::createRuleset)
                 .map(Ruleset::getRules)
                 .flatMap(Collection::stream)
                 .map(PolicyEngineConfigurator::mapRuleToExecutor)
@@ -60,7 +60,7 @@ public class PolicyEngineConfigurator {
         return resultEngine;
     }
 
-    private static Ruleset createRuleSet(final String ruleClassRef) throws IllegalArgumentException {
+    private static Ruleset createRuleset(final String ruleClassRef) throws IllegalArgumentException {
         try {
             return (Ruleset) Class.forName(ruleClassRef).getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException |
@@ -107,16 +107,14 @@ public class PolicyEngineConfigurator {
 
     private static RuleExecutor createExecutor(String executorClass, Collection<Rule> rules) {
         if (SINGLE_ARTIFACT_EXECUTOR.equals(executorClass)) {
-            return new SingleArtifactExecutor(ruleToSpecialArtifactRule(rules));
+            return new SingleArtifactExecutor(rules.stream()
+                    .map(SingleArtifactRule.class::cast)
+                    .collect(Collectors.toList()));
         } else if (COMPARE_ARTIFACT_EXECUTOR.equals(executorClass)) {
-            return new CompareArtifactExecutor(ruleToSpecialArtifactRule(rules));
+            return new CompareArtifactExecutor(rules.stream()
+                    .map(CompareArtifactRule.class::cast)
+                    .collect(Collectors.toList()));
         }
         throw new IllegalStateException("Programming Error: Unknown executor class");
-    }
-
-    private static <R> Collection<R> ruleToSpecialArtifactRule(final Collection<Rule> rules) {
-        return rules.stream()
-                .map(rule -> (R) rule)
-                .collect(Collectors.toList());
     }
 }
