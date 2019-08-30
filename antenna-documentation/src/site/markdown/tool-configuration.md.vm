@@ -5,21 +5,26 @@ Currently, the configuration is almost the same for all three types (maven, grad
 It is based on the structure of a Maven pom configuration.
 In what follows, the configuration is described and some hints are given if special means have to be taken into account for certain build systems.
 
-Below you can find an example for a possible configuration with maven. For other build systems you would create a file with the same xml content but you can omit the maven coordinates.
+Below you can find an example for a possible configuration. If you are using the [Maven Plugin](${docName}-maven-plugin/index.html), this is part of your pom and you have to provide the maven coordinates of the plugin inside the `<plugin>...</plugin>` tags.
 
 ```xml
+<?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-    <groupId>${antennaMavenGroupId}</groupId>
-    <artifactId>${antennaMavenPluginName}</artifactId>
-    <version>x.y.z</version> <!-- enter current/desired version here ;-) -->
 
     <configuration>
-        <!--Properties for Disclosure Document -->
+        <!-- MANDATORY properties -->
+
+        <!-- properties for Disclosure Document -->
         <productName>Modeler</productName>
         <productFullname>Visual Rules - Modeler</productFullname>
         <version>6.3.0</version>
 
-        <!--Properties for attaching Artifacts-->
+        <!-- OPTIONAL properties -->
+
+        <!-- path to your workflow definition file (only optional if the workflow steps are configured directly in this file) -->
+        <workflowDefinitionFile>${basedir}/workflow.xml</workflowDefinitionFile>
+
+        <!-- properties for attaching Artifacts-->
         <attachAll>true</attachAll>
         <filesToAttach>
             <param>sources-zip,zip,OSS-sources</param>
@@ -27,13 +32,13 @@ Below you can find an example for a possible configuration with maven. For other
         <isMavenInstalled>false</isMavenInstalled>
         <sourcesRepositoryUrl>...</sourcesRepositoryUrl>
 
+        <!-- path(s) to your config.xml(s)-->
         <configFiles>
             <param> ${basedir}/config.xml </param>
             <param> ${basedir}/config2.xml </param>
         </configFiles>
 
-        <workflowDefinitionFile>${basedir}/workflow.xml</workflowDefinitionFile>
-
+        <!-- properties for proxy configuration-->
         <proxyHost>${proxyHost}</proxyHost>
         <proxyPort>${proxyPort}</proxyPort>
 
@@ -49,15 +54,17 @@ All parameters are required unless specified as optional.
 * `productName`: *(deprecated)* Name of the product (e.g. Modeler).
 * `productFullname`: Full name of the product (e.g. Visual Rules - Modeler)
 * `version`: Version of the product
+* `workflowDefinitionFile`: *optional, if embedded inside tool configuration* The path to your workflow definition file, which defines the steps
+ contained in your ${docNameCap} workflow.
 * `configFiles`: *(optional)* Path to your configuration file(s).
 * `configFileUris`: *(optional)* URIs to your config file.
-* `licenseValidation`: In this section a license can be defined as
+* `licenseValidation`: *(optional)* In this section a license can be defined as
 forbidden and parameter for the license Validation can be set.
 * `copyrightHoldersName`: *(optional)* The name of the copyright holder
 * `copyrightNotice`: *(optional)* Annotation to the copyright
 * `proxyHost`: *(optional)* Parameter to provide a proxy configuration
 * `proxyPort`: *(optional)* Port to the provided proxy server
-* `isMavenInstalled`: If set to true, tells ${docNameCap} that Maven is installed on this machine.
+* `isMavenInstalled`: *(optional - default: false)* If set to true, tells ${docNameCap} that Maven is installed on this machine.
 This allows certain workflow-steps to run or retrieve more information.
 For Gradle and CLI in addition the `M2_HOME` variable needs to be set to the Maven executable.
 Defaults is false for Gradle and CLI.
@@ -67,7 +74,7 @@ Defaults to a folder called ${docNameCap} inside the build folder of the project
 * `sourcesRepositoryUrl`: *(deprecated)* This option once allowed to set another remote repository address
 However, in the current version it does not do anything and will be removed soon.
 
-**Related to attaching artifacts**
+**Parameters related to attaching artifacts**
 
 * `attachAll`: *(optional)* Attaches all files created by the plugin to
 the current build. Defaults to `false`. The default properties are:
@@ -97,57 +104,51 @@ Inside the plugin definition, you can also add a fully fledged workflow definiti
 As an example consider the following plugin definition for ${docNameCap}:
 
 ```xml
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>${antennaMavenGroupId}</groupId>
-                <artifactId>${antennaMavenPluginName}</artifactId>
-                <version>${org.eclipse.sw360.antenna.version}</version>
-                <configuration>
-                    <productName>${docNameCap} EP</productName>
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+    <configuration>
+        <productName>${docNameCap} EP</productName>
 
-                    <productFullname>${docNameCap} Example Project</productFullname>
+        <productFullname>${docNameCap} Example Project</productFullname>
 
-                    <version>${version_to_scan}</version>
+        <version>${version_to_scan}</version>
 
-                    <configFiles>
-                        <param>${project.basedir}/src/${docName}conf.xml</param>
-                    </configFiles>
-                    <workflowDefinitionFile>${project.basedir}/src/workflow.xml</workflowDefinitionFile>
-                    <workflow>
-                        <processors>
-                            <step>
-                                <name>Source Validator</name>
-                                <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.SourceValidator</classHint>
-                                <configuration>
-                                    <entry>
-                                        <entryKey>missingSourcesSeverity</entryKey>
-                                        <entryValue>FAIL</entryValue>
-                                    </entry>
-                                    <entry>
-                                        <entryKey>incompleteSourcesSeverity</entryKey>
-                                        <entryValue>WARN</entryValue>
-                                    </entry>
-                                </configuration>
-                                <deactivated>true</deactivated>
-                            </step>
-                        </processors>
-                        <generators>
-                            <step>
-                                <name>CSV Report Writer</name>
-                                <classHint>org.eclipse.sw360.antenna.workflow.generators.CSVGenerator</classHint>
-                            </step>
-                        </generators>
-                    </workflow>
+        <configFiles>
+            <param>${project.basedir}/src/${docName}conf.xml</param>
+        </configFiles>
+        <workflowDefinitionFile>${project.basedir}/src/workflow.xml</workflowDefinitionFile>
+        <workflow>
+            <processors>
+                <step>
+                    <name>Source Validator</name>
+                    <classHint>org.eclipse.sw360.antenna.validators.workflow.processors.SourceValidator</classHint>
+                    <configuration>
+                        <entry>
+                            <entryKey>missingSourcesSeverity</entryKey>
+                            <entryValue>FAIL</entryValue>
+                        </entry>
+                        <entry>
+                            <entryKey>incompleteSourcesSeverity</entryKey>
+                            <entryValue>WARN</entryValue>
+                        </entry>
+                    </configuration>
+                    <deactivated>true</deactivated>
+                </step>
+            </processors>
+            <generators>
+                <step>
+                    <name>CSV Report Writer</name>
+                    <classHint>org.eclipse.sw360.antenna.workflow.generators.CSVGenerator</classHint>
+                </step>
+            </generators>
+        </workflow>
 
-                    <copyrightHoldersName>${docNameCap} Company</copyrightHoldersName>
-                    <copyrightNotice>All rights reserved</copyrightNotice>
+        <copyrightHoldersName>${docNameCap} Company</copyrightHoldersName>
+        <copyrightNotice>All rights reserved</copyrightNotice>
 
-                    <skip>false</skip>
-                </configuration>
-            </plugin>
-         </plugins>
-    </build>
+        <skip>false</skip>
+    </configuration>
+</plugin>
 ```
 
 You can define the workflow as described in the [Workflow configuration](./workflow-configuration.html) and you can even
@@ -159,7 +160,7 @@ If a workflow is present in the pom, it will get merged with any `workflow.xml` 
 * Properties of existing steps will be changed.
 * New steps are added at the end of the list of steps in the same segment (analyzers, processors, generators and output handlers).
 
-#[[###]]# Properties in the `pom.xml`
+#[[###]]# Workflow properties in the `pom.xml`
 
 Defining the workflow in the `pom.xml` allows defining and using properties in the workflow.
 
