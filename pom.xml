@@ -55,6 +55,7 @@
         <module>modules/maven</module>
         <module>modules/sw360</module>
         <module>modules/drools</module>
+        <module>modules/policy</module>
         <module>modules/simple-validators</module>
         <module>modules/p2</module>
         <module>modules/ort</module>
