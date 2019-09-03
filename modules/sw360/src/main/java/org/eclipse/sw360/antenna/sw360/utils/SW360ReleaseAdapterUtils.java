@@ -88,7 +88,7 @@ public class SW360ReleaseAdapterUtils {
 
     private static void setFinalLicense(SW360Release release, Artifact artifact) {
         LicenseInformation licenseInformation = ArtifactLicenseUtils.getFinalLicenses(artifact);
-        Optional.of(licenseInformation.evaluate())
+        Optional.ofNullable(licenseInformation.evaluate())
                 .filter(evaluatedLicenseInformation -> !"".equals(evaluatedLicenseInformation))
                 .ifPresent(release::setFinalLicense);
     }

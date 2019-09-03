@@ -54,8 +54,10 @@ public class ArtifactLicenseUtils {
         final Optional<LicenseInformation> declared = artifact.askForGet(DeclaredLicenseInformation.class);
         final Optional<LicenseInformation> observed = artifact.askForGet(ObservedLicenseInformation.class);
         if(declared.isPresent() && observed.isPresent()) {
-            final String declaredLicenseRepresentation = declared.get().evaluate();
-            final String observedLicenseRepresentation = observed.get().evaluate();
+            final String declaredLicenseRepresentation = Optional.ofNullable(declared.get().evaluate())
+                    .orElse("");
+            final String observedLicenseRepresentation = Optional.ofNullable(observed.get().evaluate())
+                    .orElse("");
 
             if (observedLicenseRepresentation.contains(declaredLicenseRepresentation)
                 && !observedLicenseRepresentation.contains(" OR ")) {
