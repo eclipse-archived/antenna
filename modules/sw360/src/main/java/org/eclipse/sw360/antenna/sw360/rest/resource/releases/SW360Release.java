@@ -38,6 +38,8 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     private String downloadurl;
     @JsonSerialize
     private final Map<String, String> externalIds = new HashMap<>();
+    @JsonSerialize
+    private final Map<String, String> additionalData = new HashMap<>();
 
     @JsonIgnore
     public String getReleaseId() {
@@ -144,31 +146,31 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
 
     @JsonIgnore
     public String getFinalLicense() {
-        return externalIds.get(FINAL_LICENSES_KEY);
+        return additionalData.get(FINAL_LICENSES_KEY);
     }
 
     public SW360Release setFinalLicense(String finalLicense) {
-        externalIds.put(FINAL_LICENSES_KEY, finalLicense);
+        additionalData.put(FINAL_LICENSES_KEY, finalLicense);
         return this;
     }
 
     @JsonIgnore
     public String getDeclaredLicense() {
-        return externalIds.get(DECLARED_LICENSE_KEY);
+        return additionalData.get(DECLARED_LICENSE_KEY);
     }
 
     public SW360Release setDeclaredLicense(String declaredLicense) {
-        externalIds.put(DECLARED_LICENSE_KEY, declaredLicense);
+        additionalData.put(DECLARED_LICENSE_KEY, declaredLicense);
         return this;
     }
 
     @JsonIgnore
     public String getObservedLicense() {
-        return externalIds.get(OBSERVED_LICENSES_KEY);
+        return additionalData.get(OBSERVED_LICENSES_KEY);
     }
 
     public SW360Release setObservedLicense(String observedLicense) {
-        externalIds.put(OBSERVED_LICENSES_KEY, observedLicense);
+        additionalData.put(OBSERVED_LICENSES_KEY, observedLicense);
         return this;
     }
 
@@ -221,37 +223,32 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
 
     @JsonIgnore
     public String getClearingState() {
-        return externalIds.get(CLEARINGSTATE_KEY);
+        return additionalData.get(CLEARINGSTATE_KEY);
     }
 
     public SW360Release setClearingState(String clearingState) {
-        externalIds.put(CLEARINGSTATE_KEY, clearingState);
+        additionalData.put(CLEARINGSTATE_KEY, clearingState);
         return this;
     }
 
     @JsonIgnore
     public String getChangeStatus() {
-        return externalIds.get(CHANGESTATUS_KEY);
+        return additionalData.get(CHANGESTATUS_KEY);
     }
 
 
     public SW360Release setChangeStatus(String changeStatus) {
-        externalIds.put(CHANGESTATUS_KEY, changeStatus);
+        additionalData.put(CHANGESTATUS_KEY, changeStatus);
         return this;
     }
 
     @JsonIgnore
     public String getCopyrights() {
-        return externalIds.get(COPYRIGHTS_KEY);
+        return additionalData.get(COPYRIGHTS_KEY);
     }
 
     public SW360Release setCopyrights(String copyrights) {
-        externalIds.put(COPYRIGHTS_KEY, copyrights);
-        return this;
-    }
-
-    public SW360Release setExternalIds(Map<String,String> externalIds) {
-        this.externalIds.putAll(externalIds);
+        additionalData.put(COPYRIGHTS_KEY, copyrights);
         return this;
     }
 
@@ -277,6 +274,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
             get_Links().setSelfComponent(componentIdWithPrecedence);
         }
         externalIds.putAll(releaseWithPrecedence.externalIds);
+        additionalData.putAll(releaseWithPrecedence.additionalData);
 
         return this;
     }
@@ -306,11 +304,12 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
                 Objects.equals(version, release.version) &&
                 Objects.equals(cpeId, release.cpeId) &&
                 Objects.equals(downloadurl, release.downloadurl) &&
-                Objects.equals(externalIds, release.externalIds);
+                Objects.equals(externalIds, release.externalIds) &&
+                Objects.equals(additionalData, release.additionalData);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), name, version, cpeId, downloadurl, externalIds);
+        return Objects.hash(super.hashCode(), name, version, cpeId, downloadurl, externalIds, additionalData);
     }
 }
