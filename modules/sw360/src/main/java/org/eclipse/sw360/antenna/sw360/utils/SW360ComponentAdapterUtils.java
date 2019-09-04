@@ -45,7 +45,7 @@ public class SW360ComponentAdapterUtils {
         return getMostDominantArtifactCoordinates(artifact)
                 .map(ArtifactCoordinates::getName)
                 .filter(n -> ! n.isEmpty())
-                .orElse(artifact.toString()); // TODO: ugly hack
+                .orElse("Artifact: " + artifact.toString().hashCode()); // TODO: ugly hack
     }
 
     public static String createComponentVersion(Artifact artifact) {

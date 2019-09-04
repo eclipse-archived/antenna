@@ -296,17 +296,22 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
         return new SW360ReleaseEmbedded();
     }
 
+    public boolean equalsOnUpdatableFields(SW360Release release) {
+        return Objects.equals(name, release.name) &&
+                Objects.equals(version, release.version) &&
+                Objects.equals(cpeId, release.cpeId) &&
+                Objects.equals(downloadurl, release.downloadurl) &&
+                Objects.equals(externalIds, release.externalIds) &&
+                Objects.equals(getMainLicenseIds(), release.getMainLicenseIds());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         SW360Release release = (SW360Release) o;
-        return Objects.equals(name, release.name) &&
-                Objects.equals(version, release.version) &&
-                Objects.equals(cpeId, release.cpeId) &&
-                Objects.equals(downloadurl, release.downloadurl) &&
-                Objects.equals(externalIds, release.externalIds);
+        return equalsOnUpdatableFields(release);
     }
 
     @Override

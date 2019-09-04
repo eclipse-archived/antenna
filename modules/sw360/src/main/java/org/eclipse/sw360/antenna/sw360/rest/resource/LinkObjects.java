@@ -11,6 +11,8 @@
 
 package org.eclipse.sw360.antenna.sw360.rest.resource;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.Objects;
 
 public class LinkObjects {
@@ -20,6 +22,7 @@ public class LinkObjects {
         return this.self;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public LinkObjects setSelf(Self self) {
         this.self = self;
         return this;
