@@ -185,7 +185,7 @@ public class CsvAnalyzerImpl {
         if (record.isMapped(RELEASE_ARTIFACT_URL) && !record.get(RELEASE_ARTIFACT_URL).isEmpty()) {
             artifact.addFact(new ArtifactReleaseTagURL(record.get(RELEASE_ARTIFACT_URL)));
         }
-        if (record.isMapped(SWH_ID)) {
+        if (record.isMapped(SWH_ID) && !record.get(SWH_ID).isEmpty()) {
             try {
                 artifact.addFact(new ArtifactSoftwareHeritageID.Builder(record.get(SWH_ID)).build());
             } catch (AntennaException e) {
