@@ -129,17 +129,43 @@ scanner:
             start_time: "2019-01-07T07:51:42.194Z"
             end_time: "2019-01-07T07:52:10.961Z"
             file_count: 430
-            license_findings:
+            licenses:
             - license: "Apache-2.0"
-              copyrights: []
+              location:
+                path: "path/to/a/file"
+                start_line: 1
+                end_line: 2
             - license: "BSD-2-Clause"
-              copyrights:
-              - "Copyright (c) 2012 Test Person1 <test.person@1.com>"
+              location:
+                path: "path/to/another/file"
+                start_line: 3
+                end_line: 4
             - license: "MIT"
-              copyrights:
-              - "Copyright (c) 2014-2017 Teist Peirson2 <teist.peirson@2.com>"
-              - "Copyright (c) 2015 Teost Peorson3"
-              - "Copyright (c) 2015 Teast Pearson4 <teast.pearson@15.com>"
+              location:
+                path: "path/to/yet/another/file"
+                start_line: 42
+                end_line: 42
+            copyrights:
+            - statement: "Copyright (c) 2012 Test Person1 <test.person@1.com>"
+              location:
+                path: "path/to/another/file"
+                start_line: 2
+                end_line: 2
+            - statement: "Copyright (c) 2014-2017 Teist Peirson2 <teist.peirson@2.com>"
+              location:
+                path: "path/to/yet/another/file"
+                start_line: 39
+                end_line: 39
+            - statement: "Copyright (c) 2015 Teost Peorson3"
+              location:
+                path: "path/to/yet/another/file"
+                start_line: 40
+                end_line: 40
+            - statement: "Copyright (c) 2015 Teast Pearson4 <teast.pearson@15.com>"
+              location:
+                path: "path/to/yet/another/file"
+                start_line: 41
+                end_line: 41
     cache_stats:
       num_reads: 407
       num_hits: 0

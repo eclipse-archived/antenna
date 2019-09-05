@@ -28,7 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class OrtResultArtifactResolver implements Function<Package, Artifact> {
-    private SortedMap<Identifier, Map<LicenseFinding, List<PathExclude>>> licenseFindings;
+    private SortedMap<Identifier, Map<LicenseFindings, List<PathExclude>>> licenseFindings;
 
     public OrtResultArtifactResolver(OrtResult result) {
         licenseFindings = result.collectLicenseFindings(false);
@@ -133,7 +133,7 @@ public class OrtResultArtifactResolver implements Function<Package, Artifact> {
         Collection<String> licenses = Optional.ofNullable(licenseFindings.get(pkg.getId()))
                 .map(Map::keySet)
                 .orElse(Collections.emptySet()).stream()
-                .map(LicenseFinding::getLicense)
+                .map(LicenseFindings::getLicense)
                 .collect(Collectors.toList());
 
         return Optional.of(LicenseSupport.mapLicenses(licenses))
@@ -144,9 +144,9 @@ public class OrtResultArtifactResolver implements Function<Package, Artifact> {
         return Optional.ofNullable(licenseFindings.get(pkg.getId()))
                 .map(Map::keySet)
                 .orElse(Collections.emptySet()).stream()
-                .map(LicenseFinding::getCopyrights)
+                .map(LicenseFindings::getCopyrights)
                 .flatMap(Collection::stream)
-                .map(CopyrightFinding::getStatement)
+                .map(CopyrightFindings::getStatement)
                 .map(CopyrightStatement::new)
                 .reduce(CopyrightStatement::mergeWith);
     }

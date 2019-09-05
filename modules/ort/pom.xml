@@ -24,12 +24,6 @@
     <packaging>jar</packaging>
 
     <repositories>
-        <!-- For ch.frankel.log4k used by ORT -->
-        <repository>
-            <id>jcenter</id>
-            <url>http://jcenter.bintray.com</url>
-        </repository>
-
         <!-- For ORT -->
         <repository>
             <id>jitpack.io</id>
