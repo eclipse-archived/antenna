@@ -10,31 +10,16 @@
  */
 package org.eclipse.sw360.antenna.model.test;
 
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.junit.Before;
+import org.eclipse.sw360.antenna.model.license.LicenseStatement;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LicenseTest {
-    private License license;
-
-    @Before
-    public void init() {
-        this.license = new License();
-        license.setName("testLicense");
-        license.setText("testText");
-    }
-
     @Test
-    public void nameTest() {
-        assertThat(license.getName()).isEqualTo("testLicense");
-
+    public void test() {
+        final LicenseStatement licenseStatement = new LicenseStatement("(BSD-3-Clause)");
+        assertThat(new LicenseStatement(licenseStatement.toSpdxExpression()))
+                .isEqualTo(licenseStatement);
     }
-
-    @Test
-    public void textTest() {
-        assertThat(license.getText()).isEqualTo("testText");
-    }
-
 }
