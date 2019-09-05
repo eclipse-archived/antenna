@@ -38,14 +38,14 @@ spec:
     tty: true
     resources:
         requests:
-            memory: "4096Mi"
+            memory: "5120Mi"
         limits:
-            memory: "4096Mi"
+            memory: "5120Mi"
 """
         }
     }
     environment {
-        MAVEN_OPTS = '-Xms4G -Xmx4G'
+        MAVEN_OPTS = '-Xms5G -Xmx5G'
     }
     parameters {
         choice(
