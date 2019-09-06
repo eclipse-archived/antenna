@@ -38,6 +38,7 @@ class CompareArtifactExecutor implements RuleExecutor {
         return thirdPartyArtifacts.stream()
                 .map(artifact -> findViolationsForLeftHandSide(rule, artifact, thirdPartyArtifacts))
                 .flatMap(Collection::stream)
+                .distinct()
                 .collect(Collectors.toList());
     }
 
@@ -45,6 +46,7 @@ class CompareArtifactExecutor implements RuleExecutor {
             final ThirdPartyArtifact leftHandSide, final Collection<ThirdPartyArtifact> rightHandSides) {
 
         return rightHandSides.stream()
+                .filter(rightHandSide -> !rightHandSide.equals(leftHandSide))
                 .map(rightHandSide -> rule.evaluate(leftHandSide, rightHandSide))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
