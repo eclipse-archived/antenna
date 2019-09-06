@@ -19,6 +19,6 @@ Add the following step into the `<processors>` section of your workflow.xml
 #### Explanation of parameters
 
 - `sourcesRepositoryUrl`: *(optional)* valid URL to maven repository (e.g. a company nexus) containing additional source jars for resolution.
-- `preferredSourceQualifier`: *(optional)* will be used by the artifact resolver as a qualifier for source jars before tying the usual qualifier `sources`.
+- `preferredSourceQualifier`: *(optional)* will be used by the artifact resolver as a qualifier for source jars before trying the usual qualifier `sources`.
 This should be used together with `sourcesRepositoryUrl` providing a repository to search for artifacts with the given qualifier.
 
