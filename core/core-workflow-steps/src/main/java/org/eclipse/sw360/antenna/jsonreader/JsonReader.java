@@ -44,8 +44,8 @@ import java.util.stream.StreamSupport;
 public class JsonReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonReader.class);
     private static final String COMPONENTS = "components";
-    private final Charset encoding;
-    private final Path recordingFile;
+    protected final Charset encoding;
+    protected final Path recordingFile;
     private final Path dependencyDir;
 
     private static final Map<String, MissingLicenseReasons> SPECIAL_INFORMATION = Stream.of(new Object[][] {
