@@ -64,9 +64,8 @@ public class PolicyEngineProcessorTest {
                 .map(IEvaluationResult::getFailedArtifacts)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
-        assertThat(failingArtifacts.size()).isEqualTo(2);
+        assertThat(failingArtifacts.size()).isEqualTo(1);
         assertThat(failingArtifacts).contains(AntennaTestdata.UNKNOWN_ARTIFACT);
-        assertThat(failingArtifacts).contains(AntennaTestdata.SIMILAR_ARTIFACT);
     }
 
     @Test

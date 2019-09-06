@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.policy.engine;
 
 import com.github.packageurl.PackageURL;
+import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -65,6 +66,7 @@ public class PolicyViolation {
     public String getViolationHash() {
         String hashBase = failingArtifacts.stream()
                 .map(this::getPurlAsString)
+                .flatMap(Collection::stream)
                 .collect(Collectors.joining(" : ", rule.getId() + " : ", ""));
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
@@ -75,10 +77,10 @@ public class PolicyViolation {
         }
     }
 
-    private String getPurlAsString(ThirdPartyArtifact artifact) {
-        return artifact.getPurl()
+    private Collection<String> getPurlAsString(ThirdPartyArtifact artifact) {
+        return artifact.getPurls().stream()
                 .map(PackageURL::canonicalize)
-                .orElse("pkg:generic/unknown@" + artifact.hashCode());
+                .collect(Collectors.toList());
     }
 
     /**

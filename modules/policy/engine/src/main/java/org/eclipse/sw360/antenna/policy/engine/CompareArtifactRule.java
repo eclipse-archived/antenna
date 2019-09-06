@@ -10,6 +10,8 @@
  */
 package org.eclipse.sw360.antenna.policy.engine;
 
+import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
+
 import java.util.Optional;
 
 /**

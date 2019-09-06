@@ -11,11 +11,11 @@
 package org.eclipse.sw360.antenna.policy.engine;
 
 import com.github.packageurl.PackageURL;
+import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,9 +33,8 @@ public class PolicyEngine {
     public Collection<PolicyViolation> evaluate(final Collection<ThirdPartyArtifact> thirdPartyArtifacts) {
         LOGGER.info("Start policy engine run");
         LOGGER.debug("Artifacts are " + thirdPartyArtifacts.stream()
-                .map(ThirdPartyArtifact::getPurl)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .map(ThirdPartyArtifact::getPurls)
+                .flatMap(Collection::stream)
                 .map(PackageURL::canonicalize)
                 .collect(Collectors.joining(",", "[", "]")));
 

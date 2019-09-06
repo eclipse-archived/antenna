@@ -15,7 +15,7 @@ package org.eclipse.sw360.antenna.policy.engine;
  * appropriately on a policy violation.
  */
 public enum RuleSeverity {
-    INFO,
     WARN,
-    ERROR;
+    SEVERE,
+    CRITICAL;
 }

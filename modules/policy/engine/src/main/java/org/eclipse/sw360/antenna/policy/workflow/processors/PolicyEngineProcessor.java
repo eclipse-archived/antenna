@@ -16,6 +16,7 @@ import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.policy.engine.*;
+import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 import org.eclipse.sw360.antenna.workflow.stubs.AbstractComplianceChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,11 +132,11 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
         @Override
         public Severity getSeverity() {
             switch (violation.getSeverity()) {
-                case INFO:
-                    return Severity.INFO;
                 case WARN:
+                    return Severity.INFO;
+                case SEVERE:
                     return Severity.WARN;
-                case ERROR:
+                case CRITICAL:
                     return Severity.FAIL;
                 default:
                     throw new IllegalStateException("Programming Error: No other case possible in enum");

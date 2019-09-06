@@ -20,22 +20,24 @@ import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GivenSteps {
-    private static final String LICENSES_PROP = "licenses";
-    private static final String PROPRIETARY_PROP = "proprietary";
-    private static final String COORDINATES_PROP = "coordinates";
-
     private ScenarioState state;
 
     public GivenSteps(ScenarioState state) {
         this.state = state;
+    }
+
+    @Given("^an artifact$")
+    public void an_artifact() {
+        an_artifact_with("Default Name", Collections.emptyList());
     }
 
     @Given("^an artifact with$")
@@ -54,6 +56,11 @@ public class GivenSteps {
         artifact_facts.forEach(row -> mapProperty(row, artifact));
     }
 
+    private static final String LICENSES_PROP = "licenses";
+    private static final String PROPRIETARY_PROP = "proprietary";
+    private static final String COORDINATES_PROP = "coordinates";
+    private static final String SOURCES_PROP = "sources";
+
     private void mapProperty(List<String> row, Artifact artifact) {
         switch (getRowPropertyType(row)) {
             case LICENSES_PROP:
@@ -64,6 +71,9 @@ public class GivenSteps {
                 break;
             case COORDINATES_PROP:
                 addCoordinates(row, artifact);
+                break;
+            case SOURCES_PROP:
+                addSourceInfo(row, artifact);
                 break;
             default:
                 throw new IllegalArgumentException("Configuration Error: "
@@ -95,8 +105,8 @@ public class GivenSteps {
         return createLicenseInformation(expressionType, createLicense(licenseExpression, threatGroup));
     }
 
-    private LicenseInformation createLicenseExpression(LicenseOperator or, String... licenseExpressionParts) {
-        return LicenseSupport.mapLicenses(Arrays.asList(licenseExpressionParts), or);
+    private LicenseInformation createLicenseExpression(LicenseOperator operator, String... licenseExpressionParts) {
+        return LicenseSupport.mapLicenses(Arrays.asList(licenseExpressionParts), operator);
     }
 
     private static final String UNKNOWN_THREAT_GROUP = "unknown";
@@ -106,25 +116,29 @@ public class GivenSteps {
     private static final String FREEWARE_THREAT_GROUP = "freeware";
     private static final String NON_STANDARD_THREAT_GROUP = "non standard";
 
-    private static final Map<String, LicenseThreatGroup> THREAT_GROUP_MAP = Stream.of(new Object[][] {
-            { UNKNOWN_THREAT_GROUP, LicenseThreatGroup.UNKNOWN },
-            { LIBERAL_THREAT_GROUP, LicenseThreatGroup.LIBERAL },
-            { STRICT_COPYLEFT_THREAT_GROUP, LicenseThreatGroup.STRICT_COPYLEFT },
-            { HIGH_RISK_THREAT_GROUP, LicenseThreatGroup.HIGH_RISK },
-            { FREEWARE_THREAT_GROUP, LicenseThreatGroup.FREEWARE },
-            { NON_STANDARD_THREAT_GROUP, LicenseThreatGroup.NON_STANDARD }})
+    private static final Map<String, LicenseThreatGroup> THREAT_GROUP_MAP = Stream.of(new Object[][]{
+            {UNKNOWN_THREAT_GROUP, LicenseThreatGroup.UNKNOWN},
+            {LIBERAL_THREAT_GROUP, LicenseThreatGroup.LIBERAL},
+            {STRICT_COPYLEFT_THREAT_GROUP, LicenseThreatGroup.STRICT_COPYLEFT},
+            {HIGH_RISK_THREAT_GROUP, LicenseThreatGroup.HIGH_RISK},
+            {FREEWARE_THREAT_GROUP, LicenseThreatGroup.FREEWARE},
+            {NON_STANDARD_THREAT_GROUP, LicenseThreatGroup.NON_STANDARD}})
             .collect(Collectors.toMap(data -> (String) data[0], data -> (LicenseThreatGroup) data[1]));
 
     private License createLicense(String licenseExpression, Optional<String> threatGroup) {
         License license = new License();
-        license.setName(licenseExpression);
+        String[] licenseText = licenseExpression.split("::");
+        license.setName(licenseText[0]);
+        if (licenseText.length > 1) {
+            license.setText(licenseText[1]);
+        }
         threatGroup.ifPresent(tg -> license.setThreatGroup(THREAT_GROUP_MAP.get(tg)));
         return license;
     }
 
     private static final String DECLARED_LICENSE_EXPRESSION = "Declared";
     private static final String OBSERVED_LICENSE_EXPRESSION = "Observed";
-    private static final String OVERWRITTEN_LICENSE_EXPRESSION = "Overridden";
+    private static final String OVERWRITTEN_LICENSE_EXPRESSION = "Overwritten";
     private static final String CONFIGURED_LICENSE_EXPRESSION = "Configured";
 
     private ArtifactLicenseInformation createLicenseInformation(String expressionType,
@@ -146,5 +160,39 @@ public class GivenSteps {
 
     private void addCoordinates(List<String> row, Artifact artifact) {
         artifact.addFact(ArtifactUtils.createArtifactCoordinatesFromPurl(row.get(1)));
+    }
+
+    private static final String SOFTWARE_HERITAGE_PROTOCOL = "swh";
+    private static final String FILE_PROTOCOL = "file";
+    private static final String URL_PROTOCOL = "http";
+
+    private static final String FOLDERPREFIX = "AntennaPolicy";
+
+    private void addSourceInfo(List<String> row, Artifact artifact) {
+        String sourceUrl = row.get(1);
+        if (sourceUrl.startsWith(SOFTWARE_HERITAGE_PROTOCOL)) {
+            artifact.addFact(new ArtifactSoftwareHeritageID.Builder(sourceUrl).build());
+        } else if (sourceUrl.startsWith(FILE_PROTOCOL)) {
+            try {
+                boolean createFile = true;
+                if (row.size() == 3) {
+                    createFile = Boolean.parseBoolean(row.get(2));
+                }
+                String fileref = sourceUrl.split(":")[1];
+                Path tempfolder = Files.createTempDirectory(FOLDERPREFIX);
+                Path testfile = Paths.get(tempfolder.toString(), fileref);
+                if (createFile) {
+                    testfile = Files.createFile(testfile);
+                }
+                state.resourcesToDelete.add(tempfolder);
+                artifact.addFact(new ArtifactSourceFile(testfile));
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+        } else if (sourceUrl.startsWith(URL_PROTOCOL)) {
+            artifact.addFact(new ArtifactSourceUrl(sourceUrl));
+        } else {
+            throw new IllegalStateException("Cannot interpret sources information");
+        }
     }
 }

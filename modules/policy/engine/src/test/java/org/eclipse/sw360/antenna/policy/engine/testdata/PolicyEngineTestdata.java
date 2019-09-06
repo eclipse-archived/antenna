@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.policy.engine.testdata;
 
-import org.eclipse.sw360.antenna.policy.engine.ThirdPartyArtifact;
+import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -11,8 +11,13 @@
 package org.eclipse.sw360.antenna.policy.testing.rules;
 
 import com.github.packageurl.PackageURL;
-import org.eclipse.sw360.antenna.policy.engine.*;
+import org.eclipse.sw360.antenna.policy.engine.CompareArtifactRule;
+import org.eclipse.sw360.antenna.policy.engine.PolicyViolation;
+import org.eclipse.sw360.antenna.policy.engine.RuleSeverity;
+import org.eclipse.sw360.antenna.policy.engine.Ruleset;
+import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -38,9 +43,8 @@ public class CheckDifferentCoordinates implements CompareArtifactRule {
 
     private long countComponentTypes(ThirdPartyArtifact leftArtifact, ThirdPartyArtifact rightArtifact) {
         return Stream.of(leftArtifact, rightArtifact)
-                .map(ThirdPartyArtifact::getPurl)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .map(ThirdPartyArtifact::getPurls)
+                .flatMap(Collection::stream)
                 .map(PackageURL::getType)
                 .distinct()
                 .count();
@@ -63,7 +67,7 @@ public class CheckDifferentCoordinates implements CompareArtifactRule {
 
     @Override
     public RuleSeverity getSeverity() {
-        return RuleSeverity.INFO;
+        return RuleSeverity.WARN;
     }
 
     @Override

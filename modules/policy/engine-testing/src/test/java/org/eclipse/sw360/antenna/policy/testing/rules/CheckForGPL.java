@@ -10,9 +10,15 @@
  */
 package org.eclipse.sw360.antenna.policy.testing.rules;
 
-import org.eclipse.sw360.antenna.policy.engine.*;
+import org.eclipse.sw360.antenna.policy.engine.PolicyViolation;
+import org.eclipse.sw360.antenna.policy.engine.RuleSeverity;
+import org.eclipse.sw360.antenna.policy.engine.Ruleset;
+import org.eclipse.sw360.antenna.policy.engine.SingleArtifactRule;
+import org.eclipse.sw360.antenna.policy.engine.model.LicenseData;
+import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 import static org.eclipse.sw360.antenna.policy.engine.RuleUtils.artifactAppliesToRule;
@@ -27,10 +33,18 @@ public class CheckForGPL implements SingleArtifactRule {
 
     @Override
     public Optional<PolicyViolation> evaluate(ThirdPartyArtifact thirdPartyArtifact) {
-        if (thirdPartyArtifact.hasLicenses(Arrays.asList("GPL-2.0-only", "AGPL-3.0-or-later")).size() > 0) {
+        if (hasLicenses(thirdPartyArtifact, "GPL-2.0-only", "AGPL-3.0-or-later")) {
             return artifactRaisesPolicyViolation(this, thirdPartyArtifact);
         }
         return artifactAppliesToRule(this, thirdPartyArtifact);
+    }
+
+    private boolean hasLicenses(ThirdPartyArtifact artifact, String... licenses) {
+        Collection<String> liclist = Arrays.asList(licenses);
+        return artifact.getLicenses().stream()
+                .map(LicenseData::getLicenseId)
+                .filter(id -> liclist.contains(id))
+                .count() > 0;
     }
 
     @Override
@@ -50,7 +64,7 @@ public class CheckForGPL implements SingleArtifactRule {
 
     @Override
     public RuleSeverity getSeverity() {
-        return RuleSeverity.ERROR;
+        return RuleSeverity.CRITICAL;
     }
 
     @Override
