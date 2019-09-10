@@ -242,7 +242,7 @@ public class MultipleConfigsResolver {
             List<ArtifactSelector> removeArtifact = configuration.getRemoveArtifact();
             mergedRemove.addAll(removeArtifact);
         }
-        mergedConfig.setremoveArtifact(mergedRemove);
+        mergedConfig.setRemoveArtifact(mergedRemove);
     }
 
     private void mergeValidForIncompleteSources(List<Configuration> configurations, Configuration mergedConfig) {

@@ -67,7 +67,7 @@ public class ConfigurationCheckerTest {
     public void testUnneccesaryRemoveArtifact() {
         List<ArtifactSelector> list = new ArrayList<>();
         list.add(selector);
-        config.setremoveArtifact(list);
+        config.setRemoveArtifact(list);
         ConfigurationChecker checker = new ConfigurationChecker(reporter, config);
         checker.process(artifacts);
         List<ProcessingMessage> messageList = reporter.getProcessingReport().getMessageList();
@@ -80,7 +80,7 @@ public class ConfigurationCheckerTest {
         List<ArtifactSelector> list = new ArrayList<>();
         list.add(selector);
         artifacts.add(artifact);
-        config.setremoveArtifact(list);
+        config.setRemoveArtifact(list);
         TemporaryFolder folder = new TemporaryFolder();
         folder.create();
         ConfigurationChecker checker = new ConfigurationChecker(reporter, config);
