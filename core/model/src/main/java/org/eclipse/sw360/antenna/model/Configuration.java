@@ -59,7 +59,7 @@ public class Configuration {
      */
     public Configuration(final AntennaConfig antennaConfig) {
         if (antennaConfig != null) {
-            setremoveArtifact(createListOfArtifactSelector(antennaConfig.getRemoveArtifact().getArtifactSelector()));
+            setRemoveArtifact(createListOfArtifactSelector(antennaConfig.getRemoveArtifact().getArtifactSelector()));
             createHandleAsValid(antennaConfig.getSourceValidation());
             setOverride(createOverride(antennaConfig.getOverrides().getOverride()));
             setFinalLicenses(createFinalLicenses(antennaConfig.getSetFinalLicenses().getSetFinalLicense()));
@@ -155,7 +155,7 @@ public class Configuration {
         return removeArtifact;
     }
 
-    public void setremoveArtifact(final List<ArtifactSelector> list) {
+    public void setRemoveArtifact(final List<ArtifactSelector> list) {
         removeArtifact = list;
     }
 
