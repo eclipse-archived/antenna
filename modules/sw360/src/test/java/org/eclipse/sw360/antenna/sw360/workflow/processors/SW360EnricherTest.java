@@ -11,6 +11,9 @@
 
 package org.eclipse.sw360.antenna.sw360.workflow.processors;
 
+import com.github.packageurl.MalformedPackageURLException;
+import com.github.packageurl.PackageURL;
+import com.github.packageurl.PackageURLBuilder;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
@@ -20,7 +23,6 @@ import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360CoordinateKeysToArtifactCoordinates;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
@@ -76,7 +78,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     }
 
     @After
-    public void after(){
+    public void after() {
         temporaryFolder.delete();
 
         verify(toolConfigMock, atLeast(0)).getProxyHost();
@@ -85,7 +87,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
 
     @Test
-    public void releaseIsMappedToArtifactCorrectly() {
+    public void releaseIsMappedToArtifactCorrectly() throws MalformedPackageURLException {
         SW360Release release0 = mkSW360Release("test1");
         release0.set_Embedded(new SW360ReleaseEmbedded());
         release0.get_Embedded().setLicenses(Collections.emptyList());
@@ -96,6 +98,9 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         assertThat(artifacts.size()).isEqualTo(1);
         Artifact artifact0 = artifacts.get(0);
+
+        assertThat(artifact0.askFor(MavenCoordinates.class).isPresent()).isTrue();
+        assertThat(artifact0.askFor(MavenCoordinates.class).get().getVersion()).isEqualTo("1.2.3");
 
         assertThat(artifact0.askFor(ArtifactSourceUrl.class).isPresent()).isTrue();
         assertThat(artifact0.askForGet(ArtifactSourceUrl.class).get()).isEqualTo(sourceUrl);
@@ -227,7 +232,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         return license;
     }
 
-    private SW360Release mkSW360Release(String name) {
+    private SW360Release mkSW360Release(String name) throws MalformedPackageURLException {
         SW360Release sw360Release = new SW360Release();
 
         sw360Release.setName(name);
@@ -238,7 +243,14 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         sw360Release.setDeclaredLicense("Apache-2.0");
         sw360Release.setObservedLicense("A Test License");
-        sw360Release.setCoordinates(Collections.singletonMap(SW360CoordinateKeysToArtifactCoordinates.get(MavenCoordinates.class), "test:test1:1.2.3"));
+        sw360Release.setPurls(Collections.singletonMap(PackageURL.StandardTypes.MAVEN,
+                PackageURLBuilder.aPackageURL()
+                .withName("test")
+                .withType("maven")
+                .withNamespace("test")
+                .withVersion("1.2.3")
+                .build()
+                .canonicalize()));
         sw360Release.setReleaseTagUrl(releaseTagUrl);
         sw360Release.setSoftwareHeritageId(swhID);
         sw360Release.setHashes(Collections.singleton(hashString));

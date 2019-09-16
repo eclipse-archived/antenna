@@ -50,9 +50,10 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         assertThat(release.getReleaseTagUrl()).isEqualTo(releaseTagUrl);
         assertThat(release.getSoftwareHeritageId()).isEqualTo(swhID);
         assertThat(new ArtifactSoftwareHeritageID.Builder(release.getSoftwareHeritageId()).build().toString()).isEqualTo(swhID);
-        assertThat(release.getCoordinates()).containsKeys("mvn");
-        assertThat(release.getCoordinates()).hasSize(1);
-        assertThat(release.getCoordinates()).containsValue("org.group.id:artifactId(test1):1.2.3");
+
+        assertThat(release.getPurls()).hasSize(1);
+        assertThat(release.getPurls().containsKey("maven")).isTrue();
+        assertThat(release.getPurls().containsValue("pkg:maven/org.group.id/artifactId_test1@1.2.3")).isTrue();
 
         assertThat(release.getHashes()).hasSize(1);
         assertThat(release.getHashes()).
@@ -104,7 +105,7 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         };
         Artifact artifact = new Artifact("JSON");
         artifact.setProprietary(false);
-        artifact.addFact(new MavenCoordinates("artifactId(" + name + ")", "org.group.id", "1.2.3"));
+        artifact.addFact(new MavenCoordinates("artifactId_" + name, "org.group.id", "1.2.3"));
         artifact.addFact(new DeclaredLicenseInformation(licenseInformation));
         artifact.addFact(new ObservedLicenseInformation(licenseInformation));
         artifact.addFact(new ArtifactSourceUrl(sourceUrl));
