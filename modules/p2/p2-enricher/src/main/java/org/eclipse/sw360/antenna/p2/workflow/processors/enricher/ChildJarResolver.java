@@ -11,8 +11,8 @@
 package org.eclipse.sw360.antenna.p2.workflow.processors.enricher;
 
 import org.apache.commons.io.IOUtils;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
@@ -153,9 +153,9 @@ public class ChildJarResolver extends AbstractProcessor {
     private String getParentJarBaseName(Path path) {
         return Optional.ofNullable(
                 Optional.ofNullable(AntennaUtils.getJarPath(path))
-                        .orElseThrow(() -> new AntennaExecutionException("parent should exists"))
+                        .orElseThrow(() -> new ExecutionException("parent should exists"))
                         .getFileName())
-                .orElseThrow(() -> new AntennaExecutionException("Path had no elements"))
+                .orElseThrow(() -> new ExecutionException("Path had no elements"))
                 .toString();
     }
 
@@ -177,7 +177,7 @@ public class ChildJarResolver extends AbstractProcessor {
     }
 
     @Override
-    public void configure(Map<String,String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String,String> configMap) throws ConfigurationException {
         super.configure(configMap);
         this.targetDirectory = context.getToolConfiguration().getAntennaTargetDirectory();
     }

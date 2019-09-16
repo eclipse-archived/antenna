@@ -12,7 +12,6 @@
 package org.eclipse.sw360.antenna.workflow.analyzers;
 
 import org.eclipse.sw360.antenna.api.IProject;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
@@ -158,7 +157,7 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
         verifyNoMoreInteractions(toolConfigMock);
     }
 
-    private void configureAnalyzer(String fileName, String delimiter) throws URISyntaxException, AntennaConfigurationException {
+    private void configureAnalyzer(String fileName, String delimiter) throws URISyntaxException {
         Map<String, String> configMap = new HashMap<>();
         configMap.put("file.path", Paths.get("src", "test", "resources", "CsvAnalyzerTest", fileName).toString());
         configMap.put("base.dir", ClassCodeSourceLocation.getClassCodeSourceLocationAsString(this.getClass()));

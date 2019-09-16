@@ -15,7 +15,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -206,7 +206,7 @@ public class TemplateRenderer {
         } catch (ParserConfigurationException | IOException | SAXException e) {
             String msg = "Error in second stage while rendering template. This also means that first stage result is invalid.";
             LOGGER.error(msg, e);
-            throw new AntennaExecutionException(msg, e);
+            throw new ExecutionException(msg,e);
         }
         return result;
     }

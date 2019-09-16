@@ -18,7 +18,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.eclipse.sw360.antenna.exceptions.FailedToDownloadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,17 +34,17 @@ public class HttpHelper {
         httpClient = getConfiguredHttpClient(proxySettings);
     }
 
-    public File downloadFile(String url, Path targetDirectory) throws IOException, FailedToDownloadException {
+    public File downloadFile(String url, Path targetDirectory) throws IOException {
         String filename = url.substring(url.lastIndexOf("/") + 1);  // We don't want to have the last slash in the name
         return downloadFile(url, targetDirectory, filename);
     }
 
-    public File downloadFile(String url, Path targetDirectory, String filename) throws IOException, FailedToDownloadException {
+    public File downloadFile(String url, Path targetDirectory, String filename) throws IOException {
         File targetFile = targetDirectory.resolve(filename).toFile();
 
         try (CloseableHttpResponse response = getFromUrl(url)) {
-            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                throw new FailedToDownloadException("File not found on URL=[" + url + "]");
+            if(response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+                throw new IOException("File not found on URL=["+url+"]");
             } else if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 throw new IOException("Reason: " + response.getStatusLine().getReasonPhrase());
             }
@@ -56,12 +55,10 @@ public class HttpHelper {
                     FileUtils.copyInputStreamToFile(is, targetFile);
                 }
             }
-        } catch (IOException e) {
-            throw new IOException("Encountered a problem while downloading the file " + url + ": " + e.getMessage());
         }
 
         if (!targetFile.exists()) {
-            throw new FailedToDownloadException("File does not exist after downloading.");
+            throw new IOException("File " + targetFile.getAbsolutePath() + "does not exist after downloading.");
         }
         return targetFile;
     }

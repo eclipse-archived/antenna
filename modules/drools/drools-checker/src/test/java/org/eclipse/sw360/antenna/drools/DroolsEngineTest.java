@@ -14,6 +14,7 @@ package org.eclipse.sw360.antenna.drools;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
@@ -65,8 +66,8 @@ public class DroolsEngineTest {
         assertThat(failedArtifacts).containsExactly(artifact2);
     }
 
-    @Test(expected = AntennaException.class)
-    public void evaluateThrowsAnExceptionIfRulesetCannotBeFound() throws AntennaException {
+    @Test(expected = ExecutionException.class)
+    public void evaluateThrowsAnExceptionIfRulesetCannotBeFound() {
         droolsEngine = new DroolsEngine();
         droolsEngine.setRulesetDirectory("");
         droolsEngine.evaluate(Collections.emptyList());
@@ -95,7 +96,7 @@ public class DroolsEngineTest {
     }
 
     @Test
-    public void evaluateEPLvsGPLRule() throws AntennaException {
+    public void evaluateEPLvsGPLRule() {
         Artifact artifact1 = new Artifact();
         artifact1.addFact(createDeclaredLicenseInformation("EPL 2.0"));
 
@@ -125,7 +126,7 @@ public class DroolsEngineTest {
     }
 
     @Test
-    public void additionalPolicies() throws AntennaException {
+    public void additionalPolicies() {
         droolsEngine.setRulesetPaths(Arrays.asList("policies", "policiesTheSecond"));
 
         Artifact artifact1 = new Artifact();

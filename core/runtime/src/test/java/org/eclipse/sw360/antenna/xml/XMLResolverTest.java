@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.xml;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
 import org.junit.Test;
 
@@ -24,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class XMLResolverTest {
 
     @Test
-    public void test() throws URISyntaxException, AntennaConfigurationException {
+    public void test() throws URISyntaxException {
         XMLResolverJaxB resolver = new XMLResolverJaxB(StandardCharsets.UTF_8);
         URL xml = resolver.getClass().getResource("/antennaconf.xml");
         AntennaConfig config = resolver.resolveXML(new File(xml.toURI()));

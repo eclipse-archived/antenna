@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.api.workflow;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -28,7 +28,7 @@ public abstract class ManualAnalyzer extends AbstractAnalyzer {
     protected File componentInfoFile;
 
     @Override
-    public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String, String> configMap) throws ConfigurationException {
         final Path basedir = context.getProject().getBasedir().toPath();
 
         String filename = getConfigValue(FILE_KEY, configMap);

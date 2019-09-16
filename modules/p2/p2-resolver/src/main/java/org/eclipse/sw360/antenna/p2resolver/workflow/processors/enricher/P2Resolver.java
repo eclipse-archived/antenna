@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.p2resolver.workflow.processors.enricher;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -47,7 +47,7 @@ public class P2Resolver extends AbstractProcessor {
     }
 
     @Override
-    public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String, String> configMap) throws ConfigurationException {
         repositories = Arrays.asList(getConfigValue(DEPENDENCY_REPOSITORY, configMap).split(";"));
     }
 

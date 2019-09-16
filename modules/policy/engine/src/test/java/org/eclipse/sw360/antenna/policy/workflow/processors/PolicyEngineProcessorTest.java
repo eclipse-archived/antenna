@@ -12,7 +12,6 @@ package org.eclipse.sw360.antenna.policy.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.policy.engine.testdata.PolicyEngineTestdata;
 import org.eclipse.sw360.antenna.policy.workflow.processors.testdata.AntennaTestdata;
@@ -32,7 +31,7 @@ public class PolicyEngineProcessorTest {
     private static final String RULESETCONFIGKEY = "ruleset.classes";
 
     @Test
-    public void testPolicyEngineIntegration() throws AntennaConfigurationException {
+    public void testPolicyEngineIntegration() {
         PolicyEngineProcessor testee = new PolicyEngineProcessor();
         Map<String, String> configMap = new HashMap<>();
         configMap.put(RULESETCONFIGKEY, PolicyEngineTestdata.RULESET_CLASS);
@@ -53,7 +52,7 @@ public class PolicyEngineProcessorTest {
     }
 
     @Test
-    public void testPolicyEngineWithMatchStateRule() throws AntennaConfigurationException {
+    public void testPolicyEngineWithMatchStateRule() {
         PolicyEngineProcessor testee = new PolicyEngineProcessor();
         Map<String, String> configMap = new HashMap<>();
         configMap.put(RULESETCONFIGKEY, AntennaTestdata.SINGLE_RULESET_CLASS);
@@ -71,7 +70,7 @@ public class PolicyEngineProcessorTest {
     }
 
     @Test
-    public void testPolicyEngineWithLicenseRule() throws AntennaConfigurationException {
+    public void testPolicyEngineWithLicenseRule() {
         PolicyEngineProcessor testee = new PolicyEngineProcessor();
         Map<String, String> configMap = new HashMap<>();
         configMap.put(RULESETCONFIGKEY, AntennaTestdata.COMPARE_RULESET_CLASS);
@@ -90,7 +89,7 @@ public class PolicyEngineProcessorTest {
     }
 
     @Test
-    public void testTwoRulesetsAreFound() throws AntennaConfigurationException {
+    public void testTwoRulesetsAreFound() {
         PolicyEngineProcessor testee = new PolicyEngineProcessor();
         Map<String, String> configMap = new HashMap<>();
         configMap.put(RULESETCONFIGKEY, AntennaTestdata.TEST_RULESETS_LIST);

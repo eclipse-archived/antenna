@@ -14,7 +14,7 @@ package org.eclipse.sw360.antenna.configuration;
 import org.apache.commons.lang.Validate;
 import org.eclipse.sw360.antenna.api.IConfigReader;
 import org.eclipse.sw360.antenna.api.IXMLValidator;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
 import org.eclipse.sw360.antenna.xml.XMLResolverJaxB;
@@ -61,7 +61,7 @@ public class ConfigurationReader implements IConfigReader {
     }
 
     @Override
-    public Configuration readConfigFromUri(URI configFileUri, Path antennaTargetDirectory) throws AntennaConfigurationException {
+    public Configuration readConfigFromUri(URI configFileUri, Path antennaTargetDirectory) throws ConfigurationException {
         Validate.notNull(configFileUri, "Configured config uri is null!");
 
         LOGGER.info("Validate config file against xsd.");
@@ -71,7 +71,7 @@ public class ConfigurationReader implements IConfigReader {
     }
 
     @Override
-    public Configuration readConfigFromFile(File configFile, Path antennaTargetDirectory) throws AntennaConfigurationException {
+    public Configuration readConfigFromFile(File configFile, Path antennaTargetDirectory) throws ConfigurationException {
         Validate.isTrue(configFile.exists(), "Configured config file '" + configFile + "' does not exist!");
         Validate.isTrue(configFile.isFile(), "Configured config file '" + configFile + "' must be a file!");
 
@@ -79,7 +79,7 @@ public class ConfigurationReader implements IConfigReader {
         return checkAndParseConfigXML(configFile, configXsdURL);
     }
 
-    private File resolveConfigUriAndGetFile(URI configFileUri, Path antennaTargetDirectory) throws AntennaConfigurationException {
+    private File resolveConfigUriAndGetFile(URI configFileUri, Path antennaTargetDirectory) {
         File configFromUri;
         if (configFileUri.getScheme().contains("file")) {
             configFromUri = new File(configFileUri);
@@ -94,14 +94,13 @@ public class ConfigurationReader implements IConfigReader {
                 LOGGER.debug("Copy configuration file to target folder of antenna.");
                 org.apache.commons.io.FileUtils.copyURLToFile(configFileUri.toURL(), configFromUri);
             } catch (IOException e) {
-                throw new AntennaConfigurationException("Failed to fetch file to target folder of antenna.", e);
+                throw new ConfigurationException("Failed to fetch file to target folder of antenna.", e);
             }
         }
         return configFromUri;
     }
 
-    private Configuration checkAndParseConfigXML(File xmlFile, URL configXsdURL)
-            throws AntennaConfigurationException {
+    private Configuration checkAndParseConfigXML(File xmlFile, URL configXsdURL) {
         xmlValidator.validateXML(xmlFile, configXsdURL);
 
         AntennaConfig config = xmlResolver.resolveXML(xmlFile);

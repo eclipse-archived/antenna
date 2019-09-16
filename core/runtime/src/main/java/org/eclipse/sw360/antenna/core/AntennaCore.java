@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.core;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.workflow.AntennaWorkflow;
 import org.eclipse.sw360.antenna.workflow.AntennaWorkflowConfiguration;
@@ -57,9 +57,9 @@ public class AntennaCore {
      *
      * @param context The antenna context run
      *
-     * @throws AntennaConfigurationException Configuration problem
+     * @throws ConfigurationException Configuration problem
      */
-    public AntennaCore(AntennaContext context) throws AntennaConfigurationException {
+    public AntennaCore(AntennaContext context) throws ConfigurationException {
         this.context = context;
         LOGGER.info("Initializing core ...");
         AntennaWorkflowConfiguration twc = new AntennaWorkflowConfiguration(context);

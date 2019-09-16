@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.workflow;
 
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.*;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.slf4j.Logger;
@@ -29,12 +29,12 @@ public class AntennaWorkflowConfiguration {
     private final List<AbstractGenerator> generators;
     private final List<AbstractOutputHandler> outputHandlers;
 
-    public AntennaWorkflowConfiguration(AntennaContext context) throws AntennaConfigurationException {
+    public AntennaWorkflowConfiguration(AntennaContext context) throws ConfigurationException {
         LOGGER.info("Initializing workflow configuration ...");
         Workflow workflow = context.getToolConfiguration().getWorkflow();
 
         if (workflow == null) {
-            throw new AntennaConfigurationException("No workflow was found in configuration.");
+            throw new ConfigurationException("No workflow was found in configuration.");
         }
 
         // Initialize analyzers

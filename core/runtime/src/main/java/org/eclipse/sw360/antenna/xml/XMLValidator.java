@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.xml;
 
 import org.apache.commons.lang.Validate;
 import org.eclipse.sw360.antenna.api.IXMLValidator;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -39,12 +39,12 @@ public class XMLValidator extends IXMLValidator {
      * @param xsdUrl
      *            URL to the xsd File against which the xml File will be
      *            validated.
-     * @throws RuntimeException
+     * @throws ConfigurationException
      *             if the config.xml is not valid or if an IOException occurs
      *             during processing.
      */
     @Override
-    public void validateXML(File xmlFile, URL xsdUrl) throws AntennaConfigurationException {
+    public void validateXML(File xmlFile, URL xsdUrl) throws ConfigurationException {
         Validate.notNull(xmlFile, "No URL to xml file provided!");
         if (xsdUrl != null) {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -56,10 +56,10 @@ public class XMLValidator extends IXMLValidator {
                 validator.validate(source);
             } catch (SAXException e) {
                 LOGGER.error("Invalid XML", e);
-                throw new AntennaConfigurationException("The config File " + xmlFile + " could not be validated against" + xsdUrl, e);
-                // return false;
+                throw new ConfigurationException("The config File " + xmlFile + " could not be validated against" + xsdUrl, e);
             } catch (IOException e) {
-                throw new AntennaConfigurationException("The config File could not be validated", e);
+                LOGGER.error("File access failing", e);
+                throw new ConfigurationException("The config File could not be validated", e);
             }
         }
     }

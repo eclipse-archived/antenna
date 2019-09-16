@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.report;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
@@ -65,7 +65,7 @@ public class Reporter implements IProcessingReporter {
 
         File fTargetDirectory  = targetDirectory.toFile();
         if (!fTargetDirectory.exists() && !fTargetDirectory.mkdirs()) {
-            throw new AntennaExecutionException("Target directory: " + fTargetDirectory + " cannot be created.");
+            throw new ExecutionException("Target directory: " + fTargetDirectory + " cannot be created.");
         }
     }
 
@@ -113,7 +113,7 @@ public class Reporter implements IProcessingReporter {
                 msgList.forEach(msg -> writeFormattedMessage(stream, msg));
             }
         } catch (UnsupportedEncodingException e) {
-            throw new AntennaExecutionException("Could not start printstream.", e);
+            throw new ExecutionException("Could not start printstream.", e);
         }
     }
 
@@ -170,7 +170,7 @@ public class Reporter implements IProcessingReporter {
         Files.createDirectories(this.targetDirectory);
     }
 
-    public IAttachable writeReportToReportPath() throws AntennaExecutionException {
+    public IAttachable writeReportToReportPath() throws ExecutionException {
         try {
             createReportPath();
             LOGGER.info("Writing report to {}", reportPath.toString());
@@ -179,7 +179,7 @@ public class Reporter implements IProcessingReporter {
             }
             return new Attachable(TYPE, CLASSIFIER, reportPath.toFile());
         } catch (IOException e) {
-            throw new AntennaExecutionException("The processing report could not be created.", e);
+            throw new ExecutionException("The processing report could not be created.", e);
         }
     }
 }

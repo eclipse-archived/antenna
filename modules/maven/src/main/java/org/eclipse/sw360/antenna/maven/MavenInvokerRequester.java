@@ -14,7 +14,7 @@ import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +68,7 @@ public class MavenInvokerRequester extends IArtifactRequester {
 
     @Override
     public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation)
-            throws AntennaExecutionException {
+            throws ExecutionException {
 
         File expectedJarFile = getExpectedJarFile(coordinates, targetDirectory, classifierInformation);
 
@@ -135,13 +135,13 @@ public class MavenInvokerRequester extends IArtifactRequester {
         return new File(targetDirectory.toFile(), jarBaseName);
     }
 
-    private boolean callMavenInvocationRequest(InvocationRequest request) throws AntennaExecutionException {
+    private boolean callMavenInvocationRequest(InvocationRequest request) throws ExecutionException {
         try {
             LOGGER.info("Calling Maven Invoker with command " + String.join(", ", request.getGoals()));
             return defaultInvoker.execute(request)
                     .getExitCode() == 0;
         } catch (MavenInvocationException e) {
-            throw new AntennaExecutionException("Error when getting jar: " + e);
+            throw new ExecutionException("Error when getting jar: " + e);
         }
 
     }

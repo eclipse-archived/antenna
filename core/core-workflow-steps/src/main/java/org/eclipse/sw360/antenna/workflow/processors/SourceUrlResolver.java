@@ -12,9 +12,8 @@
 package org.eclipse.sw360.antenna.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
-import org.eclipse.sw360.antenna.exceptions.FailedToDownloadException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
@@ -55,15 +54,15 @@ public class SourceUrlResolver extends AbstractProcessor {
                 try {
                     File file = httpHelper.downloadFile(sourceUrl.get(), dependencyTargetDirectory);
                     artifact.addFact(new ArtifactSourceFile(file.toPath()));
-                } catch (IOException | FailedToDownloadException e) {
-                    LOGGER.warn(e.getMessage());
+                } catch (IOException e) {
+                    LOGGER.warn("Issue during download of artifact sources", e);
                 }
             }
         }
     }
 
     @Override
-    public void configure(Map<String,String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String,String> configMap) throws ConfigurationException {
         super.configure(configMap);
         ToolConfiguration toolConfig = context.getToolConfiguration();
         ProxySettings proxySettings = new ProxySettings(toolConfig.useProxy(), toolConfig.getProxyHost(), toolConfig.getProxyPort());

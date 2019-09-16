@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resource;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.GenericArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
@@ -84,7 +84,7 @@ public enum SW360CoordinateKeysToArtifactCoordinates {
             }
             return (ArtifactCoordinates) object;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new AntennaExecutionException();
+            throw new ExecutionException();
         }
     }
 

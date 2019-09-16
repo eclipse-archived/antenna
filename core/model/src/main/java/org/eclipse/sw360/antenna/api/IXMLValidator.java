@@ -11,7 +11,7 @@
 
 package org.eclipse.sw360.antenna.api;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -29,15 +29,15 @@ public abstract class IXMLValidator {
      * @param xsdUrl
      *            XSD against which the xml will be validated.
      *
-     * @throws AntennaConfigurationException
+     * @throws ConfigurationException
      */
-    public abstract void validateXML(File xmlFile, URL xsdUrl) throws AntennaConfigurationException;
+    public abstract void validateXML(File xmlFile, URL xsdUrl) throws ConfigurationException;
 
-    public void validateXML(URL xmlUrl, URL xsdUrl) throws AntennaConfigurationException {
+    public void validateXML(URL xmlUrl, URL xsdUrl) throws ConfigurationException {
         try {
             validateXML(new File(xmlUrl.toURI()), xsdUrl);
         } catch (URISyntaxException e) {
-            throw new AntennaConfigurationException("Failed to convert URL=["+xmlUrl+"] to File", e);
+            throw new ConfigurationException("Failed to convert URL=["+xmlUrl+"] to File", e);
         }
     }
 }

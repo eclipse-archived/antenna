@@ -12,8 +12,7 @@ package org.eclipse.sw360.antenna.workflow.stubs;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.FailCausingException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
@@ -76,7 +75,7 @@ public class AbstractComplianceCheckerTest extends AntennaTestWithMockedContext 
     }
 
     @Before
-    public void setUp() throws AntennaConfigurationException {
+    public void setUp() {
         complianceChecker = new AbstractComplianceChecker() {
             @Override
             public IPolicyEvaluation evaluate(Collection<Artifact> artifacts) {
@@ -111,12 +110,12 @@ public class AbstractComplianceCheckerTest extends AntennaTestWithMockedContext 
     }
 
     @Test
-    public void testSimpleExecutionWithoutFail() throws Exception {
+    public void testSimpleExecutionWithoutFail() throws FailCausingException {
 
         if(failureExpected) {
             try {
                 complianceChecker.execute(evaluation);
-            } catch (AntennaException e) {
+            } catch (FailCausingException e) {
                 return; // success
             }
             fail("this should not be reached");

@@ -17,7 +17,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
@@ -50,7 +50,7 @@ public class HTMLReportGenerator extends AbstractGenerator {
     }
 
     @Override
-    public Map<String, IAttachable> produce(Collection<Artifact> artifacts) throws AntennaExecutionException {
+    public Map<String, IAttachable> produce(Collection<Artifact> artifacts) throws ExecutionException {
         LOGGER.info("Generating HTML report.");
 
         // Get path to disclosure documents
@@ -73,7 +73,7 @@ public class HTMLReportGenerator extends AbstractGenerator {
             Template template = velocityEngine.getTemplate(LICENSE_REPORT_TEMPLATE_FILE, "utf-8");
             template.merge(velocityContext, writer);
         } catch (IOException e) {
-            throw new AntennaExecutionException("Cannot write HTML report file: " + e.getMessage());
+            throw new ExecutionException("Cannot write HTML report file: " + e.getMessage());
         }
     }
 

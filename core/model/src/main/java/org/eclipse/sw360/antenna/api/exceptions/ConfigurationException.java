@@ -13,19 +13,19 @@ package org.eclipse.sw360.antenna.api.exceptions;
 /**
  * Used when the Antenna workflow configuration unexpectedly fails.
  */
-public class AntennaConfigurationException extends AntennaException {
+public class ConfigurationException extends RuntimeException {
 
     private static final long serialVersionUID = 7171915096651884386L;
 
-    public AntennaConfigurationException() {
+    public ConfigurationException() {
         super();
     }
 
-    public AntennaConfigurationException(String message) {
+    public ConfigurationException(String message) {
         super(message);
     }
 
-    public AntennaConfigurationException(String message, Throwable cause) {
+    public ConfigurationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.xml;
 
 import org.eclipse.sw360.antenna.api.IXMLResolver;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
 
 import javax.xml.bind.JAXBContext;
@@ -43,15 +43,15 @@ public class XMLResolverJaxB implements IXMLResolver {
      *            File to be resolved.
      */
     @Override
-    public AntennaConfig resolveXML(File file) throws AntennaConfigurationException{
+    public AntennaConfig resolveXML(File file) throws ConfigurationException{
         try {
             JAXBContext context = JAXBContext.newInstance(AntennaConfig.class);
             Unmarshaller um = context.createUnmarshaller();
             return (AntennaConfig) um.unmarshal(new InputStreamReader(new FileInputStream(file), encoding));
         } catch (JAXBException e) {
-            throw new AntennaConfigurationException("The config.xml could not be resolved.", e);
+            throw new ConfigurationException("The config.xml could not be resolved.", e);
         } catch (FileNotFoundException e) {
-            throw new AntennaConfigurationException("Failed to read antenna config from file.", e);
+            throw new ConfigurationException("Failed to read antenna config from file.", e);
         }
 
     }

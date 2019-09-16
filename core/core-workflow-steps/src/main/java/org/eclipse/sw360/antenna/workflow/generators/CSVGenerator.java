@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.workflow.generators;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
@@ -59,9 +59,9 @@ public class CSVGenerator extends AbstractGenerator {
         try (PrintWriter out = new PrintWriter(csvFile, encoding.toString())) {
             out.write(information.toString());
         }catch (FileNotFoundException e) {
-            throw new AntennaExecutionException("The csvFile " + csvFile.getName() + " was not found ", e);
+            throw new ExecutionException("The csvFile " + csvFile.getName() + " was not found ", e);
         } catch (UnsupportedEncodingException e){
-            throw new AntennaExecutionException("The encoding " + encoding.toString() + " is unsupported ", e);
+            throw new ExecutionException("The encoding " + encoding.toString() + " is unsupported ", e);
         }
     }
 

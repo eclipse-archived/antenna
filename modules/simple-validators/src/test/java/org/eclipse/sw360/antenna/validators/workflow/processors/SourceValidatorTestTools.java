@@ -33,19 +33,19 @@ public class SourceValidatorTestTools {
         this.tmpdir = tmpdir;
     }
 
-    public File writeJar() throws Exception {
+    public File writeJar() throws IOException {
         File jar = tmpdir.resolve(jarName).toFile();
         write(jar, i -> true, classExtension);
         return jar;
     }
 
-    public File writeSourceJar(int percentage) throws Exception {
+    public File writeSourceJar(int percentage) throws IOException {
         File jar = tmpdir.resolve(sourceJarName).toFile();
         write(jar, i -> (i % 100 < percentage), sourceExtension);
         return jar;
     }
 
-    private void write(File filename, IntPredicate filter, String fileExtension) throws Exception {
+    private void write(File filename, IntPredicate filter, String fileExtension) throws IOException {
         try ( FileOutputStream fos = new FileOutputStream(filename);
               ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(fos)) ) {
             IntStream.rangeClosed(1, size)

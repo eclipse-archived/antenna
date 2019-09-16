@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.validators.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIssues;
@@ -115,7 +115,7 @@ public class SecurityIssueValidator extends AbstractComplianceChecker {
     public String getRulesetDescription() { return "Security Issue Validator"; }
 
     @Override
-    public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String, String> configMap) throws ConfigurationException {
         super.configure(configMap);
 
         configuredSecurityIssues = context.getConfiguration().getSecurityIssues();

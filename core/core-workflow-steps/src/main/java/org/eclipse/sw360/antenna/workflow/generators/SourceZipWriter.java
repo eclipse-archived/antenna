@@ -16,7 +16,7 @@ import org.eclipse.sw360.antenna.analysis.filter.MatchStateArtifactFilter;
 import org.eclipse.sw360.antenna.api.IArtifactFilter;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
@@ -176,7 +176,7 @@ public class SourceZipWriter extends AbstractGenerator {
     }
 
     @Override
-    public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String, String> configMap) throws ConfigurationException {
         this.reporter = context.getProcessingReporter();
         this.notAllowed = new AllowAllArtifactsFilter();
         Set<MatchState> blacklistUnknown = new HashSet<>();

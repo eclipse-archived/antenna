@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.maven;
 
-import org.eclipse.sw360.antenna.exceptions.FailedToDownloadException;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.util.HttpHelper;
 import org.eclipse.sw360.antenna.util.ProxySettings;
@@ -86,8 +85,8 @@ public class HttpRequester extends IArtifactRequester {
         try {
             LOGGER.info("HttpRequester with download path " + jarUrl);
             return Optional.ofNullable(httpHelper.downloadFile(jarUrl, targetDirectory, jarBaseName));
-        } catch (FailedToDownloadException | IOException e) {
-            LOGGER.warn("Failed to find jar: " + e.getMessage());
+        } catch (IOException e) {
+            LOGGER.warn("Failed to find jar: ", e);
             return Optional.empty();
         }
     }

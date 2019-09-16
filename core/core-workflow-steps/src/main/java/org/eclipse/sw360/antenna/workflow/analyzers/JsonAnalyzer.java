@@ -15,7 +15,7 @@ import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.jsonreader.JsonReader;
@@ -35,7 +35,7 @@ public class JsonAnalyzer extends ManualAnalyzer {
     private void validate(ToolConfiguration toolConfig) throws AntennaException {
         // Check that JSON file is present
         if (!componentInfoFile.exists()) {
-            throw new AntennaExecutionException("Antenna is configured to read a JSON configuration file ("
+            throw new ExecutionException("Antenna is configured to read a JSON configuration file ("
                     + componentInfoFile.getAbsolutePath() + "), but the file wasn't found.");
         }
 

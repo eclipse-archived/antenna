@@ -12,7 +12,6 @@
 package org.eclipse.sw360.antenna.validators.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
@@ -22,7 +21,6 @@ import org.eclipse.sw360.antenna.model.xml.generated.Issue;
 import org.eclipse.sw360.antenna.model.xml.generated.Issues;
 import org.eclipse.sw360.antenna.model.xml.generated.SecurityIssueStatus;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
-import org.eclipse.sw360.antenna.validators.workflow.processors.SecurityIssueValidator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,7 +94,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void validateWithoutForbiddenStatus() throws AntennaConfigurationException {
+    public void validateWithoutForbiddenStatus() {
         Artifact artifact = mkArtifact(openIssue);
 
         validator.configure(Collections.emptyMap());
@@ -104,7 +102,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void validateWithOpenStatus() throws AntennaConfigurationException {
+    public void validateWithOpenStatus() {
         Artifact artifact = mkArtifact(openIssue);
 
         configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUS_SEVERITY_KEY, "FAIL");
@@ -119,7 +117,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void validateWithMultipleForbiddenStatus() throws AntennaConfigurationException {
+    public void validateWithMultipleForbiddenStatus() {
         Artifact artifact = mkArtifact(Arrays.asList(openIssue, acknowledgedIssue, confirmedIssue));
 
         configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "Open,Acknowledged");
@@ -134,7 +132,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void validateArtifactFromConfiguration() throws AntennaConfigurationException {
+    public void validateArtifactFromConfiguration() {
         Artifact emptyArtifact = new Artifact();
         emptyArtifact.addFact(mkArtifactIdentifier());
 
@@ -152,7 +150,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void validateWithSeverityLimit() throws AntennaConfigurationException {
+    public void validateWithSeverityLimit() {
         Artifact artifact = mkArtifact(Arrays.asList(openIssue, acknowledgedIssue, confirmedIssue));
 
         configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, "5.5");
@@ -168,7 +166,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void validateDontFindNotApplicable() throws AntennaConfigurationException {
+    public void validateDontFindNotApplicable() {
         Artifact artifact = mkArtifact(Arrays.asList(notApplicableIssue));
         configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, "1.0");
         configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_SEVERITY_KEY, "FAIL");
@@ -179,7 +177,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void validateOnlyFindOpenIssues() throws Exception {
+    public void validateOnlyFindOpenIssues() {
         Artifact artifact = mkArtifact(Arrays.asList(notApplicableIssue, acknowledgedIssue, openIssue, confirmedIssue));
 
         configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, "1.0");
@@ -195,7 +193,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void validateDoesNotFindIssuesWithAllowedSecurityIssueStatus() throws Exception {
+    public void validateDoesNotFindIssuesWithAllowedSecurityIssueStatus() {
         Artifact artifact = mkArtifact(Arrays.asList(notApplicableIssue, acknowledgedIssue, confirmedIssue));
 
         configMap.put(SECURITY_ISSUE_SEVERITY_LIMIT_KEY, "1.0");
@@ -207,7 +205,7 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void validateFindsOpenIssuesAccordingToSeverityConfiguration() throws Exception {
+    public void validateFindsOpenIssuesAccordingToSeverityConfiguration() {
         Issue issueWithLowSeverity = new Issue();
         issueWithLowSeverity.setStatus(SecurityIssueStatus.OPEN);
         issueWithLowSeverity.setSeverity(3.0);

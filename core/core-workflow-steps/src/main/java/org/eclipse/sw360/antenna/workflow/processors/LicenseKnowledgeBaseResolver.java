@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.workflow.processors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.knowledgebase.LicenseKnowledgeBaseFactory;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -142,7 +142,7 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
     }
 
     @Override
-    public void configure(Map<String,String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String,String> configMap) throws ConfigurationException {
         super.configure(configMap);
         this.knowledgeBase = new LicenseKnowledgeBaseFactory(context).get();
     }

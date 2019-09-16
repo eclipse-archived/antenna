@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.workflow;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
@@ -28,7 +28,7 @@ import java.util.function.Function;
 
 public class WorkflowFileLoader {
 
-    public static Workflow loadWorkflowFromClassPath(Optional<File> workflowOverride, TemplateRenderer tr) throws AntennaConfigurationException {
+    public static Workflow loadWorkflowFromClassPath(Optional<File> workflowOverride, TemplateRenderer tr) throws ConfigurationException {
         Workflow workflow = new Workflow();
         Optional<String> renderedWorkflow = tr.renderClassPathWorkflow();
         if(renderedWorkflow.isPresent()) {
@@ -129,7 +129,7 @@ public class WorkflowFileLoader {
         return actual;
     }
 
-    private static void validateWorkflowByXSD(File workflowOverride) throws AntennaConfigurationException {
+    private static void validateWorkflowByXSD(File workflowOverride) {
         new XMLValidator().
                 validateXML(workflowOverride, XmlSettingsReader.class.getClassLoader().
                         getResource("workflow.xsd"));

@@ -228,12 +228,6 @@ abstract public class AbstractAntennaFrontendTest {
         assertThat(testData.getExpectedToolConfigurationSkip()).isEqualTo(antennaContext.getToolConfiguration().isSkipAntennaExecution());
     }
 
-    @Test
-    public void testExecution() throws Exception {
-        assumeTrue(runExecutionTest);
-        protoypeExecutionTest(antennaFrontend::execute, AntennaFrontend::getOutputs);
-    }
-
     protected void protoypeExecutionTest(RunnableWithExceptions executor, Function<AntennaFrontend, Map<String, IAttachable>> buildArtifactsGetter)
             throws Exception {
         assumeTrue("The test data " + testData.getClass().getSimpleName() + " is not executable", testData instanceof ExecutableTestProject);

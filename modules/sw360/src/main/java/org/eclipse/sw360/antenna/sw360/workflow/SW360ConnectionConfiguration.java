@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.workflow;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
@@ -38,7 +38,7 @@ public class SW360ConnectionConfiguration {
     private final ProxySettings proxySettings;
     private final SW360AuthenticationClient authenticationClient;
 
-    public SW360ConnectionConfiguration(Getter<String> getConfigValue, Getter<Boolean> getBooleanConfigValue, String proxyHost, int proxyPort) throws AntennaConfigurationException {
+    public SW360ConnectionConfiguration(Getter<String> getConfigValue, Getter<Boolean> getBooleanConfigValue, String proxyHost, int proxyPort) throws ConfigurationException {
         // SW360 Connection configuration
         restServerUrl = getConfigValue.apply(SW360ConnectionConfiguration.REST_SERVER_URL_KEY);
         authServerUrl = getConfigValue.apply(SW360ConnectionConfiguration.AUTH_SERVER_URL_KEY);
@@ -92,6 +92,6 @@ public class SW360ConnectionConfiguration {
 
     @FunctionalInterface
     public interface Getter<T> {
-        T apply(String s) throws AntennaConfigurationException;
+        T apply(String s);
     }
 }

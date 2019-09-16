@@ -13,10 +13,8 @@ package org.eclipse.sw360.antenna.drools;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
-import org.eclipse.sw360.antenna.api.IRuleEngine;
 import org.eclipse.sw360.antenna.api.IRulesPackage;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
@@ -37,7 +35,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DroolsEngine implements IRuleEngine {
+public class DroolsEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(DroolsEngine.class);
     private static final String RULES_SUBFOLDER = "rules";
     private static final String POLICIES_PROPERTIES_FILENAME = "policies.properties";
@@ -73,8 +71,7 @@ public class DroolsEngine implements IRuleEngine {
         this.debug = debug;
     }
 
-    @Override
-    public IPolicyEvaluation evaluate(Collection<Artifact> artifacts) throws AntennaException {
+    public IPolicyEvaluation evaluate(Collection<Artifact> artifacts) {
         KieServices kieServices = KieServices.Factory.get();
         KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
 
@@ -101,14 +98,14 @@ public class DroolsEngine implements IRuleEngine {
         return evaluation;
     }
 
-    private void resolvePolicyFolders() throws AntennaException {
+    private void resolvePolicyFolders() {
         if (resolvedPolicyFolderPaths.isEmpty()) {
             resolvedPolicyFolderPaths.addAll(extractInbuiltRuleFolders());
             resolvedPolicyFolderPaths.addAll(resolveRuleFoldersPaths());
         }
     }
 
-    private List<Path> extractInbuiltRuleFolders() throws AntennaException {
+    private List<Path> extractInbuiltRuleFolders() {
         List<Path> policiesFolders = new ArrayList<>();
         for (IRulesPackage rulesPackage : ServiceLoader.load(IRulesPackage.class, getClass().getClassLoader())) {
             try {
@@ -125,9 +122,9 @@ public class DroolsEngine implements IRuleEngine {
                 internalRules.add(rules);
                 policiesFolders.add(internalRulesPath.resolve(POLICIES_FOLDER_NAME));
             } catch (IOException e) {
-                throw new AntennaException("Error while extracting rules from folder " + rulesPackage.getRulesPackageName() + ": ", e);
+                throw new ExecutionException("Error while extracting rules from folder " + rulesPackage.getRulesPackageName() + ": ", e);
             } catch (URISyntaxException e) {
-                throw new AntennaException(e.getReason() + "when getting policy folder.", e);
+                throw new ExecutionException(e.getReason() + "when getting policy folder.", e);
             }
         }
         return policiesFolders;
@@ -139,11 +136,11 @@ public class DroolsEngine implements IRuleEngine {
                 .collect(Collectors.toList());
     }
 
-    private void addAllRules(KieFileSystem kieFileSystem) throws AntennaException {
+    private void addAllRules(KieFileSystem kieFileSystem) {
         List<File> ruleFiles = getAllRuleFiles(resolvedPolicyFolderPaths);
 
         if (ruleFiles.isEmpty()) {
-            throw new AntennaException("No rules provided. Please check whether the rules are installed at " +
+            throw new ExecutionException("No rules provided. Please check whether the rules are installed at " +
                     rulesetPaths.stream()
                             .map(path -> Paths.get(rulesetDirectory, path).normalize().toString() + ";")
                             .collect(Collectors.joining(";")));
@@ -172,11 +169,11 @@ public class DroolsEngine implements IRuleEngine {
             return collectRuleFiles.getRuleFiles();
         } catch (IOException ex) {
             // Code is unreachable, DroolsRuleFolderVisitor will handle all IOExceptions
-            throw new AntennaExecutionException("Exception when scanning directory" + folderPath.toString());
+            throw new ExecutionException("Exception when scanning directory" + folderPath.toString());
         }
     }
 
-    private List<IEvaluationResult> getEvaluationResults() throws AntennaException {
+    private List<IEvaluationResult> getEvaluationResults() {
         List<IEvaluationResult> resultList = new ArrayList<>();
         for (Path path : resolvedPolicyFolderPaths) {
             resultList.addAll(DroolsEvaluationResultReader.getEvaluationResult(path.resolve(POLICIES_FILENAME)));
@@ -207,7 +204,6 @@ public class DroolsEngine implements IRuleEngine {
         resolvedPolicyFolderPaths = new ArrayList<>();
     }
 
-    @Override
     public Optional<String> getRulesetVersion() {
         if (versionCache.isPresent()) {
             return versionCache;
@@ -217,7 +213,7 @@ public class DroolsEngine implements IRuleEngine {
             resolvePolicyFolders();
             versionCache = getRulesetVersions();
             return versionCache;
-        } catch (AntennaException ex) {
+        } catch (ExecutionException ex) {
             LOGGER.error("Could not read versions correctly.", ex);
             return Optional.empty();
         }

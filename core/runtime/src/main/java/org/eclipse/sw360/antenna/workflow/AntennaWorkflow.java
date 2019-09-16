@@ -12,8 +12,7 @@ package org.eclipse.sw360.antenna.workflow;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaValidationException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,11 +65,7 @@ public class AntennaWorkflow {
 
             LOGGER.info("Workflow execution done");
             return generatedOutput;
-        } catch (AntennaValidationException tve) {
-            String msg = "some artifacts were invalid";
-            LOGGER.error(msg, tve);
-            throw new AntennaException(msg, tve);
-        } catch (AntennaExecutionException tee) {
+        } catch (ExecutionException tee) {
             String msg = "Workflow execution failed!";
             LOGGER.error(msg, tee);
             throw new AntennaException(msg, tee);

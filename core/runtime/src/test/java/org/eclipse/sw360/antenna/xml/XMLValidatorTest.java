@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.xml;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -18,15 +18,15 @@ import java.net.URL;
 
 public class XMLValidatorTest {
     @Test
-    public void validateXMLTestValidURL() throws AntennaConfigurationException {
+    public void validateXMLTestValidURL() {
         XMLValidator validator = new XMLValidator();
         URL xsd = validator.getClass().getResource("/configTest.xsd");
         URL xml = validator.getClass().getResource("/antennaconf.xml");
         validator.validateXML(xml, xsd);
     }
 
-    @Test(expected = AntennaConfigurationException.class)
-    public void validateXMLTestInvalidURL() throws AntennaConfigurationException, MalformedURLException {
+    @Test(expected = ConfigurationException.class)
+    public void validateXMLTestInvalidURL() throws MalformedURLException {
         XMLValidator validator = new XMLValidator();
         URL xsd = validator.getClass().getResource("/configTest.xsd");
         URL xml = new URL("http://");

@@ -34,9 +34,9 @@ import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.core.AntennaCore;
 import org.eclipse.sw360.antenna.frontend.AntennaFrontend;
 import org.eclipse.sw360.antenna.frontend.AntennaFrontendHelper;
@@ -195,14 +195,14 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
             final AntennaFrontendHelper antennaFrontendHelper = init();
             context = antennaFrontendHelper.buildAntennaContext();
             antennaCore = antennaFrontendHelper.buildAntennaCore(context);
-        } catch (AntennaConfigurationException e) {
+        } catch (ConfigurationException e) {
             LOGGER.error("AntennaCore was not initialized sucessfully");
             throw new MojoExecutionException("Exception during Antenna initialization", e);
         }
 
         try {
             output.putAll(antennaCore.compose());
-        } catch (AntennaExecutionException | AntennaException e) {
+        } catch (AntennaException e) {
             LOGGER.error("Antenna execution failed due to:", e);
             throw new MojoExecutionException("Exception during Antenna execution", e);
         } finally {
@@ -243,7 +243,7 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
     /**
      * Put parameters into context ready for a Antenna execution.
      */
-    private ToolConfiguration loadConfiguration() throws AntennaExecutionException {
+    private ToolConfiguration loadConfiguration() throws ExecutionException {
         HashMap<String, Object> contextMap = new HashMap<>();
         contextMap.put("project", project);
         contextMap.put("basedir", project.getBasedir().toPath().toString());
@@ -264,8 +264,8 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
         try {
             finalWorkflow = WorkflowFileLoader.loadWorkflowFromClassPath(workflowDefFile, tr);
             WorkflowFileLoader.overrideWorkflow(finalWorkflow, workflow);
-        } catch (AntennaConfigurationException e) {
-            throw new AntennaExecutionException("Failed to load workflow", e);
+        } catch (ConfigurationException e) {
+            throw new ExecutionException("Failed to load workflow", e);
         }
 
         ToolConfiguration.ConfigurationBuilder toolConfigBuilder = new ToolConfiguration.ConfigurationBuilder()
