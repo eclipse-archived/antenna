@@ -68,6 +68,16 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
     }
 
     @Override
+    public LinkObjects createEmptyLinks() {
+        return new LinkObjects();
+    }
+
+    @Override
+    public SW360ComponentEmbedded createEmptyEmbedded() {
+        return new SW360ComponentEmbedded();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

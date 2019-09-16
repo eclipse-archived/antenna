@@ -54,15 +54,6 @@ public class SW360Attributes {
     public static final String RELEASE_SOURCES = "downloadurl";
     public static final String RELEASE_MAIN_LICENSE_IDS = "mainLicenseIds";
     public static final String RELEASE_EXTERNAL_IDS = "externalIds";
-    public static final String RELEASE_EXTERNAL_ID_FLICENSES = "license";
-    public static final String RELEASE_EXTERNAL_ID_DLICENSES = "declared_license";
-    public static final String RELEASE_EXTERNAL_ID_OLICENSES = "observed_license";
-    public static final String RELEASE_EXTERNAL_ID_OREPO = "orig_repo";
-    public static final String RELEASE_EXTERNAL_ID_SWHID = "swh";
-    public static final String RELEASE_EXTERNAL_ID_HASHES = "hash_";
-    public static final String RELEASE_EXTERNAL_ID_CHANGESTATUS = "change_status";
-    public static final String RELEASE_EXTERNAL_ID_COPYRIGHTS = "copyrights";
-    public static final String RELEASE_EXTERNAL_ID_CLEARINGSTATE = "clearingState";
 
     // Attributes of Sw360Attachment
     public static final String ATTACHMENT_ATTACHMENT_TYPE = "attachmentType";

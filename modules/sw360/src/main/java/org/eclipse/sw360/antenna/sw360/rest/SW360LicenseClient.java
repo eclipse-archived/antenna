@@ -50,7 +50,7 @@ public class SW360LicenseClient extends SW360Client {
                     .getContent();
             if (resource.get_Embedded() != null &&
                     resource.get_Embedded().getLicenses() != null) {
-                return resource.get_Embedded().getLicenses();
+                return new ArrayList<>(resource.get_Embedded().getLicenses());
             } else {
                 return new ArrayList<>();
             }

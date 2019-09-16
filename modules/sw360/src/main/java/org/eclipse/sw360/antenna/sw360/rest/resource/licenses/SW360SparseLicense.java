@@ -10,16 +10,15 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resource.licenses;
 
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.eclipse.sw360.antenna.sw360.rest.resource.*;
 
 import java.util.Objects;
 
 public class SW360SparseLicense extends SW360HalResource<LinkObjects, Embedded> {
     private String fullName;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getFullName() {
         return this.fullName;
     }
@@ -29,8 +28,24 @@ public class SW360SparseLicense extends SW360HalResource<LinkObjects, Embedded> 
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getShortName() {
-        return SW360HalResourceUtility.getLastIndexOfLinkObject(get_Links()).orElse("");
+        return SW360HalResourceUtility.getLastIndexOfSelfLink(get_Links()).orElse("");
+    }
+
+    public SW360SparseLicense setShortName(String shortName) {
+        get_Links().setSelf(new Self(shortName));
+        return this;
+    }
+
+    @Override
+    public LinkObjects createEmptyLinks() {
+        return new LinkObjects();
+    }
+
+    @Override
+    public Embedded createEmptyEmbedded() {
+        return new EmptyEmbedded();
     }
 
     @Override

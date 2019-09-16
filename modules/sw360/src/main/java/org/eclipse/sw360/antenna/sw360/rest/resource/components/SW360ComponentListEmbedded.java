@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 
 import java.util.List;
+import java.util.Objects;
 
 @JsonDeserialize(as = SW360ComponentListEmbedded.class)
 public class SW360ComponentListEmbedded implements Embedded {
@@ -28,6 +29,19 @@ public class SW360ComponentListEmbedded implements Embedded {
     public SW360ComponentListEmbedded setComponents(List<SW360SparseComponent> components) {
         this.components = components;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SW360ComponentListEmbedded that = (SW360ComponentListEmbedded) o;
+        return Objects.equals(components, that.components);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(components);
     }
 }
 

@@ -10,55 +10,62 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resource.releases;
 
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360CoordinateKeysToArtifactCoordinates;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.eclipse.sw360.antenna.sw360.rest.resource.*;
+import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW360ReleaseEmbedded> {
-    private String releaseId;
-    private String componentId;
+
+    private static final String FINAL_LICENSES_KEY = "license";
+    private static final String DECLARED_LICENSE_KEY = "declared_license";
+    private static final String OBSERVED_LICENSES_KEY = "observed_license";
+    private static final String RELEASE_TAG_URL_KEY = "release_tag";
+    private static final String SOFTWARE_HERITAGE_ID_KEY = "swh";
+    private static final String HASHES_PREFIX = "hash_";
+    private static final String CHANGESTATUS_KEY = "change_status";
+    private static final String COPYRIGHTS_KEY = "copyrights";
+    private static final String CLEARINGSTATE_KEY = "clearingState";
+
     private String name;
     private String version;
-    private String cpeid;
+    private String cpeId;
     private String downloadurl;
-    private Set<String> mainLicenseIds;
-    private Map<String, String> coordinates;
+    @JsonSerialize
+    private final Map<String, String> externalIds = new HashMap<>();
 
-    private String finalLicense;
-    private String declaredLicense;
-    private String observedLicense;
-    private String releaseTagUrl;
-    private String softwareHeritageId;
-    private Set<String> hashes;
-    private String clearingState;
-    private String changeStatus;
-    private String copyrights;
-
-    private Map<String, String> externalIds;
-
+    @JsonIgnore
     public String getReleaseId() {
-        return releaseId;
+        return Optional.ofNullable(get_Links())
+                .map(SW360ReleaseLinkObjects::getSelf)
+                .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink)
+                .orElse(null);
     }
 
     public SW360Release setReleaseId(String releaseId) {
-        this.releaseId = releaseId;
+        get_Links().setSelf(new Self(releaseId)); // TODO
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getComponentId() {
-        return componentId;
+        return Optional.ofNullable(get_Links())
+                .map(SW360ReleaseLinkObjects::getSelfComponent)
+                .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink)
+                .orElse(null);
     }
 
     public SW360Release setComponentId(String componentId) {
-        this.componentId = componentId;
+        get_Links().setSelfComponent(new Self(componentId)); // TODO
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getName() {
         return name;
     }
@@ -68,6 +75,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getVersion() {
         return version;
     }
@@ -77,24 +85,42 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
         return this;
     }
 
-    public String getCpeid() {
-        return cpeid;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public String getCpeId() {
+        return cpeId;
     }
 
-    public SW360Release setCpeid(String cpeid) {
-        this.cpeid = cpeid;
+    public SW360Release setCpeId(String cpeId) {
+        this.cpeId = cpeId;
         return this;
     }
 
+    @JsonIgnore
+    public boolean isSetMainLicenseIds() {
+        return get_Embedded().getLicenses() != null;
+    }
+
+    @JsonIgnore
     public Set<String> getMainLicenseIds() {
-        return mainLicenseIds;
+        return Optional.ofNullable(get_Embedded().getLicenses())
+                .map(lics -> lics
+                        .stream()
+                        .map(SW360SparseLicense::getShortName)
+                        .collect(Collectors.toSet()))
+                .orElse(Collections.emptySet());
     }
 
+    @JsonIgnore
     public SW360Release setMainLicenseIds(Set<String> mainLicenseIds) {
-        this.mainLicenseIds = mainLicenseIds;
+        List<SW360SparseLicense> licenses = mainLicenseIds.stream()
+                .map(licenseId -> new SW360SparseLicense()
+                        .setShortName(licenseId))
+                .collect(Collectors.toList());
+        get_Embedded().setLicenses(licenses);
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getDownloadurl() {
         return downloadurl;
     }
@@ -104,110 +130,129 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     }
 
 
+    @JsonIgnore
     public Map<String, String> getCoordinates() {
-        return coordinates;
+        return externalIds.entrySet().stream()
+                .filter(e -> SW360CoordinateKeysToArtifactCoordinates.getValues().contains(e.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public SW360Release setCoordinates(Map<String, String> coordinates) {
-        this.coordinates = coordinates;
+        externalIds.putAll(coordinates);
         return this;
     }
 
+    @JsonIgnore
     public String getFinalLicense() {
-        return finalLicense;
+        return externalIds.get(FINAL_LICENSES_KEY);
     }
 
     public SW360Release setFinalLicense(String finalLicense) {
-        this.finalLicense = finalLicense;
+        externalIds.put(FINAL_LICENSES_KEY, finalLicense);
         return this;
     }
 
+    @JsonIgnore
     public String getDeclaredLicense() {
-        return declaredLicense;
+        return externalIds.get(DECLARED_LICENSE_KEY);
     }
 
     public SW360Release setDeclaredLicense(String declaredLicense) {
-        this.declaredLicense = declaredLicense;
+        externalIds.put(DECLARED_LICENSE_KEY, declaredLicense);
         return this;
     }
 
+    @JsonIgnore
     public String getObservedLicense() {
-        return observedLicense;
+        return externalIds.get(OBSERVED_LICENSES_KEY);
     }
 
     public SW360Release setObservedLicense(String observedLicense) {
-        this.observedLicense = observedLicense;
+        externalIds.put(OBSERVED_LICENSES_KEY, observedLicense);
         return this;
     }
 
+    @JsonIgnore
     public String getReleaseTagUrl() {
-        return releaseTagUrl;
+        return externalIds.get(RELEASE_TAG_URL_KEY);
     }
 
     public SW360Release setReleaseTagUrl(String releaseTagUrl) {
-        this.releaseTagUrl = releaseTagUrl;
+        externalIds.put(RELEASE_TAG_URL_KEY, releaseTagUrl);
         return this;
     }
 
+    @JsonIgnore
     public String getSoftwareHeritageId() {
-        return softwareHeritageId;
+        return externalIds.get(SOFTWARE_HERITAGE_ID_KEY);
     }
 
     public SW360Release setSoftwareHeritageId(String softwareHeritageId) {
-        this.softwareHeritageId = softwareHeritageId;
+        externalIds.put(SOFTWARE_HERITAGE_ID_KEY, softwareHeritageId);
         return this;
     }
 
+    @JsonIgnore
     public Set<String> getHashes() {
-        return hashes;
+        return externalIds.entrySet().stream()
+                .filter(e -> e.getKey().startsWith(HASHES_PREFIX))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toSet());
+    }
+
+    private void dropAllHashes() {
+        externalIds.keySet().stream()
+                .filter(s -> s.startsWith(HASHES_PREFIX))
+                .forEach(externalIds::remove);
     }
 
     public SW360Release setHashes(Set<String> hashes) {
-        this.hashes = hashes;
+        dropAllHashes();
+
+        int i = 1;
+        for (String hash : hashes) {
+            if (hash != null && !hash.isEmpty()) {
+                externalIds.put(HASHES_PREFIX + i, hash);
+                i++;
+            }
+        }
         return this;
     }
 
+    @JsonIgnore
     public String getClearingState() {
-        return clearingState;
+        return externalIds.get(CLEARINGSTATE_KEY);
     }
 
     public SW360Release setClearingState(String clearingState) {
-        this.clearingState = clearingState;
+        externalIds.put(CLEARINGSTATE_KEY, clearingState);
         return this;
     }
 
+    @JsonIgnore
     public String getChangeStatus() {
-        return changeStatus;
+        return externalIds.get(CHANGESTATUS_KEY);
     }
 
 
     public SW360Release setChangeStatus(String changeStatus) {
-        this.changeStatus = changeStatus;
+        externalIds.put(CHANGESTATUS_KEY, changeStatus);
         return this;
     }
 
-    public Map<String, String> getExternalIds() {
-        return Optional.ofNullable(externalIds)
-                .map(Map::entrySet)
-                .map(Collection::stream)
-                .orElse(Stream.empty())
-                .filter(entry -> !entry.getValue().equals(""))
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        Map.Entry::getValue));
-    }
-
-    public SW360Release setExternalIds(Map<String, String> externalIds) {
-        this.externalIds = externalIds;
-        mapExternalIdsOnVariable();
-        return this;
-    }
-
+    @JsonIgnore
     public String getCopyrights() {
-        return copyrights;
+        return externalIds.get(COPYRIGHTS_KEY);
     }
 
-    public void setCopyrights(String copyrights) {
-        this.copyrights = copyrights;
+    public SW360Release setCopyrights(String copyrights) {
+        externalIds.put(COPYRIGHTS_KEY, copyrights);
+        return this;
+    }
+
+    public SW360Release setExternalIds(Map<String,String> externalIds) {
+        this.externalIds.putAll(externalIds);
+        return this;
     }
 
     public boolean shareIdentifier(SW360Release releaseCompare) {
@@ -215,66 +260,23 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
                 && this.version.equals(Optional.of(releaseCompare.getVersion()).orElse(""));
     }
 
-    private void mapExternalIdsOnVariable() {
-        externalIds.forEach((key, value) -> {
-            switch (key) {
-                case SW360Attributes.RELEASE_EXTERNAL_ID_FLICENSES:
-                    finalLicense = value;
-                    break;
-                case SW360Attributes.RELEASE_EXTERNAL_ID_DLICENSES:
-                    declaredLicense = value;
-                    break;
-                case SW360Attributes.RELEASE_EXTERNAL_ID_OLICENSES:
-                    observedLicense = value;
-                    break;
-                case SW360Attributes.RELEASE_EXTERNAL_ID_OREPO:
-                    releaseTagUrl = value;
-                    break;
-                case SW360Attributes.RELEASE_EXTERNAL_ID_SWHID:
-                    softwareHeritageId = value;
-                    break;
-                case SW360Attributes.RELEASE_EXTERNAL_ID_CHANGESTATUS:
-                    changeStatus = value;
-                    break;
-                case SW360Attributes.RELEASE_EXTERNAL_ID_COPYRIGHTS:
-                    copyrights = value;
-                    break;
-                case SW360Attributes.RELEASE_EXTERNAL_ID_CLEARINGSTATE:
-                    clearingState = value;
-                    break;
-                default:
-                    if (key.startsWith(SW360Attributes.RELEASE_EXTERNAL_ID_HASHES)) {
-                        if(hashes == null) {
-                            hashes = Collections.singleton(value);
-                        } else {
-                            hashes.add(value);
-                        }
-                    } else if (SW360CoordinateKeysToArtifactCoordinates.getValues().contains(key)) {
-                        if(coordinates == null) {
-                            coordinates = new HashMap<>();
-                            coordinates.put(key, value);
-                        } else {
-                            coordinates.put(key, value);
-                        }
-                    }
-            }
-        });
-    }
-
     public SW360Release mergeWith(SW360Release releaseWithPrecedence) {
-        cpeid = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getCpeid);
+        name = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getName);
+        version = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getVersion);
+        cpeId = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getCpeId);
         downloadurl = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getDownloadurl);
-        mainLicenseIds = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getMainLicenseIds);
-        coordinates = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getCoordinates);
-        finalLicense = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getFinalLicense);
-        declaredLicense = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getDeclaredLicense);
-        observedLicense = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getObservedLicense);
-        releaseTagUrl = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getReleaseTagUrl);
-        softwareHeritageId = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getSoftwareHeritageId);
-        hashes = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getHashes);
-        clearingState = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getClearingState);
-        changeStatus = getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getChangeStatus);
-        copyrights =  getDominantGetterFromVariableMergeOrNull(releaseWithPrecedence, SW360Release::getCopyrights);
+        if (releaseWithPrecedence.isSetMainLicenseIds()) {
+            setMainLicenseIds(releaseWithPrecedence.getMainLicenseIds());
+        }
+        Self releaseIdWithPrecedence = releaseWithPrecedence.get_Links().getSelf();
+        if(releaseIdWithPrecedence != null && ! releaseIdWithPrecedence.getHref().isEmpty()) {
+            get_Links().setSelf(releaseIdWithPrecedence);
+        }
+        Self componentIdWithPrecedence = releaseWithPrecedence.get_Links().getSelfComponent();
+        if(componentIdWithPrecedence != null && ! componentIdWithPrecedence.getHref().isEmpty()) {
+            get_Links().setSelfComponent(componentIdWithPrecedence);
+        }
+        externalIds.putAll(releaseWithPrecedence.externalIds);
 
         return this;
     }
@@ -285,32 +287,30 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     }
 
     @Override
+    public SW360ReleaseLinkObjects createEmptyLinks() {
+        return new SW360ReleaseLinkObjects();
+    }
+
+    @Override
+    public SW360ReleaseEmbedded createEmptyEmbedded() {
+        return new SW360ReleaseEmbedded();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        SW360Release that = (SW360Release) o;
-        return Objects.equals(componentId, that.componentId) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(version, that.version) &&
-                Objects.equals(cpeid, that.cpeid) &&
-                Objects.equals(downloadurl, that.downloadurl) &&
-                Objects.equals(mainLicenseIds, that.mainLicenseIds) &&
-                Objects.equals(coordinates, that.coordinates) &&
-                Objects.equals(finalLicense, that.finalLicense) &&
-                Objects.equals(declaredLicense, that.declaredLicense) &&
-                Objects.equals(observedLicense, that.observedLicense) &&
-                Objects.equals(releaseTagUrl, that.releaseTagUrl) &&
-                Objects.equals(softwareHeritageId, that.softwareHeritageId) &&
-                Objects.equals(hashes, that.hashes) &&
-                Objects.equals(clearingState, that.clearingState) &&
-                Objects.equals(changeStatus, that.changeStatus) &&
-                Objects.equals(copyrights, that.copyrights) &&
-                Objects.equals(externalIds, that.externalIds);
+        SW360Release release = (SW360Release) o;
+        return Objects.equals(name, release.name) &&
+                Objects.equals(version, release.version) &&
+                Objects.equals(cpeId, release.cpeId) &&
+                Objects.equals(downloadurl, release.downloadurl) &&
+                Objects.equals(externalIds, release.externalIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), componentId, name, version, cpeid, downloadurl, mainLicenseIds, coordinates, finalLicense, declaredLicense, observedLicense, releaseTagUrl, softwareHeritageId, hashes, clearingState, changeStatus, copyrights, externalIds);
+        return Objects.hash(super.hashCode(), name, version, cpeId, downloadurl, externalIds);
     }
 }
