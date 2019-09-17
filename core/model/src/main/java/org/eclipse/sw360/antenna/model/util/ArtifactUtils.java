@@ -10,6 +10,8 @@
  */
 package org.eclipse.sw360.antenna.model.util;
 
+import com.github.packageurl.MalformedPackageURLException;
+import com.github.packageurl.PackageURL;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactFact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
@@ -75,5 +77,30 @@ public class ArtifactUtils {
                         .map(ArtifactFilename.ArtifactFilenameEntry::getFilename)
                         .map(fn -> new GenericArtifactCoordinates(fn, "-")),
                 artifact);
+    }
+
+    public static ArtifactCoordinates createArtifactCoordinates(PackageURL packageURL) {
+        String type = packageURL.getType();
+
+        switch (type) {
+            case "maven":
+                return new MavenCoordinates(packageURL.getName(), packageURL.getNamespace(), packageURL.getVersion());
+            case "npm":
+                return new JavaScriptCoordinates(packageURL.getName(), packageURL.getNamespace(), packageURL.getVersion());
+            case "nuget":
+                return new DotNetCoordinates(packageURL.getName(), packageURL.getVersion());
+            case "p2":
+                return new BundleCoordinates(packageURL.getName(), packageURL.getVersion());
+            default:
+                return new GenericArtifactCoordinates(packageURL.getName(), packageURL.getVersion());
+        }
+    }
+
+    public static ArtifactCoordinates createArtifactCoordinatesFromPurl(String packageUrl) {
+        try {
+            return createArtifactCoordinates(new PackageURL(packageUrl));
+        } catch (MalformedPackageURLException e) {
+            throw new IllegalArgumentException("Could not build PURL", e);
+        }
     }
 }
