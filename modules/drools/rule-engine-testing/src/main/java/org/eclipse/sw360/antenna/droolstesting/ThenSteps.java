@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.droolstesting;
 
 import cucumber.api.java.en.Then;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
@@ -73,7 +74,7 @@ public class ThenSteps {
         return state.evaluations.stream()
                 .filter(evaluation -> evaluation.getId().equals(policy))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Could not find evaluation policy with id " + policy));
+                .orElseThrow(() -> new ExecutionException("Could not find evaluation policy with id " + policy));
     }
 
     private void runRules() {

@@ -98,7 +98,7 @@ public class ConfigurationHandlerOverrideTest extends CommonConfigurationHandler
         Artifact processedArtifact = artifacts.stream()
                 .filter(a -> new ArtifactFilename(FILENAME).matches(a))
                 .findAny()
-                .orElseThrow(() -> new RuntimeException("should not happen"));
+                .orElseThrow(() -> new IllegalStateException("should not happen"));
         assertThat(processedArtifact.askFor(MavenCoordinates.class).map(MavenCoordinates::getArtifactId).get())
                 .isEqualTo(OVERRIDE_ID);
         assertThat(processedArtifact.askFor(ArtifactMatchingMetadata.class).map(ArtifactMatchingMetadata::getMatchState).orElse(null)).isEqualTo(expectedMatchState);

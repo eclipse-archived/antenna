@@ -142,10 +142,8 @@ public class AntennaCLISettingsReader {
 
         try {
             return new XmlSettingsReader(renderedPom);
-        } catch (IOException e) {
-            throw new RuntimeException("IO exception when reading config: " + e.getMessage());
-        } catch (ParserConfigurationException | SAXException e) {
-            throw new IllegalArgumentException("Problem parsing the config: " + e.getMessage());
+        } catch (IOException | ParserConfigurationException | SAXException e) {
+            throw new ConfigurationException("Problem parsing the config: " + e.getMessage());
         }
     }
 

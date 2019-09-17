@@ -37,7 +37,7 @@ public class XMLResolverJaxB implements IXMLResolver {
      * @return Returns an AntennaConfig with the values of the given configuration
      *         xml. If the File is not found a ProcessingMessage is added to the
      *         Report.
-     * @throws RuntimeException
+     * @throws ConfigurationException
      *             If the file can not be resolved.
      * @param file
      *            File to be resolved.

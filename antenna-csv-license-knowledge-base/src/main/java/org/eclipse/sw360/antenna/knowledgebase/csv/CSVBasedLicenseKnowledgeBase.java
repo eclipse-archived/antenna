@@ -80,7 +80,7 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
     private void checkThatCSVIsOnClasspath() {
         final URL resource = CSVBasedLicenseKnowledgeBase.class.getClassLoader().getResource(licensesCSV);
         if(resource == null) {
-            throw new RuntimeException("The required file " + licensesCSV + " was not found on the classpath");
+            throw new ExecutionException("The required file " + licensesCSV + " was not found on the classpath");
         }
     }
 
@@ -189,9 +189,9 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
             }
             return IOUtils.toString(iStream, encoding);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("An UnsupportedEncodingException was thrown while reading the license texts.", e);
+            throw new ExecutionException("An UnsupportedEncodingException was thrown while reading the license texts.", e);
         } catch (IOException e) {
-            throw new RuntimeException("Unable to read licensetext in recources", e);
+            throw new ExecutionException("Unable to read licensetext in recources", e);
         }
     }
 

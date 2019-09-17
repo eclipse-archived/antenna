@@ -57,7 +57,7 @@ public class SourceValidatorTestTools {
                                     zos.putNextEntry(ze);
                                     zos.closeEntry();
                                 } catch (IOException e) {
-                                    throw new RuntimeException(e);
+                                    throw new IllegalStateException(e);
                                 }
                             }
                     );

@@ -110,7 +110,7 @@ public interface ExecutableTestProject {
                 .filter(e -> "sources-zip".equals(e.getKey()))
                 .map(Map.Entry::getValue)
                 .map(IAttachable::getFile)
-                .findAny().orElseThrow(() -> new RuntimeException("should not happen"));
+                .findAny().orElseThrow(() -> new IllegalStateException("should not happen"));
 
         try (ZipFile zipFile = new ZipFile(sourceZipFile)) {
             List<String> filesInZip = zipFile.stream()

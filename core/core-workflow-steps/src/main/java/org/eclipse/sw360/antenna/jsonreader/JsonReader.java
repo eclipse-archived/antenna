@@ -77,7 +77,7 @@ public class JsonReader {
             stream.close();
             return artifactList;
         } catch (IOException | JsonException e) {
-            throw new RuntimeException(e);
+            throw new ExecutionException("Cannot read json objects from input stream", e);
         }
     }
 

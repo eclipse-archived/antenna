@@ -55,7 +55,7 @@ public class ConfigurationResolverTest extends AntennaTestWithMockedContext {
                         return null;
                     }
                 })
-                .orElseThrow(() -> new RuntimeException("failed to get " + path));
+                .orElseThrow(() -> new IllegalStateException("failed to get " + path));
     }
 
     @Before

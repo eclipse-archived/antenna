@@ -97,7 +97,7 @@ public class FileToArchiveWriterTest extends AntennaTestWithMockedContext {
                         try {
                             return zip.getInputStream(entry);
                         } catch (IOException exeption) {
-                            throw new RuntimeException(exeption);
+                            throw new IllegalStateException(exeption);
                         }
                     })
                     .findAny()
@@ -105,7 +105,7 @@ public class FileToArchiveWriterTest extends AntennaTestWithMockedContext {
                         try {
                             return IOUtils.toString(in, Charset.defaultCharset());
                         } catch (IOException exeption) {
-                            throw new RuntimeException(exeption);
+                            throw new IllegalStateException(exeption);
                         }
                     })
                     .orElse("<none>");
