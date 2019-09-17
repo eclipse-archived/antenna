@@ -11,7 +11,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
@@ -19,7 +19,10 @@ import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,32 +48,32 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
         return restUrl + RELEASES_ENDPOINT_APPENDIX;
     }
 
-    public SW360Release getRelease(String releaseId, HttpHeaders header) throws AntennaException {
+    public SW360Release getRelease(String releaseId, HttpHeaders header) throws ExecutionException {
         ResponseEntity<Resource<SW360Release>> response = doRestGET(getEndpoint() + "/" + releaseId, header,
                 new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .orElseThrow(() -> new ExecutionException("Body was null"))
                     .getContent();
         } else {
-            throw new AntennaException("Request to get release " + releaseId + " failed with "
+            throw new ExecutionException("Request to get release " + releaseId + " failed with "
                     + response.getStatusCode());
         }
     }
 
-    public List<SW360SparseRelease> getReleases(HttpHeaders header) throws AntennaException {
+    public List<SW360SparseRelease> getReleases(HttpHeaders header) throws ExecutionException {
         ResponseEntity<Resource<SW360ReleaseList>> response = doRestGET(getEndpoint(), header,
                 new ParameterizedTypeReference<Resource<SW360ReleaseList>>() {});
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return getSw360SparseReleases(response);
         } else {
-            throw new AntennaException("Request to get all releases failed with " + response.getStatusCode());
+            throw new ExecutionException("Request to get all releases failed with " + response.getStatusCode());
         }
     }
 
-    public SW360Release createRelease(SW360Release sw360Release, HttpHeaders header) throws AntennaException {
+    public SW360Release createRelease(SW360Release sw360Release, HttpHeaders header) throws ExecutionException {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
 
         ResponseEntity<Resource<SW360Release>> response = doRestPOST(getEndpoint(), httpEntity,
@@ -78,27 +81,27 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
 
         if (response.getStatusCode() == HttpStatus.CREATED) {
             return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .orElseThrow(() -> new ExecutionException("Body was null"))
                     .getContent();
         } else {
-            throw new AntennaException("Request to create release " + sw360Release.getName() + " failed with "
+            throw new ExecutionException("Request to create release " + sw360Release.getName() + " failed with "
                     + response.getStatusCode());
         }
     }
 
-    public SW360Release patchRelease(SW360Release sw360Release, HttpHeaders header) throws AntennaException {
+    public SW360Release patchRelease(SW360Release sw360Release, HttpHeaders header) throws ExecutionException {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
 
         ResponseEntity<Resource<SW360Release>> response = doRestPATCH(getEndpoint(), httpEntity,
                 new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
         if (! response.getStatusCode().is2xxSuccessful()) {
-            throw new AntennaException("Request to create release " + sw360Release.getName() + " failed with "
+            throw new ExecutionException("Request to create release " + sw360Release.getName() + " failed with "
                     + response.getStatusCode());
         }
         Resource<SW360Release> body = response.getBody();
         if (body == null) {
-            throw new AntennaException("Request to create release " + sw360Release.getName() + " returned empty body");
+            throw new ExecutionException("Request to create release " + sw360Release.getName() + " returned empty body");
         }
 
         return body.getContent();

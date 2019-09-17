@@ -18,7 +18,6 @@ import java.util.Map;
 
 public interface AntennaFrontend<T extends IProject> {
     AntennaFrontendHelper init() throws ConfigurationException;
-//    void execute() throws AntennaException;
     Map<String, IAttachable> getOutputs();
     T getProject();
 }

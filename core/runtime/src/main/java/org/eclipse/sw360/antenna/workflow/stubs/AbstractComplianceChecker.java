@@ -16,7 +16,7 @@ import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.exceptions.FailCausingException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -42,7 +42,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
     public abstract String getRulesetDescription();
 
     @Override
-    public Collection<Artifact> process(Collection<Artifact> artifacts) throws AntennaException {
+    public Collection<Artifact> process(Collection<Artifact> artifacts) throws ExecutionException {
         LOGGER.info("Evaluate compliance rule set: {}", getRulesetDescription());
         IPolicyEvaluation evaluation = evaluate(artifacts);
         LOGGER.info("Rule evaluation done");
@@ -50,7 +50,9 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         try {
             execute(evaluation);
         } catch (FailCausingException e) {
-            throw new AntennaException("Fail execution because of compliance check result", e);
+            // ToDo: A FailCausingException should not end the build but should be reflected in the workflow result
+            // Build should not be aborted, but should indicate the failure in the end, so that reports etc. are created.
+            throw new ExecutionException("Fail execution because of compliance check result", e);
         }
         LOGGER.info("Check evaluation results... done.");
         return artifacts;

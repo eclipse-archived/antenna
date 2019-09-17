@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.workflow.processors.checkers.ConfigurationChecker;
@@ -43,7 +43,7 @@ public class AntennaConfHandler extends AbstractProcessor {
     }
 
     @Override
-    public Collection<Artifact> process(Collection<Artifact> intermediates) throws AntennaException {
+    public Collection<Artifact> process(Collection<Artifact> intermediates) throws ExecutionException {
         for(AbstractProcessor processor : localProcessors) {
             intermediates = processor.process(intermediates);
         }

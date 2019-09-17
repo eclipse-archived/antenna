@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.adapter;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.sw360.adapter.commonComparisonProperties.ArtifactCommons;
@@ -36,11 +36,11 @@ public class SW360ReleaseClientAdapter {
         this.releaseClient = new SW360ReleaseClient(restUrl, proxySettings);
     }
 
-    public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, boolean uploadSource, HttpHeaders header) throws AntennaException {
+    public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, boolean uploadSource, HttpHeaders header) throws ExecutionException {
         SW360Release release = SW360ReleaseAdapterUtils.prepareRelease(sw360Component, sw360LicenseIds, artifact);
 
         if (! SW360ReleaseAdapterUtils.isValidRelease(release)) {
-            throw new AntennaException("Can not write invalid release for " + artifact.toString());
+            throw new ExecutionException("Can not write invalid release for " + artifact.toString());
         }
 
 
@@ -53,7 +53,7 @@ public class SW360ReleaseClientAdapter {
             return release1;
         }
     }
-    public SW360Release updateRelease(SW360Release release, Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws AntennaException {
+    public SW360Release updateRelease(SW360Release release, Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws ExecutionException {
         SW360Release sw360ReleaseFromArtifact = SW360ReleaseAdapterUtils.prepareRelease(sw360Component, sw360LicenseIds, artifact);
 
         if (release.equals(sw360ReleaseFromArtifact)) {
@@ -65,11 +65,11 @@ public class SW360ReleaseClientAdapter {
         }
     }
 
-    public SW360Release getReleaseById(String releaseId, HttpHeaders header) throws AntennaException {
+    public SW360Release getReleaseById(String releaseId, HttpHeaders header) throws ExecutionException {
         return releaseClient.getRelease(releaseId, header);
     }
 
-    public List<SW360SparseRelease> getReleases(HttpHeaders header) throws AntennaException {
+    public List<SW360SparseRelease> getReleases(HttpHeaders header) throws ExecutionException {
         return releaseClient.getReleases(header);
     }
 
@@ -79,7 +79,7 @@ public class SW360ReleaseClientAdapter {
         return artifactCommons.matchesOnComparisonProperties(componentCommons);
     }
 
-    public Optional<SW360Release> getReleaseByArtifact(SW360Component component, Artifact artifact, HttpHeaders header) throws AntennaException {
+    public Optional<SW360Release> getReleaseByArtifact(SW360Component component, Artifact artifact, HttpHeaders header) throws ExecutionException {
         String releaseVersionOfArtifact = SW360ReleaseAdapterUtils.createSW360ReleaseVersion(artifact);
         if (component != null &&
                 component.get_Embedded() != null &&

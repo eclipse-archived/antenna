@@ -16,7 +16,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
@@ -43,7 +43,7 @@ public class MavenArtifactResolver extends AbstractProcessor {
 
 
     @Override
-    public Collection<Artifact> process(Collection<Artifact> artifacts) throws AntennaException {
+    public Collection<Artifact> process(Collection<Artifact> artifacts) throws ExecutionException {
         ToolConfiguration toolConfig = context.getToolConfiguration();
         ProxySettings proxySettings = new ProxySettings(
                 toolConfig.useProxy(), toolConfig.getProxyHost(), toolConfig.getProxyPort());

@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.sw360.workflow;
 
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
@@ -86,7 +86,7 @@ public class SW360ConnectionConfiguration {
         return new SW360ProjectClientAdapter(restServerUrl, proxySettings);
     }
 
-    public HttpHeaders getHttpHeaders() throws AntennaException {
+    public HttpHeaders getHttpHeaders() throws ExecutionException {
         return authenticationClient.getHeadersWithBearerToken(authenticationClient.getOAuth2AccessToken(user, password, clientId, clientPassword));
     }
 

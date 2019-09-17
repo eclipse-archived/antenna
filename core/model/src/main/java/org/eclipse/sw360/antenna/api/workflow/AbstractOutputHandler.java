@@ -11,10 +11,10 @@
 package org.eclipse.sw360.antenna.api.workflow;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 
 import java.util.Map;
 
 public abstract class AbstractOutputHandler extends ConfigurableWorkflowItem {
-    public abstract void handle(Map<String,IAttachable> generatedOutput) throws AntennaException;
+    public abstract void handle(Map<String,IAttachable> generatedOutput) throws ExecutionException;
 }

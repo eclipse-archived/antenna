@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.sw360.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
@@ -49,7 +49,7 @@ public class SW360Enricher extends AbstractProcessor {
     }
 
     @Override
-    public Collection<Artifact> process(Collection<Artifact> intermediates) throws AntennaException {
+    public Collection<Artifact> process(Collection<Artifact> intermediates) throws ExecutionException {
         return new SW360EnricherImpl(reporter, connector).process(intermediates);
     }
 }

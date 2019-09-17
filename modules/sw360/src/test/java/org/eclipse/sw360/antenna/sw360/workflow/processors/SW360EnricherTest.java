@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.sw360.workflow.processors;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
@@ -86,7 +85,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
 
     @Test
-    public void releaseIsMappedToArtifactCorrectly() throws AntennaException {
+    public void releaseIsMappedToArtifactCorrectly() {
         SW360Release release0 = mkSW360Release("test1");
         release0.set_Embedded(new SW360ReleaseEmbedded());
         release0.get_Embedded().setLicenses(Collections.emptyList());
@@ -141,7 +140,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void singleLicenseIsAddedToArtifact() throws AntennaException {
+    public void singleLicenseIsAddedToArtifact() {
         SW360SparseLicense apacheSparse = createSparseLicense("apache2", "Apache 2.0");
         SW360License apache = createLicenseFromSparseLicense(apacheSparse, "Some text");
 
@@ -160,7 +159,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void multipleLicensesAreAddedToArtifact() throws AntennaException {
+    public void multipleLicensesAreAddedToArtifact() {
         SW360SparseLicense apacheSparse = createSparseLicense("apache2", "Apache 2.0");
         SW360License apache = createLicenseFromSparseLicense(apacheSparse, "Some text");
 
@@ -186,7 +185,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void differingLicenseIsOverwritten() throws AntennaException {
+    public void differingLicenseIsOverwritten() {
         License apache = new License();
         apache.setName("apache2");
         apache.setLongName("Apache 2.0");

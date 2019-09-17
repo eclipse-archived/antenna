@@ -14,7 +14,7 @@ package org.eclipse.sw360.antenna.core;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.workflow.AntennaWorkflow;
 import org.eclipse.sw360.antenna.workflow.AntennaWorkflowConfiguration;
 import org.slf4j.Logger;
@@ -40,9 +40,9 @@ public class AntennaCore {
      *
      * @return Attachment map
      *
-     * @throws AntennaException Error in execution
+     * @throws ExecutionException Error in execution
      */
-    public Map<String, IAttachable> compose() throws AntennaException {
+    public Map<String, IAttachable> compose() throws ExecutionException {
         // Execution workflow begins
         if (context.getToolConfiguration().isSkipAntennaExecution()) {
             LOGGER.info("Antenna execution is skipped.");

@@ -12,7 +12,7 @@
 
 package org.eclipse.sw360.antenna.sw360.rest;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectList;
@@ -45,7 +45,7 @@ public class SW360ProjectClient extends SW360Client {
         return restUrl + PROJECTS_ENDPOINT;
     }
 
-    public List<SW360Project> searchByName(String name, HttpHeaders header) throws AntennaException {
+    public List<SW360Project> searchByName(String name, HttpHeaders header) throws ExecutionException {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(getEndpoint())
                 .queryParam(SW360Attributes.PROJECT_SEARCH_BY_NAME, name);
@@ -55,7 +55,7 @@ public class SW360ProjectClient extends SW360Client {
 
         if (response.getStatusCode().is2xxSuccessful()) {
             SW360ProjectList resource = Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .orElseThrow(() -> new ExecutionException("Body was null"))
                     .getContent();
             if (resource != null &&
                     resource.get_Embedded() != null &&
@@ -65,41 +65,41 @@ public class SW360ProjectClient extends SW360Client {
                 return new ArrayList<>();
             }
         } else {
-            throw new AntennaException("Request to search for projects with the name " + name + " failed with "
+            throw new ExecutionException("Request to search for projects with the name " + name + " failed with "
                     + response.getStatusCode());
         }
     }
 
-    public SW360Project createProject(SW360Project sw360Project, HttpHeaders header) throws AntennaException {
+    public SW360Project createProject(SW360Project sw360Project, HttpHeaders header) throws ExecutionException {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Project, header);
         ResponseEntity<Resource<SW360Project>> response = doRestPOST(getEndpoint(), httpEntity,
                 new ParameterizedTypeReference<Resource<SW360Project>>() {});
 
         if (response.getStatusCode() == HttpStatus.CREATED) {
             return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .orElseThrow(() -> new ExecutionException("Body was null"))
                     .getContent();
         } else {
-            throw new AntennaException("Request to create project " + sw360Project.getName() + " failed with "
+            throw new ExecutionException("Request to create project " + sw360Project.getName() + " failed with "
                     + response.getStatusCode());
         }
     }
 
-    public SW360Project getProject(String projectId, HttpHeaders header) throws AntennaException {
+    public SW360Project getProject(String projectId, HttpHeaders header) throws ExecutionException {
         ResponseEntity<Resource<SW360Project>> response = doRestGET(getEndpoint() + "/" + projectId, header,
                 new ParameterizedTypeReference<Resource<SW360Project>>() {});
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .orElseThrow(() -> new ExecutionException("Body was null"))
                     .getContent();
         } else {
-            throw new AntennaException("Request to get project " + projectId + " failed with "
+            throw new ExecutionException("Request to get project " + projectId + " failed with "
                     + response.getStatusCode());
         }
     }
 
-    public void addReleasesToProject(String projectId, List<String> releases, HttpHeaders header) throws AntennaException {
+    public void addReleasesToProject(String projectId, List<String> releases, HttpHeaders header) throws ExecutionException {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(getEndpoint())
                 .pathSegment(projectId, SW360Attributes.PROJECT_RELEASES);
@@ -108,12 +108,12 @@ public class SW360ProjectClient extends SW360Client {
         ResponseEntity<String> response = doRestCall(builder.build(false).toUriString(), HttpMethod.POST, httpEntity, String.class);
 
         if (!(response.getStatusCode() == HttpStatus.CREATED)) {
-            throw new AntennaException("Request to add linked releases to project " + projectId + " failed with "
+            throw new ExecutionException("Request to add linked releases to project " + projectId + " failed with "
                     + response.getStatusCode());
         }
     }
 
-    public List<SW360SparseRelease> getLinkedReleases(String projectId, boolean transitive, HttpHeaders header) throws AntennaException {
+    public List<SW360SparseRelease> getLinkedReleases(String projectId, boolean transitive, HttpHeaders header) throws ExecutionException {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(getEndpoint())
                 .pathSegment(projectId, SW360Attributes.PROJECT_RELEASES)
@@ -125,7 +125,7 @@ public class SW360ProjectClient extends SW360Client {
         if (response.getStatusCode().is2xxSuccessful()) {
             return getSw360SparseReleases(response);
         } else {
-            throw new AntennaException("Request to get linked releases of project with id=[ " + projectId + "] failed with "
+            throw new ExecutionException("Request to get linked releases of project with id=[ " + projectId + "] failed with "
                     + response.getStatusCode());
         }
     }

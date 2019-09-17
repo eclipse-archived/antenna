@@ -14,7 +14,7 @@ package org.eclipse.sw360.antenna.p2resolver.workflow.processors.enricher;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
@@ -53,7 +53,7 @@ public class P2Resolver extends AbstractProcessor {
 
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     @Override
-    public Collection<Artifact> process(Collection<Artifact> intermediates) throws AntennaException {
+    public Collection<Artifact> process(Collection<Artifact> intermediates) throws ExecutionException {
         File productInstallationArea = context
                 .getToolConfiguration()
                 .getAntennaTargetDirectory()
@@ -91,17 +91,17 @@ public class P2Resolver extends AbstractProcessor {
         return intermediates;
     }
 
-    private void attachArtifacts(File artifactDownloadArea, List<Artifact> actionableIntermediates) throws AntennaException {
+    private void attachArtifacts(File artifactDownloadArea, List<Artifact> actionableIntermediates)  {
         try {
             ArtifactAttacher attacher = new ArtifactAttacher(context.getToolConfiguration().getDependenciesDirectory());
 
             attacher.copyDependencies(artifactDownloadArea, actionableIntermediates);
         } catch (IOException e) {
-            throw new AntennaException("Error while copying File.", e);
+            throw new ExecutionException("Error while copying File.", e);
         }
     }
 
-    private void runEclipseProduct(File productInstallationArea, File artifactDownloadArea, List<Artifact> actionableIntermediates) throws AntennaException {
+    private void runEclipseProduct(File productInstallationArea, File artifactDownloadArea, List<Artifact> actionableIntermediates) {
         try {
             Process process =
                     setupEclipseProcess(productInstallationArea, artifactDownloadArea, actionableIntermediates, repositories)
@@ -110,12 +110,12 @@ public class P2Resolver extends AbstractProcessor {
             loggingResolverLogOutput(process);
         } catch (IOException e) {
             if (e.getMessage().contains("No such file or directory") && OperatingSystemSpecifics.isLinux()) {
-                throw new AntennaException("The product could not be started. " +
+                throw new ExecutionException("The product could not be started. " +
                         "This could be due to a problem with the launcher: The executable is explicitly linked against glibc. " +
                         "Some operating systems such as Alpine Linux commonly used for Docker or BSD Unix systems do not ship a glibc. " +
                         "This is a known limitation for the P2 workflow step. Error was: ", e);
             }
-            throw new AntennaException("Error while using external product " + ANTENNA_ECLIPSE_APP, e);
+            throw new ExecutionException("Error while using external product " + ANTENNA_ECLIPSE_APP, e);
         }
     }
 
@@ -140,15 +140,15 @@ public class P2Resolver extends AbstractProcessor {
         }
     }
 
-    private static File createTempDirectory() throws AntennaException {
+    private static File createTempDirectory() {
         try {
             final File tempDir = File.createTempFile("equinox", "");
             if (!(tempDir.delete() && tempDir.mkdirs())) {
-                throw new AntennaException("Could not create temp dir " + tempDir);
+                throw new ExecutionException("Could not create temp dir " + tempDir);
             }
             return tempDir;
         } catch (IOException e) {
-            throw new AntennaException(e.getLocalizedMessage(), e);
+            throw new ExecutionException(e.getLocalizedMessage(), e);
         }
     }
 

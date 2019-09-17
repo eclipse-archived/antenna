@@ -36,7 +36,6 @@ import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.core.AntennaCore;
 import org.eclipse.sw360.antenna.frontend.AntennaFrontend;
 import org.eclipse.sw360.antenna.frontend.AntennaFrontendHelper;
@@ -202,7 +201,7 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
 
         try {
             output.putAll(antennaCore.compose());
-        } catch (AntennaException e) {
+        } catch (ExecutionException e) {
             LOGGER.error("Antenna execution failed due to:", e);
             throw new MojoExecutionException("Exception during Antenna execution", e);
         } finally {

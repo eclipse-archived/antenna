@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.adapter;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.rest.SW360ComponentClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
@@ -32,20 +32,20 @@ public class SW360ComponentClientAdapter {
         this.componentClient = new SW360ComponentClient(restUrl, proxySettings);
     }
 
-    public SW360Component addComponent(Artifact artifact, HttpHeaders header) throws AntennaException {
+    public SW360Component addComponent(Artifact artifact, HttpHeaders header) throws ExecutionException {
         SW360Component component = new SW360Component();
         SW360ComponentAdapterUtils.prepareComponent(component, artifact);
         if(! SW360ComponentAdapterUtils.isValidComponent(component)) {
-            throw new AntennaException("Can not write invalid component for " + artifact.toString());
+            throw new ExecutionException("Can not write invalid component for " + artifact.toString());
         }
         return componentClient.createComponent(component, header);
     }
 
-    public SW360Component getComponentById(String componentId, HttpHeaders header) throws AntennaException {
+    public SW360Component getComponentById(String componentId, HttpHeaders header) throws ExecutionException {
         return componentClient.getComponent(componentId, header);
     }
 
-    public boolean isArtifactAvailableAsComponent(Artifact artifact, HttpHeaders header) throws AntennaException {
+    public boolean isArtifactAvailableAsComponent(Artifact artifact, HttpHeaders header) throws ExecutionException {
         String componentName = SW360ComponentAdapterUtils.createComponentName(artifact);
 
         List<SW360SparseComponent> components = componentClient.getComponents(header);
@@ -55,13 +55,13 @@ public class SW360ComponentClientAdapter {
                 .anyMatch(name -> name.equals(componentName));
     }
 
-    public Optional<SW360Component> getComponentByArtifact(Artifact artifact, HttpHeaders header) throws AntennaException {
+    public Optional<SW360Component> getComponentByArtifact(Artifact artifact, HttpHeaders header) throws ExecutionException {
         String componentName = SW360ComponentAdapterUtils.createComponentName(artifact);
 
         return getComponentByName(componentName, header);
     }
 
-    public Optional<SW360Component> getComponentByName(String componentName, HttpHeaders header) throws AntennaException {
+    public Optional<SW360Component> getComponentByName(String componentName, HttpHeaders header) throws ExecutionException {
         List<SW360Component> completeComponents = new ArrayList<>();
         List<SW360SparseComponent> components = componentClient.searchByName(componentName, header);
 

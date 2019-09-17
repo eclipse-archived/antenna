@@ -13,7 +13,6 @@ package org.eclipse.sw360.antenna.sw360.rest;
 
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectType;
 import org.eclipse.sw360.antenna.util.ProxySettings;
@@ -86,7 +85,7 @@ public class SW360ProjectClientTest {
 
 
     @Test
-    public void testSearchProjectsByNameWithSuccess() throws AntennaException {
+    public void testSearchProjectsByNameWithSuccess() {
         // project 1
         JsonObject projectJsonObj1 = new JsonObject(new HashMap<String, String>() {{
             put(PROJECT_NAME_KEY, PROJECT_NAME_VALUE_1);
@@ -144,7 +143,7 @@ public class SW360ProjectClientTest {
     }
 
     @Test( expected = RestClientException.class )
-    public void testSearchProjectsByNameWithNotParseableRespond() throws AntennaException {
+    public void testSearchProjectsByNameWithNotParseableRespond() {
         String expectedResponseBody = "NotParseableJsonString";
         String searchName = "test";
         String requestUrl = SEARCH_BY_NAME_ENDPOINT + searchName;
@@ -155,7 +154,7 @@ public class SW360ProjectClientTest {
     }
 
     @Test( expected = HttpClientErrorException.class )
-    public void testSearchProjectsByNameWithBadStatusCode() throws AntennaException {
+    public void testSearchProjectsByNameWithBadStatusCode() {
         String searchName = "test";
         String requestUrl = SEARCH_BY_NAME_ENDPOINT + searchName;
         mockedServer.expect(requestTo(requestUrl))
@@ -166,7 +165,7 @@ public class SW360ProjectClientTest {
     }
 
     @Test
-    public void testCreateProjectWithSuccess() throws AntennaException {
+    public void testCreateProjectWithSuccess() {
         String newProjectId = "anyNewId";
         String newHref = PROJECTS_ENDPOINT + "/" + newProjectId;
         SW360Project requestProject = new SW360Project()
@@ -229,7 +228,7 @@ public class SW360ProjectClientTest {
     }
 
     @Test( expected = HttpClientErrorException.class )
-    public void testCreateProjectWithBadStatusCode() throws AntennaException {
+    public void testCreateProjectWithBadStatusCode() {
         mockedServer.expect(requestTo(PROJECTS_ENDPOINT))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withBadRequest());
@@ -237,7 +236,7 @@ public class SW360ProjectClientTest {
     }
 
     @Test
-    public void testGetProjectWithSuccess() throws AntennaException {
+    public void testGetProjectWithSuccess() {
         String projectId = "anyId";
         String requestUrl = PROJECTS_ENDPOINT + "/" + projectId;
         String expectedResponseBody = new JsonObject(new HashMap<String, String>() {{
@@ -259,7 +258,7 @@ public class SW360ProjectClientTest {
     }
 
     @Test( expected = HttpClientErrorException.class )
-    public void testGetProjectWithBadStatusCode() throws AntennaException {
+    public void testGetProjectWithBadStatusCode() {
         String projectId = "anyId";
         String requestUrl = PROJECTS_ENDPOINT + "/" + projectId;
         mockedServer.expect(requestTo(requestUrl))

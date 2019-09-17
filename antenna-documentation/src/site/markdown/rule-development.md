@@ -90,7 +90,6 @@ Furthermore, in `src/test`, add the following files into a package `org.eclipse.
 package org.eclipse.sw360.antenna.droolstesting;
 
 import cucumber.api.java.en.When;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
@@ -103,7 +102,7 @@ public class AddRulesAndEvaluations {
     }
 
     @When("^I use the rule \"([^\"]*)\"$")
-    public void i_use_the_rule(String rule) throws FileNotFoundException, AntennaException, URISyntaxException {
+    public void i_use_the_rule(String rule) throws FileNotFoundException, URISyntaxException {
         stepsHelpers.iUseTheRule(rule, this.getClass());
     }
 }

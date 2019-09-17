@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.p2resolver.workflow.processors.enricher;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics;
@@ -64,7 +63,7 @@ public class P2ResolverTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testProductInstallation() throws AntennaException {
+    public void testProductInstallation() {
         checkInternetConnectionAndAssume(Assume::assumeTrue);
         Assume.assumeFalse("The linux looks unusual and probably does not support the p2 product.", OperatingSystemSpecifics.isLinux() && ! Files.exists(Paths.get("/usr/lib/")));
 

@@ -11,7 +11,7 @@
 
 package org.eclipse.sw360.antenna.api.workflow;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 
 /**
  * Executes an analysis of the source code artifacts in a project.
@@ -23,5 +23,5 @@ public abstract class AbstractAnalyzer extends ConfigurableWorkflowItem {
      */
     public abstract String getName();
 
-    public abstract WorkflowStepResult yield() throws AntennaException;
+    public abstract WorkflowStepResult yield() throws ExecutionException;
 }

@@ -11,7 +11,7 @@
 
 package org.eclipse.sw360.antenna.sw360.adapter;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.SW360UserClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
 import org.eclipse.sw360.antenna.util.ProxySettings;
@@ -25,7 +25,7 @@ public class SW360UserClientAdapter {
         this.userClient= new SW360UserClient(restUrl, proxySettings);
     }
 
-    public SW360User getUserByEmail(String userId, HttpHeaders header) throws AntennaException {
+    public SW360User getUserByEmail(String userId, HttpHeaders header) throws ExecutionException {
         return userClient.getUserByEmail(userId, header);
     }
 }

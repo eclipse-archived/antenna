@@ -13,7 +13,6 @@ package org.eclipse.sw360.antenna.sw360.workflow.generators;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.model.SW360ProjectCoordinates;
@@ -63,7 +62,7 @@ public class SW360Updater extends AbstractGenerator {
     }
 
     @Override
-    public Map<String, IAttachable> produce(Collection<Artifact> intermediates) throws AntennaException {
+    public Map<String, IAttachable> produce(Collection<Artifact> intermediates) throws ExecutionException {
         return new SW360UpdaterImpl(sw360MetaDataUpdater,projectName, projectVersion)
                 .produce(intermediates);
     }

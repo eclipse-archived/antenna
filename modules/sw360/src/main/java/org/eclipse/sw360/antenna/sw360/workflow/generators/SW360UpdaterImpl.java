@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.sw360.workflow.generators;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
@@ -32,7 +32,7 @@ public class SW360UpdaterImpl {
         this.sw360MetaDataUpdater = sw360MetaDataUpdater;
     }
 
-    public Map<String, IAttachable> produce(Collection<Artifact> intermediates) throws AntennaException {
+    public Map<String, IAttachable> produce(Collection<Artifact> intermediates) throws ExecutionException {
 
         try {
             List<SW360Release> releases = new ArrayList<>();
@@ -43,7 +43,7 @@ public class SW360UpdaterImpl {
             }
             sw360MetaDataUpdater.createProject(projectName, projectVersion, releases);
         } catch (IOException e) {
-            throw new AntennaException("Problem occurred during updating SW360.", e);
+            throw new ExecutionException("Problem occurred during updating SW360.", e);
         }
         return Collections.emptyMap();
     }

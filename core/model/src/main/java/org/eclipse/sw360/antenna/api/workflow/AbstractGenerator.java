@@ -11,16 +11,16 @@
 package org.eclipse.sw360.antenna.api.workflow;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 import java.util.Collection;
 import java.util.Map;
 
 public abstract class AbstractGenerator extends ConfigurableWorkflowItem {
-    public Map<String,IAttachable> produce(ProcessingState previousState) throws AntennaException {
+    public Map<String,IAttachable> produce(ProcessingState previousState) throws ExecutionException {
         return produce(previousState.getArtifacts());
     }
 
-    public abstract Map<String,IAttachable> produce(Collection<Artifact> intermediates) throws AntennaException;
+    public abstract Map<String,IAttachable> produce(Collection<Artifact> intermediates) throws ExecutionException;
 }

@@ -14,7 +14,6 @@ package org.eclipse.sw360.antenna.workflow.analyzers;
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
@@ -32,7 +31,7 @@ public class JsonAnalyzer extends ManualAnalyzer {
         this.workflowStepOrder = 600;
     }
 
-    private void validate(ToolConfiguration toolConfig) throws AntennaException {
+    private void validate(ToolConfiguration toolConfig) throws ExecutionException {
         // Check that JSON file is present
         if (!componentInfoFile.exists()) {
             throw new ExecutionException("Antenna is configured to read a JSON configuration file ("
@@ -44,16 +43,16 @@ public class JsonAnalyzer extends ManualAnalyzer {
              InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, toolConfig.getEncoding())) {
             Jsoner.deserialize(inputStreamReader);
         } catch (JsonException e) {
-            throw new AntennaException("Encountered a problem when trying to parse "
+            throw new ExecutionException("Encountered a problem when trying to parse "
                     + componentInfoFile.getAbsolutePath() + ": " + e.getMessage());
         } catch (IOException e) {
-            throw new AntennaException("Unexpected error: " + e.getMessage());
+            throw new ExecutionException("Unexpected error: " + e.getMessage());
         }
     }
 
 
     @Override
-    public WorkflowStepResult yield() throws AntennaException {
+    public WorkflowStepResult yield() throws ExecutionException {
         ToolConfiguration toolConfig = context.getToolConfiguration();
         validate(toolConfig);
 
@@ -63,7 +62,7 @@ public class JsonAnalyzer extends ManualAnalyzer {
         try (InputStream is = new FileInputStream(componentInfoFile)) {
             return new WorkflowStepResult(jsonReader.createArtifactsList(is));
         } catch (IOException e) {
-            throw new AntennaException("Error opening the component information file: " + e.getMessage());
+            throw new ExecutionException("Error opening the component information file: " + e.getMessage());
         }
     }
 
