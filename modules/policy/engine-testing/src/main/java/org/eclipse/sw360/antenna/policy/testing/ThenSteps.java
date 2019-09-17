@@ -12,7 +12,6 @@ package org.eclipse.sw360.antenna.policy.testing;
 
 import cucumber.api.java.en.Then;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.policy.workflow.processors.PolicyEngineProcessor;
 
 import java.util.HashMap;
@@ -77,11 +76,7 @@ public class ThenSteps {
         PolicyEngineProcessor testee = new PolicyEngineProcessor();
         Map<String, String> configMap = new HashMap<>();
         configMap.put(RULESETCONFIGKEY, state.rulesets.stream().collect(Collectors.joining(",")));
-        try {
-            testee.configure(configMap);
-        } catch (AntennaConfigurationException e) {
-            throw new IllegalArgumentException(e);
-        }
+        testee.configure(configMap);
         state.evaluations.addAll(testee.evaluate(state.artifacts.values()).getEvaluationResults());
     }
 

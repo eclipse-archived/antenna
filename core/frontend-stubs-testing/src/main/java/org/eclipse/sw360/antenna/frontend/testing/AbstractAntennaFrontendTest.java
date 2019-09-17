@@ -49,7 +49,16 @@ abstract public class AbstractAntennaFrontendTest {
     protected AbstractTestProjectWithExpectations testData;
     protected AntennaFrontend antennaFrontend;
     protected AntennaContext antennaContext;
-    protected boolean runExecutionTest;
+
+    protected boolean isRunExecutionTest() {
+        return runExecutionTest;
+    }
+
+    protected void setRunExecutionTest(boolean runExecutionTest) {
+        this.runExecutionTest = runExecutionTest;
+    }
+
+    private boolean runExecutionTest;
 
     @Parameterized.Parameters(name = "{index}: Test data = {1}")
     public static Collection<Object[]> data() throws IOException {

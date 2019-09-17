@@ -119,7 +119,7 @@ public class AntennaGradlePluginTest {
     }
 
     @Test
-    public void testWithPomInSubDirs() throws IOException, AntennaException {
+    public void testWithPomInSubDirs() throws IOException {
         Path pomParentPath = exampleTestProject.getProjectPom().getParent().normalize();
         Path dest = Paths.get(pomParentPath.toString(), "src", "pom.xml");
         Files.move(exampleTestProject.getProjectPom(), dest, REPLACE_EXISTING);

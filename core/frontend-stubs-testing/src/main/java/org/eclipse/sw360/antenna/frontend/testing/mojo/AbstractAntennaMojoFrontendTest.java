@@ -61,7 +61,7 @@ public abstract class AbstractAntennaMojoFrontendTest extends AbstractAntennaFro
         Assert.assertNotNull(antennaContext.getToolConfiguration());
         Assert.assertNotNull(antennaContext.getToolConfiguration().getAntennaTargetDirectory());
 
-        runExecutionTest = true;
+        setRunExecutionTest(true);
     }
 
     private MavenSession setUpMavenSession(File basedir) throws Exception {

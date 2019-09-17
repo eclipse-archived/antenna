@@ -52,7 +52,7 @@ public abstract class AbstractAntennaCLIFrontendTest extends AbstractAntennaFron
         assertNotNull(antennaContext);
         assertNotNull(antennaContext.getProject());
 
-        runExecutionTest = !testData.requiresMaven();
+        setRunExecutionTest(!testData.requiresMaven());
     }
 
     @Ignore("would fail due to unrelated templating issues")
