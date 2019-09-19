@@ -11,6 +11,7 @@
 
 package org.eclipse.sw360.antenna.model.artifact.facts.javaScript;
 
+import com.github.packageurl.PackageURLBuilder;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactFactBuilder;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
@@ -65,6 +66,11 @@ public class JavaScriptCoordinates extends ArtifactCoordinates<JavaScriptCoordin
     @Override
     public String getType() {
         return "npm";
+    }
+
+    @Override
+    protected PackageURLBuilder addPurlFacts(PackageURLBuilder builder) {
+        return builder.withNamespace(getName()).withName(getArtifactId());
     }
 
     @Override

@@ -69,7 +69,7 @@ public class MavenCoordinates extends JavaCoordinates<MavenCoordinates> {
 
     @Override
     protected PackageURLBuilder addPurlFacts(PackageURLBuilder builder) {
-        return builder.withNamespace(getGroupId());
+        return builder.withNamespace(getGroupId()).withName(getArtifactId());
     }
 
     @Override
