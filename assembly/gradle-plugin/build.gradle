@@ -14,6 +14,8 @@ repositories {
 dependencies {
     compile gradleApi()
     testCompile gradleTestKit()
+    testCompile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.0'
+    testCompile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3.0'
     // other dependencies are prepared by maven
     compile fileTree(dir: 'target/dependencies/compile', include: '*.jar')
     runtime fileTree(dir: 'target/dependencies/runtime', include: '*.jar')

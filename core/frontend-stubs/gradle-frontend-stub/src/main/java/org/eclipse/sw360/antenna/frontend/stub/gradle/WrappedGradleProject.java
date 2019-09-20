@@ -48,6 +48,11 @@ public class WrappedGradleProject extends MetaDataStoringProject {
     }
 
     @Override
+    public File getBasedir() {
+        return innerProject.getRootDir();
+    }
+
+    @Override
     public Object getRawProject() {
         return innerProject;
     }
