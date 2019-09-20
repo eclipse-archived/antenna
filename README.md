@@ -10,6 +10,8 @@ their licenses,
 
 Learn more about Antenna in [What Antenna Does](antenna-documentation/src/site/markdown/index.md.vm).
 
+If you want to contribute to Antenna, please check out the [Contribution guidlines](CONTRIBUTING.md). 
+
 ### Modules
 
 The Antenna project consists of a core and multiple modules in `./modules`, which encapsulate related functionality.
