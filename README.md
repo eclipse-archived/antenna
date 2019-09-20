@@ -1,5 +1,9 @@
-# Antenna
+# <img src="antenna-documentation/src/site/resources/images/logo.png" alt="Eclipse SW360 Antenna" width="385" height="150"/>
 
+[![Eclipse Public License 2.0](https://img.shields.io/badge/license-EPL--2.0-green.svg "Eclipse Public License 2.0")](LICENSE)
+[![Build Status](https://travis-ci.com/eclipse/antenna.svg?branch=master)](https://travis-ci.com/eclipse/antenna)
+
+ 
 Antenna scans artifacts of a project, downloads sources for dependencies, 
 validates sources and licenses and creates:
 
