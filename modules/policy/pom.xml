@@ -28,5 +28,6 @@
 
     <modules>
         <module>engine</module>
+        <module>engine-testing</module>
     </modules>
 </project>

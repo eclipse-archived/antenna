@@ -94,4 +94,22 @@ public class PolicyViolation {
     public Collection<ThirdPartyArtifact> getFailingArtifacts() {
         return Collections.unmodifiableCollection(failingArtifacts);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof PolicyViolation) {
+            PolicyViolation other = (PolicyViolation) obj;
+            if (rule.getId().equalsIgnoreCase(other.rule.getId())
+                    && failingArtifacts.size() == other.failingArtifacts.size()
+                    && failingArtifacts.containsAll(other.failingArtifacts)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rule, failingArtifacts);
+    }
 }
