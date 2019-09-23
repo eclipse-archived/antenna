@@ -13,7 +13,6 @@ package org.eclipse.sw360.antenna.ort.workflow.analyzers
 import com.here.ort.model.OrtResult
 import com.here.ort.model.readValue
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult
 import org.eclipse.sw360.antenna.model.artifact.Artifact
@@ -33,13 +32,7 @@ class OrtResultAnalyzer : ManualAnalyzer() {
         workflowStepOrder = 700
     }
 
-    @Throws(AntennaException::class)
-    override fun yield(): WorkflowStepResult =
-        try {
-            WorkflowStepResult(createArtifactList(componentInfoFile))
-        } catch (e: IOException) {
-            throw AntennaException("Error parsing the ORT result file: ${e.message}")
-        }
+    override fun yield() = WorkflowStepResult(createArtifactList(componentInfoFile))
 
     override fun getName() = "OrtResult"
 
