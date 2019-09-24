@@ -31,9 +31,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.checkInternetConnectionAndAssume;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
@@ -117,5 +119,28 @@ public class AntennaGradlePluginTest {
         Path root = projectRoot.resolve("build");
 
         assertThat(root.resolve("antenna")).exists();
+    }
+
+    @Test
+    public void testWithPomInSubDirs() throws IOException, AntennaException {
+        Path pomParentPath = exampleTestProject.getProjectPom().getParent().normalize();
+        Path dest = Paths.get(pomParentPath.toString(), "src", "pom.xml");
+        Files.move(exampleTestProject.getProjectPom(), dest, REPLACE_EXISTING);
+
+        String buildGradle = "plugins {\nid 'org.eclipse.sw360.antenna'\n}\n" +
+                "AntennaConfiguration{\ntoolConfigurationPath '" + dest + "'\n}";
+        FileUtils.writeStringToFile(projectRoot.resolve("build.gradle").toFile(), buildGradle, StandardCharsets.UTF_8);
+
+        AntennaImpl runner = new AntennaImpl("antenna-maven-plugin",
+                dest,
+                project);
+
+        runner.execute();
+
+        assertThat(dest.getParent().resolve("build").toFile()).doesNotExist();
+
+        assertThat(projectRoot.resolve("build/antenna").toFile()).exists();
+        assertThat(projectRoot.resolve("build/antenna/3rdparty-licenses.html").toFile()).exists();
+        assertThat(projectRoot.resolve("build/antenna/sources.zip").toFile()).exists();
     }
 }
