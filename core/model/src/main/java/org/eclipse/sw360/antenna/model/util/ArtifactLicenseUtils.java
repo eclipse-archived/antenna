@@ -16,9 +16,9 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformati
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.ObservedLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.OverriddenLicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
+import org.eclipse.sw360.antenna.model.license.EmptyLicenseInformation;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
+import org.eclipse.sw360.antenna.model.license.LicenseStatement;
 
 import java.util.*;
 
@@ -54,22 +54,18 @@ public class ArtifactLicenseUtils {
         final Optional<LicenseInformation> declared = artifact.askForGet(DeclaredLicenseInformation.class);
         final Optional<LicenseInformation> observed = artifact.askForGet(ObservedLicenseInformation.class);
         if(declared.isPresent() && observed.isPresent()) {
-            final String declaredLicenseRepresentation = Optional.ofNullable(declared.get().evaluate())
+            final String declaredLicenseRepresentation = declared.map(LicenseInformation::toSpdxExpression)
                     .orElse("");
-            final String observedLicenseRepresentation = Optional.ofNullable(observed.get().evaluate())
+            final String observedLicenseRepresentation = observed.map(LicenseInformation::toSpdxExpression)
                     .orElse("");
 
             if (observedLicenseRepresentation.contains(declaredLicenseRepresentation)
                 && !observedLicenseRepresentation.contains(" OR ")) {
                 return observed.get();
             } else {
-                final LicenseStatement effective = new LicenseStatement();
-                effective.setLeftStatement(declared.get());
-                effective.setRightStatement(observed.get());
-                effective.setOp(LicenseOperator.AND);
-                return effective;
+                return declared.get().and(observed.get());
             }
         }
-        return declared.orElse(observed.orElse(new LicenseStatement()));
+        return declared.orElse(observed.orElse(new EmptyLicenseInformation()));
     }
 }

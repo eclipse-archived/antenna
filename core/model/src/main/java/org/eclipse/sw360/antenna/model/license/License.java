@@ -53,6 +53,11 @@ public class License extends LicenseInformation {
     }
 
     @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
     public LicenseInformation and(LicenseInformation other) {
         return new LicenseStatement(this).and(other);
     }
