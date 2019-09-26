@@ -10,9 +10,12 @@
  */
 package org.eclipse.sw360.antenna.model.license;
 
+import java.util.Set;
+
 public abstract class LicenseInformation {
     public abstract LicenseInformation and(LicenseInformation other);
     public abstract LicenseInformation or(LicenseInformation other);
     public abstract String toSpdxExpression();
     public abstract boolean isEmpty();
+    public abstract Set<License> getLicenses();
 }

@@ -10,12 +10,13 @@
  */
 package org.eclipse.sw360.antenna.model.license;
 
+import com.here.ort.spdx.SpdxCompoundExpression;
 import com.here.ort.spdx.SpdxExpression;
 import com.here.ort.spdx.SpdxLicenseIdExpression;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class LicenseStatement extends LicenseInformation {
     private final Map<String,License> licenses = new HashMap<>();
@@ -25,7 +26,7 @@ public class LicenseStatement extends LicenseInformation {
         if (licenseInformation instanceof LicenseStatement) {
             LicenseStatement licenseStatement = (LicenseStatement) licenseInformation;
             licenses.putAll(licenseStatement.licenses);
-            expression = deepCopySpdxExpression(licenseStatement.expression);
+            expression = licenseStatement.expression;
         } else if (licenseInformation instanceof License) {
             License license = (License) licenseInformation;
             addLicenseToLicenses(license);
@@ -42,6 +43,11 @@ public class LicenseStatement extends LicenseInformation {
         this(SpdxExpression.parse(expression));
     }
 
+    public LicenseStatement(Collection<License> licenses, SpdxExpression expression) {
+        this.expression = expression;
+        licenses.forEach(this::addLicenseToLicenses);
+    }
+
     public LicenseStatement(SpdxExpression expression) {
         this.expression = expression;
         expression.licenses()
@@ -49,17 +55,12 @@ public class LicenseStatement extends LicenseInformation {
                     final License.Builder builder = new License.Builder();
                     builder.setShortname(sn);
                     final License license = builder.build();
-                    licenses.put(sn, license);
+                    addLicenseToLicenses(license);
                 });
     }
 
     private void addLicenseToLicenses(License license) {
         licenses.put(license.getShortname(), license);
-    }
-
-    private SpdxExpression deepCopySpdxExpression(SpdxExpression spdxExpression) {
-        // TODO: how to make a deep copy?
-        return new SpdxLicenseIdExpression(spdxExpression.toString(), false);
     }
 
     @Override
@@ -73,46 +74,47 @@ public class LicenseStatement extends LicenseInformation {
     }
 
     @Override
+    public Set<License> getLicenses() {
+        return new HashSet<>(licenses.values());
+    }
+
+    @Override
     public LicenseInformation and(LicenseInformation other) {
+        if (other instanceof EmptyLicenseInformation) {
+            return this;
+        }
+
+        final Set<License> allLicenses = getLicenses();
+        allLicenses.addAll(other.getLicenses());
+
         if (other instanceof License) {
             License license = (License) other;
-            LicenseStatement clone = new LicenseStatement(this);
-            clone.addLicenseToLicenses(license);
-            clone.expression.and(new SpdxLicenseIdExpression(license.getShortname(), false));
-            return this;
+            return new LicenseStatement(allLicenses, expression.and(new SpdxLicenseIdExpression(license.getShortname(), false)));
         }
         if (other instanceof LicenseStatement) {
             LicenseStatement licenseStatement = (LicenseStatement) other;
-            LicenseStatement clone = new LicenseStatement(this);
-            clone.licenses.putAll(licenseStatement.licenses);
-            clone.expression.and(deepCopySpdxExpression(licenseStatement.expression));
-            return clone;
-        }
-        if (other instanceof EmptyLicenseInformation) {
-            return new LicenseStatement(this);
+            return new LicenseStatement(allLicenses, expression.and(licenseStatement.expression));
         }
         throw new UnsupportedOperationException("The type of other=[" + other.getClass().getCanonicalName() + "] is unsupported");
     }
 
     @Override
     public LicenseInformation or(LicenseInformation other) {
+        if (other instanceof EmptyLicenseInformation) {
+            return this;
+        }
+
+        final Set<License> allLicenses = getLicenses();
+        allLicenses.addAll(other.getLicenses());
+
         if (other instanceof License) {
             License license = (License) other;
-            LicenseStatement clone = new LicenseStatement(this);
-            clone.addLicenseToLicenses(license);
-            clone.expression.or(new SpdxLicenseIdExpression(license.getShortname(), false));
-            return this;
+            return new LicenseStatement(allLicenses, expression.or(new SpdxLicenseIdExpression(license.getShortname(), false)));
         }
         if (other instanceof LicenseStatement) {
             LicenseStatement licenseStatement = (LicenseStatement) other;
-            LicenseStatement clone = new LicenseStatement(this);
-            clone.licenses.putAll(licenseStatement.licenses);
-            clone.expression.or(deepCopySpdxExpression(licenseStatement.expression));
-            return clone;
+            return new LicenseStatement(allLicenses, expression.or(licenseStatement.expression));
         }
-        if (other instanceof EmptyLicenseInformation) {
-            return new LicenseStatement(this);
-        }
-        throw  new UnsupportedOperationException("The type of other=[" + other.getClass().getCanonicalName() + "] is unsupported");
+        throw new UnsupportedOperationException("The type of other=[" + other.getClass().getCanonicalName() + "] is unsupported");
     }
 }

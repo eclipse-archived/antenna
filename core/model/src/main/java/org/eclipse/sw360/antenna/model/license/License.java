@@ -10,7 +10,9 @@
  */
 package org.eclipse.sw360.antenna.model.license;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 
 public class License extends LicenseInformation {
     private final String shortname;
@@ -55,6 +57,11 @@ public class License extends LicenseInformation {
     @Override
     public boolean isEmpty() {
         return false;
+    }
+
+    @Override
+    public Set<License> getLicenses() {
+        return Collections.singleton(this);
     }
 
     @Override

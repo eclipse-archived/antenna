@@ -1,5 +1,8 @@
 package org.eclipse.sw360.antenna.model.license;
 
+import java.util.Collections;
+import java.util.Set;
+
 public class EmptyLicenseInformation extends LicenseInformation {
     @Override
     public LicenseInformation and(LicenseInformation other) {
@@ -19,5 +22,10 @@ public class EmptyLicenseInformation extends LicenseInformation {
     @Override
     public boolean isEmpty() {
         return true;
+    }
+
+    @Override
+    public Set<License> getLicenses() {
+        return Collections.emptySet();
     }
 }
