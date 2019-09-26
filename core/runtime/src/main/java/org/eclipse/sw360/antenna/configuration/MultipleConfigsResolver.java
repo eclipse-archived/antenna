@@ -58,7 +58,7 @@ public class MultipleConfigsResolver {
      *
      * @throws ConfigurationException Configuration Problem
      */
-    public Configuration resolveConfigs(ToolConfiguration toolConfiguration) throws ConfigurationException {
+    public Configuration resolveConfigs(ToolConfiguration toolConfiguration) {
         return resolveConfigs(toolConfiguration, true);
     }
 

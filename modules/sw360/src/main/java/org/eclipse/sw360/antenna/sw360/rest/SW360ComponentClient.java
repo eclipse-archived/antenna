@@ -47,7 +47,7 @@ public class SW360ComponentClient extends SW360Client {
         return restUrl + COMPONENTS_ENDPOINT;
     }
 
-    public SW360Component getComponent(String componentId, HttpHeaders header) throws ExecutionException {
+    public SW360Component getComponent(String componentId, HttpHeaders header) {
         ResponseEntity<Resource<SW360Component>> response = doRestGET(getEndpoint() + "/" + componentId, header,
                 new ParameterizedTypeReference<Resource<SW360Component>>() {});
 
@@ -61,7 +61,7 @@ public class SW360ComponentClient extends SW360Client {
         }
     }
 
-    public List<SW360SparseComponent> getComponents(HttpHeaders header) throws ExecutionException {
+    public List<SW360SparseComponent> getComponents(HttpHeaders header) {
         ResponseEntity<Resource<SW360ComponentList>> response = doRestGET(getEndpoint(), header,
                 new ParameterizedTypeReference<Resource<SW360ComponentList>>() {});
 
@@ -72,7 +72,7 @@ public class SW360ComponentClient extends SW360Client {
         }
     }
 
-    public List<SW360SparseComponent> searchByName(String name, HttpHeaders header) throws ExecutionException {
+    public List<SW360SparseComponent> searchByName(String name, HttpHeaders header) {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(getEndpoint())
                 .queryParam(SW360Attributes.COMPONENT_SEARCH_BY_NAME, name);
@@ -88,7 +88,7 @@ public class SW360ComponentClient extends SW360Client {
         }
     }
 
-    public SW360Component createComponent(SW360Component sw360Component, HttpHeaders header) throws ExecutionException {
+    public SW360Component createComponent(SW360Component sw360Component, HttpHeaders header) {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Component, header);
 
         ResponseEntity<Resource<SW360Component>> response;

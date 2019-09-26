@@ -242,7 +242,7 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
     /**
      * Put parameters into context ready for a Antenna execution.
      */
-    private ToolConfiguration loadConfiguration() throws ExecutionException {
+    private ToolConfiguration loadConfiguration() {
         HashMap<String, Object> contextMap = new HashMap<>();
         contextMap.put("project", project);
         contextMap.put("basedir", project.getBasedir().toPath().toString());

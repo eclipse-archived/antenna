@@ -36,7 +36,7 @@ public class SW360ReleaseClientAdapter {
         this.releaseClient = new SW360ReleaseClient(restUrl, proxySettings);
     }
 
-    public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, boolean uploadSource, HttpHeaders header) throws ExecutionException {
+    public SW360Release addRelease(Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, boolean uploadSource, HttpHeaders header) {
         SW360Release release = SW360ReleaseAdapterUtils.prepareRelease(sw360Component, sw360LicenseIds, artifact);
 
         if (! SW360ReleaseAdapterUtils.isValidRelease(release)) {
@@ -53,7 +53,7 @@ public class SW360ReleaseClientAdapter {
             return release1;
         }
     }
-    public SW360Release updateRelease(SW360Release release, Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) throws ExecutionException {
+    public SW360Release updateRelease(SW360Release release, Artifact artifact, SW360Component sw360Component, Set<String> sw360LicenseIds, HttpHeaders header) {
         SW360Release sw360ReleaseFromArtifact = SW360ReleaseAdapterUtils.prepareRelease(sw360Component, sw360LicenseIds, artifact);
 
         if (release.equals(sw360ReleaseFromArtifact)) {
@@ -65,11 +65,11 @@ public class SW360ReleaseClientAdapter {
         }
     }
 
-    public SW360Release getReleaseById(String releaseId, HttpHeaders header) throws ExecutionException {
+    public SW360Release getReleaseById(String releaseId, HttpHeaders header) {
         return releaseClient.getRelease(releaseId, header);
     }
 
-    public List<SW360SparseRelease> getReleases(HttpHeaders header) throws ExecutionException {
+    public List<SW360SparseRelease> getReleases(HttpHeaders header) {
         return releaseClient.getReleases(header);
     }
 
@@ -79,7 +79,7 @@ public class SW360ReleaseClientAdapter {
         return artifactCommons.matchesOnComparisonProperties(componentCommons);
     }
 
-    public Optional<SW360Release> getReleaseByArtifact(SW360Component component, Artifact artifact, HttpHeaders header) throws ExecutionException {
+    public Optional<SW360Release> getReleaseByArtifact(SW360Component component, Artifact artifact, HttpHeaders header) {
         String releaseVersionOfArtifact = SW360ReleaseAdapterUtils.createSW360ReleaseVersion(artifact);
         if (component != null &&
                 component.get_Embedded() != null &&

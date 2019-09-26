@@ -42,7 +42,7 @@ public class AntennaCore {
      *
      * @throws ExecutionException Error in execution
      */
-    public Map<String, IAttachable> compose() throws ExecutionException {
+    public Map<String, IAttachable> compose() {
         // Execution workflow begins
         if (context.getToolConfiguration().isSkipAntennaExecution()) {
             LOGGER.info("Antenna execution is skipped.");
@@ -59,7 +59,7 @@ public class AntennaCore {
      *
      * @throws ConfigurationException Configuration problem
      */
-    public AntennaCore(AntennaContext context) throws ConfigurationException {
+    public AntennaCore(AntennaContext context) {
         this.context = context;
         LOGGER.info("Initializing core ...");
         AntennaWorkflowConfiguration twc = new AntennaWorkflowConfiguration(context);

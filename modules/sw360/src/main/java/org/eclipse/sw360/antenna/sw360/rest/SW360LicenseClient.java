@@ -43,7 +43,7 @@ public class SW360LicenseClient extends SW360Client {
         return restUrl + LICENSES_ENDPOINT;
     }
 
-    public List<SW360SparseLicense> getLicenses(HttpHeaders header) throws ExecutionException {
+    public List<SW360SparseLicense> getLicenses(HttpHeaders header) {
         ResponseEntity<Resource<SW360LicenseList>> response = doRestGET(getEndpoint(), header,
                 new ParameterizedTypeReference<Resource<SW360LicenseList>>() {});
 
@@ -62,7 +62,7 @@ public class SW360LicenseClient extends SW360Client {
         }
     }
 
-    public SW360License getLicenseByName(String name, HttpHeaders header) throws ExecutionException {
+    public SW360License getLicenseByName(String name, HttpHeaders header) {
         ResponseEntity<Resource<SW360License>> response = doRestGET(getEndpoint() + "/" + name, header,
                 new ParameterizedTypeReference<Resource<SW360License>>() {});
 
@@ -76,7 +76,7 @@ public class SW360LicenseClient extends SW360Client {
         }
     }
 
-    public SW360License createLicense(SW360License sw360License, HttpHeaders header) throws ExecutionException {
+    public SW360License createLicense(SW360License sw360License, HttpHeaders header) {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360License, header);
         ResponseEntity<Resource<SW360License>> response;
         try {

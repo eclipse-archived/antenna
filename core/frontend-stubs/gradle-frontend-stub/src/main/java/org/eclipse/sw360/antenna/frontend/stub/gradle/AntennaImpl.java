@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.frontend.stub.gradle;
 
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.frontend.MetaDataStoringProject;
 import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIFrontend;
 import org.gradle.api.Project;
@@ -49,7 +48,7 @@ public class AntennaImpl {
         };
     }
 
-    public void execute() throws ExecutionException {
+    public void execute() {
         antennaCLIFrontend.execute();
     }
 

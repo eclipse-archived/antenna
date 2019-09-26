@@ -170,7 +170,7 @@ public class Reporter implements IProcessingReporter {
         Files.createDirectories(this.targetDirectory);
     }
 
-    public IAttachable writeReportToReportPath() throws ExecutionException {
+    public IAttachable writeReportToReportPath() {
         try {
             createReportPath();
             LOGGER.info("Writing report to {}", reportPath.toString());

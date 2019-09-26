@@ -32,7 +32,7 @@ public class SW360UpdaterImpl {
         this.sw360MetaDataUpdater = sw360MetaDataUpdater;
     }
 
-    public Map<String, IAttachable> produce(Collection<Artifact> intermediates) throws ExecutionException {
+    public Map<String, IAttachable> produce(Collection<Artifact> intermediates) {
 
         try {
             List<SW360Release> releases = new ArrayList<>();

@@ -48,7 +48,7 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
         return restUrl + RELEASES_ENDPOINT_APPENDIX;
     }
 
-    public SW360Release getRelease(String releaseId, HttpHeaders header) throws ExecutionException {
+    public SW360Release getRelease(String releaseId, HttpHeaders header) {
         ResponseEntity<Resource<SW360Release>> response = doRestGET(getEndpoint() + "/" + releaseId, header,
                 new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
@@ -62,7 +62,7 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
         }
     }
 
-    public List<SW360SparseRelease> getReleases(HttpHeaders header) throws ExecutionException {
+    public List<SW360SparseRelease> getReleases(HttpHeaders header) {
         ResponseEntity<Resource<SW360ReleaseList>> response = doRestGET(getEndpoint(), header,
                 new ParameterizedTypeReference<Resource<SW360ReleaseList>>() {});
 
@@ -73,7 +73,7 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
         }
     }
 
-    public SW360Release createRelease(SW360Release sw360Release, HttpHeaders header) throws ExecutionException {
+    public SW360Release createRelease(SW360Release sw360Release, HttpHeaders header) {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
 
         ResponseEntity<Resource<SW360Release>> response = doRestPOST(getEndpoint(), httpEntity,
@@ -89,7 +89,7 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
         }
     }
 
-    public SW360Release patchRelease(SW360Release sw360Release, HttpHeaders header) throws ExecutionException {
+    public SW360Release patchRelease(SW360Release sw360Release, HttpHeaders header) {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
 
         ResponseEntity<Resource<SW360Release>> response = doRestPATCH(getEndpoint(), httpEntity,

@@ -12,12 +12,11 @@ package org.eclipse.sw360.antenna.frontend;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.IProject;
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 
 import java.util.Map;
 
 public interface AntennaFrontend<T extends IProject> {
-    AntennaFrontendHelper init() throws ConfigurationException;
+    AntennaFrontendHelper init();
     Map<String, IAttachable> getOutputs();
     T getProject();
 }

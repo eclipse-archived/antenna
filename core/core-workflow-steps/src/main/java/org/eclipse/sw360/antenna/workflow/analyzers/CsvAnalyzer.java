@@ -11,8 +11,6 @@
 
 package org.eclipse.sw360.antenna.workflow.analyzers;
 
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -30,7 +28,7 @@ public class CsvAnalyzer extends ManualAnalyzer {
     }
 
     @Override
-    public WorkflowStepResult yield() throws ExecutionException {
+    public WorkflowStepResult yield() {
         List<Artifact> artifacts = new CsvAnalyzerImpl(
                 getName(),
                 delimiter,
@@ -42,7 +40,7 @@ public class CsvAnalyzer extends ManualAnalyzer {
     }
 
     @Override
-    public void configure(Map<String, String> configMap) throws ConfigurationException {
+    public void configure(Map<String, String> configMap) {
         super.configure(configMap);
         if(configMap.containsKey(DELIMITER))  {
             this.delimiter = getConfigValue(DELIMITER, configMap).charAt(0);

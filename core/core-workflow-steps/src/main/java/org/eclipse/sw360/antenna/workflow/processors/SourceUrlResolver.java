@@ -12,7 +12,6 @@
 package org.eclipse.sw360.antenna.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
@@ -62,7 +61,7 @@ public class SourceUrlResolver extends AbstractProcessor {
     }
 
     @Override
-    public void configure(Map<String,String> configMap) throws ConfigurationException {
+    public void configure(Map<String,String> configMap) {
         super.configure(configMap);
         ToolConfiguration toolConfig = context.getToolConfiguration();
         ProxySettings proxySettings = new ProxySettings(toolConfig.useProxy(), toolConfig.getProxyHost(), toolConfig.getProxyPort());

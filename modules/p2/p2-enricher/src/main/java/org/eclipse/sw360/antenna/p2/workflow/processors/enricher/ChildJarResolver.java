@@ -11,7 +11,6 @@
 package org.eclipse.sw360.antenna.p2.workflow.processors.enricher;
 
 import org.apache.commons.io.IOUtils;
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -177,7 +176,7 @@ public class ChildJarResolver extends AbstractProcessor {
     }
 
     @Override
-    public void configure(Map<String,String> configMap) throws ConfigurationException {
+    public void configure(Map<String,String> configMap) {
         super.configure(configMap);
         this.targetDirectory = context.getToolConfiguration().getAntennaTargetDirectory();
     }

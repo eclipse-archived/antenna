@@ -45,8 +45,7 @@ public class SW360AuthenticationClient extends SW360Client {
         return authServerUrl + GET_ACCESS_TOKEN_ENDPOINT;
     }
 
-    public String getOAuth2AccessToken(String username, String password, String clientId, String clientPassword)
-            throws ExecutionException {
+    public String getOAuth2AccessToken(String username, String password, String clientId, String clientPassword) {
         String body = String.format("%s=%s&%s=%s&%s=%s", SW360Attributes.AUTHENTICATOR_GRANT_TYPE, GRANT_TYPE_VALUE,
                 SW360Attributes.AUTHENTICATOR_USERNAME, username, SW360Attributes.AUTHENTICATOR_PASSWORD, password);
 

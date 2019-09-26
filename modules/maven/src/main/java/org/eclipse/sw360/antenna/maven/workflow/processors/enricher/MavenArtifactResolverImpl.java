@@ -15,7 +15,6 @@ import org.apache.maven.plugin.LegacySupport;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.maven.ArtifactRequesterFactory;
 import org.eclipse.sw360.antenna.maven.ClassifierInformation;
 import org.eclipse.sw360.antenna.maven.IArtifactRequester;
@@ -77,7 +76,7 @@ public class MavenArtifactResolverImpl {
         this.basedir = basedir;
     }
 
-    public Collection<Artifact> process(Collection<Artifact> artifacts) throws ExecutionException {
+    public Collection<Artifact> process(Collection<Artifact> artifacts) {
         LOGGER.info("Resolve maven artifacts, be patient... this could take a long time");
         resolveArtifacts(artifacts);
         LOGGER.info("Resolve maven artifacts... done");

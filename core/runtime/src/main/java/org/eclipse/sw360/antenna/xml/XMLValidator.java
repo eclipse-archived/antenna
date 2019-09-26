@@ -44,7 +44,7 @@ public class XMLValidator extends IXMLValidator {
      *             during processing.
      */
     @Override
-    public void validateXML(File xmlFile, URL xsdUrl) throws ConfigurationException {
+    public void validateXML(File xmlFile, URL xsdUrl) {
         Validate.notNull(xmlFile, "No URL to xml file provided!");
         if (xsdUrl != null) {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);

@@ -10,8 +10,6 @@
  */
 package org.eclipse.sw360.antenna.sw360.workflow;
 
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
@@ -38,7 +36,7 @@ public class SW360ConnectionConfiguration {
     private final ProxySettings proxySettings;
     private final SW360AuthenticationClient authenticationClient;
 
-    public SW360ConnectionConfiguration(Getter<String> getConfigValue, Getter<Boolean> getBooleanConfigValue, String proxyHost, int proxyPort) throws ConfigurationException {
+    public SW360ConnectionConfiguration(Getter<String> getConfigValue, Getter<Boolean> getBooleanConfigValue, String proxyHost, int proxyPort) {
         // SW360 Connection configuration
         restServerUrl = getConfigValue.apply(SW360ConnectionConfiguration.REST_SERVER_URL_KEY);
         authServerUrl = getConfigValue.apply(SW360ConnectionConfiguration.AUTH_SERVER_URL_KEY);
@@ -86,7 +84,7 @@ public class SW360ConnectionConfiguration {
         return new SW360ProjectClientAdapter(restServerUrl, proxySettings);
     }
 
-    public HttpHeaders getHttpHeaders() throws ExecutionException {
+    public HttpHeaders getHttpHeaders() {
         return authenticationClient.getHeadersWithBearerToken(authenticationClient.getOAuth2AccessToken(user, password, clientId, clientPassword));
     }
 

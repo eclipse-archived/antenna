@@ -55,7 +55,7 @@ public class SW360MetaDataUpdater {
         this.uploadSources = uploadSources;
     }
 
-    public Set<String> getOrCreateLicenses(Artifact artifact) throws ExecutionException {
+    public Set<String> getOrCreateLicenses(Artifact artifact) {
         HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
         Set<String> licenseIds = new HashSet<>();
 
@@ -73,7 +73,7 @@ public class SW360MetaDataUpdater {
         return licenseIds;
     }
 
-    public SW360Release getOrCreateRelease(Artifact artifact, Set<String> licenseIds, SW360Component component) throws ExecutionException {
+    public SW360Release getOrCreateRelease(Artifact artifact, Set<String> licenseIds, SW360Component component) {
         HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
 
         if (!releaseClientAdapter.isArtifactAvailableAsRelease(artifact, component, header)) {
@@ -93,7 +93,7 @@ public class SW360MetaDataUpdater {
         }
     }
 
-    public SW360Component getOrCreateComponent(Artifact artifact) throws ExecutionException {
+    public SW360Component getOrCreateComponent(Artifact artifact) {
         HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
 
         if (!componentClientAdapter.isArtifactAvailableAsComponent(artifact, header)) {
@@ -109,7 +109,7 @@ public class SW360MetaDataUpdater {
         }
     }
 
-    public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) throws ExecutionException, IOException {
+    public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) throws IOException {
         HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
 
         Optional<String> projectId = projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion, header);

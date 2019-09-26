@@ -27,7 +27,7 @@ public class SW360ClientUtils {
         // Utils
     }
 
-    protected static List<SW360SparseRelease> getSw360SparseReleases(ResponseEntity<Resource<SW360ReleaseList>> response) throws ExecutionException {
+    protected static List<SW360SparseRelease> getSw360SparseReleases(ResponseEntity<Resource<SW360ReleaseList>> response) {
         SW360ReleaseList resource = Optional.ofNullable(response.getBody())
                 .orElseThrow(() -> new ExecutionException("Body was null"))
                 .getContent();
@@ -39,7 +39,7 @@ public class SW360ClientUtils {
         }
     }
 
-    protected static List<SW360SparseComponent> getSw360SparseComponents(ResponseEntity<Resource<SW360ComponentList>> response) throws ExecutionException {
+    protected static List<SW360SparseComponent> getSw360SparseComponents(ResponseEntity<Resource<SW360ComponentList>> response) {
         SW360ComponentList resource = Optional.ofNullable(response.getBody())
                 .orElseThrow(() -> new ExecutionException("Body was null"))
                 .getContent();

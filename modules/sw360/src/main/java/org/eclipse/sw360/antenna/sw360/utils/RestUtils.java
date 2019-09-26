@@ -29,7 +29,7 @@ import java.util.Map;
 public class RestUtils {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    public static HttpEntity<String> getHttpEntity(Map<String, Object> resourceMap, HttpHeaders authBearerHeader) throws ExecutionException {
+    public static HttpEntity<String> getHttpEntity(Map<String, Object> resourceMap, HttpHeaders authBearerHeader) {
         try {
             String jsonBody = objectMapper.writeValueAsString(resourceMap);
             return new HttpEntity<>(jsonBody, authBearerHeader);
@@ -38,7 +38,7 @@ public class RestUtils {
         }
     }
 
-    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Project sw360Project, HttpHeaders header) throws ExecutionException {
+    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Project sw360Project, HttpHeaders header) {
         Map<String, Object> project = new HashMap<>();
         project.put(SW360Attributes.PROJECT_NAME, sw360Project.getName());
         project.put(SW360Attributes.PROJECT_VERSION, sw360Project.getVersion());
@@ -50,7 +50,7 @@ public class RestUtils {
         return getHttpEntity(project, header);
     }
 
-    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Component sw360Component, HttpHeaders header) throws ExecutionException {
+    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Component sw360Component, HttpHeaders header) {
         Map<String, Object> component = new HashMap<>();
         component.put(SW360Attributes.COMPONENT_COMPONENT_NAME, sw360Component.getName());
         component.put(SW360Attributes.COMPONENT_COMPONENT_TYPE, sw360Component.getComponentType().toString());
@@ -58,7 +58,7 @@ public class RestUtils {
         return getHttpEntity(component, header);
     }
 
-    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Release sw360Release, HttpHeaders header) throws ExecutionException {
+    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Release sw360Release, HttpHeaders header) {
         try {
             String jsonBody = objectMapper.writeValueAsString(sw360Release);
             return new HttpEntity<>(jsonBody, header);
@@ -67,7 +67,7 @@ public class RestUtils {
         }
     }
 
-    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360License sw360License, HttpHeaders header) throws ExecutionException {
+    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360License sw360License, HttpHeaders header) {
         String shortName = sw360License.getShortName() == null ? "" : sw360License.getShortName();
         String fullName = sw360License.getFullName() == null ? shortName : sw360License.getFullName();
 
@@ -78,7 +78,7 @@ public class RestUtils {
         return getHttpEntity(license, header);
     }
 
-    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Attachment sw360Attachment, HttpHeaders header) throws ExecutionException {
+    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Attachment sw360Attachment, HttpHeaders header) {
         Map<String, Object> attachment = new HashMap<>();
         attachment.put("filename", sw360Attachment.getFilename());
         attachment.put("attachmentType", sw360Attachment.getAttachmentType());

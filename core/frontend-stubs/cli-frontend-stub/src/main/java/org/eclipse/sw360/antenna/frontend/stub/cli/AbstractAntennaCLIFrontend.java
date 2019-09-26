@@ -80,7 +80,7 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend<Meta
                 .setToolConfiguration(toolConfiguration);
     }
 
-    public void execute() throws ExecutionException {
+    public void execute() {
         AntennaCore antennaCore;
         try{
             final AntennaFrontendHelper antennaFrontendHelper = init();

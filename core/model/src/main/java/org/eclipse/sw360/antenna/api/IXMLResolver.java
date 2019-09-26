@@ -28,5 +28,5 @@ public interface IXMLResolver {
      *         opened.
      * @throws ConfigurationException If file does not contain a valid content
      */
-    AntennaConfig resolveXML(File file) throws ConfigurationException;
+    AntennaConfig resolveXML(File file);
 }

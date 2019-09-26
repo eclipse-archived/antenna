@@ -32,7 +32,7 @@ public final class P2RepositoryExtractor {
         // Utility class
     }
 
-    public static void installEclipseProductForP2Resolution(String extractionLocation) throws ExecutionException {
+    public static void installEclipseProductForP2Resolution(String extractionLocation) {
         String location = "";
         try {
             location = ClassCodeSourceLocation.getClassCodeSourceLocationAsString(P2RepositoryExtractor.class);
@@ -50,7 +50,7 @@ public final class P2RepositoryExtractor {
     }
 
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
-    public static void extractProductFromJar(String extractionLocation, String jarPath) throws ExecutionException {
+    public static void extractProductFromJar(String extractionLocation, String jarPath) {
         String extractedFolder = extractionLocation + File.separator + "extracted";
         new File(extractedFolder).mkdir();
         LOGGER.info("Extracting jar file containing products.");
@@ -59,7 +59,7 @@ public final class P2RepositoryExtractor {
         extractProductFromFilesystem(extractionLocation, extractedFolder);
     }
 
-    public static void extractProductFromFilesystem(String extractionLocation, String location) throws ExecutionException {
+    public static void extractProductFromFilesystem(String extractionLocation, String location) {
         File zipFile = new File(location + File.separator + getProductNameForOS());
         LOGGER.info("Extracting zip file of product.");
         unzipFile(zipFile, extractionLocation);

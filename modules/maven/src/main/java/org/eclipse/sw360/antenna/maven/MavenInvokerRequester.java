@@ -67,8 +67,7 @@ public class MavenInvokerRequester extends IArtifactRequester {
     }
 
     @Override
-    public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation)
-            throws ExecutionException {
+    public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation) {
 
         File expectedJarFile = getExpectedJarFile(coordinates, targetDirectory, classifierInformation);
 
@@ -135,7 +134,7 @@ public class MavenInvokerRequester extends IArtifactRequester {
         return new File(targetDirectory.toFile(), jarBaseName);
     }
 
-    private boolean callMavenInvocationRequest(InvocationRequest request) throws ExecutionException {
+    private boolean callMavenInvocationRequest(InvocationRequest request) {
         try {
             LOGGER.info("Calling Maven Invoker with command " + String.join(", ", request.getGoals()));
             return defaultInvoker.execute(request)

@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.sw360.adapter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.SW360ProjectClient;
@@ -25,7 +24,6 @@ import org.eclipse.sw360.antenna.sw360.utils.SW360ProjectAdapterUtils;
 import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.HttpHeaders;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -39,11 +37,11 @@ public class SW360ProjectClientAdapter {
         this.projectClient = new SW360ProjectClient(restUrl, proxySettings);
     }
 
-    public Optional<String> getProjectIdByNameAndVersion(IProject project, HttpHeaders header) throws ExecutionException {
+    public Optional<String> getProjectIdByNameAndVersion(IProject project, HttpHeaders header) {
         return getProjectIdByNameAndVersion(project.getProjectId(), project.getVersion(), header);
     }
 
-    public Optional<String> getProjectIdByNameAndVersion(String projectName, String projectVersion, HttpHeaders header) throws ExecutionException {
+    public Optional<String> getProjectIdByNameAndVersion(String projectName, String projectVersion, HttpHeaders header) {
         List<SW360Project> projects = projectClient.searchByName(projectName, header);
 
         return projects.stream()
@@ -53,7 +51,7 @@ public class SW360ProjectClientAdapter {
                 .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink);
     }
 
-    public String addProject(String projectName, String projectVersion, HttpHeaders header) throws ExecutionException, JsonProcessingException {
+    public String addProject(String projectName, String projectVersion, HttpHeaders header) {
         SW360Project sw360Project = new SW360Project();
         SW360ProjectAdapterUtils.prepareProject(sw360Project, projectName, projectVersion);
 
@@ -72,7 +70,7 @@ public class SW360ProjectClientAdapter {
         return isAppIdEqual && isProjectVersionEqual;
     }
 
-    public void addSW360ReleasesToSW360Project(String id, Collection<SW360Release> releases, HttpHeaders header) throws IOException, ExecutionException {
+    public void addSW360ReleasesToSW360Project(String id, Collection<SW360Release> releases, HttpHeaders header) {
         List<String> releaseLinks = releases.stream()
                 .map(SW360Release::get_Links)
                 .filter(Objects::nonNull)
@@ -83,7 +81,7 @@ public class SW360ProjectClientAdapter {
         projectClient.addReleasesToProject(id, releaseLinks, header);
     }
 
-    public List<SW360SparseRelease> getLinkedReleases(String projectId, HttpHeaders header) throws ExecutionException {
+    public List<SW360SparseRelease> getLinkedReleases(String projectId, HttpHeaders header) {
         return projectClient.getLinkedReleases(projectId, true, header);
     }
 }

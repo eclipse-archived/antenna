@@ -13,7 +13,6 @@ package org.eclipse.sw360.antenna.p2resolver.workflow.processors.enricher;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -47,13 +46,13 @@ public class P2Resolver extends AbstractProcessor {
     }
 
     @Override
-    public void configure(Map<String, String> configMap) throws ConfigurationException {
+    public void configure(Map<String, String> configMap) {
         repositories = Arrays.asList(getConfigValue(DEPENDENCY_REPOSITORY, configMap).split(";"));
     }
 
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     @Override
-    public Collection<Artifact> process(Collection<Artifact> intermediates) throws ExecutionException {
+    public Collection<Artifact> process(Collection<Artifact> intermediates) {
         File productInstallationArea = context
                 .getToolConfiguration()
                 .getAntennaTargetDirectory()

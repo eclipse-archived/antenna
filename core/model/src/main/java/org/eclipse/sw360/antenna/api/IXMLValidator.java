@@ -31,9 +31,9 @@ public abstract class IXMLValidator {
      *
      * @throws ConfigurationException
      */
-    public abstract void validateXML(File xmlFile, URL xsdUrl) throws ConfigurationException;
+    public abstract void validateXML(File xmlFile, URL xsdUrl);
 
-    public void validateXML(URL xmlUrl, URL xsdUrl) throws ConfigurationException {
+    public void validateXML(URL xmlUrl, URL xsdUrl) {
         try {
             validateXML(new File(xmlUrl.toURI()), xsdUrl);
         } catch (URISyntaxException e) {

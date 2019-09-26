@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.api;
 
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.model.Configuration;
 
 import java.io.File;
@@ -25,6 +24,6 @@ import java.nio.file.Path;
  * IConfigReader
  */
 public interface IConfigReader {
-    Configuration readConfigFromFile(File configFile, Path targetDirectory) throws ConfigurationException;
-    Configuration readConfigFromUri(URI configFileUri, Path targetDirectory) throws ConfigurationException;
+    Configuration readConfigFromFile(File configFile, Path targetDirectory);
+    Configuration readConfigFromUri(URI configFileUri, Path targetDirectory);
 }

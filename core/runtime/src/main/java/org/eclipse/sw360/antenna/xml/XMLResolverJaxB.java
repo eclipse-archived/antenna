@@ -43,7 +43,7 @@ public class XMLResolverJaxB implements IXMLResolver {
      *            File to be resolved.
      */
     @Override
-    public AntennaConfig resolveXML(File file) throws ConfigurationException{
+    public AntennaConfig resolveXML(File file){
         try {
             JAXBContext context = JAXBContext.newInstance(AntennaConfig.class);
             Unmarshaller um = context.createUnmarshaller();

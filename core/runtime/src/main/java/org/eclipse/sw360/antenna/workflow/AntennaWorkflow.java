@@ -38,7 +38,7 @@ public class AntennaWorkflow {
         LOGGER.info("Initializing workflow done\n");
     }
 
-    public Map<String, IAttachable> execute() throws ExecutionException {
+    public Map<String, IAttachable> execute() {
         LOGGER.info("Workflow execution started ...");
         try {
             LOGGER.info("Start collecting dependencies from");

@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 public class AnalyzerFactory extends WorkflowItemFactory {
 
-    public static List<AbstractAnalyzer> getAnalyzers(Workflow workflow, AntennaContext context) throws ConfigurationException {
+    public static List<AbstractAnalyzer> getAnalyzers(Workflow workflow, AntennaContext context) {
         if (workflow == null) {
             throw new ConfigurationException("No <workflow> section was found in your configuration.");
         }

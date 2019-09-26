@@ -23,7 +23,7 @@ public class OperatingSystemSpecifics {
     private static final String MAC_X86_64 = ANTENNA + "-macosx.cocoa.x86_64.zip";
     private static final String MAC_PATH = "Eclipse.app" + File.separator + "Contents" + File.separator + "MacOS" + File.separator;
 
-    public static String getProductNameForOS() throws ExecutionException {
+    public static String getProductNameForOS() {
         if (isWindows()) {
             return WIN32_X86_64;
         } else if (isLinux()) {
@@ -34,7 +34,7 @@ public class OperatingSystemSpecifics {
         throw new ExecutionException("Operating system not supported for workflow step P2 Resolver");
     }
 
-    public static File prepareEclipseExecutable(File productInstallationArea) throws ExecutionException {
+    public static File prepareEclipseExecutable(File productInstallationArea) {
         File eclipse_executable = getEclipseExecutable(productInstallationArea);
         if (isLinux() || isMac()) {
             eclipse_executable.setExecutable(true);
@@ -43,7 +43,7 @@ public class OperatingSystemSpecifics {
         return eclipse_executable;
     }
 
-    public static File getEclipseExecutable(File productInstallationArea) throws ExecutionException {
+    public static File getEclipseExecutable(File productInstallationArea) {
         if (isWindows()) {
             return productInstallationArea.toPath().resolve(LAUNCHER_NAME + ".exe").normalize().toFile();
         } else if (isLinux()) {

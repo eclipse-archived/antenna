@@ -32,7 +32,7 @@ public class SW360ComponentClientAdapter {
         this.componentClient = new SW360ComponentClient(restUrl, proxySettings);
     }
 
-    public SW360Component addComponent(Artifact artifact, HttpHeaders header) throws ExecutionException {
+    public SW360Component addComponent(Artifact artifact, HttpHeaders header) {
         SW360Component component = new SW360Component();
         SW360ComponentAdapterUtils.prepareComponent(component, artifact);
         if(! SW360ComponentAdapterUtils.isValidComponent(component)) {
@@ -41,11 +41,11 @@ public class SW360ComponentClientAdapter {
         return componentClient.createComponent(component, header);
     }
 
-    public SW360Component getComponentById(String componentId, HttpHeaders header) throws ExecutionException {
+    public SW360Component getComponentById(String componentId, HttpHeaders header) {
         return componentClient.getComponent(componentId, header);
     }
 
-    public boolean isArtifactAvailableAsComponent(Artifact artifact, HttpHeaders header) throws ExecutionException {
+    public boolean isArtifactAvailableAsComponent(Artifact artifact, HttpHeaders header) {
         String componentName = SW360ComponentAdapterUtils.createComponentName(artifact);
 
         List<SW360SparseComponent> components = componentClient.getComponents(header);
@@ -55,13 +55,13 @@ public class SW360ComponentClientAdapter {
                 .anyMatch(name -> name.equals(componentName));
     }
 
-    public Optional<SW360Component> getComponentByArtifact(Artifact artifact, HttpHeaders header) throws ExecutionException {
+    public Optional<SW360Component> getComponentByArtifact(Artifact artifact, HttpHeaders header) {
         String componentName = SW360ComponentAdapterUtils.createComponentName(artifact);
 
         return getComponentByName(componentName, header);
     }
 
-    public Optional<SW360Component> getComponentByName(String componentName, HttpHeaders header) throws ExecutionException {
+    public Optional<SW360Component> getComponentByName(String componentName, HttpHeaders header) {
         List<SW360Component> completeComponents = new ArrayList<>();
         List<SW360SparseComponent> components = componentClient.searchByName(componentName, header);
 

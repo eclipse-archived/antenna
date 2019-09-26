@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.api;
 
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
@@ -42,7 +41,7 @@ public interface IProcessingReporter {
      * 
      * @param stream
      */
-    void writeReport(OutputStream stream) throws ExecutionException;
+    void writeReport(OutputStream stream);
 
-    IAttachable writeReportToReportPath() throws ExecutionException;
+    IAttachable writeReportToReportPath();
 }

@@ -45,7 +45,7 @@ public class SW360ProjectClient extends SW360Client {
         return restUrl + PROJECTS_ENDPOINT;
     }
 
-    public List<SW360Project> searchByName(String name, HttpHeaders header) throws ExecutionException {
+    public List<SW360Project> searchByName(String name, HttpHeaders header) {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(getEndpoint())
                 .queryParam(SW360Attributes.PROJECT_SEARCH_BY_NAME, name);
@@ -70,7 +70,7 @@ public class SW360ProjectClient extends SW360Client {
         }
     }
 
-    public SW360Project createProject(SW360Project sw360Project, HttpHeaders header) throws ExecutionException {
+    public SW360Project createProject(SW360Project sw360Project, HttpHeaders header) {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Project, header);
         ResponseEntity<Resource<SW360Project>> response = doRestPOST(getEndpoint(), httpEntity,
                 new ParameterizedTypeReference<Resource<SW360Project>>() {});
@@ -85,7 +85,7 @@ public class SW360ProjectClient extends SW360Client {
         }
     }
 
-    public SW360Project getProject(String projectId, HttpHeaders header) throws ExecutionException {
+    public SW360Project getProject(String projectId, HttpHeaders header) {
         ResponseEntity<Resource<SW360Project>> response = doRestGET(getEndpoint() + "/" + projectId, header,
                 new ParameterizedTypeReference<Resource<SW360Project>>() {});
 
@@ -99,7 +99,7 @@ public class SW360ProjectClient extends SW360Client {
         }
     }
 
-    public void addReleasesToProject(String projectId, List<String> releases, HttpHeaders header) throws ExecutionException {
+    public void addReleasesToProject(String projectId, List<String> releases, HttpHeaders header) {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(getEndpoint())
                 .pathSegment(projectId, SW360Attributes.PROJECT_RELEASES);
@@ -113,7 +113,7 @@ public class SW360ProjectClient extends SW360Client {
         }
     }
 
-    public List<SW360SparseRelease> getLinkedReleases(String projectId, boolean transitive, HttpHeaders header) throws ExecutionException {
+    public List<SW360SparseRelease> getLinkedReleases(String projectId, boolean transitive, HttpHeaders header) {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(getEndpoint())
                 .pathSegment(projectId, SW360Attributes.PROJECT_RELEASES)

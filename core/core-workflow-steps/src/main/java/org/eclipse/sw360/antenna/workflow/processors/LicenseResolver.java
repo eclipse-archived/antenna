@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.workflow.processors;
 
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
@@ -75,7 +74,7 @@ public class LicenseResolver extends AbstractProcessor {
     }
 
     @Override
-    public void configure(Map<String,String> configMap) throws ConfigurationException {
+    public void configure(Map<String,String> configMap) {
         super.configure(configMap);
         this.configuredLicenses = context.getConfiguration().getFinalLicenses();
     }

@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.p2resolver;
 
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 
@@ -38,7 +37,7 @@ public class EclipseProcessBuilder {
     private static final String REPOSITORIES = "-repositories";
     private static final String ARTIFACTS = "-coordinates";
 
-    public static ProcessBuilder setupEclipseProcess(File productInstallationArea, File artifactDownloadArea, Collection<Artifact> artifacts, List<String> repositories) throws ExecutionException {
+    public static ProcessBuilder setupEclipseProcess(File productInstallationArea, File artifactDownloadArea, Collection<Artifact> artifacts, List<String> repositories) {
         File eclipse_executable = prepareEclipseExecutable(productInstallationArea);
 
         return new ProcessBuilder(

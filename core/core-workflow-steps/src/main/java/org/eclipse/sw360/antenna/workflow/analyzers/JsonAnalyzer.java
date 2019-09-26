@@ -31,7 +31,7 @@ public class JsonAnalyzer extends ManualAnalyzer {
         this.workflowStepOrder = 600;
     }
 
-    private void validate(ToolConfiguration toolConfig) throws ExecutionException {
+    private void validate(ToolConfiguration toolConfig) {
         // Check that JSON file is present
         if (!componentInfoFile.exists()) {
             throw new ExecutionException("Antenna is configured to read a JSON configuration file ("
@@ -52,7 +52,7 @@ public class JsonAnalyzer extends ManualAnalyzer {
 
 
     @Override
-    public WorkflowStepResult yield() throws ExecutionException {
+    public WorkflowStepResult yield() {
         ToolConfiguration toolConfig = context.getToolConfiguration();
         validate(toolConfig);
 

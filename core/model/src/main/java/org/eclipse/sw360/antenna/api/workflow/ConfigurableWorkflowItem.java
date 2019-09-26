@@ -60,11 +60,11 @@ public abstract class ConfigurableWorkflowItem {
 
     }
 
-    public String getConfigValue(String key, Map<String, String> configMap) throws ConfigurationException {
+    public String getConfigValue(String key, Map<String, String> configMap) {
         return getConfigValue(key, configMap, null);
     }
 
-    public String getConfigValue(String key, Map<String, String> configMap, String defaultValue) throws ConfigurationException {
+    public String getConfigValue(String key, Map<String, String> configMap, String defaultValue) {
         String result = configMap.get(key);
         if (result == null && defaultValue != null) {
             return defaultValue;
@@ -76,11 +76,11 @@ public abstract class ConfigurableWorkflowItem {
         return result;
     }
 
-    public Boolean getBooleanConfigValue(String key, Map<String, String> configMap) throws ConfigurationException {
+    public Boolean getBooleanConfigValue(String key, Map<String, String> configMap) {
         return "true".equals(getConfigValue(key, configMap, "false").toLowerCase());
     }
 
-    public List<String> getCommaSeparatedConfigValue(String key, Map<String,String> configMap) throws  ConfigurationException {
+    public List<String> getCommaSeparatedConfigValue(String key, Map<String,String> configMap) {
         final String configValue = getConfigValue(key, configMap, "");
         if ("".equals(configValue)) {
             return Collections.emptyList();

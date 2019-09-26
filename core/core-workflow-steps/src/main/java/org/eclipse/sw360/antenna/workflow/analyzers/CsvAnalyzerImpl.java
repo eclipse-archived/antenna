@@ -66,7 +66,7 @@ public class CsvAnalyzerImpl {
         this.baseDir = baseDir;
     }
 
-    public List<Artifact> yield() throws ExecutionException {
+    public List<Artifact> yield() {
         List<Artifact> artifacts = new ArrayList<>();
         List<CSVRecord> records = getRecords();
 

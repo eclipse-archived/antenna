@@ -29,7 +29,7 @@ public class AntennaWorkflowConfiguration {
     private final List<AbstractGenerator> generators;
     private final List<AbstractOutputHandler> outputHandlers;
 
-    public AntennaWorkflowConfiguration(AntennaContext context) throws ConfigurationException {
+    public AntennaWorkflowConfiguration(AntennaContext context) {
         LOGGER.info("Initializing workflow configuration ...");
         Workflow workflow = context.getToolConfiguration().getWorkflow();
 

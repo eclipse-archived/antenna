@@ -43,8 +43,8 @@ public class HttpHelper {
         File targetFile = targetDirectory.resolve(filename).toFile();
 
         try (CloseableHttpResponse response = getFromUrl(url)) {
-            if(response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                throw new IOException("File not found on URL=["+url+"]");
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+                throw new IOException("File not found on URL=[" + url + "]");
             } else if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 throw new IOException("Reason: " + response.getStatusLine().getReasonPhrase());
             }

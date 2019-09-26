@@ -36,13 +36,13 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
 
     public abstract Class<T> getHandledClassType();
 
-    private HttpEntity<String> buildJsonPart(SW360Attachment sw360Attachment) throws ExecutionException {
+    private HttpEntity<String> buildJsonPart(SW360Attachment sw360Attachment) {
         HttpHeaders jsonHeader = new HttpHeaders();
         jsonHeader.setContentType(MediaType.APPLICATION_JSON);
         return RestUtils.convertSW360ResourceToHttpEntity(sw360Attachment, jsonHeader);
     }
 
-    public T uploadAndAttachAttachment(T itemToModify, Path fileToAttach, String kindToAttach, HttpHeaders header) throws ExecutionException {
+    public T uploadAndAttachAttachment(T itemToModify, Path fileToAttach, String kindToAttach, HttpHeaders header) {
         if (!Files.exists(fileToAttach)) {
             throw new ExecutionException("The file=[" + fileToAttach + "], which should be attached to release, does not exist");
         }
@@ -60,7 +60,7 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
         return uploadAndAttachAttachment(itemToModify, fileToAttach, requestEntity);
     }
 
-    private T uploadAndAttachAttachment(T itemToModify, Path fileToAttach, HttpEntity<MultiValueMap<String, Object>> requestEntity) throws ExecutionException {
+    private T uploadAndAttachAttachment(T itemToModify, Path fileToAttach, HttpEntity<MultiValueMap<String, Object>> requestEntity) {
         final String self = itemToModify.get_Links().getSelf().getHref();
         ResponseEntity<T> response = restTemplate.postForEntity(self + ATTACHMENTS_ENDPOINT, requestEntity, getHandledClassType());
 

@@ -36,7 +36,7 @@ public class SW360UserClient extends SW360Client {
         return restUrl + USERS_ENDPOINT;
     }
 
-    public SW360User getUserByEmail(String email, HttpHeaders header) throws ExecutionException {
+    public SW360User getUserByEmail(String email, HttpHeaders header) {
         ResponseEntity<Resource<SW360User>> response = doRestGET(getEndpoint() + "/" + email, header,
                 new ParameterizedTypeReference<Resource<SW360User>>() {});
 

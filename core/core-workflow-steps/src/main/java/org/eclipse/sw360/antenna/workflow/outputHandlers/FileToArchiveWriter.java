@@ -12,7 +12,6 @@
 package org.eclipse.sw360.antenna.workflow.outputHandlers;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractOutputHandler;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
@@ -47,7 +46,7 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
     }
 
     @Override
-    public void configure(Map<String, String> configMap) throws ConfigurationException {
+    public void configure(Map<String, String> configMap) {
         String[] rawWriteToArchiveInstructions = getConfigValue(INSTRUCTIONS_KEY, configMap)
                 .split(";");
         for(String rawInstruction : rawWriteToArchiveInstructions){

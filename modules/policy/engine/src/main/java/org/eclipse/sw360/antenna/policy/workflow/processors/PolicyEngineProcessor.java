@@ -41,7 +41,7 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
     }
 
     @Override
-    public void configure(final Map<String, String> configMap) throws ConfigurationException {
+    public void configure(final Map<String, String> configMap) {
         super.configure(configMap);
 
         LOGGER.info("Setting up policy engine");

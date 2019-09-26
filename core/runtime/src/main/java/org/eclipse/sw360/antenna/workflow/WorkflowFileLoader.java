@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.workflow;
 
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
@@ -28,7 +27,7 @@ import java.util.function.Function;
 
 public class WorkflowFileLoader {
 
-    public static Workflow loadWorkflowFromClassPath(Optional<File> workflowOverride, TemplateRenderer tr) throws ConfigurationException {
+    public static Workflow loadWorkflowFromClassPath(Optional<File> workflowOverride, TemplateRenderer tr) {
         Workflow workflow = new Workflow();
         Optional<String> renderedWorkflow = tr.renderClassPathWorkflow();
         if(renderedWorkflow.isPresent()) {

@@ -44,7 +44,7 @@ public class SW360EnricherImpl {
         this.connector = connector;
     }
 
-    public Collection<Artifact> process(Collection<Artifact> intermediates) throws ExecutionException {
+    public Collection<Artifact> process(Collection<Artifact> intermediates) {
         for (Artifact artifact : intermediates) {
             Optional<SW360Release> release = connector.findReleaseForArtifact(artifact);
             if (release.isPresent()) {
@@ -173,7 +173,7 @@ public class SW360EnricherImpl {
         return license;
     }
 
-    private Optional<License> enrichSparseLicenseFromSW360(SW360SparseLicense sparseLicense) throws ExecutionException {
+    private Optional<License> enrichSparseLicenseFromSW360(SW360SparseLicense sparseLicense) {
         Optional<License> licenseDetails = connector.getLicenseDetails(sparseLicense)
                 .map(this::makeLicenseFromLicenseDetails);
         if (!licenseDetails.isPresent()) {

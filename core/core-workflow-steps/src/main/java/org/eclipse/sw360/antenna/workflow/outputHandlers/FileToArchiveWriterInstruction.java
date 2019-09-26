@@ -24,7 +24,7 @@ public class FileToArchiveWriterInstruction {
     public final String outputType;
     public final Path pathInArchive;
 
-    public FileToArchiveWriterInstruction(String instruction, IProcessingReporter reporter) throws ConfigurationException {
+    public FileToArchiveWriterInstruction(String instruction, IProcessingReporter reporter) {
         if (!instruction.contains(":")) {
             throwConfigurationError(instruction, "invalid due to missing \":\"", reporter);
         }

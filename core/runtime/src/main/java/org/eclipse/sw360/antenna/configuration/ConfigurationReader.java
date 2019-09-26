@@ -61,7 +61,7 @@ public class ConfigurationReader implements IConfigReader {
     }
 
     @Override
-    public Configuration readConfigFromUri(URI configFileUri, Path antennaTargetDirectory) throws ConfigurationException {
+    public Configuration readConfigFromUri(URI configFileUri, Path antennaTargetDirectory) {
         Validate.notNull(configFileUri, "Configured config uri is null!");
 
         LOGGER.info("Validate config file against xsd.");
@@ -71,7 +71,7 @@ public class ConfigurationReader implements IConfigReader {
     }
 
     @Override
-    public Configuration readConfigFromFile(File configFile, Path antennaTargetDirectory) throws ConfigurationException {
+    public Configuration readConfigFromFile(File configFile, Path antennaTargetDirectory) {
         Validate.isTrue(configFile.exists(), "Configured config file '" + configFile + "' does not exist!");
         Validate.isTrue(configFile.isFile(), "Configured config file '" + configFile + "' must be a file!");
 

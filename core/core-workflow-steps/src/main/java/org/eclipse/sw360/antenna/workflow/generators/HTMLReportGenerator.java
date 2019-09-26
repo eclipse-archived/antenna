@@ -50,7 +50,7 @@ public class HTMLReportGenerator extends AbstractGenerator {
     }
 
     @Override
-    public Map<String, IAttachable> produce(Collection<Artifact> artifacts) throws ExecutionException {
+    public Map<String, IAttachable> produce(Collection<Artifact> artifacts){
         LOGGER.info("Generating HTML report.");
 
         // Get path to disclosure documents

@@ -12,7 +12,6 @@
 package org.eclipse.sw360.antenna.drools.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.drools.DroolsEngine;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -32,7 +31,7 @@ public class AntennaDroolsChecker extends AbstractComplianceChecker {
     }
 
     @Override
-    public void configure(Map<String, String> configMap) throws ConfigurationException {
+    public void configure(Map<String, String> configMap) {
         super.configure(configMap);
         droolsEngine.setRulesetDirectory(getConfigValue(BASEDIR_KEY, configMap));
         droolsEngine.setDebug(context.getDebug());
