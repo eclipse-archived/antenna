@@ -57,3 +57,7 @@ Antenna can be used with Java versions 9 or newer.
 However, it requires some additional configuration described in [Tool Configuration](antenna-documentation/src/site/markdown/tool-configuration.md.vm/#additional-configuration-for-java-9-or-newer).
 
  *To find answers in the most frequent questions/problems go to [Troubleshooting](antenna-documentation/src/site/markdown/troubleshooting.md.vm).*
+
+### Documentation
+
+For more information please refer to our [documentation](https://eclipse.github.io/antenna/).

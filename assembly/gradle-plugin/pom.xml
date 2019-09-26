@@ -123,7 +123,7 @@
                     <execution>
                         <id>gradle-build</id>
                         <phase>prepare-package</phase>
-                        <configuration>
+                        <configuration combine.self="override">
                             <executable>${gradle.executable}</executable>
                             <arguments>
                                 <argument>clean</argument>
@@ -175,6 +175,34 @@
         </plugins>
     </build>
     <profiles>
+        <profile>
+            <!-- this profile is for cases when a ci fails due to vm failures in gradle -->
+            <id>ci</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <configuration combine.self="override">
+                                    <executable>${gradle.executable}</executable>
+                                    <arguments>
+                                        <argument>clean</argument>
+                                        <argument>${gradle.task}</argument>
+                                        <argument>-Pversion=${project.version}</argument>
+                                        <argument>-Pdescription=${project.description}</argument>
+                                        <argument>-S</argument>
+                                        <argument>--no-daemon</argument>
+                                    </arguments>
+                                    <skip>${skip.gradle.build}</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>windows</id>
             <activation>

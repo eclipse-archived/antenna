@@ -71,6 +71,39 @@
                 <skip.tests>false</skip.tests>
             </properties>
         </profile>
+        <profile>
+            <id>site-deploy</id>
+            <activation>
+                <property>
+                    <name>site-deploy</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.github</groupId>
+                        <artifactId>site-maven-plugin</artifactId>
+                        <configuration>
+                            <message>Creating documentation on Github Pages for ${project.name} ${project.version}</message>
+                            <merge>true</merge>
+                            <path>${ANTENNA_DOCUMENTATION_VERSION}</path>
+                            <noJekyll>true</noJekyll>
+                            <userName>${GITHUB_USERNAME}</userName>
+                            <password>${GITHUB_PASSWORD}</password>
+                            <outputDirectory>${basedir}/target/documentation</outputDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>site</goal>
+                                </goals>
+                                <phase>site-deploy</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>
@@ -216,6 +249,4 @@
             </resource>
         </resources>
     </build>
-
-
 </project>
