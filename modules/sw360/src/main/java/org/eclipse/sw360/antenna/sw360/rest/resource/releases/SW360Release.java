@@ -252,6 +252,16 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
         return this;
     }
 
+    public SW360Release setExternalIds(Map<String,String> externalIds) {
+        this.externalIds.putAll(externalIds);
+        return this;
+    }
+
+    public SW360Release setAdditionalData(Map<String,String> additionalData) {
+        this.additionalData.putAll(additionalData);
+        return this;
+    }
+
     public boolean shareIdentifier(SW360Release releaseCompare) {
         return this.name.equals(Optional.of(releaseCompare.getName()).orElse(""))
                 && this.version.equals(Optional.of(releaseCompare.getVersion()).orElse(""));
