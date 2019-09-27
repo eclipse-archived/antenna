@@ -144,7 +144,7 @@ The process described here has several goals:
 - Maintain Antenna's quality
 - Enable a sustainable system for maintainers to review contributions
 
-Please follow these steps to have your contribution considered by the maintainers:
+Please follow these steps, detailed in the [pull request template](.github/PULL_REQUEST_TEMPLATE/pull_request_template.md), to have your contribution considered by the maintainers:
 
 1. Describe in your PR what you have done, what this is fixing or introducing and why this isn't regressive. 
 If there is an issue to your PR, please link it. 
