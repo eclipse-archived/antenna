@@ -15,6 +15,7 @@ their licenses,
 Learn more about Antenna in [What Antenna Does](antenna-documentation/src/site/markdown/index.md.vm).
 
 If you want to contribute to Antenna, please check out the [Contribution guidlines](CONTRIBUTING.md). 
+Please ensure to keep our [Code of Conduct](CODE_OF_CONDUCT.md)
 
 ### Modules
 

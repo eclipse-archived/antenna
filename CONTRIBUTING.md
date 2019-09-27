@@ -23,7 +23,7 @@ This is a set of guidelines for contributing to [Antenna](https://github.com/ecl
   * [Java Styleguide](#java-styleguide)
   * [Documentation Styleguide](#documentation-styleguide)
 
-## Code of Conduct
+## [Code of Conduct](CODE_OF_CONDUCT.md)
 
 This project is hosted by the [Eclipse Foundation](https://github.com/eclipse) on GitHub and hence adheres to the 
 [Eclipse Code of Conduct](https://wiki.eclipse.org/Eclipse_Code_of_Conduct) that is based on the
