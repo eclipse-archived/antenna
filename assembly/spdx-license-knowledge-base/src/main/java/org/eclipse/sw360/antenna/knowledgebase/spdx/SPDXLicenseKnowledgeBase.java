@@ -59,13 +59,12 @@ public class SPDXLicenseKnowledgeBase implements ILicenseManagementKnowledgeBase
 
     @Override
     public String getTextForId(String licenseId) {
-        final Optional<SpdxListedLicense> spdxLicense = getSpdxLicense(licenseId);
-        if(spdxLicense.isPresent()){
-            return spdxLicense.map(License::getLicenseText).get();
-        }
-
-        reporter.add(licenseId, MessageType.MISSING_LICENSE_TEXT, "No license text found in SPDX with list version: " + LicenseInfoFactory.getLicenseListVersion());
-        return null;
+        return getSpdxLicense(licenseId)
+                .map(License::getLicenseText)
+                .orElseGet(() -> {
+                    reporter.add(licenseId, MessageType.MISSING_LICENSE_TEXT, "No license text found in SPDX with list version: " + LicenseInfoFactory.getLicenseListVersion());
+                    return null;
+                });
     }
 
     @Override

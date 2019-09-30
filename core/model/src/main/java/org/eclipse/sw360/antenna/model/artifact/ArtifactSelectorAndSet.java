@@ -56,7 +56,10 @@ public class ArtifactSelectorAndSet implements ArtifactSelector {
     @Override
     public String toString() {
         if(selectors.size() == 1) {
-            return selectors.stream().findAny().get().toString();
+            return selectors.stream()
+                    .findFirst()
+                    .map(ArtifactSelector::toString)
+                    .orElse("");
         }
         return selectors.stream()
                 .map(ArtifactSelector::toString)
