@@ -47,7 +47,7 @@ public class WorkflowComparator {
                                 .filter(step2 -> step1.getClassHint() == null && step2.getClassHint() == null ||
                                         step1.getClassHint() != null && step1.getClassHint().equals(step2.getClassHint()))
                                 .filter(step2 -> Optional.ofNullable(step1.isDeactivated()).orElse(false)
-                                        == Optional.ofNullable(step2.isDeactivated()).orElse(false))
+                                        .equals(Optional.ofNullable(step2.isDeactivated()).orElse(false)))
                                 .filter(step2 -> areEqual(step2.getConfiguration(), step1.getConfiguration()))
                                 .count() == 1);
     }

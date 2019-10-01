@@ -12,6 +12,7 @@
 package org.eclipse.sw360.antenna.p2resolver;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
@@ -40,12 +41,15 @@ public class ArtifactAttacher {
         }
     }
 
-    private void attachArtifacts(Artifact artifact, File artifactDownloadArea) throws IOException {
-        if (artifact.askFor(BundleCoordinates.class).isPresent()) {
-            BundleCoordinates bundleCoordinates = artifact.askFor(BundleCoordinates.class).get();
-            attachJar(artifact, artifactDownloadArea, bundleCoordinates);
-            attachSource(artifact, artifactDownloadArea, bundleCoordinates);
-        }
+    private void attachArtifacts(Artifact artifact, File artifactDownloadArea) {
+        artifact.askFor(BundleCoordinates.class).ifPresent(bundleCoordinates -> {
+            try {
+                attachJar(artifact, artifactDownloadArea, bundleCoordinates);
+                attachSource(artifact, artifactDownloadArea, bundleCoordinates);
+            } catch (IOException e) {
+                throw new AntennaExecutionException("IOException: ", e);
+            }
+        });
     }
 
     private void attachSource(Artifact artifact, File artifactDownloadArea, BundleCoordinates bundleCoordinates) throws IOException {

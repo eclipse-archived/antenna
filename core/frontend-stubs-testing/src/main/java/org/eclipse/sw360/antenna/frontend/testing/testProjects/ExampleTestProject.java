@@ -84,11 +84,11 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                 "base.dir", projectRoot.toString(),
                 "file.path", "src/reportData.json"));
         analyzers.add(mkWorkflowStep("CSV Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer",
-                new HashMap<String, String>() {{
-                    put("base.dir", projectRoot.toString());
-                    put("file.path", "src/dependencies.csv");
-                    put("delimiter", ",");
-                }}));
+                Stream.of(new String[][] {
+                        { "base.dir", projectRoot.toString() },
+                        { "file.path", "src/dependencies.csv" },
+                        { "delimiter", "," }})
+                        .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]))));
         analyzers.add(mkWorkflowStep("ORT Result Analyzer", "org.eclipse.sw360.antenna.ort.workflow.analyzers.OrtResultAnalyzer",
                 "base.dir", projectRoot.toString(),
                 "file.path", "src/analyzer-result.yml"));
@@ -117,23 +117,26 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                     return newS;
                 })
                 .collect(Collectors.toList());
-        Map<String, String> droolsConfig = new HashMap<String, String>() {{
-            put("base.dir", projectRoot.toString());
-            put("folder.paths", "./src/example-policies");
-            put("failOn", "WARN");
-        }};
+
+        Map<String, String> droolsConfig = Stream.of(new String[][] {
+                { "base.dir", projectRoot.toString() },
+                { "folder.paths", "./src/example-policies" },
+                { "failOn", "WARN" }})
+                .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
+
         WorkflowStep checker1 = mkWorkflowStep("Drools Policy Engine", "org.eclipse.sw360.antenna.drools.workflow.processors.AntennaDroolsChecker", droolsConfig);
         processors.add(checker1);
         WorkflowStep enricher = mkWorkflowStep("SW360 Enricher", "org.eclipse.sw360.antenna.sw360.workflow.processors.SW360Enricher",
-                new HashMap<String, String>() {{
-                    put("rest.server.url", "http://localhost:8080/resource/api");
-                    put("auth.server.url", "http://localhost:8080/authorization/oauth");
-                    put("user.id", "admin@sw360.org");
-                    put("user.password", "12345");
-                    put("client.id", "trusted-sw360-client");
-                    put("client.password", "sw360-secret");
-                    put("proxy.use", "false");
-                }});
+                Stream.of(new String[][] {
+                        { "rest.server.url", "http://localhost:8080/resource/api" },
+                        { "auth.server.url", "http://localhost:8080/authorization/oauth" },
+                        { "user.id", "admin@sw360.org" },
+                        { "user.password", "12345" },
+                        { "client.id", "trusted-sw360-client" },
+                        { "client.password", "sw360-secret" },
+                        { "proxy.use", "false" }})
+                        .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1])));
+
         enricher.setDeactivated(true);
         processors.add(enricher);
         return processors;
@@ -143,16 +146,17 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
         List<WorkflowStep> result = BasicConfiguration.getGenerators(projectRoot.toString());
         WorkflowStep generator = mkWorkflowStep("SW360 Updater", "org.eclipse.sw360.antenna.sw360.workflow.generators.SW360Updater",
-                new HashMap<String, String>() {{
-                    put("rest.server.url", "http://localhost:8080/resource/api");
-                    put("auth.server.url", "http://localhost:8080/authorization/oauth");
-                    put("user.id", "admin@sw360.org");
-                    put("user.password", "12345");
-                    put("client.id", "trusted-sw360-client");
-                    put("client.password", "sw360-secret");
-                    put("proxy.use", "false");
-                    put("upload_sources", "true");
-                }});
+                Stream.of(new String[][] {
+                        { "rest.server.url", "http://localhost:8080/resource/api" },
+                        { "auth.server.url", "http://localhost:8080/authorization/oauth" },
+                        { "user.id", "admin@sw360.org" },
+                        { "user.password", "12345" },
+                        { "client.id", "trusted-sw360-client" },
+                        { "client.password", "sw360-secret" },
+                        { "proxy.use", "false" },
+                        { "upload_sources", "true" }})
+                        .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1])));
+
         generator.setDeactivated(true);
         result.add(generator);
         return result;
