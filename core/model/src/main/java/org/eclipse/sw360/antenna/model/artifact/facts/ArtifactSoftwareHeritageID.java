@@ -30,7 +30,7 @@ public class ArtifactSoftwareHeritageID extends ArtifactFactWithPayload<String> 
             this.softwareHeritageID = softwareHeritageID;
         }
 
-        public ArtifactSoftwareHeritageID build() {
+        public ArtifactSoftwareHeritageID build() throws IllegalArgumentException {
             if(softwareHeritageID == null || !isValid(softwareHeritageID)) {
                 throw new IllegalArgumentException(softwareHeritageID
                         + " does not match expected format for SoftwareHeritageID: "

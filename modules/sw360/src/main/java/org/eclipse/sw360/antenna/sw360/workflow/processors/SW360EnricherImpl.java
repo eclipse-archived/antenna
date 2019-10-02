@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -73,13 +75,18 @@ public class SW360EnricherImpl {
         mapCoordinates(sw360Release)
                 .forEach(artifact::addFact);
 
-        artifact.addFact(new DeclaredLicenseInformation(makeLicenseStatementFromString(sw360Release.getDeclaredLicense())));
-        artifact.addFact(new ObservedLicenseInformation(makeLicenseStatementFromString(sw360Release.getObservedLicense())));
-        artifact.addFact(new ArtifactReleaseTagURL(sw360Release.getReleaseTagUrl()));
+        addLicenseFact(Optional.ofNullable(sw360Release.getDeclaredLicense()), artifact, DeclaredLicenseInformation::new);
+        addLicenseFact(Optional.ofNullable(sw360Release.getObservedLicense()), artifact, ObservedLicenseInformation::new);
+        Optional.ofNullable(sw360Release.getReleaseTagUrl())
+                .map(ArtifactReleaseTagURL::new)
+                .ifPresent(artifact::addFact);
         try {
-            artifact.addFact(new ArtifactSoftwareHeritageID.Builder(sw360Release.getSoftwareHeritageId()).build());
+            Optional.ofNullable(sw360Release.getSoftwareHeritageId())
+                    .map(ArtifactSoftwareHeritageID.Builder::new)
+                    .map(ArtifactSoftwareHeritageID.Builder::build)
+                    .ifPresent(artifact::addFact);
         } catch (IllegalArgumentException e) {
-            LOGGER.warn(e.getMessage());
+            LOGGER.info(e.getMessage());
         }
         sw360Release.getHashes().stream()
                 .map(hash -> new ArtifactFilename(null, hash))
@@ -88,7 +95,15 @@ public class SW360EnricherImpl {
                 .map(ArtifactChangeStatus.ChangeStatus::valueOf)
                 .map(ArtifactChangeStatus::new)
                 .ifPresent(artifact::addFact);
-        artifact.addFact(new CopyrightStatement(sw360Release.getCopyrights()));
+        Optional.ofNullable(sw360Release.getCopyrights())
+                .map(CopyrightStatement::new)
+                .ifPresent(artifact::addFact);
+    }
+
+    private void addLicenseFact(Optional<String> licenseList, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator) {
+        licenseList.map(this::makeLicenseStatementFromString)
+                .map(licenseCreator::apply)
+                .ifPresent(artifact::addFact);
     }
 
     private License makeLicenseStatementFromString(String license) {
