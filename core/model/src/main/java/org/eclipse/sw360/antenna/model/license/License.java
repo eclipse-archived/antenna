@@ -15,15 +15,15 @@ import java.util.Objects;
 import java.util.Set;
 
 public class License extends LicenseInformation {
-    private final String shortname;
-    private final String fullname;
+    private final String licenseId;
+    private final String name;
     private final String text;
     private final LicenseClassification licenseClassification;
     private final LicenseThreatGroup licenseThreatGroup;
 
-    public License(String shortname, String fullname, String text, LicenseClassification licenseClassification, LicenseThreatGroup licenseThreatGroup) {
-        this.shortname = shortname;
-        this.fullname = fullname;
+    public License(String licenseId, String name, String text, LicenseClassification licenseClassification, LicenseThreatGroup licenseThreatGroup) {
+        this.licenseId = licenseId;
+        this.name = name;
         this.text = text;
         this.licenseClassification = licenseClassification;
         this.licenseThreatGroup = licenseThreatGroup;
@@ -37,12 +37,12 @@ public class License extends LicenseInformation {
         return licenseThreatGroup;
     }
 
-    public String getShortname() {
-        return shortname;
+    public String getLicenseId() {
+        return licenseId;
     }
 
-    public String getFullname() {
-        return fullname;
+    public String getName() {
+        return name;
     }
 
     public String getText() {
@@ -51,7 +51,7 @@ public class License extends LicenseInformation {
 
     @Override
     public String toSpdxExpression() {
-        return getShortname();
+        return getLicenseId();
     }
 
     @Override
@@ -79,8 +79,8 @@ public class License extends LicenseInformation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         License license = (License) o;
-        return Objects.equals(shortname, license.shortname) &&
-                Objects.equals(fullname, license.fullname) &&
+        return Objects.equals(licenseId, license.licenseId) &&
+                Objects.equals(name, license.name) &&
                 Objects.equals(text, license.text) &&
                 licenseClassification == license.licenseClassification &&
                 licenseThreatGroup == license.licenseThreatGroup;
@@ -88,11 +88,13 @@ public class License extends LicenseInformation {
 
     @Override
     public int hashCode() {
-        return Objects.hash(shortname, fullname, text, licenseClassification, licenseThreatGroup);
+        return Objects.hash(licenseId, name, text, licenseClassification, licenseThreatGroup);
     }
 
     public enum LicenseClassification {
-        // TODO
+        COVERED,
+        NOT_CLASSIFIED,
+        NOT_COVERED;
     }
 
     public enum LicenseThreatGroup {
@@ -106,19 +108,19 @@ public class License extends LicenseInformation {
     }
 
     public static class Builder {
-        private String shortname;
-        private String fullname;
+        private String licenseId;
+        private String name;
         private String text;
         private License.LicenseClassification licenseClassification;
         private License.LicenseThreatGroup licenseThreatGroup = LicenseThreatGroup.UNKNOWN;
 
-        public Builder setShortname(String shortname) {
-            this.shortname = shortname;
+        public Builder setLicenseId(String licenseId) {
+            this.licenseId = licenseId;
             return this;
         }
 
-        public Builder setFullname(String fullname) {
-            this.fullname = fullname;
+        public Builder setName(String name) {
+            this.name = name;
             return this;
         }
 
@@ -138,7 +140,7 @@ public class License extends LicenseInformation {
         }
 
         public License build() {
-            return new License(shortname, fullname, text, licenseClassification, licenseThreatGroup);
+            return new License(licenseId, name, text, licenseClassification, licenseThreatGroup);
         }
     }
 }

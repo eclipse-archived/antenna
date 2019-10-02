@@ -18,7 +18,6 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ObservedLicenseInformation
 import org.eclipse.sw360.antenna.model.artifact.facts.OverriddenLicenseInformation;
 import org.eclipse.sw360.antenna.model.license.EmptyLicenseInformation;
 import org.eclipse.sw360.antenna.model.license.LicenseInformation;
-import org.eclipse.sw360.antenna.model.license.LicenseStatement;
 
 import java.util.*;
 

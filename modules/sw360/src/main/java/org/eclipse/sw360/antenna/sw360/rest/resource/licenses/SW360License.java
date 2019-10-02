@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resource.licenses;
 
-import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
@@ -25,8 +25,8 @@ public class SW360License extends SW360HalResource<LinkObjects, Embedded> {
     public SW360License() { }
 
     public SW360License(License license) {
-        this.fullName = license.getLongName();
-        this.shortName = license.getName();
+        this.fullName = license.getName();
+        this.shortName = license.getLicenseId();
         this.text = license.getText();
     }
 

@@ -10,13 +10,11 @@
  */
 package org.eclipse.sw360.antenna.model.license;
 
-import com.here.ort.spdx.SpdxCompoundExpression;
 import com.here.ort.spdx.SpdxExpression;
 import com.here.ort.spdx.SpdxLicenseIdExpression;
 import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class LicenseStatement extends LicenseInformation {
     private final Map<String,License> licenses = new HashMap<>();
@@ -30,7 +28,7 @@ public class LicenseStatement extends LicenseInformation {
         } else if (licenseInformation instanceof License) {
             License license = (License) licenseInformation;
             addLicenseToLicenses(license);
-            expression = new SpdxLicenseIdExpression(license.getShortname(), false);
+            expression = new SpdxLicenseIdExpression(license.getLicenseId(), false);
         } else if (licenseInformation instanceof EmptyLicenseInformation) {
             // no-op
             expression = SpdxExpression.parse("");
@@ -53,14 +51,14 @@ public class LicenseStatement extends LicenseInformation {
         expression.licenses()
                 .forEach(sn -> {
                     final License.Builder builder = new License.Builder();
-                    builder.setShortname(sn);
+                    builder.setLicenseId(sn);
                     final License license = builder.build();
                     addLicenseToLicenses(license);
                 });
     }
 
     private void addLicenseToLicenses(License license) {
-        licenses.put(license.getShortname(), license);
+        licenses.put(license.getLicenseId(), license);
     }
 
     @Override
@@ -89,7 +87,7 @@ public class LicenseStatement extends LicenseInformation {
 
         if (other instanceof License) {
             License license = (License) other;
-            return new LicenseStatement(allLicenses, expression.and(new SpdxLicenseIdExpression(license.getShortname(), false)));
+            return new LicenseStatement(allLicenses, expression.and(new SpdxLicenseIdExpression(license.getLicenseId(), false)));
         }
         if (other instanceof LicenseStatement) {
             LicenseStatement licenseStatement = (LicenseStatement) other;
@@ -109,12 +107,26 @@ public class LicenseStatement extends LicenseInformation {
 
         if (other instanceof License) {
             License license = (License) other;
-            return new LicenseStatement(allLicenses, expression.or(new SpdxLicenseIdExpression(license.getShortname(), false)));
+            return new LicenseStatement(allLicenses, expression.or(new SpdxLicenseIdExpression(license.getLicenseId(), false)));
         }
         if (other instanceof LicenseStatement) {
             LicenseStatement licenseStatement = (LicenseStatement) other;
             return new LicenseStatement(allLicenses, expression.or(licenseStatement.expression));
         }
         throw new UnsupportedOperationException("The type of other=[" + other.getClass().getCanonicalName() + "] is unsupported");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LicenseStatement that = (LicenseStatement) o;
+        return Objects.equals(licenses, that.licenses) &&
+                Objects.equals(expression, that.expression);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(licenses, expression);
     }
 }

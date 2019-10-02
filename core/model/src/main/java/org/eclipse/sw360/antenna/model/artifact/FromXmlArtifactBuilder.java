@@ -16,7 +16,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
-import org.eclipse.sw360.antenna.model.license.FromXmlLicenseInformationBuilder;
+import org.eclipse.sw360.antenna.model.license.FromXmlLicenseInformationConverter;
 import org.eclipse.sw360.antenna.model.xml.generated.DeclaredLicense;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
@@ -53,7 +53,7 @@ public class FromXmlArtifactBuilder implements IArtifactBuilder {
                 .addFact(new ArtifactModificationStatus(modificationStatus));
         if(declaredLicense != null) {
             final LicenseInformation licenseInfo = declaredLicense.getLicenseInfo().getValue();
-            artifact.addFact(new DeclaredLicenseInformation(new FromXmlLicenseInformationBuilder(licenseInfo).build()));
+            artifact.addFact(new DeclaredLicenseInformation(FromXmlLicenseInformationConverter.convert(licenseInfo)));
         }
         if(isProprietary != null) {
             artifact.setProprietary(isProprietary);

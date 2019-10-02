@@ -15,15 +15,11 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformati
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.ObservedLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.OverriddenLicenseInformation;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -35,14 +31,11 @@ public class ArtifactLicenseUtilsTest {
 
     @Before
     public void setUp() {
-        mit = new License();
-        mit.setName("MIT");
+        mit = new License.Builder().setLicenseId("MIT").build();
 
-        apache = new License();
-        apache.setName("Apache-2.0");
+        apache = new License.Builder().setLicenseId("Apache-2.0").build();
 
-        epl = new License();
-        epl.setName("EPL-2.0");
+        epl = new License.Builder().setLicenseId("EPL-2.0").build();
     }
 
     @Test
@@ -58,17 +51,13 @@ public class ArtifactLicenseUtilsTest {
         assertThat(finalLicenses.getLicenses()
                     .stream()
                     .findAny()
-                    .get()
-                    .getName())
-                .isEqualTo(mit.getName());
+                    .get())
+                .isEqualTo(mit);
     }
 
     @Test
     public void testEffectiveLicenseWithAndInObservedAsFinal() {
-        LicenseStatement observedLicenseStatement = new LicenseStatement();
-        observedLicenseStatement.setLeftStatement(epl);
-        observedLicenseStatement.setOp(LicenseOperator.AND);
-        observedLicenseStatement.setRightStatement(apache);
+        LicenseInformation observedLicenseStatement = epl.and(apache);
 
         Artifact artifact = new Artifact("Test")
                 .addFact(new DeclaredLicenseInformation(apache))
@@ -78,20 +67,16 @@ public class ArtifactLicenseUtilsTest {
 
         assertThat(finalLicenses.getLicenses().size())
                 .isEqualTo(2);
-        assertThat(finalLicenses.getLicenses()
-                    .stream()
-                    .filter(l -> l.getName().equals(apache.getName()))
-                    .collect(Collectors.toList())
-                    .size())
+        assertThat((int) finalLicenses.getLicenses()
+                .stream()
+                .filter(apache::equals)
+                .count())
                 .isEqualTo(1);
     }
 
     @Test
     public void testEffectiveLicenseWithOrInObserved() {
-        LicenseStatement observedLicenseStatement = new LicenseStatement();
-        observedLicenseStatement.setLeftStatement(epl);
-        observedLicenseStatement.setOp(LicenseOperator.OR);
-        observedLicenseStatement.setRightStatement(apache);
+        LicenseInformation observedLicenseStatement = epl.or(apache);
 
         Artifact artifact = new Artifact("Test")
                 .addFact(new DeclaredLicenseInformation(apache))
@@ -113,7 +98,7 @@ public class ArtifactLicenseUtilsTest {
 
         assertThat(finalLicenses.getLicenses().size())
                 .isEqualTo(2);
-        assertThat(finalLicenses.getLicenses().get(0).getName())
-                .isEqualTo(epl.getName());
+        assertThat(finalLicenses.getLicenses().contains(epl))
+                .isTrue();
     }
 }

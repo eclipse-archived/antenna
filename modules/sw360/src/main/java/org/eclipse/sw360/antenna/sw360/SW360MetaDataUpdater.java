@@ -13,8 +13,8 @@ package org.eclipse.sw360.antenna.sw360;
 
 import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.sw360.adapter.*;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
@@ -62,7 +62,7 @@ public class SW360MetaDataUpdater {
             if (!licenseClientAdapter.isLicenseOfArtifactAvailable(license, header)) {
                 sw360License = licenseClientAdapter.addLicense(license, header);
             } else {
-                LOGGER.debug("License [" + license.getName() + "] already exists in SW360.");
+                LOGGER.debug("License [" + license.getLicenseId() + "] already exists in SW360.");
                 sw360License = licenseClientAdapter.getSW360LicenseByAntennaLicense(license, header);
             }
             licenseIds.add(sw360License.getShortName());
@@ -127,7 +127,8 @@ public class SW360MetaDataUpdater {
                 .of(ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses())
                 .filter(Objects::nonNull)
                 .flatMap(Collection::stream)
-                .filter(l -> Objects.nonNull(l.getName()))
+                .filter(Objects::nonNull)
+                .filter(li -> ! li.isEmpty())
                 .distinct()
                 .collect(Collectors.toList());
     }

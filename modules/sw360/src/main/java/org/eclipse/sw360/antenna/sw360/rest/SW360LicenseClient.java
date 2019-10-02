@@ -59,7 +59,7 @@ public class SW360LicenseClient extends SW360Client {
         }
     }
 
-    public SW360License getLicenseByName(String name, HttpHeaders header) throws AntennaException {
+    public SW360License getLicenseByLicenseId(String name, HttpHeaders header) throws AntennaException {
         ResponseEntity<Resource<SW360License>> response = doRestGET(getEndpoint() + "/" + name, header,
                 new ParameterizedTypeReference<Resource<SW360License>>() {});
 

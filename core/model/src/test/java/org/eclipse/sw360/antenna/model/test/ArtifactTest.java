@@ -13,11 +13,10 @@ package org.eclipse.sw360.antenna.model.test;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.license.EmptyLicenseInformation;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
-import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -25,11 +24,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,12 +46,10 @@ public class ArtifactTest {
                 .addFact(new GenericArtifactCoordinates("name", "version"))
                 .addFact(new ArtifactFile(jar))
                 .addFact(new ArtifactSourceFile(mavenSourcesJar))
-                .addFact(new ArtifactMatchingMetadata(MatchState.EXACT))
                 .setProprietary(true);
 
 
-        license = new License();
-        license.setName("testLicense");
+        license = new License.Builder().setLicenseId("testLicense").build();
         artifact.setFlag(Artifact.IS_IGNORE_FOR_DOWNLOAD_KEY);
     }
 
@@ -113,11 +106,6 @@ public class ArtifactTest {
     }
 
     @Test
-    public void matchStateTest() {
-        assertThat(artifact.getMatchState()).isEqualTo(MatchState.EXACT);
-    }
-
-    @Test
     public void proprietaryTest() {
         assertThat(artifact.isProprietary()).isTrue();
     }
@@ -148,43 +136,39 @@ public class ArtifactTest {
     @Test
     public void testGetFinalLicense() {
         Artifact artifact = new Artifact();
-        License declaredLicenses = new License();
-        declaredLicenses.setName("license1");
-        declaredLicenses.setLongName("licenseNumber1");
+        License declaredLicenses = new License.Builder()
+                .setLicenseId("license1")
+                .setName("licenseNumber1")
+                .build();
 
         artifact.addFact(new DeclaredLicenseInformation(declaredLicenses));
-        artifact.addFact(new ConfiguredLicenseInformation(new LicenseStatement()));
-        artifact.addFact(new OverriddenLicenseInformation(new LicenseStatement()));
+        artifact.addFact(new ConfiguredLicenseInformation(new EmptyLicenseInformation()));
+        artifact.addFact(new OverriddenLicenseInformation(new EmptyLicenseInformation()));
 
-        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact).evaluate().equals(declaredLicenses.getName()));
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact).toSpdxExpression().equals(declaredLicenses.getLicenseId()));
 
-        LicenseStatement observedLicenses = new LicenseStatement();
-        License license2 = new License();
-        license2.setName("license2");
-        license2.setLongName("licenseNumber2");
-        observedLicenses.setLeftStatement(license2);
-        observedLicenses.setRightStatement(declaredLicenses);
-        observedLicenses.setOp(LicenseOperator.AND);
+        License license2 = new License.Builder()
+                .setLicenseId("license2")
+                .setName("licenseNumber2")
+                .build();
+        LicenseInformation observedLicenses = license2.and(declaredLicenses);
         artifact.addFact(new ObservedLicenseInformation(observedLicenses));
-        List<License> licenses = new ArrayList<>();
+        Set<License> licenses = new HashSet<>();
         licenses.add(license2);
         licenses.add(declaredLicenses);
 
-        assertThat(observedLicenses.evaluate()).isEqualTo("( license2 AND license1 )");
-        assertThat(observedLicenses.evaluateLong()).isEqualTo("( licenseNumber2 AND licenseNumber1 )");
-        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact).evaluate()).isEqualTo("( license2 AND license1 )");
+        assertThat(observedLicenses.toSpdxExpression()).isEqualTo("license2 AND license1");
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact).toSpdxExpression()).isEqualTo("license2 AND license1");
         assertThat(observedLicenses.getLicenses().equals(licenses)).isTrue();
 
-        License configuredLicense = new License();
-        configuredLicense.setName("license3");
+        License configuredLicense = new License.Builder().setLicenseId("license3").build();
         artifact.addFact(new ConfiguredLicenseInformation(configuredLicense));
 
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact)).isEqualTo(configuredLicense);
 
-        License overriddenLicense = new License();
-        overriddenLicense.setName("license4");
+        License overriddenLicense = new License.Builder().setLicenseId("license4").build();
         artifact.addFact(new OverriddenLicenseInformation(overriddenLicense));
-        artifact.addFact(new ConfiguredLicenseInformation(new LicenseStatement()));
+        artifact.addFact(new ConfiguredLicenseInformation(new EmptyLicenseInformation()));
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact)).isEqualTo(overriddenLicense);
     }
 }

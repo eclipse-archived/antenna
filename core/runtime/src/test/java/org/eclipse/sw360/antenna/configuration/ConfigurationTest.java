@@ -106,8 +106,10 @@ public class ConfigurationTest {
                 .get();
         assertThat(generatedArtifact.askForGet(DeclaredLicenseInformation.class).get()
                 .getLicenses()
-                .get(0)
-                .getName()
+                .stream()
+                .findAny()
+                .get()
+                .getLicenseId()
         ).isEqualTo("testLicense");
 
         assertThat(generatedArtifact.askFor(ArtifactFilename.class).get().getFilenames())
@@ -128,7 +130,13 @@ public class ConfigurationTest {
     public void addArtifactTest() {
         Artifact artifact = configuration.getAddArtifact().get(0);
 
-        assertThat(artifact.askForGet(DeclaredLicenseInformation.class).get().getLicenses().get(0).getName())
+        assertThat(artifact.askForGet(DeclaredLicenseInformation.class)
+                .get()
+                .getLicenses()
+                .stream()
+                .findAny()
+                .get()
+                .getLicenseId())
                 .isEqualTo("Apache");
         assertThat(artifact.askFor(ArtifactFilename.class).get().getFilenames())
                 .contains("addArtifact.jar");
