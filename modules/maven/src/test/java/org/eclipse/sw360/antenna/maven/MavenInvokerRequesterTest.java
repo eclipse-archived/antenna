@@ -13,8 +13,8 @@ package org.eclipse.sw360.antenna.maven;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
+import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.apache.maven.shared.utils.cli.CommandLineException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.Before;
@@ -49,7 +49,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
     private MavenCoordinates mavenCoordinates;
 
     @Before
-    public void before() throws IOException, AntennaException {
+    public void before() throws IOException {
         mavenCoordinates = new MavenCoordinates("artifactId","groupId","version");
 
         System.setProperty("maven.home", temporaryFolder.newFolder("m2").toString());
@@ -65,7 +65,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
         assertThat(pomFile.toString()).endsWith(MavenInvokerRequester.POM_FILENAME);
     }
 
-    private InvocationResult getDummyInvocationResult(int returncode){
+    private InvocationResult getDummyInvocationResult(int returncode) {
         return new InvocationResult() {
             @Override
             public CommandLineException getExecutionException() {
@@ -80,7 +80,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void requestFileTestThatRequestIsComposedCorrectly() throws Exception {
+    public void requestFileTestThatRequestIsComposedCorrectly() throws IOException, MavenInvocationException {
         Path targetDirectory = temporaryFolder.newFolder("target").toPath();
 
         final String expectedJarBaseName = mir.getExpectedJarBaseName(mavenCoordinates, ClassifierInformation.DEFAULT_JAR);
@@ -111,7 +111,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void requestFileRecognizesNonExistingArtifactReturningAnEmptyOptional() throws Exception {
+    public void requestFileRecognizesNonExistingArtifactReturningAnEmptyOptional() throws IOException, MavenInvocationException {
         Path targetDirectory = temporaryFolder.newFolder("target").toPath();
         Mockito.when(defaultInvokerMock.execute(ArgumentMatchers.any(InvocationRequest.class)))
                 .thenReturn(getDummyInvocationResult(0));
@@ -120,7 +120,7 @@ public class MavenInvokerRequesterTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void requestFileOnNonzeroReturnCodeReturnsEmptyOptional() throws Exception {
+    public void requestFileOnNonzeroReturnCodeReturnsEmptyOptional() throws IOException, MavenInvocationException {
         Path targetDirectory = temporaryFolder.newFolder("target").toPath();
 
         final String expectedJarBaseName = mir.getExpectedJarBaseName(mavenCoordinates, ClassifierInformation.DEFAULT_JAR);

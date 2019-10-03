@@ -66,7 +66,7 @@ public class AntennaTestingUtils {
                 return getFieldIncludingSuperclasses(fieldName, superclass);
             } else {
                 // This is only a testing util, so it's okay to throw a runtime exception here.
-                throw new RuntimeException("Could not find field " + fieldName);
+                throw new IllegalArgumentException("Could not find field " + fieldName);
             }
         }
     }

@@ -46,7 +46,7 @@ public class DependencyTest {
             MAVEN_FRONTEND_POM = Paths.get(ClassCodeSourceLocation.getClassCodeSourceLocationURI(DependencyTest.class)).resolve("../../pom.xml").normalize();
             PARENT_POM = Paths.get(ClassCodeSourceLocation.getClassCodeSourceLocationURI(DependencyTest.class)).resolve("../../../../../pom.xml").normalize();
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 

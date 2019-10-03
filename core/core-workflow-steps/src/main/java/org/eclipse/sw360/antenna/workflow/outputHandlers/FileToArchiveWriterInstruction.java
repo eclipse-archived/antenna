@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.workflow.outputHandlers;
 
 
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 
 import java.nio.file.Path;
@@ -24,7 +24,7 @@ public class FileToArchiveWriterInstruction {
     public final String outputType;
     public final Path pathInArchive;
 
-    public FileToArchiveWriterInstruction(String instruction, IProcessingReporter reporter) throws AntennaConfigurationException {
+    public FileToArchiveWriterInstruction(String instruction, IProcessingReporter reporter) {
         if (!instruction.contains(":")) {
             throwConfigurationError(instruction, "invalid due to missing \":\"", reporter);
         }
@@ -43,9 +43,9 @@ public class FileToArchiveWriterInstruction {
         outputType = newParts[0];
     }
 
-    private void throwConfigurationError(String instruction, String s, IProcessingReporter reporter) throws AntennaConfigurationException {
+    private void throwConfigurationError(String instruction, String s, IProcessingReporter reporter) {
         String msg = "Unable to attach File related to instruction=[" + instruction + "], " + s;
         reporter.add(MessageType.PROCESSING_FAILURE, msg);
-        throw new AntennaConfigurationException(msg);
+        throw new ConfigurationException(msg);
     }
 }

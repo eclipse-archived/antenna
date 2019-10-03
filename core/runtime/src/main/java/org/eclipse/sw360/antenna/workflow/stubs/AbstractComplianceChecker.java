@@ -15,8 +15,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.FailCausingException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
@@ -36,28 +36,34 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         this.workflowStepOrder = VALIDATOR_BASE_ORDER;
     }
 
-    public abstract IPolicyEvaluation evaluate(Collection<Artifact> artifacts) throws AntennaException;
+    public abstract IPolicyEvaluation evaluate(Collection<Artifact> artifacts);
 
     public abstract String getRulesetDescription();
 
     @Override
-    public Collection<Artifact> process(Collection<Artifact> artifacts) throws AntennaException {
+    public Collection<Artifact> process(Collection<Artifact> artifacts) {
         LOGGER.info("Evaluate compliance rule set: {}", getRulesetDescription());
         IPolicyEvaluation evaluation = evaluate(artifacts);
         LOGGER.info("Rule evaluation done");
         LOGGER.info("Check evaluation results...");
-        execute(evaluation);
+        try {
+            execute(evaluation);
+        } catch (FailCausingException e) {
+            // TODO: A FailCausingException should not end the build but should be reflected in the workflow result
+            // Build should not be aborted, but should indicate the failure in the end, so that reports etc. are created.
+            throw new ExecutionException("Fail execution because of compliance check result", e);
+        }
         LOGGER.info("Check evaluation results... done.");
         return artifacts;
     }
 
     @Override
-    public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String, String> configMap) {
         failOn = getSeverityFromConfig(FAIL_ON_KEY, configMap, IEvaluationResult.Severity.FAIL);
     }
 
     @SuppressFBWarnings("SF_SWITCH_FALLTHROUGH")
-    public void execute(IPolicyEvaluation evaluation) throws AntennaException {
+    public void execute(IPolicyEvaluation evaluation) throws FailCausingException {
         IProcessingReporter reporter = context.getProcessingReporter();
 
         reportResults(reporter, evaluation.getEvaluationResults());
@@ -87,7 +93,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
             String fullMessage = makeStringForEvaluationResults(messagePrefix, failCausingResults);
             reporter.add(MessageType.PROCESSING_FAILURE, fullMessage);
             LOGGER.info(fullMessage);
-            throw new AntennaComplianceException(messagePrefix);
+            throw new FailCausingException(messagePrefix);
         }
     }
 
@@ -145,12 +151,5 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         return Optional.ofNullable(configMap.get(key))
                 .map(IEvaluationResult.Severity::fromValue)
                 .orElse(defaultSeverity);
-    }
-
-    protected IEvaluationResult.Severity getSeverityFromBool(boolean hasFailSeverity) {
-        if(hasFailSeverity) {
-            return IEvaluationResult.Severity.FAIL;
-        }
-        return IEvaluationResult.Severity.WARN;
     }
 }

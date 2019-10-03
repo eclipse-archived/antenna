@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.configuration;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCore;
@@ -42,7 +41,7 @@ public class ConfigurationTest {
     private Configuration configuration;
 
     @Before
-    public void resolveConfiguration() throws URISyntaxException, AntennaConfigurationException {
+    public void resolveConfiguration() throws URISyntaxException {
         URL xmlUrl = ConfigurationTest.class.getResource("/antennaconf.xml");
         XMLResolverJaxB resolver = new XMLResolverJaxB(StandardCharsets.UTF_8);
         AntennaConfig config = resolver.resolveXML(new File(xmlUrl.toURI()));

@@ -15,7 +15,7 @@ import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
@@ -77,7 +77,7 @@ public class JsonReader {
             stream.close();
             return artifactList;
         } catch (IOException | JsonException e) {
-            throw new RuntimeException(e);
+            throw new ExecutionException("Cannot read json objects from input stream", e);
         }
     }
 
@@ -203,7 +203,7 @@ public class JsonReader {
             final JsonArray pathnames = (JsonArray) obj.get("pathnames");
             if (pathnames.size() == 1) {
                 String filename = Optional.ofNullable(Paths.get(pathnames.getString(0)).getFileName())
-                        .orElseThrow(() -> new AntennaExecutionException("Getting Path of [" + pathnames.getString(0) + "] returned null"))
+                        .orElseThrow(() -> new ExecutionException("Getting Path of [" + pathnames.getString(0) + "] returned null"))
                         .toString();
                 return new ArtifactFilename(filename, hash);
             }

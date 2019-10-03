@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.util;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.junit.Test;
 
 import java.io.File;
@@ -78,7 +78,7 @@ public class AntennaUtilsTest {
         assertThat(jarPath).hasToString(toAbsolutePathname("/some/path/to/file.jar"));
     }
 
-    @Test(expected = AntennaExecutionException.class)
+    @Test(expected = ExecutionException.class)
     public void getJarRelativePathTestExpectedFail() {
         Path filePath = Paths.get("some/path/to/file.jar");
 

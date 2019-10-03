@@ -13,17 +13,17 @@ package org.eclipse.sw360.antenna.workflow.generators;
 
 import org.eclipse.sw360.antenna.analysis.filter.AllowAllArtifactsFilter;
 import org.eclipse.sw360.antenna.analysis.filter.MatchStateArtifactFilter;
+import org.eclipse.sw360.antenna.api.Attachable;
 import org.eclipse.sw360.antenna.api.IArtifactFilter;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
-import org.eclipse.sw360.antenna.api.Attachable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +86,7 @@ public class SourceZipWriter extends AbstractGenerator {
                 zipOutput.flush();
                 output.flush();
             } catch (IOException e) {
-                throw new RuntimeException(e.getMessage() + "  The Sources-Zip File could not be created");
+                throw new ExecutionException("The sources.zip file could not be created", e);
             }
         }
         return sourceZipPath.toFile();
@@ -155,16 +155,16 @@ public class SourceZipWriter extends AbstractGenerator {
      */
     private void createSourceZipPath() {
         if (sourceZipPath.toFile().isDirectory()) {
-            throw new RuntimeException("Zip path is a directory but needs to be a file");
+            throw new ExecutionException("Zip path is a directory but needs to be a file");
         }
         Path parent = sourceZipPath.getParent();
         if (parent == null) {
-            throw new RuntimeException("The parent directory is null");
+            throw new ExecutionException("The parent directory is null");
         }
         if (!parent.toFile().exists()) {
             boolean isCreated = parent.toFile().mkdirs();
             if (!isCreated) {
-                throw new RuntimeException("We can not create a directory for the zip file");
+                throw new ExecutionException("We can not create a directory for the zip file");
             }
         }
     }
@@ -176,7 +176,7 @@ public class SourceZipWriter extends AbstractGenerator {
     }
 
     @Override
-    public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String, String> configMap) {
         this.reporter = context.getProcessingReporter();
         this.notAllowed = new AllowAllArtifactsFilter();
         Set<MatchState> blacklistUnknown = new HashSet<>();

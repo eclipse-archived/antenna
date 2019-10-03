@@ -11,8 +11,7 @@
 package org.eclipse.sw360.antenna.util;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
-
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -39,7 +38,7 @@ public class AntennaUtils {
      */
     public static Iterator<Path> getJarPathIteratorFromPath(Path jarPath){
         if (!jarPath.isAbsolute()){
-            throw new AntennaExecutionException("This function should only be called with absolute paths");
+            throw new ExecutionException("This function should only be called with absolute paths");
         }
         return new TillJarGroupingIterator(jarPath);
     }
@@ -66,7 +65,7 @@ public class AntennaUtils {
     public static Path getJarPath(Path jarPath) {
         Iterator<Path> jarPathIterator = getJarPathIteratorFromPath(jarPath);
         if(! jarPathIterator.hasNext()){
-            throw new AntennaExecutionException("Failed to parse jar path");
+            throw new ExecutionException("Failed to parse jar path");
         }
         return jarPathIterator.next();
     }
@@ -84,15 +83,15 @@ public class AntennaUtils {
     public static Path computeInnerReplacementJarPath(Path jarPath){
         Iterator<Path> jarPathIterator = getJarPathIteratorFromPath(jarPath);
         if(!jarPathIterator.hasNext()){
-            throw new AntennaExecutionException("Tried to computeInnerReplacementPath from broken Path");
+            throw new ExecutionException("Tried to computeInnerReplacementPath from broken Path");
         }
         Path cleanedUp = jarPathIterator.next();
         while(jarPathIterator.hasNext()){
             final String basename = Optional.ofNullable(cleanedUp.getFileName())
-                    .orElseThrow(() -> new AntennaExecutionException("Error in computeInnerReplacementJarPath"))
+                    .orElseThrow(() -> new ExecutionException("Error in computeInnerReplacementJarPath"))
                     .toString();
             final String parent = Optional.ofNullable(cleanedUp.getParent())
-                    .orElseThrow(() -> new AntennaExecutionException("Error in computeInnerReplacementJarPath"))
+                    .orElseThrow(() -> new ExecutionException("Error in computeInnerReplacementJarPath"))
                     .toString();
 
             String cleanedUpBasename = replaceDotInJarExtension(basename);

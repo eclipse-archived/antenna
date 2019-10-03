@@ -27,7 +27,6 @@ import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,16 +49,25 @@ abstract public class AbstractAntennaFrontendTest {
     protected AbstractTestProjectWithExpectations testData;
     protected AntennaFrontend antennaFrontend;
     protected AntennaContext antennaContext;
-    protected boolean runExecutionTest;
+
+    protected boolean isRunExecutionTest() {
+        return runExecutionTest;
+    }
+
+    protected void setRunExecutionTest(boolean runExecutionTest) {
+        this.runExecutionTest = runExecutionTest;
+    }
+
+    private boolean runExecutionTest;
 
     @Parameterized.Parameters(name = "{index}: Test data = {1}")
-    public static Collection<Object[]> data() throws IOException, URISyntaxException {
+    public static Collection<Object[]> data() throws IOException {
         // The current working directory is expected to be "<antenna root directory>/assembly/cli".
         String relativePathToP2Product = "../../modules/p2/p2-product/repository_manager";
         File absolutePathToP2Product = new File(relativePathToP2Product).getCanonicalFile();
 
         if (!absolutePathToP2Product.isDirectory()) {
-            throw new RuntimeException("AbstractAntennaFrontendTest cannot find the '" + absolutePathToP2Product +
+            throw new IllegalStateException("AbstractAntennaFrontendTest cannot find the '" + absolutePathToP2Product +
                     "' directory. Please ensure to run tests from the Antenna root directory.");
         }
 
@@ -226,12 +234,6 @@ abstract public class AbstractAntennaFrontendTest {
         assertThat(testData.getExpectedToolConfigurationMavenInstalled()).isEqualTo(antennaContext.getToolConfiguration().isMavenInstalled());
         assertThat(testData.getExpectedToolConfigurationAttachAll()).isEqualTo(antennaContext.getToolConfiguration().isAttachAll());
         assertThat(testData.getExpectedToolConfigurationSkip()).isEqualTo(antennaContext.getToolConfiguration().isSkipAntennaExecution());
-    }
-
-    @Test
-    public void testExecution() throws Exception {
-        assumeTrue(runExecutionTest);
-        protoypeExecutionTest(antennaFrontend::execute, AntennaFrontend::getOutputs);
     }
 
     protected void protoypeExecutionTest(RunnableWithExceptions executor, Function<AntennaFrontend, Map<String, IAttachable>> buildArtifactsGetter)

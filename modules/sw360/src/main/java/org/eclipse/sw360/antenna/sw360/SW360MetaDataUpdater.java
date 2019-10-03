@@ -11,11 +11,14 @@
 
 package org.eclipse.sw360.antenna.sw360;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.sw360.adapter.*;
+import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
+import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
+import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
@@ -52,7 +55,7 @@ public class SW360MetaDataUpdater {
         this.uploadSources = uploadSources;
     }
 
-    public Set<String> getOrCreateLicenses(Artifact artifact) throws AntennaException {
+    public Set<String> getOrCreateLicenses(Artifact artifact) {
         HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
         Set<String> licenseIds = new HashSet<>();
 
@@ -70,7 +73,7 @@ public class SW360MetaDataUpdater {
         return licenseIds;
     }
 
-    public SW360Release getOrCreateRelease(Artifact artifact, Set<String> licenseIds, SW360Component component) throws AntennaException {
+    public SW360Release getOrCreateRelease(Artifact artifact, Set<String> licenseIds, SW360Component component) {
         HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
 
         if (!releaseClientAdapter.isArtifactAvailableAsRelease(artifact, component, header)) {
@@ -84,13 +87,13 @@ public class SW360MetaDataUpdater {
                     return release.get();
                 }
             } else {
-                throw new AntennaException("No release found for the artifact [" +
+                throw new ExecutionException("No release found for the artifact [" +
                         artifact + "]");
             }
         }
     }
 
-    public SW360Component getOrCreateComponent(Artifact artifact) throws AntennaException {
+    public SW360Component getOrCreateComponent(Artifact artifact) {
         HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
 
         if (!componentClientAdapter.isArtifactAvailableAsComponent(artifact, header)) {
@@ -100,13 +103,13 @@ public class SW360MetaDataUpdater {
             if (component.isPresent()) {
                 return component.get();
             } else {
-                throw new AntennaException("No component found for the artifact [" +
+                throw new ExecutionException("No component found for the artifact [" +
                         artifact + "]");
             }
         }
     }
 
-    public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) throws AntennaException, IOException {
+    public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) throws IOException {
         HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
 
         Optional<String> projectId = projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion, header);

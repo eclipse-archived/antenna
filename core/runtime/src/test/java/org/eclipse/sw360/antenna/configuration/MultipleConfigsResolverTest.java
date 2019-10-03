@@ -11,7 +11,6 @@
 package org.eclipse.sw360.antenna.configuration;
 
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
 import org.junit.After;
@@ -48,7 +47,7 @@ public class MultipleConfigsResolverTest {
     private MultipleConfigsResolver resolver;
 
     @Before
-    public void init() throws URISyntaxException, IOException, AntennaConfigurationException {
+    public void init() throws URISyntaxException, IOException {
         URL configUrl = MultipleConfigsResolverTest.class.getResource("/antennaconf.xml");
         URL compareUrl = MultipleConfigsResolverTest.class.getResource("/configCompare.xml");
 

@@ -13,7 +13,7 @@
 package org.eclipse.sw360.antenna.sw360.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
 import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.*;
@@ -45,8 +45,7 @@ public class SW360AuthenticationClient extends SW360Client {
         return authServerUrl + GET_ACCESS_TOKEN_ENDPOINT;
     }
 
-    public String getOAuth2AccessToken(String username, String password, String clientId, String clientPassword)
-            throws AntennaException {
+    public String getOAuth2AccessToken(String username, String password, String clientId, String clientPassword) {
         String body = String.format("%s=%s&%s=%s&%s=%s", SW360Attributes.AUTHENTICATOR_GRANT_TYPE, GRANT_TYPE_VALUE,
                 SW360Attributes.AUTHENTICATOR_USERNAME, username, SW360Attributes.AUTHENTICATOR_PASSWORD, password);
 
@@ -61,10 +60,10 @@ public class SW360AuthenticationClient extends SW360Client {
             try {
                 return (String) new ObjectMapper().readValue(response.getBody(), HashMap.class).get(JSON_TOKEN_KEY);
             } catch (IOException e) {
-                throw new AntennaException("Error when attempting to deserialize the response body.", e);
+                throw new ExecutionException("Error when attempting to deserialize the response body.", e);
             }
         } else {
-            throw new AntennaException("Could not request OAuth2 access token for [" + username + "].");
+            throw new ExecutionException("Could not request OAuth2 access token for [" + username + "].");
         }
     }
 

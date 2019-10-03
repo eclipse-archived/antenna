@@ -12,12 +12,13 @@
 
 package org.eclipse.sw360.antenna.sw360.rest;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
 import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 
@@ -35,17 +36,17 @@ public class SW360UserClient extends SW360Client {
         return restUrl + USERS_ENDPOINT;
     }
 
-    public SW360User getUserByEmail(String email, HttpHeaders header) throws AntennaException {
+    public SW360User getUserByEmail(String email, HttpHeaders header) {
         ResponseEntity<Resource<SW360User>> response = doRestGET(getEndpoint() + "/" + email, header,
                 new ParameterizedTypeReference<Resource<SW360User>>() {});
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new AntennaException("Body was null"))
+                    .orElseThrow(() -> new ExecutionException("Body was null"))
                     .getContent();
         }
         else {
-            throw new AntennaException("Request to get user " + email + " failed with "
+            throw new ExecutionException("Request to get user " + email + " failed with "
                     + response.getStatusCode());
         }
     }

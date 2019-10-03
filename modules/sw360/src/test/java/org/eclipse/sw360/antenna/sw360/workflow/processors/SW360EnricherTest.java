@@ -11,8 +11,6 @@
 
 package org.eclipse.sw360.antenna.sw360.workflow.processors;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
@@ -22,14 +20,12 @@ import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360CoordinateKeysToArtifactCoordinates;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
-import org.eclipse.sw360.antenna.sw360.workflow.processors.SW360Enricher;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
 import org.junit.Before;
@@ -56,7 +52,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     private String copyrights = "Copyright 2006-2010 The Apache Software Foundation.";
 
     @Before
-    public void setUp() throws AntennaConfigurationException {
+    public void setUp() {
         Artifact artifact0 = new Artifact();
         artifact0.addFact(new ArtifactFilename("filename0"));
 
@@ -89,7 +85,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
 
     @Test
-    public void releaseIsMappedToArtifactCorrectly() throws AntennaException {
+    public void releaseIsMappedToArtifactCorrectly() {
         SW360Release release0 = mkSW360Release("test1");
         release0.set_Embedded(new SW360ReleaseEmbedded());
         release0.get_Embedded().setLicenses(Collections.emptyList());
@@ -144,7 +140,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void singleLicenseIsAddedToArtifact() throws AntennaException {
+    public void singleLicenseIsAddedToArtifact() {
         SW360SparseLicense apacheSparse = createSparseLicense("apache2", "Apache 2.0");
         SW360License apache = createLicenseFromSparseLicense(apacheSparse, "Some text");
 
@@ -163,7 +159,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void multipleLicensesAreAddedToArtifact() throws AntennaException {
+    public void multipleLicensesAreAddedToArtifact() {
         SW360SparseLicense apacheSparse = createSparseLicense("apache2", "Apache 2.0");
         SW360License apache = createLicenseFromSparseLicense(apacheSparse, "Some text");
 
@@ -189,7 +185,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void differingLicenseIsOverwritten() throws AntennaException {
+    public void differingLicenseIsOverwritten() {
         License apache = new License();
         apache.setName("apache2");
         apache.setLongName("Apache 2.0");

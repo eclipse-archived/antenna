@@ -10,11 +10,9 @@
  */
 package org.eclipse.sw360.antenna.workflow.processors;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
@@ -44,7 +42,7 @@ public class LicenseResolverTest extends AntennaTestWithMockedContext {
     private LicenseStatement configuredLicense;
 
     @Before
-    public void init() throws AntennaConfigurationException {
+    public void init() {
 
         Artifact artifact0 = new Artifact();
 

@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.p2resolver;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.junit.Test;
@@ -32,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EclipseProcessBuilderTest {
 
     @Test
-    public void testEclipseProcessBuilderCommandWorksCorrectlyWithHttpRepositoryAndOneArtifact() throws AntennaException {
+    public void testEclipseProcessBuilderCommandWorksCorrectlyWithHttpRepositoryAndOneArtifact() {
         Artifact artifact = new Artifact();
         artifact.addFact(new BundleCoordinates("TestBundle", "1.0.0"));
         File installArea = new File("test_file1");
@@ -48,7 +47,7 @@ public class EclipseProcessBuilderTest {
     }
 
     @Test
-    public void testEclipseProcessBuilderCommandPrependsFileToUriIfItDoesNotHaveAScheme() throws AntennaException {
+    public void testEclipseProcessBuilderCommandPrependsFileToUriIfItDoesNotHaveAScheme() {
         Artifact artifact = new Artifact();
         artifact.addFact(new BundleCoordinates("TestBundle", "1.0.0"));
         File installArea = new File("test_file1");
@@ -63,7 +62,7 @@ public class EclipseProcessBuilderTest {
     }
 
     @Test
-    public void testEclipseProcessBuilderCommandCorrectlyChainsArtifacts() throws AntennaException {
+    public void testEclipseProcessBuilderCommandCorrectlyChainsArtifacts() {
         Artifact artifact1 = new Artifact();
         artifact1.addFact(new BundleCoordinates("TestBundle1", "1.0.0"));
         Artifact artifact2 = new Artifact();

@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.sw360;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
@@ -40,7 +39,7 @@ public class SW360MetaDataReceiver {
         this.sw360ConnectionConfiguration = sw360ConnectionConfiguration;
     }
 
-    public Optional<SW360Release> findReleaseForArtifact(Artifact artifact) throws AntennaException {
+    public Optional<SW360Release> findReleaseForArtifact(Artifact artifact) {
         HttpHeaders headers = sw360ConnectionConfiguration.getHttpHeaders();
         Optional<SW360Component> component = componentClientAdapter.getComponentByArtifact(artifact, headers);
         if (component.isPresent()) {
@@ -49,7 +48,7 @@ public class SW360MetaDataReceiver {
         return Optional.empty();
     }
 
-    public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense) throws AntennaException {
+    public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense) {
         HttpHeaders headers = sw360ConnectionConfiguration.getHttpHeaders();
         return licenseClientAdapter.getLicenseDetails(sparseLicense, headers);
     }

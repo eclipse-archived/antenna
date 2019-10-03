@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.sw360.workflow.generator;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
@@ -50,11 +49,7 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         assertThat(release.getDownloadurl()).isEqualTo(sourceUrl);
         assertThat(release.getReleaseTagUrl()).isEqualTo(releaseTagUrl);
         assertThat(release.getSoftwareHeritageId()).isEqualTo(swhID);
-        try {
-            new ArtifactSoftwareHeritageID.Builder(release.getSoftwareHeritageId()).build();
-        } catch (AntennaException e) {
-            assertThat(false).isTrue();
-        }
+        new ArtifactSoftwareHeritageID.Builder(release.getSoftwareHeritageId()).build();
 
         assertThat(release.getCoordinates()).containsKeys("mvn");
         assertThat(release.getCoordinates()).hasSize(1);
@@ -115,11 +110,7 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         artifact.addFact(new ObservedLicenseInformation(licenseInformation));
         artifact.addFact(new ArtifactSourceUrl(sourceUrl));
         artifact.addFact(new ArtifactReleaseTagURL(releaseTagUrl));
-        try {
-            artifact.addFact(new ArtifactSoftwareHeritageID.Builder(swhID).build());
-        } catch (AntennaException e) {
-            //continue
-        }
+        artifact.addFact(new ArtifactSoftwareHeritageID.Builder(swhID).build());
         artifact.addFact(new ArtifactFilename("test1-file.jar", ("12345678" + name)));
         artifact.addFact(new ArtifactFilename("test2-file.jar", ("12345678" + name)));
         artifact.addFact(new ArtifactClearingState(ArtifactClearingState.ClearingState.valueOf("PROJECT_APPROVED")));

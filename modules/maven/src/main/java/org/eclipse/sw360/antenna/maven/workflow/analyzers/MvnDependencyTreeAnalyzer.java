@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.maven.workflow.analyzers;
 
 import org.apache.maven.shared.dependency.graph.DependencyNode;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.frontend.stub.mojo.WrappedDependencyNodes;
@@ -39,7 +39,7 @@ public class MvnDependencyTreeAnalyzer extends AbstractAnalyzer {
         Optional<WrappedDependencyNodes> wrappedProjectsOptional = context.getGeneric(WrappedDependencyNodes.class);
 
         if (!wrappedProjectsOptional.isPresent()) {
-            throw new AntennaExecutionException("No Maven dependency tree was provided for analysis.");
+            throw new ExecutionException("No Maven dependency tree was provided for analysis.");
         }
 
         List<DependencyNode> projectList = wrappedProjectsOptional.get().getDependencyNodes();

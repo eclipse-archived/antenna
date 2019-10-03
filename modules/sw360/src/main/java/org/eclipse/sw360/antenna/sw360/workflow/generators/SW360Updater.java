@@ -12,9 +12,7 @@
 package org.eclipse.sw360.antenna.sw360.workflow.generators;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.model.SW360ProjectCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -38,7 +36,7 @@ public class SW360Updater extends AbstractGenerator {
     }
 
     @Override
-    public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String, String> configMap) {
         Optional<SW360ProjectCoordinates> configuredSW360Project = Optional.ofNullable(context.getConfiguration().getConfiguredSW360Project());
 
         projectName = retrieveName(configuredSW360Project);
@@ -55,7 +53,7 @@ public class SW360Updater extends AbstractGenerator {
         // General configuration
         final boolean updateReleases = getBooleanConfigValue(UPDATE_RELEASES, configMap);
         if (updateReleases) {
-            throw new AntennaExecutionException("The functionality to update releases, activated with the " + UPDATE_RELEASES + " is not yet supported.");
+            throw new ExecutionException("The functionality to update releases, activated with the " + UPDATE_RELEASES + " is not yet supported.");
         }
         Boolean uploadSources = getBooleanConfigValue(UPLOAD_SOURCES, configMap);
 
@@ -63,7 +61,7 @@ public class SW360Updater extends AbstractGenerator {
     }
 
     @Override
-    public Map<String, IAttachable> produce(Collection<Artifact> intermediates) throws AntennaException {
+    public Map<String, IAttachable> produce(Collection<Artifact> intermediates) {
         return new SW360UpdaterImpl(sw360MetaDataUpdater,projectName, projectVersion)
                 .produce(intermediates);
     }

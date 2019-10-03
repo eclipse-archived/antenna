@@ -15,8 +15,7 @@ import org.apache.maven.plugin.LegacySupport;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
@@ -43,7 +42,7 @@ public class MavenArtifactResolver extends AbstractProcessor {
 
 
     @Override
-    public Collection<Artifact> process(Collection<Artifact> artifacts) throws AntennaException {
+    public Collection<Artifact> process(Collection<Artifact> artifacts) {
         ToolConfiguration toolConfig = context.getToolConfiguration();
         ProxySettings proxySettings = new ProxySettings(
                 toolConfig.useProxy(), toolConfig.getProxyHost(), toolConfig.getProxyPort());
@@ -63,7 +62,7 @@ public class MavenArtifactResolver extends AbstractProcessor {
     }
 
     @Override
-    public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String, String> configMap) {
         dependencyTargetDirectory = context.getToolConfiguration().getDependenciesDirectory();
         sourceResolvingBlacklist = context.getConfiguration().getIgnoreForSourceResolving();
         String sourcesUrlString = configMap.get(SOURCES_REPOSITORY_URL);
@@ -71,7 +70,7 @@ public class MavenArtifactResolver extends AbstractProcessor {
             try {
                 sourcesRepositoryUrl = new URL(sourcesUrlString);
             } catch (MalformedURLException e) {
-                throw new AntennaConfigurationException("The URL in 'sourcesRepositoryUrl' is not valid.");
+                throw new ConfigurationException("The URL in 'sourcesRepositoryUrl' is not valid.");
             }
         }
         preferredSourceQualifier = configMap.get(PREFERRED_SOURCE_QUALIFIER);

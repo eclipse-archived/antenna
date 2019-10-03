@@ -11,7 +11,7 @@
 
 package org.eclipse.sw360.antenna.api;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 
 import java.io.File;
 
@@ -26,10 +26,10 @@ public class Attachable implements IAttachable {
 
     public Attachable(String type, String classifier, File file){
         if(type == null){
-            throw new AntennaExecutionException("Type in Attachable must not be null");
+            throw new ExecutionException("Type in Attachable must not be null");
         }
         if(classifier == null){
-            throw new AntennaExecutionException("Classifier in Attachable must not be null");
+            throw new ExecutionException("Classifier in Attachable must not be null");
         }
         this.type = type;
         this.classifier = classifier;

@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.knowledgebase;
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ public class LicenseKnowledgeBaseFactory implements Supplier<ILicenseManagementK
     public ILicenseManagementKnowledgeBase get() {
         Iterator<ILicenseManagementKnowledgeBase> iter = ServiceLoader.load(ILicenseManagementKnowledgeBase.class, getClass().getClassLoader()).iterator();
         if(!iter.hasNext()){
-            throw new AntennaExecutionException("Was not able to find any implementation for the ILicenseManagementKnowledgeBase interface.");
+            throw new ExecutionException("Was not able to find any implementation for the ILicenseManagementKnowledgeBase interface.");
         }
 
         ILicenseManagementKnowledgeBase knowledgeBase = iter.next();
@@ -46,7 +46,7 @@ public class LicenseKnowledgeBaseFactory implements Supplier<ILicenseManagementK
             while(iter.hasNext()){
                 implementations.append(", ").append(iter.next().getClass().getCanonicalName());
             }
-            throw new AntennaExecutionException("Found to many implementations for the ILicenseManagementKnowledgeBase interface: " + implementations);
+            throw new ExecutionException("Found to many implementations for the ILicenseManagementKnowledgeBase interface: " + implementations);
         }
 
         logger.info("Found knowledgebase implementation: " + knowledgeBase.getClass().getCanonicalName());

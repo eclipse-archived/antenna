@@ -15,7 +15,6 @@ import org.apache.maven.plugin.LegacySupport;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.maven.ArtifactRequesterFactory;
 import org.eclipse.sw360.antenna.maven.ClassifierInformation;
 import org.eclipse.sw360.antenna.maven.IArtifactRequester;
@@ -77,7 +76,7 @@ public class MavenArtifactResolverImpl {
         this.basedir = basedir;
     }
 
-    public Collection<Artifact> process(Collection<Artifact> artifacts) throws AntennaException {
+    public Collection<Artifact> process(Collection<Artifact> artifacts) {
         LOGGER.info("Resolve maven artifacts, be patient... this could take a long time");
         resolveArtifacts(artifacts);
         LOGGER.info("Resolve maven artifacts... done");
@@ -91,7 +90,7 @@ public class MavenArtifactResolverImpl {
      * @param artifacts to be resolved
      */
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
-    private void resolveArtifacts(Collection<Artifact> artifacts) throws AntennaException {
+    private void resolveArtifacts(Collection<Artifact> artifacts) {
         // Check directory exists
         File dir = dependencyTargetDirectory.toFile();
         if (!dir.exists()) {
@@ -108,7 +107,7 @@ public class MavenArtifactResolverImpl {
     }
 
 
-    private void resolve(Artifact artifact, Path dependencyTargetDirectory) throws AntennaException {
+    private void resolve(Artifact artifact, Path dependencyTargetDirectory) {
         Optional<MavenCoordinates> oCoordinates = artifact.askFor(MavenCoordinates.class);
         if (!oCoordinates.isPresent()) {
             return;

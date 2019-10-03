@@ -11,12 +11,10 @@
 package org.eclipse.sw360.antenna.validators.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
-import org.eclipse.sw360.antenna.validators.workflow.processors.LicenseValidator;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,7 +69,7 @@ public class LicenseValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void validLicense() throws AntennaConfigurationException {
+    public void validLicense() {
         Artifact artifact = mkArtifact(allowedLicense);
 
         validator.configure(Collections.emptyMap());
@@ -79,7 +77,7 @@ public class LicenseValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void validLicenseWithConfig() throws AntennaConfigurationException {
+    public void validLicenseWithConfig() {
         Artifact artifact = mkArtifact(allowedLicense);
 
         configMap.put(FORBIDDEN_LICENSE_SEVERITY_KEY, "FAIL");
@@ -91,42 +89,42 @@ public class LicenseValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testForbiddenLicenseFail() throws AntennaConfigurationException {
+    public void testForbiddenLicenseFail() {
         configMap.put(FORBIDDEN_LICENSE_SEVERITY_KEY, "FAIL");
         runTest(forbiddenLicense, IEvaluationResult.Severity.FAIL);
     }
 
     @Test
-    public void testForbiddenLicenseWarn() throws AntennaConfigurationException {
+    public void testForbiddenLicenseWarn() {
         configMap.put(FORBIDDEN_LICENSE_SEVERITY_KEY, "WARN");
         runTest(forbiddenLicense, IEvaluationResult.Severity.WARN);
     }
 
     @Test
-    public void testLicenseWithoutTextTestFail() throws AntennaConfigurationException {
+    public void testLicenseWithoutTextTestFail() {
         configMap.put(MISSING_LICENSE_TEXT_SEVERITY_KEY, "FAIL");
         runTest(emptyTextLicense, IEvaluationResult.Severity.FAIL);
     }
 
     @Test
-    public void testLicenseWithoutTextTestWarn() throws AntennaConfigurationException {
+    public void testLicenseWithoutTextTestWarn() {
         configMap.put(MISSING_LICENSE_TEXT_SEVERITY_KEY, "WARN");
         runTest(emptyTextLicense, IEvaluationResult.Severity.WARN);
     }
 
     @Test
-    public void testLicenseWithoutLicenseInformationTestFail() throws AntennaConfigurationException {
+    public void testLicenseWithoutLicenseInformationTestFail() {
         configMap.put(MISSING_LICENSE_INFORMATION_SEVERITY_KEY, "FAIL");
         runTest(emptyLicense, IEvaluationResult.Severity.FAIL);
     }
 
     @Test
-    public void testLicenseWithoutLicenseInformationTestWarn() throws AntennaConfigurationException {
+    public void testLicenseWithoutLicenseInformationTestWarn() {
         configMap.put(MISSING_LICENSE_INFORMATION_SEVERITY_KEY, "WARN");
         runTest(emptyLicense, IEvaluationResult.Severity.WARN);
     }
 
-    private void runTest(License license, IEvaluationResult.Severity expectedSeverity) throws AntennaConfigurationException {
+    private void runTest(License license, IEvaluationResult.Severity expectedSeverity) {
         Artifact artifact = mkArtifact(license);
         validator.configure(configMap);
         final List<IEvaluationResult> validate = validator.validate(artifact);

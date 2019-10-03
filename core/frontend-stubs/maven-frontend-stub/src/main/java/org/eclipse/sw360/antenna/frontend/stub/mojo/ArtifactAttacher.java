@@ -17,7 +17,7 @@ import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ public class ArtifactAttacher {
         if(context.getProject().getRawProject() instanceof MavenProject){
             this.reporter = context.getProcessingReporter();
             this.projectHelper = (MavenProjectHelper) context.getGeneric(MavenProjectHelper.class)
-                    .orElseThrow(() -> new AntennaExecutionException("MavenProjectHelper is not supported "));
+                    .orElseThrow(() -> new ExecutionException("MavenProjectHelper is not supported "));
             this.currentProject = (MavenProject) context.getProject().getRawProject();
             this.attachAll = toolConf.isAttachAll();
         }else{

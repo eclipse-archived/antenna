@@ -11,7 +11,6 @@
 package org.eclipse.sw360.antenna.frontend.gradle;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.frontend.stub.gradle.AntennaImpl;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.AbstractTestProject;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.ExampleTestProject;
@@ -25,11 +24,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -71,13 +68,13 @@ public class AntennaGradlePluginTest {
     }
 
     @After
-    public void cleanup() throws Exception {
+    public void cleanup() throws IOException {
         exampleTestProject.cleanUpTemporaryProjectFolder();
     }
 
     @Ignore("steps are not on classpath")
     @Test
-    public void testWithoutGradle() throws Exception {
+    public void testWithoutGradle() {
         checkInternetConnectionAndAssume(Assume::assumeTrue);
         AntennaImpl runner = new AntennaImpl("antenna-maven-plugin", exampleTestProject.getProjectPom(), project);
         runner.execute();
@@ -85,7 +82,7 @@ public class AntennaGradlePluginTest {
     }
 
     @Test
-    public void testWithGradle() throws Exception {
+    public void testWithGradle() {
         checkInternetConnectionAndAssume(Assume::assumeTrue);
         boolean withDebug = false; // whether to enable debugging
         BuildResult result = GradleRunner.create()
@@ -105,7 +102,7 @@ public class AntennaGradlePluginTest {
     }
 
     @Test
-    public void testWithoutGradleSetSystemEnvironmentVariables() throws AntennaException, URISyntaxException {
+    public void testWithoutGradleSetSystemEnvironmentVariables() throws URISyntaxException {
         URI pom = AntennaGradlePluginTest.class.getClassLoader().getResource("pom.xml").toURI();
         URI propertiesFile = AntennaGradlePluginTest.class.getClassLoader().getResource("antennaTestVariable.properties").toURI();
 
@@ -122,7 +119,7 @@ public class AntennaGradlePluginTest {
     }
 
     @Test
-    public void testWithPomInSubDirs() throws IOException, AntennaException {
+    public void testWithPomInSubDirs() throws IOException {
         Path pomParentPath = exampleTestProject.getProjectPom().getParent().normalize();
         Path dest = Paths.get(pomParentPath.toString(), "src", "pom.xml");
         Files.move(exampleTestProject.getProjectPom(), dest, REPLACE_EXISTING);

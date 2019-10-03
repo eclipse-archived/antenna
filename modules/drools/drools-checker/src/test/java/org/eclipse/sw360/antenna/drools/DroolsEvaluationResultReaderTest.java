@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.drools;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -44,27 +44,27 @@ public class DroolsEvaluationResultReaderTest {
     public TemporaryFolder testFolder = new TemporaryFolder();
 
     @Test
-    public void testNotExistingPolicyFile() throws AntennaException {
+    public void testNotExistingPolicyFile() {
         Path p = Paths.get("not/existing/file");
 
-        thrown.expect(AntennaException.class);
+        thrown.expect(ExecutionException.class);
         thrown.expectMessage(EXP_MSG_DOES_NOT_FILE);
 
         DroolsEvaluationResultReader.getEvaluationResult(p);
     }
 
     @Test
-    public void testIsNotPolicyFile() throws AntennaException, IOException {
+    public void testIsNotPolicyFile() throws IOException {
         Path p = testFolder.newFolder("rootOfFile").toPath();
 
-        thrown.expect(AntennaException.class);
+        thrown.expect(ExecutionException.class);
         thrown.expectMessage(EXP_MSG_IS_NOT_FILE);
 
         DroolsEvaluationResultReader.getEvaluationResult(p);
     }
 
     @Test
-    public void testWithValidPolicyFile() throws URISyntaxException, AntennaException {
+    public void testWithValidPolicyFile() throws URISyntaxException {
         Path p = Paths.get(getClass().getResource(POLICIES_FILENAME).toURI());
         List<IEvaluationResult> r = DroolsEvaluationResultReader.getEvaluationResult(p);
 

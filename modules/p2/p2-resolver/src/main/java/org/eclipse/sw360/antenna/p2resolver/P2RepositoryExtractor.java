@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.p2resolver;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.util.ClassCodeSourceLocation;
 import org.eclipse.sw360.antenna.util.ZipExtractor;
 import org.slf4j.Logger;
@@ -32,12 +32,12 @@ public final class P2RepositoryExtractor {
         // Utility class
     }
 
-    public static void installEclipseProductForP2Resolution(String extractionLocation) throws AntennaException {
+    public static void installEclipseProductForP2Resolution(String extractionLocation) {
         String location = "";
         try {
             location = ClassCodeSourceLocation.getClassCodeSourceLocationAsString(P2RepositoryExtractor.class);
         } catch (URISyntaxException e) {
-            throw new AntennaException("There was a problem parsing the class  code source location of " + P2RepositoryExtractor.class);
+            throw new ExecutionException("There was a problem parsing the class  code source location of " + P2RepositoryExtractor.class);
         }
         try (JarFile jar = new JarFile(location)) {
             P2RepositoryExtractor.extractProductFromJar(extractionLocation, location);
@@ -50,7 +50,7 @@ public final class P2RepositoryExtractor {
     }
 
     @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
-    public static void extractProductFromJar(String extractionLocation, String jarPath) throws AntennaException {
+    public static void extractProductFromJar(String extractionLocation, String jarPath) {
         String extractedFolder = extractionLocation + File.separator + "extracted";
         new File(extractedFolder).mkdir();
         LOGGER.info("Extracting jar file containing products.");
@@ -59,18 +59,18 @@ public final class P2RepositoryExtractor {
         extractProductFromFilesystem(extractionLocation, extractedFolder);
     }
 
-    public static void extractProductFromFilesystem(String extractionLocation, String location) throws AntennaException {
+    public static void extractProductFromFilesystem(String extractionLocation, String location) {
         File zipFile = new File(location + File.separator + getProductNameForOS());
         LOGGER.info("Extracting zip file of product.");
         unzipFile(zipFile, extractionLocation);
         LOGGER.info("Extracted product at: " + extractionLocation);
     }
 
-    private static void unzipFile(File zipFile, String extractionLocation) throws AntennaException {
+    private static void unzipFile(File zipFile, String extractionLocation) {
         try {
             ZipExtractor.extractAll(zipFile, new File(extractionLocation));
         } catch (IOException e) {
-            throw new AntennaException("Unzipping file " + zipFile.toString() + " failed. Reason: ", e);
+            throw new ExecutionException("Unzipping file " + zipFile.toString() + " failed. Reason: ", e);
         }
     }
 }

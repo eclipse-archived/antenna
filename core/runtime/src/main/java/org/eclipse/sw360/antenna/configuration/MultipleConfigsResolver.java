@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.configuration;
 
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.SW360ProjectCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -56,13 +56,13 @@ public class MultipleConfigsResolver {
      *
      * @return The resolved configurations
      *
-     * @throws AntennaConfigurationException Configuration Problem
+     * @throws ConfigurationException Configuration Problem
      */
-    public Configuration resolveConfigs(ToolConfiguration toolConfiguration) throws AntennaConfigurationException {
+    public Configuration resolveConfigs(ToolConfiguration toolConfiguration) {
         return resolveConfigs(toolConfiguration, true);
     }
 
-    protected Configuration resolveConfigs(ToolConfiguration toolConfiguration, boolean checkReport) throws AntennaConfigurationException {
+    protected Configuration resolveConfigs(ToolConfiguration toolConfiguration, boolean checkReport) {
         this.configurationReader = new ConfigurationReader(toolConfiguration.getEncoding());
         this.antennaTargetDirectory = toolConfiguration.getAntennaTargetDirectory();
         this.tempReporter = new Reporter(antennaTargetDirectory, toolConfiguration.getEncoding());
@@ -89,7 +89,7 @@ public class MultipleConfigsResolver {
         return resolvedConfigs;
     }
 
-    private ArrayList<Configuration> resolveConfigs(List<File> configs) throws AntennaConfigurationException {
+    private ArrayList<Configuration> resolveConfigs(List<File> configs) {
         LOGGER.debug("Resolve list of configurations.");
         ArrayList<Configuration> configurations = new ArrayList<>();
         for (File config : configs) {
@@ -102,7 +102,7 @@ public class MultipleConfigsResolver {
     /**
      * Check processing reports for conflict messages.
      */
-    private void checkReport() throws AntennaConfigurationException {
+    private void checkReport() {
         Report processingReport = tempReporter.getProcessingReport();
         if (processingReport.getMessageList().size() > 0) {
             tempReporter.writeReport(System.out);
@@ -110,11 +110,11 @@ public class MultipleConfigsResolver {
 
             String msg = "There are conflicting configurations. Please have a look at the processing Report and resolve them.";
             LOGGER.error(msg);
-            throw new AntennaConfigurationException(msg);
+            throw new ConfigurationException(msg);
         }
     }
 
-    private List<Configuration> resolveUris(List<URI> uris) throws AntennaConfigurationException {
+    private List<Configuration> resolveUris(List<URI> uris) {
         LOGGER.debug("Resolve list of configuration file uris.");
         List<Configuration> configurations = new ArrayList<>();
         for (URI uri : uris) {

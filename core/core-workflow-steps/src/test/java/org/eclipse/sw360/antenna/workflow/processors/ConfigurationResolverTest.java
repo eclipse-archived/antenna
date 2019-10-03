@@ -11,7 +11,6 @@
 package org.eclipse.sw360.antenna.workflow.processors;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
@@ -56,11 +55,11 @@ public class ConfigurationResolverTest extends AntennaTestWithMockedContext {
                         return null;
                     }
                 })
-                .orElseThrow(() -> new RuntimeException("failed to get " + path));
+                .orElseThrow(() -> new IllegalStateException("failed to get " + path));
     }
 
     @Before
-    public void init() throws AntennaConfigurationException {
+    public void init() {
         File xmlFile = getResourceAsFile("antennaconf.xml");
         XMLResolverJaxB resolverXML = new XMLResolverJaxB(StandardCharsets.UTF_8);
         AntennaConfig antennaConfig = resolverXML.resolveXML(xmlFile);

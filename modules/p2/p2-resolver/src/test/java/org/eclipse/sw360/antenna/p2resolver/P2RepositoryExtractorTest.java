@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.p2resolver;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -26,7 +25,7 @@ public class P2RepositoryExtractorTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
-    public void testProductInstallation() throws IOException, AntennaException {
+    public void testProductInstallation() throws IOException {
         File extractionPath = temporaryFolder.newFolder();
         P2RepositoryExtractor.installEclipseProductForP2Resolution(extractionPath.toString());
 

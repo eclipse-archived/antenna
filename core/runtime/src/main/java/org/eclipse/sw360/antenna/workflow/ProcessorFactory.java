@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.workflow;
 
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.api.workflow.ConfigurableWorkflowItem;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
  */
 public class ProcessorFactory extends WorkflowItemFactory {
 
-    public static List<AbstractProcessor> getProcessors(Workflow workflow, AntennaContext context)  throws AntennaConfigurationException {
+    public static List<AbstractProcessor> getProcessors(Workflow workflow, AntennaContext context) {
         if (workflow == null) {
-            throw new AntennaConfigurationException("No <workflow> section was found in your configuration.");
+            throw new ConfigurationException("No <workflow> section was found in your configuration.");
         }
 
         if(workflow.getProcessors() == null) {

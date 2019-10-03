@@ -12,6 +12,7 @@
 package org.eclipse.sw360.antenna.droolstesting;
 
 import cucumber.api.java.en.Given;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIssues;
 import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
@@ -58,7 +59,7 @@ public class GivenSteps {
         if (DATA_KEYS.containsKey(row.get(0))) {
             mapDataKeys(artifact, row);
         } else {
-            throw new RuntimeException(row.get(0) + " unknown, must be one of " + String.join(", ", DATA_KEYS.keySet()));
+            throw new ConfigurationException(row.get(0) + " unknown, must be one of " + String.join(", ", DATA_KEYS.keySet()));
         }
     }
 
@@ -112,7 +113,7 @@ public class GivenSteps {
         if (MISSING_LICENSE_REASONS_MAP.containsKey(row.get(1))) {
             addMissingLicenseInformation(artifact, row);
         } else {
-            throw new RuntimeException(row.get(1) + " unknown, must be one of " + String.join(", ", MISSING_LICENSE_REASONS_MAP.keySet()));
+            throw new ConfigurationException(row.get(1) + " unknown, must be one of " + String.join(", ", MISSING_LICENSE_REASONS_MAP.keySet()));
         }
     }
 
@@ -128,7 +129,7 @@ public class GivenSteps {
         if (MATCH_STATE_MAP.containsKey(row.get(1))) {
             artifact.setMatchState(MATCH_STATE_MAP.get(row.get(1)));
         } else {
-            throw new RuntimeException(row.get(1) + " unknown, must be one of " + String.join(", ", MATCH_STATE_MAP.keySet()));
+            throw new ConfigurationException(row.get(1) + " unknown, must be one of " + String.join(", ", MATCH_STATE_MAP.keySet()));
         }
     }
 
@@ -136,7 +137,7 @@ public class GivenSteps {
         if (COORDINATES_FACTORY.containsKey(row.get(1))) {
             artifact.addFact(COORDINATES_FACTORY.get(row.get(1)).apply(row));
         } else {
-            throw new RuntimeException(row.get(1) + " unknown, must be one of " + String.join(", ", COORDINATES_FACTORY.keySet()));
+            throw new ConfigurationException(row.get(1) + " unknown, must be one of " + String.join(", ", COORDINATES_FACTORY.keySet()));
         }
     }
 
@@ -145,13 +146,13 @@ public class GivenSteps {
         if (SECURITY_ISSUES.containsKey(row.get(1))) {
             securityIssue.setStatus(SECURITY_ISSUES.get(row.get(1)));
         } else {
-            throw new RuntimeException(row.get(1) + " unknown, must be one of " + String.join(", ", SECURITY_ISSUES.keySet()));
+            throw new ConfigurationException(row.get(1) + " unknown, must be one of " + String.join(", ", SECURITY_ISSUES.keySet()));
         }
         if (row.size() >= 3) {
             try {
                 securityIssue.setSeverity(Double.parseDouble(row.get(2)));
             } catch (NumberFormatException ex) {
-                throw new NumberFormatException("Security issue must be parseable to a double value");
+                throw new ConfigurationException("Security issue must be parseable to a double value");
             }
         }
         artifact.addFact(new ArtifactIssues(Collections.singletonList(securityIssue)));

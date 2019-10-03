@@ -35,7 +35,7 @@ public class AntennaCLIFrontendTest extends AbstractAntennaCLIFrontendTest {
     @Test
     public void testExecutionUsingMainMethod()
             throws Exception {
-        assumeTrue(runExecutionTest);
+        assumeTrue(isRunExecutionTest());
         protoypeExecutionTest(() -> {
             Path pom = testData.getProjectPom();
             String[] args = new String[]{ pom.toAbsolutePath().toString() };

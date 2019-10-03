@@ -11,9 +11,7 @@
 package org.eclipse.sw360.antenna.workflow;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaValidationException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +38,7 @@ public class AntennaWorkflow {
         LOGGER.info("Initializing workflow done\n");
     }
 
-    public Map<String, IAttachable> execute() throws AntennaException {
+    public Map<String, IAttachable> execute() {
         LOGGER.info("Workflow execution started ...");
         try {
             LOGGER.info("Start collecting dependencies from");
@@ -66,14 +64,10 @@ public class AntennaWorkflow {
 
             LOGGER.info("Workflow execution done");
             return generatedOutput;
-        } catch (AntennaValidationException tve) {
-            String msg = "some artifacts were invalid";
-            LOGGER.error(msg, tve);
-            throw new AntennaException(msg, tve);
-        } catch (AntennaExecutionException tee) {
+        } catch (ExecutionException tee) {
             String msg = "Workflow execution failed!";
             LOGGER.error(msg, tee);
-            throw new AntennaException(msg, tee);
+            throw tee;
         } finally {
             LOGGER.info("Clean up workflow ...");
             cleanup();
@@ -81,7 +75,7 @@ public class AntennaWorkflow {
         }
     }
 
-    private Collection<WorkflowStepResult> getArtifactsFromAnalyzers() throws AntennaException {
+    private Collection<WorkflowStepResult> getArtifactsFromAnalyzers() {
         Collection<WorkflowStepResult> results = new HashSet<>();
         for(AbstractAnalyzer source : analyzers){
             LOGGER.info("\nCollecting dependencies from source {}", source.getWorkflowItemName());
@@ -90,7 +84,7 @@ public class AntennaWorkflow {
         return results;
     }
 
-    private void applyProcessors(ProcessingState processingState) throws AntennaException {
+    private void applyProcessors(ProcessingState processingState) {
         for (AbstractProcessor processor : processors) {
             LOGGER.info("Let {} process dependencies", processor.getWorkflowItemName());
             processingState.applyWorkflowStepResult(processor.process(processingState));
@@ -107,7 +101,7 @@ public class AntennaWorkflow {
         }
     }
 
-    private Map<String, IAttachable> generateOutputViaGenerators(ProcessingState processingState) throws AntennaException {
+    private Map<String, IAttachable> generateOutputViaGenerators(ProcessingState processingState) {
         Map<String, IAttachable> generatedOutput = new HashMap<>();
         for (AbstractGenerator sink : generators) {
             LOGGER.info("Let {} generate output", sink.getWorkflowItemName());
@@ -118,7 +112,7 @@ public class AntennaWorkflow {
         return generatedOutput;
     }
 
-    private void applyOutputPostHandler(Map<String, IAttachable> generatedOutput) throws AntennaException {
+    private void applyOutputPostHandler(Map<String, IAttachable> generatedOutput) {
         for (AbstractOutputHandler postSinksHook: postSinksHooks) {
             postSinksHook.handle(generatedOutput);
         }

@@ -17,7 +17,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
@@ -80,7 +80,7 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
     private void checkThatCSVIsOnClasspath() {
         final URL resource = CSVBasedLicenseKnowledgeBase.class.getClassLoader().getResource(licensesCSV);
         if(resource == null) {
-            throw new RuntimeException("The required file " + licensesCSV + " was not found on the classpath");
+            throw new ExecutionException("The required file " + licensesCSV + " was not found on the classpath");
         }
     }
 
@@ -149,7 +149,7 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
 
 
         ClassLoader classLoader = this.getClass().getClassLoader();
-        try (InputStream iStream = Optional.ofNullable(classLoader.getResourceAsStream(licensesCSV)).orElseThrow(() -> new AntennaExecutionException("Knowledgebase not found"));
+        try (InputStream iStream = Optional.ofNullable(classLoader.getResourceAsStream(licensesCSV)).orElseThrow(() -> new ExecutionException("Knowledgebase not found"));
              Reader iReader = new InputStreamReader(iStream, encoding);
              CSVParser csvParser = new CSVParser(iReader, csvFormat)) {
             validateHeader(csvParser);
@@ -159,7 +159,7 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
                         .forEach(f -> f.accept(row));
             }
         } catch (IOException e) {
-            throw new AntennaExecutionException("Could not initialize knowledgebase maps", e);
+            throw new ExecutionException("Could not initialize knowledgebase maps", e);
         }
     }
 
@@ -169,7 +169,7 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
         if (missingHeaders.size() > 0) {
             String errMsg = String.format("License knowledgebase malformed. Missing headers: %s", String.join(";", missingHeaders));
             LOGGER.error(errMsg);
-            throw new AntennaExecutionException(errMsg);
+            throw new ExecutionException(errMsg);
         }
     }
 
@@ -189,9 +189,9 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
             }
             return IOUtils.toString(iStream, encoding);
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("An UnsupportedEncodingException was thrown while reading the license texts.", e);
+            throw new ExecutionException("An UnsupportedEncodingException was thrown while reading the license texts.", e);
         } catch (IOException e) {
-            throw new RuntimeException("Unable to read licensetext in recources", e);
+            throw new ExecutionException("Unable to read licensetext in recources", e);
         }
     }
 

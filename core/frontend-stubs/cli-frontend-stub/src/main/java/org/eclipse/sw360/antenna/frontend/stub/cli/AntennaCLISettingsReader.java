@@ -11,11 +11,10 @@
 package org.eclipse.sw360.antenna.frontend.stub.cli;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.sw360.antenna.frontend.MetaDataStoringProject;
 import org.eclipse.sw360.antenna.api.FrontendCommons;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
+import org.eclipse.sw360.antenna.frontend.MetaDataStoringProject;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.eclipse.sw360.antenna.util.TemplateRenderer;
 import org.eclipse.sw360.antenna.util.XmlSettingsReader;
@@ -143,10 +142,8 @@ public class AntennaCLISettingsReader {
 
         try {
             return new XmlSettingsReader(renderedPom);
-        } catch (IOException e) {
-            throw new RuntimeException("IO exception when reading config: " + e.getMessage());
-        } catch (ParserConfigurationException | SAXException e) {
-            throw new IllegalArgumentException("Problem parsing the config: " + e.getMessage());
+        } catch (IOException | ParserConfigurationException | SAXException e) {
+            throw new ConfigurationException("Problem parsing the config: " + e.getMessage());
         }
     }
 
@@ -191,23 +188,19 @@ public class AntennaCLISettingsReader {
     /**
      * Extract properties from the specified pom.xml
      */
-    public ToolConfiguration readSettingsToToolConfiguration(XmlSettingsReader reader, MetaDataStoringProject project)
-            throws IllegalArgumentException {
+    public ToolConfiguration readSettingsToToolConfiguration(XmlSettingsReader reader, MetaDataStoringProject project) {
         ToolConfiguration.ConfigurationBuilder toolConfigBuilder = readBasicSettingsToToolConfigurationBuilder(reader, project);
 
         Optional<File> workflowDefFile = Optional.ofNullable(reader.getFileProperty("workflowDefinitionFile"));
-        try {
-            Workflow finalWorkflow = WorkflowFileLoader.loadWorkflowFromClassPath(workflowDefFile, tr);
 
-            Workflow workflowFromConfig = reader.getComplexType("workflow", Workflow.class);
-            if (workflowFromConfig != null) {
-                WorkflowFileLoader.overrideWorkflow(finalWorkflow, workflowFromConfig);
-            }
+        Workflow finalWorkflow = WorkflowFileLoader.loadWorkflowFromClassPath(workflowDefFile, tr);
 
-            toolConfigBuilder.setWorkflow(finalWorkflow);
-        } catch (AntennaConfigurationException e) {
-            throw new AntennaExecutionException("Failed to load workflow", e);
+        Workflow workflowFromConfig = reader.getComplexType("workflow", Workflow.class);
+        if (workflowFromConfig != null) {
+            WorkflowFileLoader.overrideWorkflow(finalWorkflow, workflowFromConfig);
         }
+
+        toolConfigBuilder.setWorkflow(finalWorkflow);
 
         return toolConfigBuilder.buildConfiguration();
     }
@@ -225,7 +218,7 @@ public class AntennaCLISettingsReader {
                             p -> p.getValue().toString()
                     ));
         } catch (IOException e) {
-            throw new RuntimeException("IO exception when reading properties file: " + e.getMessage());
+            throw new ConfigurationException("IO exception when reading properties file: " + e.getMessage());
         }
     }
 }

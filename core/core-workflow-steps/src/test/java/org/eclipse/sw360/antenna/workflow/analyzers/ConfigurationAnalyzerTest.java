@@ -81,7 +81,7 @@ public class ConfigurationAnalyzerTest extends AntennaTestWithMockedContext {
                         .filter(afe -> FILENAME.equals(afe.getFilename()))
                         .isPresent())
                 .findAny()
-                .orElseThrow(() -> new RuntimeException("should not happen"));
+                .orElseThrow(() -> new IllegalStateException("should not happen"));
         assertThat(processedArtifact.askFor(ArtifactMatchingMetadata.class)
                 .map(ArtifactMatchingMetadata::getMatchState)
                 .orElse(null))

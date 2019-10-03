@@ -12,7 +12,7 @@ package org.eclipse.sw360.antenna.policy.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.policy.engine.*;
@@ -41,7 +41,7 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
     }
 
     @Override
-    public void configure(final Map<String, String> configMap) throws AntennaConfigurationException {
+    public void configure(final Map<String, String> configMap) {
         super.configure(configMap);
 
         LOGGER.info("Setting up policy engine");
@@ -56,7 +56,7 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
         try {
             policyEngine = PolicyEngineConfigurator.configure(rulesetClassesList);
         } catch (IllegalStateException | IllegalArgumentException e) {
-            throw new AntennaConfigurationException("Could not initialize Policy Engine!", e);
+            throw new ConfigurationException("Could not initialize Policy Engine!", e);
         }
     }
 

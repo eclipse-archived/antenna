@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.sw360.adapter;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.sw360.rest.SW360LicenseClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
@@ -28,7 +27,7 @@ public class SW360LicenseClientAdapter {
         this.licenseClient = new SW360LicenseClient(restUrl, proxySettings);
     }
 
-    public boolean isLicenseOfArtifactAvailable(License license, HttpHeaders header) throws AntennaException {
+    public boolean isLicenseOfArtifactAvailable(License license, HttpHeaders header) {
         List<SW360SparseLicense> sw360Licenses = licenseClient.getLicenses(header);
 
         return sw360Licenses.stream()
@@ -36,16 +35,16 @@ public class SW360LicenseClientAdapter {
                 .anyMatch(n -> n.equals(license.getName()));
     }
 
-    public SW360License addLicense(License license, HttpHeaders header) throws AntennaException {
+    public SW360License addLicense(License license, HttpHeaders header) {
         SW360License sw360License = new SW360License(license);
         return licenseClient.createLicense(sw360License, header);
     }
 
-    public SW360License getSW360LicenseByAntennaLicense(License license, HttpHeaders header) throws AntennaException {
+    public SW360License getSW360LicenseByAntennaLicense(License license, HttpHeaders header) {
         return licenseClient.getLicenseByName(license.getName(), header);
     }
 
-    public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense, HttpHeaders headers) throws AntennaException {
+    public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense, HttpHeaders headers) {
         return Optional.of(licenseClient.getLicenseByName(sparseLicense.getShortName(), headers));
     }
 }

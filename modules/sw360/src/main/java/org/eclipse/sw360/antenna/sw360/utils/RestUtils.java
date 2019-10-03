@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.sw360.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
@@ -23,21 +23,22 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RestUtils {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    public static HttpEntity<String> getHttpEntity(Map<String, Object> resourceMap, HttpHeaders authBearerHeader) throws AntennaException {
+    public static HttpEntity<String> getHttpEntity(Map<String, Object> resourceMap, HttpHeaders authBearerHeader) {
         try {
             String jsonBody = objectMapper.writeValueAsString(resourceMap);
             return new HttpEntity<>(jsonBody, authBearerHeader);
         } catch (JsonProcessingException e) {
-            throw new AntennaException("Error when attempting to serialise the request body.", e);
+            throw new ExecutionException("Error when attempting to serialise the request body.", e);
         }
     }
 
-    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Project sw360Project, HttpHeaders header) throws AntennaException {
+    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Project sw360Project, HttpHeaders header) {
         Map<String, Object> project = new HashMap<>();
         project.put(SW360Attributes.PROJECT_NAME, sw360Project.getName());
         project.put(SW360Attributes.PROJECT_VERSION, sw360Project.getVersion());
@@ -49,7 +50,7 @@ public class RestUtils {
         return getHttpEntity(project, header);
     }
 
-    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Component sw360Component, HttpHeaders header) throws AntennaException {
+    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Component sw360Component, HttpHeaders header) {
         Map<String, Object> component = new HashMap<>();
         component.put(SW360Attributes.COMPONENT_COMPONENT_NAME, sw360Component.getName());
         component.put(SW360Attributes.COMPONENT_COMPONENT_TYPE, sw360Component.getComponentType().toString());
@@ -57,16 +58,16 @@ public class RestUtils {
         return getHttpEntity(component, header);
     }
 
-    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Release sw360Release, HttpHeaders header) throws AntennaException {
+    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Release sw360Release, HttpHeaders header) {
         try {
             String jsonBody = objectMapper.writeValueAsString(sw360Release);
             return new HttpEntity<>(jsonBody, header);
         } catch (JsonProcessingException e) {
-            throw new AntennaException("Error when attempting to serialise the request body.", e);
+            throw new ExecutionException("Error when attempting to serialise the request body.", e);
         }
     }
 
-    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360License sw360License, HttpHeaders header) throws AntennaException {
+    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360License sw360License, HttpHeaders header) {
         String shortName = sw360License.getShortName() == null ? "" : sw360License.getShortName();
         String fullName = sw360License.getFullName() == null ? shortName : sw360License.getFullName();
 
@@ -77,7 +78,7 @@ public class RestUtils {
         return getHttpEntity(license, header);
     }
 
-    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Attachment sw360Attachment, HttpHeaders header) throws AntennaException {
+    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Attachment sw360Attachment, HttpHeaders header) {
         Map<String, Object> attachment = new HashMap<>();
         attachment.put("filename", sw360Attachment.getFilename());
         attachment.put("attachmentType", sw360Attachment.getAttachmentType());
@@ -90,6 +91,6 @@ public class RestUtils {
                 .stream()
                 .collect(HttpHeaders::new,
                         (h, e) -> e.getValue().forEach( v -> h.add(e.getKey(), v)),
-                        (h1, h2) -> {throw new RuntimeException("Unsuported operation");});
+                        (h1, h2) -> {throw new UnsupportedOperationException("Unsupported operation");});
     }
 }

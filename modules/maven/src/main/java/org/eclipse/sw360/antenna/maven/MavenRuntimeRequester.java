@@ -20,7 +20,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.repository.RepositorySystem;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +130,7 @@ public class MavenRuntimeRequester extends IArtifactRequester {
         try {
             return FileUtils.contentEquals(artifactFile, targetFile);
         } catch (IOException e) {
-            throw new AntennaExecutionException("File content could not be compared: " + e.getMessage(), e);
+            throw new ExecutionException("File content could not be compared: " + e.getMessage(), e);
         }
     }
 
@@ -138,7 +138,7 @@ public class MavenRuntimeRequester extends IArtifactRequester {
         try {
             FileUtils.copyFile(artifactFile, targetFile);
         } catch (IOException e) {
-            throw new AntennaExecutionException("File could not be copied: " + e.getMessage(), e);
+            throw new ExecutionException("File could not be copied: " + e.getMessage(), e);
         }
     }
 }

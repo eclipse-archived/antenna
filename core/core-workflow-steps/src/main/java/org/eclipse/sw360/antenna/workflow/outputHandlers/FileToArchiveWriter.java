@@ -12,8 +12,7 @@
 package org.eclipse.sw360.antenna.workflow.outputHandlers;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractOutputHandler;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.slf4j.Logger;
@@ -47,7 +46,7 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
     }
 
     @Override
-    public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String, String> configMap) {
         String[] rawWriteToArchiveInstructions = getConfigValue(INSTRUCTIONS_KEY, configMap)
                 .split(";");
         for(String rawInstruction : rawWriteToArchiveInstructions){
@@ -82,20 +81,20 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
 
     public void addFileToArchive(Path sourcePath, Path zipFile, Path pathInArchive) {
         if (pathInArchive == null){
-            throw new AntennaExecutionException("The argument pathInArchive was empty");
+            throw new ExecutionException("The argument pathInArchive was empty");
         }
         if(sourcePath == null) {
-            throw new AntennaExecutionException("The argument sourcePath was empty");
+            throw new ExecutionException("The argument sourcePath was empty");
         }
 
         if(! sourcePath.toFile().exists()){
-            throw new AntennaExecutionException("Source file=["+sourcePath+"] does not exist");
+            throw new ExecutionException("Source file=["+sourcePath+"] does not exist");
         }
 
         try {
             addNewEntryToZipFile(zipFile, pathInArchive, sourcePath);
         } catch (IOException | URISyntaxException e) {
-            throw new AntennaExecutionException("The file=[" + sourcePath + "] could not be added to the archive=[" + zipFile + "]", e);
+            throw new ExecutionException("The file=[" + sourcePath + "] could not be added to the archive=[" + zipFile + "]", e);
         }
     }
 
@@ -106,7 +105,7 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
         try (FileSystem zipfs = FileSystems.newFileSystem(zipFileUri, properties)) {
             Path zipFilePath = zipfs.getPath(pathInArchive.toString()).toAbsolutePath();
             Path parent = Optional.ofNullable(zipFilePath.getParent())
-                    .orElseThrow(() -> new AntennaExecutionException("parent should exists"));
+                    .orElseThrow(() -> new ExecutionException("parent should exists"));
             Files.createDirectories(parent);
             Files.copy(sourcePath, zipFilePath, StandardCopyOption.REPLACE_EXISTING);
         }

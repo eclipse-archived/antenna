@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2017-2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2017-2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,18 +10,22 @@
  */
 package org.eclipse.sw360.antenna.api.exceptions;
 
-public class AntennaException extends Exception {
-    private static final long serialVersionUID = -1326543066347264517L;
+/**
+ * Used when the Antenna workflow configuration unexpectedly fails.
+ */
+public class ConfigurationException extends RuntimeException {
 
-    public AntennaException() {
+    private static final long serialVersionUID = 7171915096651884386L;
+
+    public ConfigurationException() {
         super();
     }
 
-    public AntennaException(String message) {
+    public ConfigurationException(String message) {
         super(message);
     }
 
-    public AntennaException(String message, Throwable cause) {
+    public ConfigurationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

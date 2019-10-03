@@ -12,7 +12,6 @@ package org.eclipse.sw360.antenna.validators.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
@@ -28,6 +27,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
@@ -61,11 +61,11 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
         Mockito.verify(configMock, Mockito.atLeast(1)).getValidForIncompleteSources();
     }
 
-    private void configure(Map<String,String> configMap) throws AntennaConfigurationException {
+    private void configure(Map<String,String> configMap) {
         configure(configMap, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     }
 
-    private void configure(Map<String,String> configMap, List<ArtifactSelector> validForMissingSources, List<ArtifactSelector> validForIncompleteSources) throws AntennaConfigurationException {
+    private void configure(Map<String,String> configMap, List<ArtifactSelector> validForMissingSources, List<ArtifactSelector> validForIncompleteSources) {
         when(configMock.getValidForMissingSources()).thenReturn(validForMissingSources);
         when(configMock.getValidForIncompleteSources()).thenReturn(validForIncompleteSources);
         validator.configure(configMap);
@@ -87,21 +87,21 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
         return artifact;
     }
 
-    private Artifact setupForTest(int percentage) throws Exception {
+    private Artifact setupForTest(int percentage) throws IOException {
         return setupForTest(Collections.EMPTY_MAP, percentage);
     }
 
-    private Artifact setupForTest(Map<String,String> configMap, int percentage) throws Exception {
+    private Artifact setupForTest(Map<String,String> configMap, int percentage) throws IOException {
         return setupForTest(configMap, percentage, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     }
-    private Artifact setupForTest(Map<String,String> configMap, int percentage, List<ArtifactSelector> validForMissingSources, List<ArtifactSelector> validForIncompleteSources) throws Exception {
+    private Artifact setupForTest(Map<String,String> configMap, int percentage, List<ArtifactSelector> validForMissingSources, List<ArtifactSelector> validForIncompleteSources) throws IOException {
         configure(configMap, validForMissingSources, validForIncompleteSources);
         File sourceJar = sourceValidatorTestTools.writeSourceJar(percentage);
         return mkArtifact(sourceJar);
     }
 
     @Test
-    public void testParsingOfThreshold() throws Exception {
+    public void testParsingOfThreshold() throws NoSuchFieldException, IllegalAccessException {
         configure(Collections.singletonMap("threshold", "40"));
         Field f = SourceValidator.class.getDeclaredField("threshold");
         f.setAccessible(true);
@@ -110,7 +110,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testWithCompleteSources() throws Exception {
+    public void testWithCompleteSources() throws IOException {
         Artifact artifact = setupForTest(100);
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));
@@ -120,7 +120,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testWithNearlyCompleteSources() throws Exception {
+    public void testWithNearlyCompleteSources() throws IOException {
         Artifact artifact = setupForTest(95);
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));
@@ -130,7 +130,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testWithNonCompleteSources() throws Exception {
+    public void testWithNonCompleteSources() throws IOException {
         Artifact artifact = setupForTest(0);
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));
@@ -144,7 +144,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testWithNonCompleteSourcesAndFail() throws Exception {
+    public void testWithNonCompleteSourcesAndFail() throws IOException {
         Artifact artifact = setupForTest(Collections.singletonMap("incompleteSourcesSeverity", "FAIL"), 0);
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));
@@ -158,7 +158,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testWithHalfCompleteSourcesAndLowThreshold() throws Exception {
+    public void testWithHalfCompleteSourcesAndLowThreshold() throws IOException {
         Artifact artifact = setupForTest(Collections.singletonMap("threshold", "40"), 50);
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));
@@ -168,7 +168,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testWithHalfCompleteSources() throws Exception {
+    public void testWithHalfCompleteSources() throws IOException {
         Artifact artifact = setupForTest(50);
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));
@@ -178,7 +178,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testWithHalfCompleteSourcesAndWhitelist() throws Exception {
+    public void testWithHalfCompleteSourcesAndWhitelist() throws IOException {
         Artifact artifact = setupForTest(Collections.emptyMap(), 50, Collections.emptyList(), Collections.singletonList(mkArtifactIdentifier()));
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));
@@ -188,7 +188,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testWithHalfCompleteSourcesAndWhitelistInATransitiveWay() throws Exception {
+    public void testWithHalfCompleteSourcesAndWhitelistInATransitiveWay() throws IOException {
         Artifact artifact = setupForTest(Collections.emptyMap(), 50, Collections.singletonList(mkArtifactIdentifier()), Collections.emptyList());
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));
@@ -198,7 +198,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testWithoutSourceJar() throws Exception {
+    public void testWithoutSourceJar() {
         configure(Collections.emptyMap());
         Artifact artifact = mkArtifact(null);
 
@@ -213,7 +213,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testWithoutSourceJarAndWarn() throws Exception {
+    public void testWithoutSourceJarAndWarn()  {
         configure(Collections.singletonMap("missingSourcesSeverity", "WARN"));
         Artifact artifact = mkArtifact(null);
 
@@ -228,7 +228,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testWithoutSourceJarAndWhitelist() throws Exception {
+    public void testWithoutSourceJarAndWhitelist() {
         configure(Collections.emptyMap(), Collections.singletonList(mkArtifactIdentifier()), Collections.emptyList());
         Artifact artifact = mkArtifact(null);
 
@@ -243,7 +243,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testWithoutSourceJarAndWhitelistInAWrongWay() throws Exception {
+    public void testWithoutSourceJarAndWhitelistInAWrongWay() {
         configure(Collections.emptyMap(), Collections.emptyList(), Collections.singletonList(mkArtifactIdentifier()));
         Artifact artifact = mkArtifact(null);
 
@@ -259,7 +259,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
 
 
     @Test
-    public void testWithoutJar() throws AntennaConfigurationException {
+    public void testWithoutJar() {
         Artifact artifact = new Artifact();
         artifact.addFact(mkArtifactIdentifier());
         configure(Collections.emptyMap());

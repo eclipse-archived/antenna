@@ -12,7 +12,7 @@ package org.eclipse.sw360.antenna.api.workflow;
 
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public abstract class ConfigurableWorkflowItem {
         }
     }
 
-    public void configure() throws AntennaConfigurationException {
+    public void configure() throws ConfigurationException {
         configure(Collections.emptyMap());
     }
 
@@ -56,31 +56,31 @@ public abstract class ConfigurableWorkflowItem {
         return workflowStepOrder;
     }
 
-    public void configure(Map<String, String> configMap) throws AntennaConfigurationException {
+    public void configure(Map<String, String> configMap) throws ConfigurationException {
 
     }
 
-    public String getConfigValue(String key, Map<String, String> configMap) throws AntennaConfigurationException {
+    public String getConfigValue(String key, Map<String, String> configMap) {
         return getConfigValue(key, configMap, null);
     }
 
-    public String getConfigValue(String key, Map<String, String> configMap, String defaultValue) throws AntennaConfigurationException {
+    public String getConfigValue(String key, Map<String, String> configMap, String defaultValue) {
         String result = configMap.get(key);
         if (result == null && defaultValue != null) {
             return defaultValue;
         } else if (result == null) {
             String error = String.format("%s misconfigured. \"%s\" not supplied", getWorkflowItemName(), key);
             LOGGER.error(error);
-            throw new AntennaConfigurationException(error);
+            throw new ConfigurationException(error);
         }
         return result;
     }
 
-    public Boolean getBooleanConfigValue(String key, Map<String, String> configMap) throws AntennaConfigurationException {
+    public Boolean getBooleanConfigValue(String key, Map<String, String> configMap) {
         return "true".equals(getConfigValue(key, configMap, "false").toLowerCase());
     }
 
-    public List<String> getCommaSeparatedConfigValue(String key, Map<String,String> configMap) throws  AntennaConfigurationException {
+    public List<String> getCommaSeparatedConfigValue(String key, Map<String,String> configMap) {
         final String configValue = getConfigValue(key, configMap, "");
         if ("".equals(configValue)) {
             return Collections.emptyList();

@@ -14,8 +14,6 @@ import org.apache.maven.plugin.LegacySupport;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.sw360.antenna.api.IProject;
-import org.eclipse.sw360.antenna.api.configuration.ContextExtension;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.maven.workflow.processors.enricher.MavenArtifactResolver;
 import org.eclipse.sw360.antenna.maven.workflow.processors.enricher.MavenArtifactResolverImpl;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -29,14 +27,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.atLeast;
 
 public class MavenArtifactResolverTest extends AntennaTestWithMockedContext {
@@ -69,7 +67,7 @@ public class MavenArtifactResolverTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void mavenArtifactResolverForGoodArtifact() throws AntennaException {
+    public void mavenArtifactResolverForGoodArtifact() {
         Map<String, String> configMap = new HashMap<>();
         configMap.put("sourceRepositoryUrl", "");
         configMap.put("preferredSourceQualifier", "sources-ext");
@@ -82,7 +80,7 @@ public class MavenArtifactResolverTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void mavenArtifactResolverForGoodArtifactDirectWithImpl() throws MalformedURLException, AntennaException {
+    public void mavenArtifactResolverForGoodArtifactDirectWithImpl() throws MalformedURLException {
         ProxySettings proxySettings = new ProxySettings(false, null, 0);
 
         MavenArtifactResolverImpl mavenArtifactResolverImpl = new MavenArtifactResolverImpl(proxySettings, antennaContextMock.getGeneric(RepositorySystem.class),

@@ -10,16 +10,15 @@
  */
 package org.eclipse.sw360.antenna.frontend.stub.cli;
 
-import org.eclipse.sw360.antenna.frontend.MetaDataStoringProject;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.core.AntennaCore;
 import org.eclipse.sw360.antenna.frontend.AntennaFrontend;
 import org.eclipse.sw360.antenna.frontend.AntennaFrontendHelper;
+import org.eclipse.sw360.antenna.frontend.MetaDataStoringProject;
 import org.eclipse.sw360.antenna.model.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,20 +80,19 @@ public abstract class AbstractAntennaCLIFrontend implements AntennaFrontend<Meta
                 .setToolConfiguration(toolConfiguration);
     }
 
-    @Override
-    public void execute() throws AntennaException {
+    public void execute() {
         AntennaCore antennaCore;
         try{
             final AntennaFrontendHelper antennaFrontendHelper = init();
             antennaCore = antennaFrontendHelper.buildAntennaCore();
-        } catch (AntennaConfigurationException e) {
+        } catch (ConfigurationException e) {
             LOGGER.error("AntennaCore was not initialized sucessfully");
             throw e;
         }
 
         try {
             output.putAll(antennaCore.compose());
-        } catch (AntennaExecutionException | AntennaException e) {
+        } catch (ExecutionException e) {
             LOGGER.error("Antenna execution failed due to: " + e.getMessage(), e);
             throw e;
         } finally {

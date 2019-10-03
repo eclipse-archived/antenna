@@ -11,6 +11,7 @@
 
 package org.eclipse.sw360.antenna.droolstesting;
 
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
@@ -63,31 +64,31 @@ public final class Mappings {
             new HashMap<String, Function<List<String>, ArtifactCoordinates<?>>>() {{
                 put("maven", row -> {
                     if (row.size() < 5) {
-                        throw new RuntimeException("Maven coordinates need to specify groupId, artifactId and version in that order");
+                        throw new ConfigurationException("Maven coordinates need to specify groupId, artifactId and version in that order");
                     }
                     return new MavenCoordinates(row.get(3), row.get(2), row.get(4));
                 });
                 put("generic", row -> {
                     if (row.size() < 4) {
-                        throw new RuntimeException("Generic coordinates need to specify name and version in that order");
+                        throw new ConfigurationException("Generic coordinates need to specify name and version in that order");
                     }
                     return new GenericArtifactCoordinates(row.get(2), row.get(3));
                 });
                 put("dotnet", row -> {
                     if (row.size() < 4) {
-                        throw new RuntimeException(".NET coordinates need to specify packageId and version in that order");
+                        throw new ConfigurationException(".NET coordinates need to specify packageId and version in that order");
                     }
                     return new DotNetCoordinates(row.get(2), row.get(3));
                 });
                 put("bundle", row -> {
                     if (row.size() < 4) {
-                        throw new RuntimeException("Bundle coordinates need to specify BundleSymbolicName and BundleVersion in that order");
+                        throw new ConfigurationException("Bundle coordinates need to specify BundleSymbolicName and BundleVersion in that order");
                     }
                     return new BundleCoordinates(row.get(2), row.get(3));
                 });
                 put("javascript", row -> {
                     if (row.size() < 5) {
-                        throw new RuntimeException("JavaScript coordinates need to specify artifactId, name and version in that order");
+                        throw new ConfigurationException("JavaScript coordinates need to specify artifactId, name and version in that order");
                     }
                     return new JavaScriptCoordinates(row.get(2), row.get(3), row.get(4));
                 });

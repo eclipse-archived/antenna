@@ -18,7 +18,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.exceptions.FailedToDownloadException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,10 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,7 +82,7 @@ public class HttpHelperTest {
         assertThat(resultFile).isEqualTo(expectedJarFile);
     }
 
-    @Test(expected = FailedToDownloadException.class)
+    @Test(expected = IOException.class)
     public void downloadFileThrowsExceptionOn404StatusCode() throws Exception {
         Path targetDirectory = temporaryFolder.newFolder("target").toPath();
 

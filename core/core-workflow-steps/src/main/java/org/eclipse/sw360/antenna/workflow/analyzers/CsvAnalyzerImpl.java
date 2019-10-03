@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.workflow.analyzers;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
@@ -66,7 +66,7 @@ public class CsvAnalyzerImpl {
         this.baseDir = baseDir;
     }
 
-    public List<Artifact> yield() throws AntennaException {
+    public List<Artifact> yield() {
         List<Artifact> artifacts = new ArrayList<>();
         List<CSVRecord> records = getRecords();
 
@@ -112,7 +112,7 @@ public class CsvAnalyzerImpl {
         return artifact;
     }
 
-    private List<CSVRecord> getRecords() throws AntennaException {
+    private List<CSVRecord> getRecords() {
         CSVFormat csvFormat = CSVFormat.DEFAULT;
         csvFormat = csvFormat.withFirstRecordAsHeader();
         csvFormat = csvFormat.withDelimiter(delimiter);
@@ -124,11 +124,11 @@ public class CsvAnalyzerImpl {
              CSVParser csvParser = new CSVParser(isr, csvFormat)) {
             records = csvParser.getRecords();
         } catch (FileNotFoundException e) {
-            throw new AntennaException(
+            throw new ExecutionException(
                     "Antenna is configured to read a CSV configuration file (" + filename + "), but the file wasn't found",
                     e);
         } catch (IOException e) {
-            throw new AntennaException("Error when attempting to parse CSV configuration file: " + filename, e);
+            throw new ExecutionException("Error when attempting to parse CSV configuration file: " + filename, e);
         }
 
         return records;
@@ -188,7 +188,7 @@ public class CsvAnalyzerImpl {
         if (record.isMapped(SWH_ID) && !record.get(SWH_ID).isEmpty()) {
             try {
                 artifact.addFact(new ArtifactSoftwareHeritageID.Builder(record.get(SWH_ID)).build());
-            } catch (AntennaException e) {
+            } catch (IllegalArgumentException e) {
                 LOGGER.warn(e.getMessage());
             }
         }

@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.sw360.rest;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.core.ParameterizedTypeReference;
@@ -62,7 +61,7 @@ public abstract class SW360Client {
                         responseType);
     }
 
-    protected <T> ResponseEntity<T> doRestGET(String url, HttpHeaders header, ParameterizedTypeReference<T> responseType) throws AntennaException {
+    protected <T> ResponseEntity<T> doRestGET(String url, HttpHeaders header, ParameterizedTypeReference<T> responseType) {
         HttpEntity<String> httpEntity = RestUtils.getHttpEntity(Collections.emptyMap(), header);
         return doRestCall(url, HttpMethod.GET, httpEntity, responseType);
     }

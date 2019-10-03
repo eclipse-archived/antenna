@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.model.artifact.facts;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactFact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactFactWithPayload;
 
@@ -31,9 +30,9 @@ public class ArtifactSoftwareHeritageID extends ArtifactFactWithPayload<String> 
             this.softwareHeritageID = softwareHeritageID;
         }
 
-        public ArtifactSoftwareHeritageID build() throws AntennaException {
+        public ArtifactSoftwareHeritageID build() {
             if(softwareHeritageID == null || !isValid(softwareHeritageID)) {
-                throw new AntennaException(softwareHeritageID
+                throw new IllegalArgumentException(softwareHeritageID
                         + " does not match expected format for SoftwareHeritageID: "
                         + getExpectedFormat());
             }

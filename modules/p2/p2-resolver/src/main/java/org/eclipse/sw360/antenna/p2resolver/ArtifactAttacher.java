@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.p2resolver;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
@@ -47,7 +47,7 @@ public class ArtifactAttacher {
                 attachJar(artifact, artifactDownloadArea, bundleCoordinates);
                 attachSource(artifact, artifactDownloadArea, bundleCoordinates);
             } catch (IOException e) {
-                throw new AntennaExecutionException("IOException: ", e);
+                throw new ExecutionException("IOException: ", e);
             }
         });
     }

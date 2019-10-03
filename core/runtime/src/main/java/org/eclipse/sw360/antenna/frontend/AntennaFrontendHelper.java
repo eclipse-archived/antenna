@@ -15,7 +15,6 @@ import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ContextExtension;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
 import org.eclipse.sw360.antenna.configuration.MultipleConfigsResolver;
 import org.eclipse.sw360.antenna.core.AntennaCore;
 import org.eclipse.sw360.antenna.report.Reporter;
@@ -39,7 +38,7 @@ public class AntennaFrontendHelper {
         return this;
     }
 
-    public AntennaContext buildAntennaContext() throws AntennaConfigurationException {
+    public AntennaContext buildAntennaContext() {
         IProcessingReporter reporter = new Reporter(toolConfig.getAntennaTargetDirectory(), toolConfig.getEncoding());
 
         AntennaContext.ContextBuilder contextBuilder = new AntennaContext.ContextBuilder()
@@ -56,12 +55,12 @@ public class AntennaFrontendHelper {
         return context;
     }
 
-    public AntennaCore buildAntennaCore() throws AntennaConfigurationException {
+    public AntennaCore buildAntennaCore() {
         AntennaContext context = buildAntennaContext();
         return buildAntennaCore(context);
     }
 
-    public AntennaCore buildAntennaCore(AntennaContext context) throws AntennaConfigurationException {
+    public AntennaCore buildAntennaCore(AntennaContext context) {
         return new AntennaCore(context);
     }
 }

@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.droolstesting;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.drools.DroolsEvaluationResultReader;
 
 import java.io.FileNotFoundException;
@@ -28,7 +27,7 @@ public class WhenStepsHelpers {
         this.state = state;
     }
 
-    public void iUseTheRule(String rule, Class<?> clazz) throws FileNotFoundException, AntennaException, URISyntaxException {
+    public void iUseTheRule(String rule, Class<?> clazz) throws FileNotFoundException, URISyntaxException {
         addRule(rule, clazz);
         addEvaluations(clazz);
     }
@@ -37,7 +36,7 @@ public class WhenStepsHelpers {
         state.rule_resource = getUrlToRuleFile(rule + ".drl", clazz);
     }
 
-    private void addEvaluations(Class<?> clazz) throws URISyntaxException, AntennaException {
+    private void addEvaluations(Class<?> clazz) throws URISyntaxException {
         state.evaluations.addAll(DroolsEvaluationResultReader.getEvaluationResult(
                 Paths.get(clazz.getResource(RELATIVE_PATH_TO_POLICIES_XML).toURI())));
     }

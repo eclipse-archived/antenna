@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.workflow;
 
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.api.workflow.ConfigurableWorkflowItem;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
@@ -25,9 +25,9 @@ import java.util.stream.Collectors;
 
 public class GeneratorFactory extends WorkflowItemFactory {
 
-    public static List<AbstractGenerator> getGenerators(Workflow workflow, AntennaContext context) throws AntennaConfigurationException {
+    public static List<AbstractGenerator> getGenerators(Workflow workflow, AntennaContext context) {
         if (workflow == null) {
-            throw new AntennaConfigurationException("No <workflow> section was found in your configuration.");
+            throw new ConfigurationException("No <workflow> section was found in your configuration.");
         }
 
         if(workflow.getGenerators() == null) {
@@ -36,7 +36,7 @@ public class GeneratorFactory extends WorkflowItemFactory {
 
         List<WorkflowStep> generatorsRequested = workflow.getGenerators().getStep();
         if (generatorsRequested.size() == 0) {
-            throw new AntennaConfigurationException("No generators were found in your <workflow> section.");
+            throw new ConfigurationException("No generators were found in your <workflow> section.");
         }
 
         // Go through the list of generators requests and instantiate each one.

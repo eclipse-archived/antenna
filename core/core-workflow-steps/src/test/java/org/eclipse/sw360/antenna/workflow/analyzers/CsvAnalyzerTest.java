@@ -12,8 +12,6 @@
 package org.eclipse.sw360.antenna.workflow.analyzers;
 
 import org.eclipse.sw360.antenna.api.IProject;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
@@ -64,7 +62,7 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testCsvAnalyzer() throws AntennaException, URISyntaxException {
+    public void testCsvAnalyzer() throws URISyntaxException {
         configureAnalyzer("dependencies.csv", ",");
 
         Set<Artifact> artifacts = analyzer.yield().getArtifacts();
@@ -81,7 +79,7 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testCopyrightsIsParsedCorrectly() throws URISyntaxException, AntennaException {
+    public void testCopyrightsIsParsedCorrectly() throws URISyntaxException {
         configureAnalyzer("dependencyWithMultipleCopyrights.csv", ",");
         Set<Artifact> artifacts = analyzer.yield().getArtifacts();
 
@@ -95,7 +93,7 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testMergeOfDuplicateArtifact() throws URISyntaxException, AntennaException {
+    public void testMergeOfDuplicateArtifact() throws URISyntaxException {
         configureAnalyzer("dependencyWithMultipleHashes.csv", ",");
         Set<Artifact> artifacts = analyzer.yield().getArtifacts();
 
@@ -104,7 +102,7 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
     }
 
     @Test
-    public void testCsvAnalyzerWithSemicolonseparator() throws URISyntaxException, AntennaException {
+    public void testCsvAnalyzerWithSemicolonseparator() throws URISyntaxException {
         configureAnalyzer("dependenciesWithExcelFormat.csv", ";");
         Set<Artifact> artifacts = analyzer.yield().getArtifacts();
 
@@ -158,7 +156,7 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
         verifyNoMoreInteractions(toolConfigMock);
     }
 
-    private void configureAnalyzer(String fileName, String delimiter) throws URISyntaxException, AntennaConfigurationException {
+    private void configureAnalyzer(String fileName, String delimiter) throws URISyntaxException {
         Map<String, String> configMap = new HashMap<>();
         configMap.put("file.path", Paths.get("src", "test", "resources", "CsvAnalyzerTest", fileName).toString());
         configMap.put("base.dir", ClassCodeSourceLocation.getClassCodeSourceLocationAsString(this.getClass()));

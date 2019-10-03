@@ -11,8 +11,8 @@
 package org.eclipse.sw360.antenna.workflow;
 
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.AntennaExecutionException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.ConfigurableWorkflowItem;
 import org.eclipse.sw360.antenna.model.xml.generated.StepConfiguration;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
@@ -43,11 +43,11 @@ public abstract class WorkflowItemFactory {
             LOGGER.info("{} loaded and configured", name);
             return instance;
         } catch (ClassNotFoundException e) {
-            throw new AntennaExecutionException("Could not initialize workflow item [" + name + "], because the class could not be found, reason=[" + e.getMessage() + "]", e);
+            throw new ExecutionException("Could not initialize workflow item [" + name + "], because the class could not be found, reason=[" + e.getMessage() + "]", e);
         } catch (InstantiationException e) {
-            throw new AntennaExecutionException("Could not initialize workflow item [" + name + "], because the class could not be instantiated, reason=[" + e.getMessage() + "]", e);
-        } catch (LinkageError | IllegalAccessException | AntennaConfigurationException e) {
-            throw new AntennaExecutionException("Could not initialize workflow item [" + name + "], reason=[" + e.getMessage() + "]", e);
+            throw new ExecutionException("Could not initialize workflow item [" + name + "], because the class could not be instantiated, reason=[" + e.getMessage() + "]", e);
+        } catch (LinkageError | IllegalAccessException | ConfigurationException e) {
+            throw new ExecutionException("Could not initialize workflow item [" + name + "], reason=[" + e.getMessage() + "]", e);
         }
     }
 }

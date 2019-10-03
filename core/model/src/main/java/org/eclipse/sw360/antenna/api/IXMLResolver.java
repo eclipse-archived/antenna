@@ -11,7 +11,7 @@
 
 package org.eclipse.sw360.antenna.api;
 
-import org.eclipse.sw360.antenna.api.exceptions.AntennaConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
 
 import java.io.File;
@@ -26,6 +26,7 @@ public interface IXMLResolver {
      * @param file
      * @return AntennaConfig with the values of the file. Null if file cannot be
      *         opened.
+     * @throws ConfigurationException If file does not contain a valid content
      */
-    AntennaConfig resolveXML(File file) throws AntennaConfigurationException;
+    AntennaConfig resolveXML(File file);
 }
