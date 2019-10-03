@@ -152,6 +152,8 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         SW360Release release0 = new SW360Release();
         release0.set_Embedded(new SW360ReleaseEmbedded());
         release0.get_Embedded().setLicenses(Collections.singletonList(apacheSparse));
+        release0.setObservedLicense("apache2");
+
         when(connector.findReleaseForArtifact(any())).thenReturn(Optional.empty());
         when(connector.findReleaseForArtifact(artifacts.get(0))).thenReturn(Optional.of(release0));
         when(connector.getLicenseDetails(apacheSparse)).thenReturn(Optional.of(apache));
@@ -160,6 +162,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses()).hasSize(1);
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().get(0).getName()).isEqualTo("apache2");
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().get(0).getText()).isEqualTo("Some text");
     }
 
     @Test
@@ -174,6 +177,8 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         SW360Release release0 = new SW360Release();
         release0.set_Embedded(new SW360ReleaseEmbedded());
         release0.get_Embedded().setLicenses(Arrays.asList(apacheSparse, mitSparse));
+        release0.setDeclaredLicense("apache2 AND mit");
+
         when(connector.findReleaseForArtifact(any())).thenReturn(Optional.empty());
         when(connector.findReleaseForArtifact(artifacts.get(0))).thenReturn(Optional.of(release0));
         when(connector.getLicenseDetails(any())).thenReturn(Optional.of(apache), Optional.of(mit));
@@ -193,8 +198,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     public void differingLicenseIsOverwritten() {
         License apache = new License();
         apache.setName("apache2");
-        apache.setLongName("Apache 2.0");
-        apache.setText("Apache license text");
+
         artifacts.get(0).addFact(new DeclaredLicenseInformation(apache));
 
         SW360SparseLicense mitSparse = createSparseLicense("mit", "MIT License");
@@ -203,6 +207,8 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         SW360Release release0 = new SW360Release();
         release0.set_Embedded(new SW360ReleaseEmbedded());
         release0.get_Embedded().setLicenses(Collections.singletonList(mitSparse));
+        release0.setDeclaredLicense("mit");
+
         when(connector.findReleaseForArtifact(any())).thenReturn(Optional.empty());
         when(connector.findReleaseForArtifact(artifacts.get(0))).thenReturn(Optional.of(release0));
         when(connector.getLicenseDetails(any())).thenReturn(Optional.of(mit));
