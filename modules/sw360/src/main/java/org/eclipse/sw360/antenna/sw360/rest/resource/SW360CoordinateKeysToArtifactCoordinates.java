@@ -74,7 +74,7 @@ public enum SW360CoordinateKeysToArtifactCoordinates {
         try {
             Object object = null;
             if(coordinateClass == SW360CoordinateKeysToArtifactCoordinates.MVN.key){
-                object = coordinateClass.getConstructors()[0].newInstance(group, name, version);
+                object = coordinateClass.getConstructors()[0].newInstance(name, group, version);
             } else if (coordinateClass == SW360CoordinateKeysToArtifactCoordinates.DOTNET.key
                     || coordinateClass == SW360CoordinateKeysToArtifactCoordinates.BUNDLES.key
                     || coordinateClass == SW360CoordinateKeysToArtifactCoordinates.GENERAL.key) {
