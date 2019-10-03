@@ -13,7 +13,6 @@ package org.eclipse.sw360.antenna.sw360;
 
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
@@ -28,9 +27,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SW360MetaDataUpdater {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360MetaDataUpdater.class);
@@ -55,22 +56,22 @@ public class SW360MetaDataUpdater {
         this.uploadSources = uploadSources;
     }
 
-    public Set<String> getOrCreateLicenses(Artifact artifact) {
+    public Set<SW360License> getLicenses(List<License> licenses) {
         HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
-        Set<String> licenseIds = new HashSet<>();
 
-        List<License> licenses = flattenedLicenses(artifact);
-        for (License license : licenses) {
-            SW360License sw360License;
-            if (!licenseClientAdapter.isLicenseOfArtifactAvailable(license, header)) {
-                sw360License = licenseClientAdapter.addLicense(license, header);
-            } else {
-                LOGGER.debug("License [" + license.getName() + "] already exists in SW360.");
-                sw360License = licenseClientAdapter.getSW360LicenseByAntennaLicense(license, header);
-            }
-            licenseIds.add(sw360License.getShortName());
+        return licenses.stream()
+                .filter(license -> isLicenseInSW360(license, header))
+                .map(license -> licenseClientAdapter.getSW360LicenseByAntennaLicense(license, header))
+                .collect(Collectors.toSet());
+    }
+
+    private boolean isLicenseInSW360(License license, HttpHeaders header) {
+        if (licenseClientAdapter.isLicenseOfArtifactAvailable(license, header)) {
+            LOGGER.debug("License [" + license.getName() + "] found in SW360.");
+            return true;
         }
-        return licenseIds;
+        LOGGER.debug("License [" + license.getName() + "] unknown in SW360.");
+        return false;
     }
 
     public SW360Release getOrCreateRelease(Artifact artifact, Set<String> licenseIds, SW360Component component) {
@@ -123,15 +124,5 @@ public class SW360MetaDataUpdater {
             id = projectClientAdapter.addProject(projectName, projectVersion, header);
         }
         projectClientAdapter.addSW360ReleasesToSW360Project(id, releases, header);
-    }
-
-    private List<License> flattenedLicenses(Artifact artifact) {
-        return Stream
-                .of(ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses())
-                .filter(Objects::nonNull)
-                .flatMap(Collection::stream)
-                .filter(l -> Objects.nonNull(l.getName()))
-                .distinct()
-                .collect(Collectors.toList());
     }
 }

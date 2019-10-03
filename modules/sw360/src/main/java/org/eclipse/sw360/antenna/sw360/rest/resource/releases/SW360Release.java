@@ -121,11 +121,13 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
 
     @JsonIgnore
     public SW360Release setMainLicenseIds(Set<String> mainLicenseIds) {
-        List<SW360SparseLicense> licenses = mainLicenseIds.stream()
-                .map(licenseId -> new SW360SparseLicense()
-                        .setShortName(licenseId))
-                .collect(Collectors.toList());
-        get_Embedded().setLicenses(licenses);
+        if (mainLicenseIds.size() > 0) {
+            List<SW360SparseLicense> licenses = mainLicenseIds.stream()
+                    .map(licenseId -> new SW360SparseLicense()
+                            .setShortName(licenseId))
+                    .collect(Collectors.toList());
+            get_Embedded().setLicenses(licenses);
+        }
         return this;
     }
 
@@ -259,12 +261,12 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
         return this;
     }
 
-    public SW360Release setExternalIds(Map<String,String> externalIds) {
+    public SW360Release setExternalIds(Map<String, String> externalIds) {
         this.externalIds.putAll(externalIds);
         return this;
     }
 
-    public SW360Release setAdditionalData(Map<String,String> additionalData) {
+    public SW360Release setAdditionalData(Map<String, String> additionalData) {
         this.additionalData.putAll(additionalData);
         return this;
     }
@@ -283,11 +285,11 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
             setMainLicenseIds(releaseWithPrecedence.getMainLicenseIds());
         }
         Self releaseIdWithPrecedence = releaseWithPrecedence.get_Links().getSelf();
-        if(releaseIdWithPrecedence != null && ! releaseIdWithPrecedence.getHref().isEmpty()) {
+        if (releaseIdWithPrecedence != null && !releaseIdWithPrecedence.getHref().isEmpty()) {
             get_Links().setSelf(releaseIdWithPrecedence);
         }
         Self componentIdWithPrecedence = releaseWithPrecedence.get_Links().getSelfComponent();
-        if(componentIdWithPrecedence != null && ! componentIdWithPrecedence.getHref().isEmpty()) {
+        if (componentIdWithPrecedence != null && !componentIdWithPrecedence.getHref().isEmpty()) {
             get_Links().setSelfComponent(componentIdWithPrecedence);
         }
         externalIds.putAll(releaseWithPrecedence.externalIds);
