@@ -42,7 +42,7 @@ public interface ArtifactAndLicense {
     */
    Optional<String> getCopyrightStatement();
 
-   public class LicenseInfo {
+   class LicenseInfo {
 
       private final String key, title, text, shortName;
 

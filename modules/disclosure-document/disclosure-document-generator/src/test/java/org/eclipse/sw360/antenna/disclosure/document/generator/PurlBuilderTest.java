@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.disclosure.document.generator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.eclipse.sw360.antenna.disclosure.document.workflow.generators.PurlBuilder;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates.JavaScriptCoordinatesBuilder;
 import org.junit.jupiter.api.Test;
 

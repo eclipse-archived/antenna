@@ -12,7 +12,6 @@ package org.eclipse.sw360.antenna.disclosure.document.demo;
 
 import java.io.InputStream;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.eclipse.sw360.antenna.disclosure.document.core.TemplateBundle;
 

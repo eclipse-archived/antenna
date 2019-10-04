@@ -44,7 +44,7 @@ class YagenIntegrationTest {
 
       DocumentValues values = new DocumentValues( productName, version, copyrightHolder );
 
-      DisDoc disDoc = new DisDoc( tmpDir, "bot-demo", values );
+      DisDoc disDoc = new DisDoc( tmpDir, "antenna-demo", values );
 
       List<ArtifactAndLicense> foo = createData();
       File file = disDoc.generate( foo );

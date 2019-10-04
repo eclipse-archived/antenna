@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.disclosure.document.generator;
+package org.eclipse.sw360.antenna.disclosure.document.workflow.generators;
 
 import java.util.ArrayList;
 import java.util.Arrays;

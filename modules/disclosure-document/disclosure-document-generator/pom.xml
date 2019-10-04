@@ -38,6 +38,7 @@
     <dependency>
       <groupId>org.eclipse.sw360.antenna</groupId>
       <artifactId>core-workflow-steps</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>

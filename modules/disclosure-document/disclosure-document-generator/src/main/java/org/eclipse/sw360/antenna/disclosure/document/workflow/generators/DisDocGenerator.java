@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.disclosure.document.generator;
+package org.eclipse.sw360.antenna.disclosure.document.workflow.generators;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +73,8 @@ public class DisDocGenerator extends AbstractGenerator {
       DisDoc disDoc = new DisDoc( ossDir, templateKey, values );
 
       File disclosureDoc = disDoc.generate( convertAndSort( artifacts ) );
-      LOG.info( ">>Disclosure Doc<< finshed in {}ms", (System.currentTimeMillis() - start) );
+      long duration = System.currentTimeMillis() - start;
+      LOG.info( ">>Disclosure Doc<< finshed in {}ms", duration );
 
       return Collections.singletonMap( IDENTIFIER, new Attachable( TYPE, CLASSIFIER, disclosureDoc ) );
    }

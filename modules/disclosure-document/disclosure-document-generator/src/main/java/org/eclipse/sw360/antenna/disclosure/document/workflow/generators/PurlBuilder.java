@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.disclosure.document.generator;
+package org.eclipse.sw360.antenna.disclosure.document.workflow.generators;
 
 import org.apache.commons.lang3.Validate;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
