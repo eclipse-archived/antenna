@@ -62,6 +62,7 @@
         <module>modules/simple-validators</module>
         <module>modules/p2</module>
         <module>modules/ort</module>
+        <module>modules/disclosure-document</module>
         <!-- assembly -->
         <module>assembly</module>
         <!-- misc -->
