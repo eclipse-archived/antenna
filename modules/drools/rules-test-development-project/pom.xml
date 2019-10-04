@@ -24,7 +24,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <antenna.version>1.0.0-SNAPSHOT</antenna.version>
+        <antenna.version>${revision}${qualifier}</antenna.version>
     </properties>
 
     <dependencies>
