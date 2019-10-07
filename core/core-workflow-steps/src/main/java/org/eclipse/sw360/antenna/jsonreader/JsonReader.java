@@ -22,7 +22,12 @@ import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
-import org.eclipse.sw360.antenna.model.xml.generated.*;
+import org.eclipse.sw360.antenna.model.license.EmptyLicenseInformation;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
+import org.eclipse.sw360.antenna.model.xml.generated.Issue;
+import org.eclipse.sw360.antenna.model.xml.generated.Issues;
+import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
+import org.eclipse.sw360.antenna.model.xml.generated.SecurityIssueStatus;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -225,7 +230,7 @@ public class JsonReader {
                 return LicenseSupport.mapLicenses(licenses);
             }
         }
-        return new LicenseStatement();
+        return new EmptyLicenseInformation();
     }
 
     private String[] mapPathNames(JsonObject obj) {

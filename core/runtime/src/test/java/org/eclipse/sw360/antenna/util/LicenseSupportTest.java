@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.util;
 
 import org.assertj.core.api.Assertions;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -22,15 +22,15 @@ import java.util.Collections;
 public class LicenseSupportTest {
     @Test
     public void singleLicenseIsTreatedSimply() {
-        Collection<String> license = Collections.singletonList("Single License");
+        Collection<String> license = Collections.singletonList("Single-License");
         LicenseInformation actualLicenseSupport = LicenseSupport.mapLicenses(license);
 
-        Assertions.assertThat(actualLicenseSupport.toString()).startsWith("Single License");
+        Assertions.assertThat(actualLicenseSupport.toString()).startsWith("Single-License");
     }
 
     @Test
     public void mulitpleLicensesTreatedCorrectly() {
-        Collection<String> license = Arrays.asList("First License", "Second License", "Third License");
+        Collection<String> license = Arrays.asList("First-License", "Second-License", "Third-License");
         LicenseInformation actualLicenseSupport = LicenseSupport.mapLicenses(license);
 
         Assertions.assertThat(actualLicenseSupport.toString())

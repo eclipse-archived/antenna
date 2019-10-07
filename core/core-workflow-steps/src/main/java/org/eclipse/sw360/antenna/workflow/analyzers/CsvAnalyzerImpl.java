@@ -21,7 +21,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,18 +159,21 @@ public class CsvAnalyzerImpl {
 
     private void addOptionalArtifactFacts(CSVRecord record, Artifact artifact) {
         if (record.isMapped(EFFECTIVE_LICENSE) && !record.get(EFFECTIVE_LICENSE).isEmpty()) {
-            License license = new License();
-            license.setName(record.get(EFFECTIVE_LICENSE));
+            License license = new License.Builder()
+                    .setLicenseId(record.get(EFFECTIVE_LICENSE))
+                    .build();
             artifact.addFact(new OverriddenLicenseInformation(license));
         }
         if (record.isMapped(DECLARED_LICENSE) && !record.get(DECLARED_LICENSE).isEmpty()) {
-            License license = new License();
-            license.setName(record.get(DECLARED_LICENSE));
+            License license = new License.Builder()
+                    .setLicenseId(record.get(DECLARED_LICENSE))
+                    .build();
             artifact.addFact(new DeclaredLicenseInformation(license));
         }
         if (record.isMapped(OBSERVED_LICENSE) && !record.get(OBSERVED_LICENSE).isEmpty()) {
-            License license = new License();
-            license.setName(record.get(OBSERVED_LICENSE));
+            License license = new License.Builder()
+                    .setLicenseId(record.get(OBSERVED_LICENSE))
+                    .build();
             artifact.addFact(new ObservedLicenseInformation(license));
         }
         if (record.isMapped(COPYRIGHTS) && !record.get(COPYRIGHTS).isEmpty()) {

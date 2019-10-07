@@ -10,39 +10,22 @@
  */
 package org.eclipse.sw360.antenna.util;
 
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
+import org.eclipse.sw360.antenna.model.license.EmptyLicenseInformation;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.function.BinaryOperator;
 
 public class LicenseSupport {
     public static LicenseInformation mapLicenses(Collection<String> licenses) {
-        return mapLicenses(licenses, LicenseOperator.AND);
+        return mapLicenses(licenses, LicenseInformation::and);
     }
 
-    public static LicenseInformation mapLicenses(Collection<String> licenses, LicenseOperator operator) {
-        Iterator<String> iterator = licenses.iterator();
-        if (!iterator.hasNext()) {
-            return new LicenseStatement();
-        }
-
-        return computeRecursiveLicenseStatement(iterator, new LicenseStatement(), operator);
-    }
-
-    private static LicenseInformation computeRecursiveLicenseStatement(
-            Iterator<String> iterator, LicenseStatement leftLicense, LicenseOperator operator) {
-        License license = new License();
-        license.setName(iterator.next());
-
-        if (iterator.hasNext()) {
-            leftLicense.setLeftStatement(license);
-            leftLicense.setOp(operator);
-            leftLicense.setRightStatement(computeRecursiveLicenseStatement(iterator, new LicenseStatement(), operator));
-            return leftLicense;
-        }
-        return license;
+    public static LicenseInformation mapLicenses(Collection<String> licenses, BinaryOperator<LicenseInformation> operator) {
+        return licenses.stream()
+                .map(licenseId -> new License.Builder().setLicenseId(licenseId).build())
+                .map(l -> (LicenseInformation) l)
+                .reduce(new EmptyLicenseInformation(), operator);
     }
 }

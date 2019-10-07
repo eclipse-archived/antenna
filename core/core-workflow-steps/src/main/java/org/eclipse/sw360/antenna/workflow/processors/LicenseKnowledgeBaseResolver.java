@@ -18,10 +18,8 @@ import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.knowledgebase.LicenseKnowledgeBaseFactory;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactLicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,8 +58,17 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
                 .map(ArtifactLicenseInformation::get)
                 .map(LicenseInformation::getLicenses)
                 .forEach(licenses -> {
-                    aliasToIdentifier(licenses);
-                    setText(licenses);
+                    licenses.stream()
+                            .map(license -> {
+                                String licenseId = this.knowledgeBase.getLicenseIdForAlias(license.getLicenseId());
+                                if (license == null) {
+                                    licenseId = license.getLicenseId();
+                                }
+                                String longName = this.knowledgeBase.getLicenseNameForId(licenseId);
+                                String licenseText = knowledgeBase.getTextForId(licenseId);
+
+
+                            })
                     setThreatGroup(licenses);
                     setClassification(licenses);
         });
