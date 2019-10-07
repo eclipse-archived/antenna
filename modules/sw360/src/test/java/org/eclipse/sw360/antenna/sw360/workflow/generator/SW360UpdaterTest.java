@@ -49,8 +49,7 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         assertThat(release.getDownloadurl()).isEqualTo(sourceUrl);
         assertThat(release.getReleaseTagUrl()).isEqualTo(releaseTagUrl);
         assertThat(release.getSoftwareHeritageId()).isEqualTo(swhID);
-        new ArtifactSoftwareHeritageID.Builder(release.getSoftwareHeritageId()).build();
-
+        assertThat(new ArtifactSoftwareHeritageID.Builder(release.getSoftwareHeritageId()).build().toString()).isEqualTo(swhID);
         assertThat(release.getCoordinates()).containsKeys("mvn");
         assertThat(release.getCoordinates()).hasSize(1);
         assertThat(release.getCoordinates()).containsValue("org.group.id:artifactId(test1):1.2.3");
