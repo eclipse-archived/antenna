@@ -81,18 +81,21 @@ public class ArtifactUtils {
 
     public static ArtifactCoordinates createArtifactCoordinates(PackageURL packageURL) {
         String type = packageURL.getType();
+        String namespace = Optional.ofNullable(packageURL.getNamespace()).orElse("");
+        String name = Optional.ofNullable(packageURL.getName()).orElse("");
+        String version = Optional.ofNullable(packageURL.getVersion()).orElse("");
 
         switch (type) {
             case "maven":
-                return new MavenCoordinates(packageURL.getName(), packageURL.getNamespace(), packageURL.getVersion());
+                return new MavenCoordinates(name, namespace, version);
             case "npm":
-                return new JavaScriptCoordinates(packageURL.getName(), packageURL.getNamespace(), packageURL.getVersion());
+                return new JavaScriptCoordinates(namespace, name, version);
             case "nuget":
-                return new DotNetCoordinates(packageURL.getName(), packageURL.getVersion());
+                return new DotNetCoordinates(name, version);
             case "p2":
-                return new BundleCoordinates(packageURL.getName(), packageURL.getVersion());
+                return new BundleCoordinates(name, version);
             default:
-                return new GenericArtifactCoordinates(packageURL.getName(), packageURL.getVersion());
+                return new GenericArtifactCoordinates(name, version);
         }
     }
 

@@ -268,9 +268,9 @@ public class JsonReader {
     private Optional<ArtifactCoordinates> mapJavaScriptCoordinates(JsonObject objCoordinates) {
         if (objCoordinates != null) {
             JavaScriptCoordinates.JavaScriptCoordinatesBuilder c = new JavaScriptCoordinates.JavaScriptCoordinatesBuilder();
-            c.setName((String) objCoordinates.get("name"));
+            setJavaScriptCoordinatesPackageName(c, (String) objCoordinates.get("name"));
+            setJavaScriptCoordinatesNamespace(c, (String) objCoordinates.get("name"));
             c.setVersion((String) objCoordinates.get("version"));
-            c.setArtifactId(objCoordinates.get("name") + "-" + objCoordinates.get("version"));
             return Optional.of(c.build());
         }
         return Optional.empty();
@@ -300,6 +300,30 @@ public class JsonReader {
             }
         }
         return Optional.empty();
+    }
+
+    private void setJavaScriptCoordinatesNamespace(JavaScriptCoordinates.JavaScriptCoordinatesBuilder jsCoordsBuilder, String name) {
+        String[] nameParts = name.split("/");
+
+        if (nameParts.length > 1 && nameParts[0].startsWith("@")) {
+            jsCoordsBuilder.setNamespace(nameParts[0]);
+        }
+    }
+
+    private void setJavaScriptCoordinatesPackageName(JavaScriptCoordinates.JavaScriptCoordinatesBuilder jsCoordsBuilder, String name) {
+        String[] nameParts = name.split("/");
+
+        if (nameParts.length == 1) {
+            jsCoordsBuilder.setPackageName(name);
+        } else if (nameParts.length > 1) {
+            if (nameParts[0].startsWith("@")) {
+                jsCoordsBuilder.setPackageName(Arrays.asList(nameParts).stream()
+                        .skip(1)
+                        .collect(Collectors.joining("/")));
+            } else {
+                jsCoordsBuilder.setPackageName(name);
+            }
+        }
     }
 
     private String mapArtifactDownloadurl(JsonObject obj) {

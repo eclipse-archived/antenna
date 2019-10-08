@@ -32,7 +32,7 @@ private fun mapCoordinates(pkg: Package): ArtifactCoordinates<*> {
     return when (pkg.id.type.toLowerCase()) {
         "nuget", "dotnet" -> mapDotNetCoordinates(name, version)
         "maven" -> mapMavenCoordinates(namespace, name, version)
-        "npm" -> mapJavaScriptCoordinates(name, version)
+        "npm" -> mapJavaScriptCoordinates(namespace, name, version)
         else -> mapSimpleCoordinates(name, version)
     }
 }
@@ -50,11 +50,11 @@ private fun mapMavenCoordinates(namespace: String, name: String, version: String
             .setArtifactId(name)
             .build()
 
-private fun mapJavaScriptCoordinates(name: String, version: String): ArtifactCoordinates<*> =
+private fun mapJavaScriptCoordinates(namespace: String, name: String, version: String): ArtifactCoordinates<*> =
     JavaScriptCoordinates.JavaScriptCoordinatesBuilder()
-            .setName(name)
+            .setNamespace(namespace)
+            .setPackageName(name)
             .setVersion(version)
-            .setArtifactId("$name-$version")
             .build()
 
 private fun mapSimpleCoordinates(name: String, version: String): ArtifactCoordinates<*> =
