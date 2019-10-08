@@ -148,6 +148,11 @@
             <artifactId>model</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+            <artifactId>spdx-utils</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <!-- ################################ compliance dependency ########################### -->
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
