@@ -12,28 +12,51 @@ package org.eclipse.sw360.antenna.policy.engine.testdata;
 
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
-import org.eclipse.sw360.antenna.policy.engine.ThirdPartyArtifact;
+import org.eclipse.sw360.antenna.policy.engine.model.LicenseData;
+import org.eclipse.sw360.antenna.policy.engine.model.LicenseState;
+import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 
+import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
 public class TestArtifact implements ThirdPartyArtifact {
-
     @Override
-    public boolean isIdentified() {
-        return true;
+    public boolean isProprietary() {
+        return false;
     }
 
     @Override
-    public Collection<String> hasLicenses(Collection<String> searchedLicenses) {
+    public LicenseState getLicenseState() {
+        return LicenseState.EXPLICITLY_SET;
+    }
+
+    @Override
+    public Collection<LicenseData> getLicenses() {
         return Collections.emptyList();
     }
 
     @Override
-    public Optional<PackageURL> getPurl() {
+    public Optional<String> getLicenseExpression() {
+        return Optional.of("X AND Y");
+    }
+
+    @Override
+    public Optional<URL> getSourceFileOrLink() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getSWHSourceId() {
+        return Optional.empty();
+    }
+
+    @Override
+    public Collection<PackageURL> getPurls() {
         try {
-            return Optional.of(new PackageURL("pkg:generic/unknown"));
+            return Arrays.asList(new PackageURL("pkg:generic/unknown"));
         } catch (MalformedPackageURLException e) {
             throw new IllegalStateException(e);
         }

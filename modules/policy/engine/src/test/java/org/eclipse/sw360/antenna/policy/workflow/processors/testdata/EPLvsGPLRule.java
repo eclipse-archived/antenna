@@ -10,9 +10,13 @@
  */
 package org.eclipse.sw360.antenna.policy.workflow.processors.testdata;
 
-import org.eclipse.sw360.antenna.policy.engine.*;
+import org.eclipse.sw360.antenna.policy.engine.CompareArtifactRule;
+import org.eclipse.sw360.antenna.policy.engine.PolicyViolation;
+import org.eclipse.sw360.antenna.policy.engine.RuleSeverity;
+import org.eclipse.sw360.antenna.policy.engine.Ruleset;
+import org.eclipse.sw360.antenna.policy.engine.model.LicenseData;
+import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.eclipse.sw360.antenna.policy.engine.RuleUtils.artifactAppliesToRule;
@@ -28,11 +32,18 @@ public class EPLvsGPLRule implements CompareArtifactRule {
     @Override
     public Optional<PolicyViolation> evaluate(final ThirdPartyArtifact leftArtifact,
             final ThirdPartyArtifact rightArtifact) {
-        if (leftArtifact.hasAtLeastOneLicenseOf(Arrays.asList("EPL-1.0"))
-                && rightArtifact.hasAtLeastOneLicenseOf(Arrays.asList("GPL-2.0-or-later"))) {
+        if (hasLicense(leftArtifact, "EPL-1.0")
+                && hasLicense(rightArtifact, "GPL-2.0-or-later")) {
             return artifactRaisesPolicyViolation(this, leftArtifact, rightArtifact);
         }
         return artifactAppliesToRule(this, leftArtifact, rightArtifact);
+    }
+
+    private boolean hasLicense(ThirdPartyArtifact artifact, String license) {
+        return artifact.getLicenses().stream()
+                .map(LicenseData::getLicenseId)
+                .filter(id -> id.equals(license))
+                .count() > 0;
     }
 
     @Override
@@ -52,7 +63,7 @@ public class EPLvsGPLRule implements CompareArtifactRule {
 
     @Override
     public RuleSeverity getSeverity() {
-        return RuleSeverity.ERROR;
+        return RuleSeverity.CRITICAL;
     }
 
     @Override

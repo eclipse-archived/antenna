@@ -38,7 +38,7 @@ public class TestRule implements Rule {
 
     @Override
     public RuleSeverity getSeverity() {
-        return RuleSeverity.INFO;
+        return RuleSeverity.WARN;
     }
 
     @Override

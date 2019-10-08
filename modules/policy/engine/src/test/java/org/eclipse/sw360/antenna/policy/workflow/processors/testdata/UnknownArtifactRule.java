@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.policy.workflow.processors.testdata;
 
 import org.eclipse.sw360.antenna.policy.engine.*;
+import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class UnknownArtifactRule implements SingleArtifactRule {
 
     @Override
     public Optional<PolicyViolation> evaluate(final ThirdPartyArtifact thirdPartyArtifact) {
-        if(!thirdPartyArtifact.isIdentified()) {
+        if(thirdPartyArtifact.getPurls().size() == 0) {
             return artifactRaisesPolicyViolation(this, thirdPartyArtifact);
         }
         return artifactAppliesToRule(this, thirdPartyArtifact);
@@ -49,7 +50,7 @@ public class UnknownArtifactRule implements SingleArtifactRule {
 
     @Override
     public RuleSeverity getSeverity() {
-        return RuleSeverity.WARN;
+        return RuleSeverity.SEVERE;
     }
 
     @Override

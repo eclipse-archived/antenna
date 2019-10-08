@@ -29,5 +29,6 @@
     <modules>
         <module>engine</module>
         <module>engine-testing</module>
+        <module>basic-policies</module>
     </modules>
 </project>

@@ -11,10 +11,12 @@
 package org.eclipse.sw360.antenna.policy.engine;
 
 import com.github.packageurl.PackageURL;
+import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -40,10 +42,9 @@ public class RuleUtils {
 
     private static String getArtifactString(ThirdPartyArtifact[] failingArtifacts) {
         return Arrays.asList(failingArtifacts).stream()
-                .map(ThirdPartyArtifact::getPurl)
-                .filter(Optional::isPresent)
-                .map(item -> item.map(PackageURL::canonicalize))
-                .map(purl -> purl.orElse("pkg:generic/unknown"))
+                .map(ThirdPartyArtifact::getPurls)
+                .flatMap(Collection::stream)
+                .map(PackageURL::canonicalize)
                 .collect(Collectors.joining(" : ", "[ ", " ]"));
     }
 }

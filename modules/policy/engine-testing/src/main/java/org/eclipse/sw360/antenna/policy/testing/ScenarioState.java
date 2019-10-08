@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.policy.testing;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,4 +23,5 @@ public class ScenarioState {
     Map<String, Artifact> artifacts = new HashMap<>();
     List<IEvaluationResult> evaluations = new ArrayList<>();
     List<String> rulesets = new ArrayList<>();
+    List<Path> resourcesToDelete = new ArrayList<>();
 }

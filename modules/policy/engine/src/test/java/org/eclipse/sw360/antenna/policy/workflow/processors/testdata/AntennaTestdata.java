@@ -12,7 +12,8 @@ package org.eclipse.sw360.antenna.policy.workflow.processors.testdata;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
+import org.eclipse.sw360.antenna.model.artifact.facts.GenericArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
 
 import java.util.Arrays;
@@ -28,32 +29,31 @@ public class AntennaTestdata {
     public static String TEST_RULESETS_LIST = SINGLE_RULESET_CLASS + ", " + COMPARE_RULESET_CLASS;
 
     public static final Artifact UNKNOWN_ARTIFACT = createUnknownArtifact();
-    public static final Artifact SIMILAR_ARTIFACT = createSimilarArtifact();
+    public static final Artifact GENERIC_ARTIFACT = createGenericArtifact();
     public static final Artifact EXACT_ARTIFACT = createExactArtifact();
     public static final Artifact EPL_ARTIFACT = createEPLArtifact();
     public static final Artifact GPL_ARTIFACT = createGPLArtifact();
     public static final Artifact NON_ASSERTED_ARTIFACT = createArtifactUnknownLicense();
 
-    public static Collection<Artifact> TEST_MATCH_STATE_ARTIFACTS = Arrays.asList(UNKNOWN_ARTIFACT, SIMILAR_ARTIFACT,
+    public static Collection<Artifact> TEST_MATCH_STATE_ARTIFACTS = Arrays.asList(UNKNOWN_ARTIFACT, GENERIC_ARTIFACT,
             EXACT_ARTIFACT);
     public static Collection<Artifact> TEST_LICENSE_ARTIFACTS = Arrays.asList(EPL_ARTIFACT, GPL_ARTIFACT,
             NON_ASSERTED_ARTIFACT);
 
     private static Artifact createUnknownArtifact() {
         Artifact artifact = new Artifact("Testdata");
-        artifact.setMatchState(MatchState.UNKNOWN);
         return artifact;
     }
 
-    private static Artifact createSimilarArtifact() {
+    private static Artifact createGenericArtifact() {
         Artifact artifact = new Artifact("Testdata");
-        artifact.setMatchState(MatchState.SIMILAR);
+        artifact.addFact(new GenericArtifactCoordinates("Testdata", "1.0.0"));
         return artifact;
     }
 
     private static Artifact createExactArtifact() {
         Artifact artifact = new Artifact("Testdata");
-        artifact.setMatchState(MatchState.EXACT);
+        artifact.addFact(new BundleCoordinates("Testdata", "1.0.0"));
         return artifact;
     }
 
