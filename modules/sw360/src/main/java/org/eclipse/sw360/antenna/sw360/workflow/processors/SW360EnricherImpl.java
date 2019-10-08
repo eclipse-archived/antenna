@@ -26,6 +26,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
+import org.eclipse.sw360.antenna.util.LicenseSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,8 +102,8 @@ public class SW360EnricherImpl {
     }
 
     private void addLicenseFact(Optional<String> licenseList, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator) {
-        licenseList.map(this::makeLicenseStatementFromString)
-                .map(licenseCreator::apply)
+        licenseList.map(LicenseSupport::fromSPDXExpression)
+                .map(licenseCreator)
                 .ifPresent(artifact::addFact);
     }
 
@@ -110,13 +111,6 @@ public class SW360EnricherImpl {
         final Map<String, String> purls = sw360Release.getPurls();
         return purls.values().stream()
                 .map(ArtifactUtils::createArtifactCoordinatesFromPurl);
-    }
-
-    private License makeLicenseStatementFromString(String license) {
-        License license1 = new License();
-        license1.setName(license);
-
-        return license1;
     }
 
     private void addSourceUrlIfAvailable(Artifact artifact, SW360Release release) {

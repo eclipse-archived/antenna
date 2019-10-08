@@ -181,6 +181,10 @@
             <artifactId>model</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+            <artifactId>spdx-utils</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.hateoas</groupId>
             <artifactId>spring-hateoas</artifactId>
         </dependency>

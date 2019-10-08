@@ -116,7 +116,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         assertThat(artifact0.askFor(ObservedLicenseInformation.class).isPresent()).isTrue();
         License tempOLicense = new License();
-        tempOLicense.setName("A Test License");
+        tempOLicense.setName("A-Test-License");
         assertThat(artifact0.askForGet(ObservedLicenseInformation.class).get().getLicenses()).contains(tempOLicense);
 
         LicenseStatement licenseStatement = new LicenseStatement();
@@ -242,7 +242,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
 
         sw360Release.setDeclaredLicense("Apache-2.0");
-        sw360Release.setObservedLicense("A Test License");
+        sw360Release.setObservedLicense("A-Test-License");
         sw360Release.setPurls(Collections.singletonMap(PackageURL.StandardTypes.MAVEN,
                 PackageURLBuilder.aPackageURL()
                 .withName("test")

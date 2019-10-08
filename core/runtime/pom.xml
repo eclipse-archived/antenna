@@ -72,6 +72,10 @@
             <artifactId>spotbugs-annotations</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+            <artifactId>spdx-utils</artifactId>
+        </dependency>
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
