@@ -37,6 +37,7 @@
         <slf4j.version>1.7.26</slf4j.version>
         <spring.version>5.1.2.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <ort.rev>547e0bb2d3</ort.rev>
     </properties>
 
     <scm>
@@ -263,7 +264,12 @@
             <dependency>
                 <groupId>com.github.heremaps.oss-review-toolkit</groupId>
                 <artifactId>model</artifactId>
-                <version>547e0bb2d3</version>
+                <version>${ort.rev}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+                <artifactId>spdx-utils</artifactId>
+                <version>${ort.rev}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.hateoas</groupId>

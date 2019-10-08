@@ -196,12 +196,24 @@
                     if (isEmpty()) {
                         return "";
                     }
+                    if (getLeftStatement() == null) {
+                        return getRightStatement().evaluate();
+                    }
+                    if (getRightStatement() == null) {
+                        return getLeftStatement().evaluate();
+                    }
                     return String.format("( %s %s %s )", getLeftStatement().evaluate(), op.value(), getRightStatement().evaluate());
                 }
 
                 public String evaluateLong() {
                     if (isEmpty()) {
-                        return evaluate();
+                        return "";
+                    }
+                    if (getLeftStatement() == null) {
+                        return getRightStatement().evaluateLong();
+                    }
+                    if (getRightStatement() == null) {
+                        return getLeftStatement().evaluateLong();
                     }
                     return String.format("( %s %s %s )", getLeftStatement().evaluateLong(), op.value(), getRightStatement().evaluateLong());
                 }
@@ -211,6 +223,7 @@
                         return new java.util.ArrayList<>();
                     }
                     return java.util.stream.Stream.of(getLeftStatement().getLicenses(), getRightStatement().getLicenses())
+                            .filter(java.util.Objects::nonNull)
                             .flatMap(java.util.Collection::stream)
                             .distinct()
                             .collect(java.util.stream.Collectors.toList());
