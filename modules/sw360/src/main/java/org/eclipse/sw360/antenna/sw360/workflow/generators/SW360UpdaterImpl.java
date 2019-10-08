@@ -13,12 +13,16 @@ package org.eclipse.sw360.antenna.sw360.workflow.generators;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
+import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
+import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SW360UpdaterImpl {
     private final String projectName;
@@ -37,9 +41,16 @@ public class SW360UpdaterImpl {
         try {
             List<SW360Release> releases = new ArrayList<>();
             for (Artifact artifact : intermediates) {
-                Set<String> licenses = sw360MetaDataUpdater.getOrCreateLicenses(artifact);
+                List<License> availableLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
+
+                Set<SW360License> detectedLicenses = sw360MetaDataUpdater.getLicenses(availableLicenses);
+                Set<String> licenseIds = Collections.emptySet();
+                if (detectedLicenses.size() == availableLicenses.size()) {
+                    licenseIds = detectedLicenses.stream().map(SW360License::getShortName).collect(Collectors.toSet());
+                }
+
                 SW360Component component = sw360MetaDataUpdater.getOrCreateComponent(artifact);
-                releases.add(sw360MetaDataUpdater.getOrCreateRelease(artifact, licenses, component));
+                releases.add(sw360MetaDataUpdater.getOrCreateRelease(artifact, licenseIds, component));
             }
             sw360MetaDataUpdater.createProject(projectName, projectVersion, releases);
         } catch (IOException e) {
@@ -47,5 +58,4 @@ public class SW360UpdaterImpl {
         }
         return Collections.emptyMap();
     }
-
 }
