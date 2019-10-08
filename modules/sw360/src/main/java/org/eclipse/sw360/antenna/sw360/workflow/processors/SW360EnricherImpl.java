@@ -16,12 +16,12 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
+import org.eclipse.sw360.antenna.model.util.ArtifactUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360CoordinateKeysToArtifactCoordinates;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
@@ -72,7 +72,7 @@ public class SW360EnricherImpl {
     }
 
     private void mapExternalIdsOnSW360Release(SW360Release sw360Release, Artifact artifact) {
-        mapCoordinates(sw360Release)
+        mapCoordinatesFromPurls(sw360Release)
                 .forEach(artifact::addFact);
 
         addLicenseFact(Optional.ofNullable(sw360Release.getDeclaredLicense()), artifact, DeclaredLicenseInformation::new);
@@ -106,33 +106,17 @@ public class SW360EnricherImpl {
                 .ifPresent(artifact::addFact);
     }
 
+    private Stream<ArtifactCoordinates> mapCoordinatesFromPurls(SW360Release sw360Release) {
+        final Map<String, String> purls = sw360Release.getPurls();
+        return purls.values().stream()
+                .map(ArtifactUtils::createArtifactCoordinatesFromPurl);
+    }
+
     private License makeLicenseStatementFromString(String license) {
         License license1 = new License();
         license1.setName(license);
 
         return license1;
-    }
-
-    private Stream<ArtifactCoordinates> mapCoordinates(SW360Release sw360Release) {
-        final Map<String, String> coordinates = sw360Release.getCoordinates();
-        return SW360CoordinateKeysToArtifactCoordinates.getKeys()
-                .stream()
-                .map(key -> {
-                    String coordinateType = SW360CoordinateKeysToArtifactCoordinates.get(key);
-                    final String coordinatesString = coordinates.get(coordinateType);
-                    if(coordinatesString == null) {
-                        return null;
-                    }
-
-                    String[] splitCoordiantes = coordinatesString.split(":");
-
-                    if (splitCoordiantes.length == 3) {
-                        return SW360CoordinateKeysToArtifactCoordinates.createArtifactCoordinates(splitCoordiantes[0], sw360Release.getName(), sw360Release.getVersion(), key);
-                    } else {
-                        return SW360CoordinateKeysToArtifactCoordinates.createArtifactCoordinates("", sw360Release.getName(), sw360Release.getVersion(), key);
-                    }
-                })
-                .filter(Objects::nonNull);
     }
 
     private void addSourceUrlIfAvailable(Artifact artifact, SW360Release release) {
