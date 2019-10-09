@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.workflow.processors;
 
+import com.here.ort.spdx.SpdxException;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
@@ -101,17 +102,29 @@ public class SW360EnricherImpl {
     }
 
     private void addLicenseFact(Optional<String> licenseRawData, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator, boolean isAlreadyPresent) {
-        Optional<ArtifactLicenseInformation> licenseExpression = licenseRawData
-                .map(LicenseSupport::fromSPDXExpression)
-                .map(licenseCreator);
+        licenseRawData.map(this::parseSpdxExpression)
+                .map(licenseCreator)
+                .map(expression -> logOverwriteLicenseInformation(artifact, isAlreadyPresent, expression))
+                .ifPresent(artifact::addFact);
+    }
 
-        if (isAlreadyPresent && licenseExpression.isPresent()) {
+    private ArtifactLicenseInformation logOverwriteLicenseInformation(Artifact artifact, boolean isAlreadyPresent, ArtifactLicenseInformation expression) {
+        if (isAlreadyPresent) {
             warnAndReport(artifact,
-                    "License information of type " + licenseExpression.get().getClass().getSimpleName() + " found in SW360. Overwriting existing information in artifact.",
+                    "License information of type " + expression.getClass().getSimpleName() + " found in SW360. Overwriting existing information in artifact.",
                     MessageType.OVERRIDE_ARTIFACT_ATTRIBUTES);
         }
+        return expression;
+    }
 
-        licenseExpression.ifPresent(artifact::addFact);
+    private LicenseInformation parseSpdxExpression(String expression) {
+        try {
+            return LicenseSupport.fromSPDXExpression(expression);
+        } catch (SpdxException e) {
+            License unparsableExpression = new License();
+            unparsableExpression.setName(expression);
+            return unparsableExpression;
+        }
     }
 
     private Stream<ArtifactCoordinates> mapCoordinatesFromPurls(SW360Release sw360Release) {
