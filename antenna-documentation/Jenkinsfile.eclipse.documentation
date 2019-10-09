@@ -1,0 +1,40 @@
+/*
+ * Copyright (c) Bosch Software Innovations GmbH 2019.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+/*
+ * This is an additional Jenkinsfile, for building the documentation
+ * with the GitHub site-maven-plugin within the Eclipse Foundation infrastructure
+ */
+
+pipeline {
+    agent any
+
+    environment {
+        GITHUB_CREDENTIALS = credentials('bs-tu-osmi')
+    }
+
+    stages {
+        stage('Configure Git') {
+            steps {
+                sh "git config --global user.name ${GITHUB_CREDENTIALS_USR}"
+                sh "git config --global user.author ${GITHUB_CREDENTIALS_USR}"
+                sh 'git config --global user.email "osm@bosch-si.com"'
+            }
+        }
+        stage('Site Deploy') {
+            steps {
+                withMaven(maven: 'Maven 3.3.9', mavenSettingsConfig: 'db92d145-202a-43a0-bf98-39fed076da37', tempBinDir: '') {
+                    sh 'scripts/main.sh'
+                }
+            }
+        }
+    }
+}
