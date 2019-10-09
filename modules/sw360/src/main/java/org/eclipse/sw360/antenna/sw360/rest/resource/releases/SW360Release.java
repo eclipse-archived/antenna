@@ -154,11 +154,11 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     }
 
     @JsonIgnore
-    public String getFinalLicense() {
+    public String getDetectedLicense() {
         return additionalData.get(FINAL_LICENSES_KEY);
     }
 
-    public SW360Release setFinalLicense(String finalLicense) {
+    public SW360Release setDetectedLicense(String finalLicense) {
         additionalData.put(FINAL_LICENSES_KEY, finalLicense);
         return this;
     }

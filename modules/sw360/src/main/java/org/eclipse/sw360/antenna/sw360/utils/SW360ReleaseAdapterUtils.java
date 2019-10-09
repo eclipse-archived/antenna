@@ -13,8 +13,6 @@ package org.eclipse.sw360.antenna.sw360.utils;
 import com.github.packageurl.PackageURL;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
@@ -38,7 +36,7 @@ public class SW360ReleaseAdapterUtils {
         release.setMainLicenseIds(sw360LicenseIds);
 
         SW360ReleaseAdapterUtils.setPackageUrls(release, artifact);
-        SW360ReleaseAdapterUtils.setFinalLicense(release, artifact);
+        SW360ReleaseAdapterUtils.setDetectedLicense(release, artifact);
         SW360ReleaseAdapterUtils.setDeclaredLicense(release, artifact);
         SW360ReleaseAdapterUtils.setObservedLicense(release, artifact);
         SW360ReleaseAdapterUtils.setSources(release, artifact);
@@ -83,11 +81,9 @@ public class SW360ReleaseAdapterUtils {
         sw360Release.setPurls(packageURLS);
     }
 
-    private static void setFinalLicense(SW360Release release, Artifact artifact) {
-        LicenseInformation licenseInformation = ArtifactLicenseUtils.getFinalLicenses(artifact);
-        Optional.ofNullable(licenseInformation.evaluate())
-                .filter(evaluatedLicenseInformation -> !"".equals(evaluatedLicenseInformation))
-                .ifPresent(release::setFinalLicense);
+    private static void setDetectedLicense(SW360Release release, Artifact artifact) {
+        artifact.askForGet(OverriddenLicenseInformation.class)
+                .ifPresent(licenseInformation -> release.setDetectedLicense(licenseInformation.evaluate()));
     }
 
     private static void setDeclaredLicense(SW360Release release, Artifact artifact) {
