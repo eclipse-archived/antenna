@@ -97,6 +97,7 @@ class OrtResultArtifactResolver(result: OrtResult) : Function<Package, Artifact>
 
     private fun mapCopyrights(pkg: Package): CopyrightStatement? =
         licenseFindings[pkg.id]?.keys?.flatMap { it.copyrights }
+                ?.takeUnless { it.isEmpty() }
                 ?.map { CopyrightStatement(it.statement) }
                 ?.reduce(CopyrightStatement::mergeWith)
 
