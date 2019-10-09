@@ -19,7 +19,7 @@
         <version>${revision}${qualifier}</version>
     </parent>
 
-    <artifactId>bosch_policies</artifactId>
+    <artifactId>basic-policies</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
