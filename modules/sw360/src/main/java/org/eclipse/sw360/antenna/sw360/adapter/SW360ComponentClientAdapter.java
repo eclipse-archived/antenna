@@ -32,27 +32,23 @@ public class SW360ComponentClientAdapter {
         this.componentClient = new SW360ComponentClient(restUrl, proxySettings);
     }
 
-    public SW360Component addComponent(Artifact artifact, HttpHeaders header) {
-        SW360Component component = new SW360Component();
-        SW360ComponentAdapterUtils.prepareComponent(component, artifact);
+    public SW360Component getOrCreateComponent(SW360Component componentFromRelease, HttpHeaders header) {
+        if(componentFromRelease.getComponentId() != null) {
+            return getComponentById(componentFromRelease.getComponentId(), header);
+        }
+        return getComponentByName(componentFromRelease.getName(), header)
+                .orElseGet(() -> createComponent(componentFromRelease, header));
+    }
+
+    public SW360Component createComponent(SW360Component component, HttpHeaders header) {
         if(! SW360ComponentAdapterUtils.isValidComponent(component)) {
-            throw new ExecutionException("Can not write invalid component for " + artifact.toString());
+            throw new ExecutionException("Can not write invalid component for " + component.getName());
         }
         return componentClient.createComponent(component, header);
     }
 
     public SW360Component getComponentById(String componentId, HttpHeaders header) {
         return componentClient.getComponent(componentId, header);
-    }
-
-    public boolean isArtifactAvailableAsComponent(Artifact artifact, HttpHeaders header) {
-        String componentName = SW360ComponentAdapterUtils.createComponentName(artifact);
-
-        List<SW360SparseComponent> components = componentClient.getComponents(header);
-
-        return components.stream()
-                .map(SW360SparseComponent::getName)
-                .anyMatch(name -> name.equals(componentName));
     }
 
     public Optional<SW360Component> getComponentByArtifact(Artifact artifact, HttpHeaders header) {

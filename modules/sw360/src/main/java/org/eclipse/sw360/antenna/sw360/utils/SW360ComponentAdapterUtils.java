@@ -12,7 +12,6 @@ package org.eclipse.sw360.antenna.sw360.utils;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
 import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
@@ -20,10 +19,8 @@ import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoord
 import org.eclipse.sw360.antenna.model.util.ArtifactUtils;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentType;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,12 +51,6 @@ public class SW360ComponentAdapterUtils {
                 .orElse("-");
     }
 
-    private static void setCreatedOn(SW360Component component) {
-        final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        final String createdOn = dateFormat.format(new Date());
-        component.setCreatedOn(createdOn);
-    }
-
     public static void setName(SW360Component component, Artifact artifact) {
         component.setName(createComponentName(artifact));
     }
@@ -72,16 +63,16 @@ public class SW360ComponentAdapterUtils {
         }
     }
 
-    private static void setHomePage(SW360Component component, Artifact artifact) {
-        artifact.askForGet(ArtifactSourceUrl.class)
-                .ifPresent(component::setHomepage);
+    public static SW360Component createFromRelease(SW360Release release) {
+        SW360Component sw360Component = new SW360Component();
+        sw360Component.setName(release.getName());
+        // TODO: set component type
+        return sw360Component;
     }
 
     public static void prepareComponent(SW360Component component, Artifact artifact) {
-        SW360ComponentAdapterUtils.setCreatedOn(component);
         SW360ComponentAdapterUtils.setName(component, artifact);
         SW360ComponentAdapterUtils.setComponentType(component, artifact);
-        SW360ComponentAdapterUtils.setHomePage(component, artifact);
     }
 
     public static boolean isValidComponent(SW360Component component) {

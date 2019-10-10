@@ -41,7 +41,9 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         Artifact artifact = mkArtifact("test1", true);
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName("artifactIdtest1");
-        SW360Release release = SW360ReleaseAdapterUtils.prepareRelease(sw360Component, Collections.EMPTY_SET, artifact);
+        SW360Release release = SW360ReleaseAdapterUtils.convertToRelease(artifact);
+        release.setComponentId(sw360Component.getComponentId());
+        release.setMainLicenseIds(Collections.EMPTY_SET);
 
         assertThat(release.getClearingState()).isEqualTo(ArtifactClearingState.ClearingState.PROJECT_APPROVED.toString());
         assertThat(release.getChangeStatus()).isEqualTo(ArtifactChangeStatus.ChangeStatus.CHANGED.toString());
@@ -76,7 +78,7 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         Artifact artifact = mkArtifact("test1", false);
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName("artifactIdtest1");
-        SW360Release release = SW360ReleaseAdapterUtils.prepareRelease(sw360Component, Collections.EMPTY_SET, artifact);
+        SW360Release release = SW360ReleaseAdapterUtils.convertToRelease(artifact);
 
         assertThat(release.getClearingState()).isEqualTo(ArtifactClearingState.ClearingState.PROJECT_APPROVED.toString());
         assertThat(release.getChangeStatus()).isEqualTo(ArtifactChangeStatus.ChangeStatus.CHANGED.toString());
@@ -166,7 +168,9 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
 
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName("artifactId(test)");
-        SW360Release release = SW360ReleaseAdapterUtils.prepareRelease(sw360Component, Collections.EMPTY_SET, artifact);
+        SW360Release release = SW360ReleaseAdapterUtils.convertToRelease(artifact);
+        release.setComponentId(sw360Component.getComponentId());
+        release.setMainLicenseIds(Collections.EMPTY_SET);
 
         assertThat(release.getDetectedLicense()).isNull();
         assertThat(release.getMainLicenseIds().isEmpty()).isTrue();

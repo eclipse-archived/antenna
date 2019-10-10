@@ -25,6 +25,8 @@ import org.springframework.http.HttpHeaders;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 public class RestUtils {
     private static ObjectMapper objectMapper = new ObjectMapper();
@@ -53,7 +55,9 @@ public class RestUtils {
     public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Component sw360Component, HttpHeaders header) {
         Map<String, Object> component = new HashMap<>();
         component.put(SW360Attributes.COMPONENT_COMPONENT_NAME, sw360Component.getName());
-        component.put(SW360Attributes.COMPONENT_COMPONENT_TYPE, sw360Component.getComponentType().toString());
+        Optional.ofNullable(sw360Component.getComponentType())
+                .map(Objects::toString)
+                .ifPresent(componentType -> component.put(SW360Attributes.COMPONENT_COMPONENT_TYPE, componentType));
         component.put(SW360Attributes.COMPONENT_HOMEPAGE, sw360Component.getHomepage());
         return getHttpEntity(component, header);
     }

@@ -13,8 +13,6 @@ package org.eclipse.sw360.antenna.sw360.utils;
 import com.github.packageurl.PackageURL;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 
 import java.util.Collection;
@@ -25,15 +23,13 @@ import java.util.stream.Collectors;
 
 public class SW360ReleaseAdapterUtils {
 
-    public static SW360Release prepareRelease(SW360Component component, Set<String> sw360LicenseIds, Artifact artifact) {
+    public static SW360Release convertToRelease(Artifact artifact) {
         SW360Release release = new SW360Release();
-        String componentId = SW360HalResourceUtility.getLastIndexOfSelfLink(component.get_Links()).orElse("");
+        String componentName = SW360ComponentAdapterUtils.createComponentName(artifact);
 
         SW360ReleaseAdapterUtils.setVersion(release, artifact);
         SW360ReleaseAdapterUtils.setCPEId(release, artifact);
-        release.setName(component.getName());
-        release.setComponentId(componentId);
-        release.setMainLicenseIds(sw360LicenseIds);
+        release.setName(componentName);
 
         SW360ReleaseAdapterUtils.setPackageUrls(release, artifact);
         SW360ReleaseAdapterUtils.setDetectedLicense(release, artifact);

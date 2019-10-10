@@ -18,6 +18,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     private String version;
     private String cpeId;
     private String downloadurl;
-    @JsonSerialize
+    private Optional<Path> sourceFile = Optional.empty();
     private final Map<String, String> externalIds = new HashMap<>();
     @JsonSerialize
     private final Map<String, String> additionalData = new HashMap<>();
@@ -138,6 +139,15 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
 
     public void setDownloadurl(String downloadurl) {
         this.downloadurl = downloadurl;
+    }
+
+    @JsonIgnore
+    public Optional<Path> getSourceFile() {
+        return sourceFile;
+    }
+
+    public void setSourceFile(Optional<Path> sourceFile) {
+        this.sourceFile = sourceFile;
     }
 
     @JsonIgnore
@@ -259,6 +269,10 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     public SW360Release setCopyrights(String copyrights) {
         additionalData.put(COPYRIGHTS_KEY, copyrights);
         return this;
+    }
+
+    public Map<String,String> getExternalIds() {
+        return new HashMap<>(externalIds);
     }
 
     public SW360Release setExternalIds(Map<String, String> externalIds) {

@@ -17,8 +17,10 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.rest.resource.users.SW360User;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @JsonDeserialize(as = SW360ComponentEmbedded.class)
 public class SW360ComponentEmbedded implements Embedded {
@@ -27,7 +29,10 @@ public class SW360ComponentEmbedded implements Embedded {
     private List<SW360SparseRelease> releases;
     private SW360User createdBy;
 
-    public List<SW360SparseRelease> getReleases() { return this.releases; }
+    public List<SW360SparseRelease> getReleases() {
+        return Optional.ofNullable(this.releases)
+                .orElse(Collections.emptyList());
+    }
 
     public SW360ComponentEmbedded setReleases(List<SW360SparseRelease> releases) {
         this.releases = releases;
