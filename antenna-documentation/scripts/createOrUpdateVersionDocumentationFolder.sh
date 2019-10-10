@@ -13,12 +13,12 @@ BASEDIR=$(dirname "$BASEDIR")
 
 PROJECT_VERSION=$1
 # build antenna
-mvn clean install -DskipTests
-mvn site -f antenna-documentation/pom.xml
+mvn -q clean install -DskipTests
+mvn -q site -f antenna-documentation/pom.xml
 
 git checkout gh-pages
 
-rsync -av antenna-documentation/target/documentation/ ${PROJECT_VERSION}/
+cp -TRv antenna-documentation/target/documentation/ ${PROJECT_VERSION}/
 
 git add ${PROJECT_VERSION}/
 git commit -m "Update documentation for ${PROJECT_VERSION}" -s

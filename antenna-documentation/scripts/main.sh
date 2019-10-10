@@ -12,7 +12,7 @@ BASEDIR=$(readlink -f "$0")
 BASEDIR=$(dirname "$BASEDIR")
 
 if [ "$(git branch | grep \* | cut -d ' ' -f2)" != "(HEAD" ]; then
-  ./documentation_snapshot.sh
+  bash "${BASEDIR}"/documentation_snapshot.sh
 else
-  ./documentation_release.sh
+  bash "${BASEDIR}"/documentation_release.sh
 fi

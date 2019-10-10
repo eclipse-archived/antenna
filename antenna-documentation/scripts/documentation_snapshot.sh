@@ -14,20 +14,22 @@ BASEDIR=$(dirname "$BASEDIR")
 CURRENT_BRANCH=$(git branch | grep \* | cut -d ' ' -f2)
 
 createCurrentSnapshotDocumentation() {
-  PROJECT_VERSION=$(mvn -q \
+  PROJECT_VERSION="$(mvn -q\
     -Dexec.executable=echo \
     -Dexec.args='${project.version}' \
-    ---non-recursive \
-    exec:exec)
+    --non-recursive \
+    exec:exec)"
 
-  ./createOrUpdateVersionDocumentationFolder.sh ${PROJECT_VERSION}
+  bash "${BASEDIR}"/createOrUpdateVersionDocumentationFolder.sh "${PROJECT_VERSION}"
   git checkout ${CURRENT_BRANCH}
 }
 
 pushChanges() {
-  git push "https://${GITHUB_CREDENTIALS_USR}:${GITHUB_CREDENTIALS_PSW}@github.com/bsinno/antenna.git" gh-pages
+  echo $(git push "https://${GITHUB_CREDENTIALS_USR}:${GITHUB_CREDENTIALS_PSW}@github.com/bsinno/antenna.git" gh-pages)
 }
 
 createCurrentSnapshotDocumentation
-createNewIndexRootFile
-pushChanges
+push_message=$(pushChanges)
+if [[ ${push_message} == *"Everything up-to-date"* ]]; then
+    exit 1
+fi

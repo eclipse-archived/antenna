@@ -17,11 +17,20 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven 3.3.9'
+    }
+
     environment {
         GITHUB_CREDENTIALS = credentials('bs-tu-osmi')
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'neubs-bsi/doc/documentationDeployment', credentialsId: 'bs-tu-osmi', url: 'https://github.com/bsinno/antenna.git'
+            }
+        }
         stage('Configure Git') {
             steps {
                 sh "git config --global user.name ${GITHUB_CREDENTIALS_USR}"
@@ -31,9 +40,7 @@ pipeline {
         }
         stage('Site Deploy') {
             steps {
-                withMaven(maven: 'Maven 3.3.9', mavenSettingsConfig: 'db92d145-202a-43a0-bf98-39fed076da37', tempBinDir: '') {
-                    sh 'scripts/main.sh'
-                }
+                sh 'bash antenna-documentation/scripts/main.sh'
             }
         }
     }
