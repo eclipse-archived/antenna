@@ -20,17 +20,19 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorHelper.compareStringsAsWildcard;
 
 public class JavaScriptCoordinates extends ArtifactCoordinates<JavaScriptCoordinates> {
-    private final String artifactId;
-    private final String name;
+    private final String namespace;
+    private final String packageName;
     private final String version;
 
-    public JavaScriptCoordinates(String artifactId, String name, String version) {
-        this.artifactId = artifactId;
-        this.name = name;
+    public JavaScriptCoordinates(String namespace, String packageName, String version) {
+        this.namespace = namespace;
+        this.packageName = packageName;
         this.version = version;
     }
 
@@ -42,10 +44,10 @@ public class JavaScriptCoordinates extends ArtifactCoordinates<JavaScriptCoordin
     @Override
     public JavaScriptCoordinates mergeWith(JavaScriptCoordinates resultWithPrecedence) {
         return new JavaScriptCoordinates(
-                Optional.ofNullable(resultWithPrecedence.getArtifactId())
-                        .orElse(Optional.ofNullable(getArtifactId())
+                Optional.ofNullable(resultWithPrecedence.getNamespace())
+                        .orElse(Optional.ofNullable(getNamespace())
                                 .orElse(null)),
-                Optional.ofNullable(resultWithPrecedence.getName())
+                Optional.ofNullable(resultWithPrecedence.getPackageName())
                         .orElse(Optional.ofNullable(getName())
                                 .orElse(null)),
                 Optional.ofNullable(resultWithPrecedence.getVersion())
@@ -55,7 +57,10 @@ public class JavaScriptCoordinates extends ArtifactCoordinates<JavaScriptCoordin
 
     @Override
     public String getName() {
-        return name;
+        return Stream.of(namespace, packageName)
+                .filter(Objects::nonNull)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.joining("/"));
     }
 
     @Override
@@ -70,34 +75,41 @@ public class JavaScriptCoordinates extends ArtifactCoordinates<JavaScriptCoordin
 
     @Override
     protected PackageURLBuilder addPurlFacts(PackageURLBuilder builder) {
-        return builder.withNamespace(getName()).withName(getArtifactId());
+        return builder.withNamespace(namespace).withName(packageName);
     }
 
     @Override
     public String toString() {
-        return name + ":" + version + " (" + artifactId + ")";
+        return Stream.of(namespace, packageName, version)
+                .filter(Objects::nonNull)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.joining(":"));
     }
 
     @Override
     public boolean isEmpty() {
-        return (name == null || "".equals(name)) &&
+        return (packageName == null || "".equals(packageName)) &&
                 (version == null || "".equals(version)) &&
-                (artifactId == null || "".equals(artifactId));
+                (namespace == null || "".equals(namespace));
     }
 
     @Override
     public boolean matches(ArtifactIdentifier artifactIdentifier) {
         if(artifactIdentifier instanceof JavaScriptCoordinates) {
             final JavaScriptCoordinates javaScriptCoordinates = (JavaScriptCoordinates) artifactIdentifier;
-            return compareStringsAsWildcard(artifactId, javaScriptCoordinates.getArtifactId()) ||
-                    compareStringsAsWildcard(name, javaScriptCoordinates.getName()) ||
+            return compareStringsAsWildcard(namespace, javaScriptCoordinates.getNamespace()) ||
+                    compareStringsAsWildcard(packageName, javaScriptCoordinates.getName()) ||
                     compareStringsAsWildcard(version, javaScriptCoordinates.getVersion());
         }
         return false;
     }
 
-    public String getArtifactId() {
-        return artifactId;
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public String getPackageName() {
+        return packageName;
     }
 
     @Override
@@ -105,30 +117,30 @@ public class JavaScriptCoordinates extends ArtifactCoordinates<JavaScriptCoordin
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JavaScriptCoordinates that = (JavaScriptCoordinates) o;
-        return Objects.equals(artifactId, that.artifactId) &&
-                Objects.equals(name, that.name) &&
+        return Objects.equals(namespace, that.namespace) &&
+                Objects.equals(packageName, that.packageName) &&
                 Objects.equals(version, that.version);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(artifactId, name, version);
+        return Objects.hash(namespace, packageName, version);
     }
 
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class JavaScriptCoordinatesBuilder
             implements ArtifactFactBuilder {
-        protected String artifactId;
-        protected String name;
+        protected String namespace;
+        protected String packageName;
         protected String version;
 
-        public JavaScriptCoordinatesBuilder setArtifactId(String value) {
-            this.artifactId = value;
+        public JavaScriptCoordinatesBuilder setNamespace(String value) {
+            this.namespace = value;
             return this;
         }
 
-        public JavaScriptCoordinatesBuilder setName(String value) {
-            this.name = value;
+        public JavaScriptCoordinatesBuilder setPackageName(String value) {
+            this.packageName = value;
             return this;
         }
 
@@ -139,16 +151,16 @@ public class JavaScriptCoordinates extends ArtifactCoordinates<JavaScriptCoordin
 
         @Override
         public JavaScriptCoordinates build() {
-            if(artifactId != null) {
-                artifactId = artifactId.trim();
+            if(namespace != null) {
+                namespace = namespace.trim();
             }
-            if(name != null) {
-                name = name.trim();
+            if(packageName != null) {
+                packageName = packageName.trim();
             }
             if(version != null) {
                 version = version.trim();
             }
-            return new JavaScriptCoordinates(artifactId, name, version);
+            return new JavaScriptCoordinates(namespace, packageName, version);
         }
     }
 }

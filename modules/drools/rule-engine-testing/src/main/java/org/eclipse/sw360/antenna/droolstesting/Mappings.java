@@ -88,7 +88,7 @@ public final class Mappings {
                 });
                 put("javascript", row -> {
                     if (row.size() < 5) {
-                        throw new ConfigurationException("JavaScript coordinates need to specify artifactId, name and version in that order");
+                        throw new ConfigurationException("JavaScript coordinates need to specify namespace, packageName and version in that order");
                     }
                     return new JavaScriptCoordinates(row.get(2), row.get(3), row.get(4));
                 });

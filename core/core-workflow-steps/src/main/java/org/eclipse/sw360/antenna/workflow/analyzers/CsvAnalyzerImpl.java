@@ -143,7 +143,7 @@ public class CsvAnalyzerImpl {
             case "dotnet":
                 return new DotNetCoordinates(record.get(NAME), record.get(VERSION));
             case "javascript":
-                return new JavaScriptCoordinates(record.get(NAME), record.get(GROUP), record.get(VERSION));
+                return new JavaScriptCoordinates(record.get(GROUP), record.get(NAME), record.get(VERSION));
             case "bundle":
                 return new BundleCoordinates(record.get(NAME), record.get(VERSION));
             default:

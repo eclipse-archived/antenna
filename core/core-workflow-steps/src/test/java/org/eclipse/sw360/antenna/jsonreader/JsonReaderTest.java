@@ -118,7 +118,7 @@ public class JsonReaderTest {
                 .ifPresent(jsC -> {
                     assertThat(jsC.getName()).isEqualTo("process");
                     assertThat(jsC.getVersion()).isEqualTo("0.5.1");
-                    assertThat(jsC.getArtifactId()).isEqualTo("process-0.5.1");
+                    assertThat(jsC.getNamespace()).isNull();
                 });
 
         artifacts.stream()

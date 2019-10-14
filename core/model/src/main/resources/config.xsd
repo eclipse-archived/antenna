@@ -302,8 +302,8 @@
 
     <xsd:complexType name="javaScriptCoordinates">
         <xsd:all>
-            <xsd:element name="artifactId" minOccurs="0"  type="xsd:string"/>
-            <xsd:element name="name" minOccurs="0"  type="xsd:string"/>
+            <xsd:element name="namespace" minOccurs="0"  type="xsd:string"/>
+            <xsd:element name="packageName" minOccurs="0"  type="xsd:string"/>
             <xsd:element name="version" minOccurs="0"  type="xsd:string"/>
         </xsd:all>
     </xsd:complexType>
