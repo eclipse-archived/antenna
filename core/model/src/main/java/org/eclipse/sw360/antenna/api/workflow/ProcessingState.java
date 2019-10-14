@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.api.workflow;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
+import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ public class ProcessingState {
     private List<Artifact> artifacts = new ArrayList<>();
     private final Map<String,IAttachable> attachableMap = new HashMap<>();
     private final List<String> additionalReportComments = new ArrayList<>();
+    private final Map<String, Set<IEvaluationResult>> failCausingResults = new HashMap<>();
 
     private final Logger LOGGER =  LoggerFactory.getLogger(ProcessingState.class);
 
@@ -45,6 +47,10 @@ public class ProcessingState {
         return additionalReportComments;
     }
 
+    public Map<String, Set<IEvaluationResult>> getFailCausingResults() {
+        return failCausingResults;
+    }
+
     public void applyWorkflowStepResult(WorkflowStepResult workflowStepResult) {
         applyWorkflowStepResult(workflowStepResult, false);
     }
@@ -57,6 +63,9 @@ public class ProcessingState {
         }
         attachableMap.putAll(workflowStepResult.getAttachables());
         additionalReportComments.addAll(workflowStepResult.getAdditionalReportComments());
+        Optional.ofNullable(workflowStepResult.getFailCausingResults())
+                .map(failCausingResult ->
+                        failCausingResults.put(failCausingResult.getKey(), failCausingResult.getValue()));
     }
 
     private void checkingDuplicateArtifactsInWorkflowStepResults(Collection<WorkflowStepResult> initialResults) {

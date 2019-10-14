@@ -11,8 +11,11 @@
 package org.eclipse.sw360.antenna.workflow;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
+import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.*;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +60,11 @@ public class AntennaWorkflow {
 
             generatedOutput.putAll(processingState.getAttachables());
 
+            if(!processingState.getFailCausingResults().isEmpty()) {
+                logFailCausingResults(processingState.getFailCausingResults());
+                throw new ExecutionException("Build failed due to fail causing results.");
+            }
+
             if(postSinksHooks.size() > 0) {
                 LOGGER.info("Post process output");
                 applyOutputPostHandler(generatedOutput);
@@ -73,6 +81,50 @@ public class AntennaWorkflow {
             cleanup();
             LOGGER.info("Clean up workflow done");
         }
+    }
+
+    private void logFailCausingResults(Map<String, Set<IEvaluationResult>> failCausingResults) {
+        LOGGER.error(makeStringForFailCausingResults(failCausingResults));
+    }
+
+    private String makeStringForFailCausingResults(Map<String, Set<IEvaluationResult>> failCausingResults) {
+        StringBuilder failCausingResultMessage = new StringBuilder("Build fails due to fail causing results \n");
+
+        failCausingResults.forEach((workflowItemName, evaluationResults) ->
+                failCausingResultMessage.append(workflowItemName)
+                        .append(" ")
+                        .append(getEvaluationResultsAsString(evaluationResults))
+                        .append("\n"));
+
+        return failCausingResultMessage.toString();
+    }
+
+    private String getEvaluationResultsAsString(Set<IEvaluationResult> evaluationResults) {
+        return evaluationResults.stream()
+                .map(this::getEvaluationResultAsString)
+                .collect(Collectors.joining());
+    }
+
+    private String getEvaluationResultAsString(IEvaluationResult evaluationResult) {
+        return ": " + evaluationResult.getId()
+                + " failed with: \n    "
+                + evaluationResult.getDescription()
+                + " for artifacts: "
+                + getFailedArtifactsAsString(evaluationResult);
+    }
+
+    private String getFailedArtifactsAsString(IEvaluationResult evaluationResult) {
+        return evaluationResult.getFailedArtifacts().stream()
+                .map(artifact -> "\n        - " + getCoordinateAsString(artifact))
+                .collect(Collectors.joining());
+    }
+
+    private String getCoordinateAsString(Artifact artifact) {
+        return artifact.askForAll(ArtifactCoordinates.class)
+                .stream()
+                .findFirst()
+                .map(ArtifactCoordinates::getName)
+                .orElse(artifact.toString());
     }
 
     private Collection<WorkflowStepResult> getArtifactsFromAnalyzers() {

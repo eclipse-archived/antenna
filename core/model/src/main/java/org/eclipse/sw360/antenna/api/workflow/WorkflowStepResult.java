@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.api.workflow;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
+import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 import java.util.*;
@@ -28,6 +29,7 @@ public class WorkflowStepResult {
     private final Map<String,IAttachable> attachableMap = new HashMap<>();
 
     private final List<String> additionalReportComments = new ArrayList<>();
+    private Map.Entry<String, Set<IEvaluationResult>> failCausingResults;
 
     public WorkflowStepResult(Collection<Artifact> artifacts, boolean artifactsShouldBeAppended) {
         this.artifacts.addAll(artifacts);
@@ -61,6 +63,14 @@ public class WorkflowStepResult {
 
     public boolean addAdditionalReportComment(String comment) {
         return additionalReportComments.add(comment);
+    }
+
+    public Map.Entry<String, Set<IEvaluationResult>> getFailCausingResults() {
+        return this.failCausingResults;
+    }
+
+    public void addFailCausingResults(String workflowItemName, Set<IEvaluationResult> failCausingResults) {
+        this.failCausingResults = new AbstractMap.SimpleEntry(workflowItemName, failCausingResults);
     }
 
     public boolean isArtifactsShouldBeAppended() {
