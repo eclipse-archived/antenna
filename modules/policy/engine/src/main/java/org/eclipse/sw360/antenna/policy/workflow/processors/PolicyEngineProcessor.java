@@ -15,11 +15,12 @@ import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.policy.engine.*;
+import org.eclipse.sw360.antenna.policy.engine.PolicyEngine;
+import org.eclipse.sw360.antenna.policy.engine.PolicyEngineConfigurator;
+import org.eclipse.sw360.antenna.policy.engine.PolicyViolation;
+import org.eclipse.sw360.antenna.policy.engine.Ruleset;
 import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 import org.eclipse.sw360.antenna.workflow.stubs.AbstractComplianceChecker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,8 +32,6 @@ import java.util.stream.Collectors;
  * The workspace step which integrates the {@link PolicyEngine} into the Antenna workflow engine
  */
 public class PolicyEngineProcessor extends AbstractComplianceChecker {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PolicyEngineProcessor.class);
-
     private PolicyEngine policyEngine;
 
     private static final String RULESET_PROP = "ruleset.classes";
@@ -45,14 +44,10 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
     public void configure(final Map<String, String> configMap) {
         super.configure(configMap);
 
-        LOGGER.info("Setting up policy engine");
-
         final String rulesetClasses = getConfigValue(RULESET_PROP, configMap).trim();
         final Collection<String> rulesetClassesList = Arrays.stream(rulesetClasses.split(","))
                 .map(String::trim)
                 .collect(Collectors.toList());
-
-        LOGGER.debug("Configured rule set classes: " + rulesetClassesList.toString());
 
         try {
             policyEngine = PolicyEngineConfigurator.configure(rulesetClassesList);
@@ -70,27 +65,23 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
 
     @Override
     public IPolicyEvaluation evaluate(final Collection<Artifact> artifacts) {
-        LOGGER.info("Policy Engine execution started");
-
         final Collection<ThirdPartyArtifact> polengArtifacts = artifacts
                 .stream()
                 .map(AntennaArtifact::new)
                 .collect(Collectors.toList());
 
-        final Collection<PolicyViolation> results = policyEngine.evaluate(polengArtifacts);
-
-        return new PolicyEvaluation(results);
+        return new PolicyEvaluation(policyEngine.evaluate(polengArtifacts));
     }
 
     @Override
     public String getRulesetDescription() {
-        StringBuilder resultString = new StringBuilder("Policy Engine, with rule sets:\n");
+        StringBuilder resultString = new StringBuilder();
         policyEngine.getRulesets().forEach(rs -> resultString.append(prepareRulesetInfo(rs)));
         return resultString.toString();
     }
 
     private String prepareRulesetInfo(Ruleset ruleset) {
-        return String.format(" - Rule set %s in version %s%n", ruleset.getName(), ruleset.getVersion());
+        return String.format("%n - %s in version %s", ruleset.getName(), ruleset.getVersion());
     }
 
     /**

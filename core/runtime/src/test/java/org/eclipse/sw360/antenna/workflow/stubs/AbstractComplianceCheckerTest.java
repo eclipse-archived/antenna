@@ -97,6 +97,7 @@ public class AbstractComplianceCheckerTest extends AntennaTestWithMockedContext 
             IEvaluationResult result = Mockito.mock(IEvaluationResult.class);
             when(result.getFailedArtifacts()).thenReturn(failedArtifacts);
             when(result.getSeverity()).thenReturn(f);
+            when(result.getId()).thenReturn("TestId");
             results.add(result);
         });
 

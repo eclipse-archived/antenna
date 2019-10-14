@@ -10,9 +10,6 @@
  */
 package org.eclipse.sw360.antenna.policy.engine;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Map;
@@ -24,8 +21,6 @@ import java.util.stream.Collectors;
  * and instantiates the {@link PolicyEngine} infrastructure with the {@link Rule} objects defined in them.
  */
 public class PolicyEngineConfigurator {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PolicyEngineConfigurator.class);
-
     private static final String SINGLE_ARTIFACT_EXECUTOR = SingleArtifactExecutor.class.getName();
     private static final String COMPARE_ARTIFACT_EXECUTOR = CompareArtifactExecutor.class.getName();
 
@@ -43,8 +38,6 @@ public class PolicyEngineConfigurator {
             throw new IllegalArgumentException("Configuration Error: No rule set reference given");
         }
 
-        LOGGER.debug("Configuring the policy engine with rulesetRefs " + rulesetRefs.toString());
-
         final Map<String, Set<Rule>> executorToRuleMapping = rulesetRefs.stream()
                 .map(PolicyEngineConfigurator::createRuleset)
                 .map(Ruleset::getRules)
@@ -54,8 +47,6 @@ public class PolicyEngineConfigurator {
                         Collectors.mapping(RuleToExecutor::getRule, Collectors.toSet())));
 
         PolicyEngine resultEngine = new PolicyEngine(createExecutors(executorToRuleMapping));
-
-        LOGGER.debug("Policy engine created");
 
         return resultEngine;
     }

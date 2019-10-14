@@ -31,18 +31,24 @@ public class PolicyEngine {
     }
 
     public Collection<PolicyViolation> evaluate(final Collection<ThirdPartyArtifact> thirdPartyArtifacts) {
-        LOGGER.info("Start policy engine run");
         LOGGER.debug("Artifacts are " + thirdPartyArtifacts.stream()
                 .map(ThirdPartyArtifact::getPurls)
                 .flatMap(Collection::stream)
                 .map(PackageURL::canonicalize)
                 .collect(Collectors.joining(",", "[", "]")));
 
-        return executors
-                .parallelStream()
+        Collection<PolicyViolation> violations =  executors.parallelStream()
                 .map(executor -> executor.executeRules(thirdPartyArtifacts))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+
+        if (violations.size() > 0) {
+            LOGGER.warn("Number of violations found: " + violations.size());
+        } else {
+            LOGGER.info("No violations found");
+        }
+        
+        return violations;
     }
 
     public Collection<Ruleset> getRulesets() {
