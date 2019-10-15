@@ -36,7 +36,7 @@ public class SW360ReleaseAdapterUtils {
         release.setMainLicenseIds(sw360LicenseIds);
 
         SW360ReleaseAdapterUtils.setPackageUrls(release, artifact);
-        SW360ReleaseAdapterUtils.setDetectedLicense(release, artifact);
+        SW360ReleaseAdapterUtils.setOverriddenLicense(release, artifact);
         SW360ReleaseAdapterUtils.setDeclaredLicense(release, artifact);
         SW360ReleaseAdapterUtils.setObservedLicense(release, artifact);
         SW360ReleaseAdapterUtils.setSources(release, artifact);
@@ -81,9 +81,9 @@ public class SW360ReleaseAdapterUtils {
         sw360Release.setPurls(packageURLS);
     }
 
-    private static void setDetectedLicense(SW360Release release, Artifact artifact) {
+    private static void setOverriddenLicense(SW360Release release, Artifact artifact) {
         artifact.askForGet(OverriddenLicenseInformation.class)
-                .ifPresent(licenseInformation -> release.setDetectedLicense(licenseInformation.evaluate()));
+                .ifPresent(licenseInformation -> release.setOverriddenLicense(licenseInformation.evaluate()));
     }
 
     private static void setDeclaredLicense(SW360Release release, Artifact artifact) {

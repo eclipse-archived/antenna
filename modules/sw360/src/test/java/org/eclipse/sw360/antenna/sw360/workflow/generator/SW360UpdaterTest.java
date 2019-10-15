@@ -64,7 +64,7 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
                         .map(ArtifactFilename.ArtifactFilenameEntry::getHash)
                         .collect(Collectors.toSet()));
 
-        assertThat(release.getDetectedLicense()).isEqualTo("evaluated license (test1)");
+        assertThat(release.getOverriddenLicense()).isEqualTo("evaluated license (test1)");
         assertThat(release.getDeclaredLicense()).isEqualTo("evaluated license (test1)");
         assertThat(release.getObservedLicense()).isEqualTo("evaluated license (test1)");
 
@@ -98,7 +98,7 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
                         .map(ArtifactFilename.ArtifactFilenameEntry::getHash)
                         .collect(Collectors.toSet()));
 
-        assertThat(release.getDetectedLicense()).isNull();
+        assertThat(release.getOverriddenLicense()).isNull();
         assertThat(release.getDeclaredLicense()).isEqualTo("evaluated license (test1)");
         assertThat(release.getObservedLicense()).isEqualTo("evaluated license (test1)");
 
@@ -168,7 +168,7 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         sw360Component.setName("artifactId(test)");
         SW360Release release = SW360ReleaseAdapterUtils.prepareRelease(sw360Component, Collections.EMPTY_SET, artifact);
 
-        assertThat(release.getDetectedLicense()).isNull();
+        assertThat(release.getOverriddenLicense()).isNull();
         assertThat(release.getMainLicenseIds().isEmpty()).isTrue();
     }
 
