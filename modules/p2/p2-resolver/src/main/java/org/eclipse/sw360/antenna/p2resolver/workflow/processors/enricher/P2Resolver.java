@@ -16,7 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.p2resolver.ArtifactAttacher;
 import org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics;
 import org.eclipse.sw360.antenna.p2resolver.P2RepositoryExtractor;
@@ -62,7 +62,7 @@ public class P2Resolver extends AbstractProcessor {
         File artifactDownloadArea = createTempDirectory();
 
         List<Artifact> actionableIntermediates = intermediates.stream()
-                .filter(artifact -> artifact.askFor(BundleCoordinates.class).isPresent())
+                .filter(artifact -> artifact.getCoordinateForType(Coordinate.Types.P2).isPresent())
                 .filter(artifact -> !(artifact.getFile().isPresent() && artifact.getSourceFile().isPresent()))
                 .collect(Collectors.toList());
 
@@ -91,13 +91,8 @@ public class P2Resolver extends AbstractProcessor {
     }
 
     private void attachArtifacts(File artifactDownloadArea, List<Artifact> actionableIntermediates)  {
-        try {
-            ArtifactAttacher attacher = new ArtifactAttacher(context.getToolConfiguration().getDependenciesDirectory());
-
-            attacher.copyDependencies(artifactDownloadArea, actionableIntermediates);
-        } catch (IOException e) {
-            throw new ExecutionException("Error while copying File.", e);
-        }
+        ArtifactAttacher attacher = new ArtifactAttacher(context.getToolConfiguration().getDependenciesDirectory());
+        attacher.copyDependencies(artifactDownloadArea, actionableIntermediates);
     }
 
     private void runEclipseProduct(File productInstallationArea, File artifactDownloadArea, List<Artifact> actionableIntermediates) {

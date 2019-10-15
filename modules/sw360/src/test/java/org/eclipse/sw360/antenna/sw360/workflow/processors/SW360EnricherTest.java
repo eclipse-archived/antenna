@@ -12,11 +12,9 @@
 package org.eclipse.sw360.antenna.sw360.workflow.processors;
 
 import com.github.packageurl.MalformedPackageURLException;
-import com.github.packageurl.PackageURL;
-import com.github.packageurl.PackageURLBuilder;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
@@ -99,8 +97,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         assertThat(artifacts.size()).isEqualTo(1);
         Artifact artifact0 = artifacts.get(0);
 
-        assertThat(artifact0.askFor(MavenCoordinates.class).isPresent()).isTrue();
-        assertThat(artifact0.askFor(MavenCoordinates.class).get().getVersion()).isEqualTo("1.2.3");
+        assertThat(artifact0.getCoordinateForType(Coordinate.Types.MAVEN).get().canonicalize()).isEqualTo("pkg:maven/test/test1@1.2.3");
 
         assertThat(artifact0.askFor(ArtifactSourceUrl.class).isPresent()).isTrue();
         assertThat(artifact0.askForGet(ArtifactSourceUrl.class).get()).isEqualTo(sourceUrl);
@@ -249,14 +246,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         sw360Release.setDeclaredLicense("Apache-2.0");
         sw360Release.setObservedLicense("A-Test-License");
-        sw360Release.setPurls(Collections.singletonMap(PackageURL.StandardTypes.MAVEN,
-                PackageURLBuilder.aPackageURL()
-                .withName("test")
-                .withType("maven")
-                .withNamespace("test")
-                .withVersion("1.2.3")
-                .build()
-                .canonicalize()));
+        sw360Release.setCoordinates(Collections.singletonMap(Coordinate.Types.MAVEN, "pkg:maven/test/test1@1.2.3"));
         sw360Release.setReleaseTagUrl(releaseTagUrl);
         sw360Release.setSoftwareHeritageId(swhID);
         sw360Release.setHashes(Collections.singleton(hashString));

@@ -11,10 +11,8 @@
 package org.eclipse.sw360.antenna.jsonreader;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
 import org.eclipse.sw360.antenna.model.xml.generated.Issue;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.SecurityIssueStatus;
@@ -30,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -99,36 +98,16 @@ public class JsonReaderTest {
         InputStream iStream = Files.newInputStream(Paths.get(uri));
         artifacts = jsonReader.createArtifactsList(iStream);
 
-        artifacts.stream()
-                .map(artifact -> artifact.askFor(MavenCoordinates.class))
-                .filter(Optional::isPresent)
-                .findAny()
-                .map(Optional::get)
-                .ifPresent(mC -> {
-                    assertThat(mC.getGroupId()).isEqualTo("org.apache.commons");
-                    assertThat(mC.getArtifactId()).isEqualTo("commons-lang3");
-                    assertThat(mC.getVersion()).isEqualTo("3.5");
-                });
-
-        artifacts.stream()
-                .map(artifact -> artifact.askFor(JavaScriptCoordinates.class))
-                .filter(Optional::isPresent)
-                .findAny()
-                .map(Optional::get)
-                .ifPresent(jsC -> {
-                    assertThat(jsC.getName()).isEqualTo("process");
-                    assertThat(jsC.getVersion()).isEqualTo("0.5.1");
-                    assertThat(jsC.getNamespace()).isNull();
-                });
-
-        artifacts.stream()
-                .map(artifact -> artifact.askFor(DotNetCoordinates.class))
-                .filter(Optional::isPresent)
-                .findAny()
-                .map(Optional::get)
-                .ifPresent(mC -> {
-                    assertThat(mC.getPackageId()).isEqualTo("Microsoft.AspNetCore.SignalR");
-                    assertThat(mC.getVersion()).isEqualTo("1.0.4");
+        Stream.of("pkg:maven/org.apache.commons/commons-lang3@3.5",
+                "pkg:npm/process@0.5.1",
+                "pkg:nuget/Microsoft.AspNetCore.SignalR@1.0.4"
+                ).forEach(purl -> {
+            assertThat(artifacts.stream()
+                    .map(artifact -> artifact.askFor(ArtifactCoordinates.class))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .anyMatch(artifactCoordinates -> artifactCoordinates.containsPurl(purl)))
+                    .isTrue();
                 });
     }
 }

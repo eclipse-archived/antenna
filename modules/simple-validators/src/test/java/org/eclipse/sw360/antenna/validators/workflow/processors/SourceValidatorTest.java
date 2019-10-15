@@ -13,11 +13,10 @@ package org.eclipse.sw360.antenna.validators.workflow.processors;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +31,7 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -65,19 +65,23 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
         configure(configMap, Collections.emptyList(), Collections.emptyList());
     }
 
-    private void configure(Map<String,String> configMap, List<ArtifactSelector> validForMissingSources, List<ArtifactSelector> validForIncompleteSources) {
-        when(configMock.getValidForMissingSources()).thenReturn(validForMissingSources);
-        when(configMock.getValidForIncompleteSources()).thenReturn(validForIncompleteSources);
+    private void configure(Map<String,String> configMap, List<Coordinate> validForMissingSources, List<Coordinate> validForIncompleteSources) {
+        when(configMock.getValidForMissingSources()).thenReturn(validForMissingSources.stream()
+                .map(ArtifactCoordinates::new)
+                .collect(Collectors.toList()));
+        when(configMock.getValidForIncompleteSources()).thenReturn(validForIncompleteSources.stream()
+                .map(ArtifactCoordinates::new)
+                .collect(Collectors.toList()));
         validator.configure(configMap);
     }
 
-    private ArtifactIdentifier mkArtifactIdentifier() {
-        return new MavenCoordinates("source-validator-test-artifact","org","1.0");
+    private Coordinate mkArtifactIdentifier() {
+        return new Coordinate(Coordinate.Types.MAVEN, "org", "source-validator-test-artifact", "1.0");
     }
 
     private Artifact mkArtifact(File sourceJar) {
         Artifact artifact = new Artifact();
-        artifact.addFact(mkArtifactIdentifier());
+        artifact.addCoordinate(mkArtifactIdentifier());
 
         artifact.addFact(new ArtifactFile(jar.toPath()));
         if(sourceJar != null) {
@@ -94,7 +98,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     private Artifact setupForTest(Map<String,String> configMap, int percentage) throws IOException {
         return setupForTest(configMap, percentage, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
     }
-    private Artifact setupForTest(Map<String,String> configMap, int percentage, List<ArtifactSelector> validForMissingSources, List<ArtifactSelector> validForIncompleteSources) throws IOException {
+    private Artifact setupForTest(Map<String,String> configMap, int percentage, List<Coordinate> validForMissingSources, List<Coordinate> validForIncompleteSources) throws IOException {
         configure(configMap, validForMissingSources, validForIncompleteSources);
         File sourceJar = sourceValidatorTestTools.writeSourceJar(percentage);
         return mkArtifact(sourceJar);
@@ -261,7 +265,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     @Test
     public void testWithoutJar() {
         Artifact artifact = new Artifact();
-        artifact.addFact(mkArtifactIdentifier());
+        artifact.addCoordinate(mkArtifactIdentifier());
         configure(Collections.emptyMap());
 
         final IPolicyEvaluation evaluate = validator.evaluate(Collections.singleton(artifact));

@@ -11,8 +11,9 @@
 package org.eclipse.sw360.antenna.drools;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.xml.generated.Issue;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
@@ -85,9 +86,10 @@ public class DroolsRulesUtilsTest {
     @Test
     public void testMatchingCoordinatesInArtifact() {
         Artifact artifact = new Artifact();
-        artifact.addFact(new MavenCoordinates("runtime", "org.eclipse.launcher", "1.0.0"));
+        artifact.addCoordinate(new Coordinate(Coordinate.Types.MAVEN, "org.eclipse.launcher", "runtime", "1.0.0"));
 
-        assertThat(DroolsRulesUtils.matchingCoordinatesInArtifact(artifact, new MavenCoordinates("*", "org.eclipse.*", "*")))
+        assertThat(DroolsRulesUtils.matchingCoordinatesInArtifact(artifact,
+                new ArtifactCoordinates(new Coordinate(Coordinate.Types.MAVEN, "org.eclipse.*", "*", "*"))))
                 .isTrue();
     }
 

@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.p2resolver;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -63,10 +63,10 @@ public class EclipseProcessBuilder {
 
     private static String extractBundleArtifacts(Collection<Artifact> artifacts) {
         return artifacts.stream()
-                .map(artifact -> artifact.askFor(BundleCoordinates.class))
+                .map(artifact -> artifact.getCoordinateForType(Coordinate.Types.P2))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(bundleCoordinates -> bundleCoordinates.getSymbolicName() + "," + bundleCoordinates.getVersion() + "")
+                .map(bundleCoordinates -> bundleCoordinates.getName() + "," + bundleCoordinates.getVersion() + "")
                 .collect(Collectors.joining(";"));
     }
 

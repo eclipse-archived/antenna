@@ -27,7 +27,7 @@ public class UnknownArtifactRule implements SingleArtifactRule {
 
     @Override
     public Optional<PolicyViolation> evaluate(final ThirdPartyArtifact thirdPartyArtifact) {
-        if(thirdPartyArtifact.getPurls().size() == 0) {
+        if(thirdPartyArtifact.getCoordinates().size() == 0) {
             return artifactRaisesPolicyViolation(this, thirdPartyArtifact);
         }
         return artifactAppliesToRule(this, thirdPartyArtifact);

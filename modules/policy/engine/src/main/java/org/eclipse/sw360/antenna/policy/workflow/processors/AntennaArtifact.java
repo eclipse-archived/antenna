@@ -10,9 +10,9 @@
  */
 package org.eclipse.sw360.antenna.policy.workflow.processors;
 
-import com.github.packageurl.PackageURL;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.policy.engine.model.LicenseData;
@@ -120,9 +120,7 @@ class AntennaArtifact implements ThirdPartyArtifact {
     }
 
     @Override
-    public Collection<PackageURL> getPurls() {
-        return artifact.askForAll(ArtifactCoordinates.class).stream()
-                .map(ArtifactCoordinates::getPurl)
-                .collect(Collectors.toList());
+    public Collection<Coordinate> getCoordinates() {
+        return artifact.getCoordinates();
     }
 }

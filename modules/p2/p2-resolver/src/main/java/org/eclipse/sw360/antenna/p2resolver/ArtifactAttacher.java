@@ -16,7 +16,7 @@ import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,25 +35,26 @@ public class ArtifactAttacher {
         this.targetDirectory = targetDirectory;
     }
 
-    public void copyDependencies(File artifactDownloadArea, Collection<Artifact> artifactsWithBundleCoordinates) throws IOException {
+    public void copyDependencies(File artifactDownloadArea, Collection<Artifact> artifactsWithBundleCoordinates) {
         for (Artifact artifact : artifactsWithBundleCoordinates) {
             attachArtifacts(artifact, artifactDownloadArea);
         }
     }
 
     private void attachArtifacts(Artifact artifact, File artifactDownloadArea) {
-        artifact.askFor(BundleCoordinates.class).ifPresent(bundleCoordinates -> {
-            try {
-                attachJar(artifact, artifactDownloadArea, bundleCoordinates);
-                attachSource(artifact, artifactDownloadArea, bundleCoordinates);
-            } catch (IOException e) {
-                throw new ExecutionException("IOException: ", e);
-            }
-        });
+        artifact.getCoordinateForType(Coordinate.Types.P2)
+            .ifPresent(bundleCoordinate -> {
+                try {
+                    attachJar(artifact, artifactDownloadArea, bundleCoordinate);
+                    attachSource(artifact, artifactDownloadArea, bundleCoordinate);
+                } catch (IOException e) {
+                    throw new ExecutionException("IOException: ", e);
+                }
+            });
     }
 
-    private void attachSource(Artifact artifact, File artifactDownloadArea, BundleCoordinates bundleCoordinates) throws IOException {
-        String bundleSourceName = bundleCoordinates.getSymbolicName() + ".source_" + bundleCoordinates.getVersion() + ".jar";
+    private void attachSource(Artifact artifact, File artifactDownloadArea, Coordinate bundleCoordinate) throws IOException {
+        String bundleSourceName = bundleCoordinate.getName() + ".source_" + bundleCoordinate.getVersion() + ".jar";
         File sourceFile = new File(artifactDownloadArea.toURI().resolve(bundleSourceName));
         if (!artifact.getSourceFile().isPresent() && sourceFile.exists()) {
             File artifactSource = new File(targetDirectory.toString() + File.separator + bundleSourceName);
@@ -63,8 +64,8 @@ public class ArtifactAttacher {
         }
     }
 
-    private void attachJar(Artifact artifact, File artifactDownloadArea, BundleCoordinates bundleCoordinates) throws IOException {
-        String bundleJarName = bundleCoordinates.getSymbolicName() + "_" + bundleCoordinates.getVersion() + ".jar";
+    private void attachJar(Artifact artifact, File artifactDownloadArea, Coordinate bundleCoordinate) throws IOException {
+        String bundleJarName = bundleCoordinate.getName() + "_" + bundleCoordinate.getVersion() + ".jar";
         File jarFile = new File(artifactDownloadArea.toURI().resolve(bundleJarName));
         if (!artifact.getFile().isPresent() && jarFile.exists()) {
             File artifactFile = new File(targetDirectory.toString() + File.separator + bundleJarName);

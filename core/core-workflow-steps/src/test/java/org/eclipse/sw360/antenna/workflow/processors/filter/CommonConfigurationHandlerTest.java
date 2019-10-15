@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.workflow.processors.filter;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
@@ -62,7 +62,7 @@ public abstract class CommonConfigurationHandlerTest extends AntennaTestWithMock
 
     protected Artifact generateDummyArtifact(String name) {
         Artifact otherArtifact = new Artifact();
-        otherArtifact.addFact(new BundleCoordinates(name, "1.2"));
+        otherArtifact.addCoordinate(new Coordinate(Coordinate.Types.P2, name, "1.2"));
         otherArtifact.addFact(new ArtifactFilename(name));
         return otherArtifact;
     }

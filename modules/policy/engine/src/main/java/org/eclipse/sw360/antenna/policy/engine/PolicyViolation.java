@@ -10,10 +10,10 @@
  */
 package org.eclipse.sw360.antenna.policy.engine;
 
-import com.github.packageurl.PackageURL;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -70,16 +70,16 @@ public class PolicyViolation {
                 .collect(Collectors.joining(" : ", rule.getId() + " : ", ""));
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            messageDigest.update(hashBase.getBytes("UTF-8"));
+            messageDigest.update(hashBase.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(messageDigest.digest());
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("Programming Error: Hash algorithm, resp. encoding unknown");
         }
     }
 
     private Collection<String> getPurlAsString(ThirdPartyArtifact artifact) {
-        return artifact.getPurls().stream()
-                .map(PackageURL::canonicalize)
+        return artifact.getCoordinates().stream()
+                .map(Coordinate::canonicalize)
                 .collect(Collectors.toList());
     }
 

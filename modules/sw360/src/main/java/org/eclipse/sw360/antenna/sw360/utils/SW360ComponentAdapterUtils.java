@@ -11,43 +11,24 @@
 package org.eclipse.sw360.antenna.sw360.utils;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
-import org.eclipse.sw360.antenna.model.util.ArtifactUtils;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class SW360ComponentAdapterUtils {
-    private static final List<Class<? extends ArtifactCoordinates>> preferredCoordinatesTypes = Stream.of(MavenCoordinates.class,
-            BundleCoordinates.class,
-            JavaScriptCoordinates.class,
-            DotNetCoordinates.class).collect(Collectors.toList());
-
-    private static Optional<ArtifactCoordinates> getMostDominantArtifactCoordinates(Artifact artifact) {
-        return ArtifactUtils.getMostDominantArtifactCoordinates(
-                preferredCoordinatesTypes,
-                artifact);
-    }
-
     public static String createComponentName(Artifact artifact) {
-        return getMostDominantArtifactCoordinates(artifact)
-                .map(ArtifactCoordinates::getName)
-                .filter(n -> ! n.isEmpty())
+        return artifact.askFor(ArtifactCoordinates.class)
+                .map(ArtifactCoordinates::getMainCoordinate)
+                .map(Coordinate::getName)
                 .orElse(artifact.toString()); // TODO: ugly hack
     }
 
     public static String createComponentVersion(Artifact artifact) {
-        return getMostDominantArtifactCoordinates(artifact)
-                .map(ArtifactCoordinates::getVersion)
+        return artifact.askFor(ArtifactCoordinates.class)
+                .map(ArtifactCoordinates::getMainCoordinate)
+                .map(Coordinate::getVersion)
                 .orElse("-");
     }
 

@@ -13,10 +13,10 @@ package org.eclipse.sw360.antenna.validators.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIssues;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.xml.generated.Issue;
 import org.eclipse.sw360.antenna.model.xml.generated.Issues;
 import org.eclipse.sw360.antenna.model.xml.generated.SecurityIssueStatus;
@@ -85,12 +85,12 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     private Artifact mkArtifact(Issues issues) {
         Artifact artifact = new Artifact();
         artifact.addFact(new ArtifactIssues(issues));
-        artifact.addFact(mkArtifactIdentifier());
+        artifact.addCoordinate(mkArtifactIdentifier());
         return artifact;
     }
 
-    private ArtifactIdentifier mkArtifactIdentifier() {
-        return new MavenCoordinates("com.test","test-artifact","1.0");
+    private Coordinate mkArtifactIdentifier() {
+        return new Coordinate(Coordinate.Types.MAVEN, "com.test", "test-artifact", "1.0");
     }
 
     @Test
@@ -134,12 +134,12 @@ public class SecurityIssueValidatorTest extends AntennaTestWithMockedContext {
     @Test
     public void validateArtifactFromConfiguration() {
         Artifact emptyArtifact = new Artifact();
-        emptyArtifact.addFact(mkArtifactIdentifier());
+        emptyArtifact.addCoordinate(mkArtifactIdentifier());
 
         Issues issues = new Issues();
         issues.getIssue().add(openIssue);
 
-        Map<ArtifactSelector, Issues> configuredSecurityIssues = Collections.singletonMap(mkArtifactIdentifier(), issues);
+        Map<ArtifactSelector, Issues> configuredSecurityIssues = Collections.singletonMap(new ArtifactCoordinates(mkArtifactIdentifier()), issues);
 
         when(configMock.getSecurityIssues()).thenReturn(configuredSecurityIssues);
         configMap.put(FORBIDDEN_SECURITY_ISSUE_STATUSES_KEY, "Open,Acknowledged");

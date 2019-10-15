@@ -15,50 +15,30 @@ import com.here.ort.model.Package
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact
 import org.eclipse.sw360.antenna.model.artifact.facts.*
-import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates
-import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState
 import org.eclipse.sw360.antenna.util.LicenseSupport
 
 import java.io.File
 import java.util.function.Function
 
-private fun mapCoordinates(pkg: Package): ArtifactCoordinates<*> {
+private fun mapCoordinates(pkg: Package): Coordinate {
     val namespace = pkg.id.namespace
     val name = pkg.id.name
     val version = pkg.id.version
 
-    return when (pkg.id.type.toLowerCase()) {
-        "nuget", "dotnet" -> mapDotNetCoordinates(name, version)
-        "maven" -> mapMavenCoordinates(namespace, name, version)
-        "npm" -> mapJavaScriptCoordinates(namespace, name, version)
-        else -> mapSimpleCoordinates(name, version)
+    val type = pkg.id.type.toLowerCase()
+    return when (type) {
+        "nuget", "dotnet" -> Coordinate(Coordinate.Types.NPM, name, version)
+        "maven" -> Coordinate(Coordinate.Types.MAVEN, namespace, name, version)
+        "npm" -> Coordinate(Coordinate.Types.NPM, namespace, name, version)
+        else -> if (Coordinate.Types.all.contains(type)) {
+            Coordinate(type, name, version)
+        } else {
+            Coordinate(Coordinate.Types.GENERIC, name, version)
+        }
     }
 }
-
-private fun mapDotNetCoordinates(name: String, version: String): ArtifactCoordinates<*> =
-    DotNetCoordinates.DotNetCoordinatesBuilder()
-            .setPackageId(name)
-            .setVersion(version)
-            .build()
-
-private fun mapMavenCoordinates(namespace: String, name: String, version: String): ArtifactCoordinates<*> =
-    MavenCoordinates.MavenCoordinatesBuilder()
-            .setGroupId(namespace)
-            .setVersion(version)
-            .setArtifactId(name)
-            .build()
-
-private fun mapJavaScriptCoordinates(namespace: String, name: String, version: String): ArtifactCoordinates<*> =
-    JavaScriptCoordinates.JavaScriptCoordinatesBuilder()
-            .setNamespace(namespace)
-            .setPackageName(name)
-            .setVersion(version)
-            .build()
-
-private fun mapSimpleCoordinates(name: String, version: String): ArtifactCoordinates<*> =
-    GenericArtifactCoordinates(name, version)
 
 private fun mapSourceUrl(pkg: Package): ArtifactSourceUrl? =
     // Antenna does not currently have the concept of VCS-specific clone URLs, so do not take ORT's VCS URL into
@@ -103,7 +83,7 @@ class OrtResultArtifactResolver(result: OrtResult) : Function<Package, Artifact>
 
     override fun apply(pkg: Package): Artifact =
         Artifact("OrtResult").addFact(ArtifactMatchingMetadata(MatchState.EXACT)).also { a ->
-            a.addFact(mapCoordinates(pkg))
+            a.addCoordinate(mapCoordinates(pkg))
 
             mapSourceUrl(pkg)?.let { a.addFact(it) }
             mapDeclaredLicense(pkg)?.let { a.addFact(it) }

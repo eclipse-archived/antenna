@@ -14,6 +14,7 @@ package org.eclipse.sw360.antenna.model.artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 
 import java.nio.file.Path;
@@ -41,8 +42,8 @@ public class Artifact extends ArtifactCore {
     }
 
     @Override
-    public Artifact addFact(ArtifactFactBuilder artifactFactBuilder) {
-        return (Artifact) super.addFact(artifactFactBuilder);
+    public Artifact addCoordinate(Coordinate coordinate) {
+        return (Artifact) super.addCoordinate(coordinate);
     }
 
     @Override

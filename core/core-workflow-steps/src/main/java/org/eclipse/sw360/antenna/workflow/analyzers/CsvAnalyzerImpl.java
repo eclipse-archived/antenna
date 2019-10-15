@@ -15,12 +15,11 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.artifact.facts.dotnet.DotNetCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.javaScript.JavaScriptCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
+import org.eclipse.sw360.antenna.model.coordinates.CoordinateBuilder;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.slf4j.Logger;
@@ -32,6 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CsvAnalyzerImpl {
     private static final Logger LOGGER = LoggerFactory.getLogger(CsvAnalyzerImpl.class);
@@ -73,9 +73,9 @@ public class CsvAnalyzerImpl {
         for (CSVRecord record : records) {
             Artifact newArtifact = createNewArtifact(record);
 
-            if(artifactListContainsArtifact(artifacts, newArtifact)) {
-                Artifact oldArtifact = getArtifactWithCoordinatesFromList(artifacts, newArtifact.askForAll(ArtifactCoordinates.class));
-                oldArtifact.mergeWith(newArtifact);
+            final Optional<Artifact> oldArtifact = artifactListContainsArtifact(artifacts, newArtifact);
+            if(oldArtifact.isPresent()) {
+                oldArtifact.get().mergeWith(newArtifact);
             } else {
                 artifacts.add(newArtifact);
             }
@@ -84,29 +84,21 @@ public class CsvAnalyzerImpl {
         return artifacts;
     }
 
-    private boolean artifactListContainsArtifact(List<Artifact> artifacts, Artifact newArtifact) {
-        return artifacts.stream()
-                .anyMatch(artifact ->
-                        artifact.askForAll(ArtifactCoordinates.class)
-                                .stream()
-                                .anyMatch(artifactCoordinates ->
-                                        newArtifact.askForAll(ArtifactCoordinates.class).stream()
-                                                .anyMatch(artifactCoordinates1 -> artifactCoordinates1.equals(artifactCoordinates)))
-                );
+    private Optional<Artifact> artifactListContainsArtifact(List<Artifact> artifacts, Artifact artifact) {
+        return artifact.askFor(ArtifactCoordinates.class)
+                .flatMap(artifactCoordinates -> artifactListContainsArtifact(artifacts, artifactCoordinates));
+
     }
 
-    private Artifact getArtifactWithCoordinatesFromList(List<Artifact> artifacts, List<ArtifactCoordinates> coordinates) {
+    private Optional<Artifact> artifactListContainsArtifact(List<Artifact> artifacts, ArtifactCoordinates coordinates) {
         return artifacts.stream()
-                .filter(artifact ->
-                        artifact.askForAll(ArtifactCoordinates.class).stream()
-                                .anyMatch(coordinates1 -> coordinates.stream().anyMatch(coordinates1::equals)))
-                .findFirst()
-                .orElse(new Artifact());
+                .filter(coordinates::matches)
+                .findFirst();
     }
 
     private Artifact createNewArtifact(CSVRecord record) {
         Artifact artifact = new Artifact(nameOfAnalyzer)
-                .addFact(createCoordinates(record))
+                .addCoordinate(createCoordinates(record))
                 .addFact(new ArtifactMatchingMetadata(MatchState.EXACT));
         addOptionalArtifactFacts(record, artifact);
         return artifact;
@@ -134,21 +126,48 @@ public class CsvAnalyzerImpl {
         return records;
     }
 
-    private ArtifactCoordinates createCoordinates(CSVRecord record) {
-        String type = record.isMapped(COORDINATE_TYPE) ? record.get(COORDINATE_TYPE) : "mvn";
+    private Coordinate createCoordinates(CSVRecord record) {
+        final CoordinateBuilder builder = Coordinate.builder()
+                .withName(record.get(NAME))
+                .withVersion(record.get(VERSION));
 
-        switch (type) {
-            case "mvn":
-                return new MavenCoordinates(record.get(NAME), record.get(GROUP), record.get(VERSION));
-            case "dotnet":
-                return new DotNetCoordinates(record.get(NAME), record.get(VERSION));
-            case "javascript":
-                return new JavaScriptCoordinates(record.get(GROUP), record.get(NAME), record.get(VERSION));
-            case "bundle":
-                return new BundleCoordinates(record.get(NAME), record.get(VERSION));
-            default:
-                return new GenericArtifactCoordinates(record.get(NAME), record.get(VERSION));
+        if (record.isMapped(COORDINATE_TYPE)) {
+            final String type = record.get(COORDINATE_TYPE);
+            switch (type) {
+                case "mvn":
+                    builder.withType(Coordinate.Types.MAVEN);
+                    builder.withNamespace(record.get(GROUP));
+                    break;
+                case "dotnet":
+                    builder.withType(Coordinate.Types.NUGET);
+                    break;
+                case "javascript":
+                    builder.withType(Coordinate.Types.NPM);
+                    builder.withNamespace(record.get(GROUP));
+                    break;
+                case "bundle":
+                    builder.withType(Coordinate.Types.P2);
+                    break;
+                default:
+                    if (Coordinate.Types.all.contains(type)) {
+                        builder.withType(type);
+                    } else {
+                        builder.withType(Coordinate.Types.GENERIC);
+                    }
+
+                    if (record.isMapped(GROUP)) {
+                        builder.withNamespace(record.get(GROUP));
+                    }
+                    break;
+            }
+        } else {
+            builder.withType(Coordinate.Types.GENERIC);
+            if (record.isMapped(GROUP)) {
+                builder.withNamespace(record.get(GROUP));
+            }
         }
+
+        return builder.build();
     }
 
     private String makePathAbsolute(String pathName) {

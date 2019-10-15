@@ -10,15 +10,12 @@
  */
 package org.eclipse.sw360.antenna.sw360.utils;
 
-import com.github.packageurl.PackageURL;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SW360ReleaseAdapterUtils {
@@ -31,7 +28,7 @@ public class SW360ReleaseAdapterUtils {
         SW360ReleaseAdapterUtils.setCPEId(release, artifact);
         release.setName(componentName);
 
-        SW360ReleaseAdapterUtils.setPackageUrls(release, artifact);
+        SW360ReleaseAdapterUtils.setCoordinates(release, artifact);
         SW360ReleaseAdapterUtils.setOverriddenLicense(release, artifact);
         SW360ReleaseAdapterUtils.setDeclaredLicense(release, artifact);
         SW360ReleaseAdapterUtils.setObservedLicense(release, artifact);
@@ -69,12 +66,17 @@ public class SW360ReleaseAdapterUtils {
                 .ifPresent(release::setCpeId);
     }
 
-    private static void setPackageUrls(SW360Release sw360Release, Artifact artifact) {
-        Map<String, String> packageURLS = artifact.askForAll(ArtifactCoordinates.class).stream()
-                .map(ArtifactCoordinates::getPurl)
-                .collect(Collectors.toMap(PackageURL::getType, PackageURL::canonicalize));
+    private static void setCoordinates(SW360Release release, Artifact artifact) {
+        release.setCoordinates(getMapOfCoordinates(artifact));
+    }
 
-        sw360Release.setPurls(packageURLS);
+    private static Map<String, String> getMapOfCoordinates(Artifact artifact) {
+        Map<String, String> coordinates = new HashMap<>();
+        artifact.askFor(ArtifactCoordinates.class)
+                .map(ArtifactCoordinates::getCoordinates)
+                .ifPresent(packageURLS -> packageURLS.forEach(packageURL ->
+                        coordinates.put(packageURL.getType(), packageURL.canonicalize())));
+        return coordinates;
     }
 
     private static void setOverriddenLicense(SW360Release release, Artifact artifact) {

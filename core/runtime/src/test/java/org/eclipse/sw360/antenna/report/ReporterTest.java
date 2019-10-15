@@ -10,10 +10,8 @@
  */
 package org.eclipse.sw360.antenna.report;
 
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.artifact.facts.GenericArtifactCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
 import org.junit.Before;
@@ -30,15 +28,14 @@ public class ReporterTest {
     public TemporaryFolder folder = new TemporaryFolder();
 
     private Reporter reporter;
-    private ArtifactIdentifier id;
+    private ArtifactCoordinates id;
     private String msg;
 
     @Before
     public void init(){
         reporter = new Reporter(folder.getRoot().toPath());
 
-//        id = new ArtifactFilename("testfile","testhash");
-        id = new MavenCoordinates("testAid","testGid","testVer");
+        id = new ArtifactCoordinates(new Coordinate(Coordinate.Types.MAVEN, "testGid", "testAid", "testVer"));
 
         msg = "Some processing message message";
     }
@@ -57,12 +54,12 @@ public class ReporterTest {
         reporter.writeReport(stream);
         String reportString = new String(stream.toByteArray());
         assertThat(reportString).contains(msg);
-        assertThat(reportString).contains(((ArtifactCoordinates<ArtifactCoordinates>) id).getVersion());
+        assertThat(reportString).contains(id.getMainCoordinate().getVersion());
     }
 
     @Test
     public void testAddMessageWithNullArtifactIdentifier() {
-        reporter.add(new GenericArtifactCoordinates("Name","Version"), MessageType.MISSING_COORDINATES, msg);
+        reporter.add(new ArtifactCoordinates(new Coordinate("Name","Version")), MessageType.MISSING_COORDINATES, msg);
 
         final ProcessingMessage processingMessage = reporter.getProcessingReport().getMessageList().get(0);
         assertThat(processingMessage.getMessageType()).isEqualTo(MessageType.MISSING_COORDINATES);

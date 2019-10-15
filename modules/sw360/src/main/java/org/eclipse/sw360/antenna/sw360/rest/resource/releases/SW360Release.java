@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.sw360.rest.resource.releases;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
@@ -22,7 +23,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW360ReleaseEmbedded> {
 
@@ -35,10 +35,6 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     private static final String CHANGESTATUS_KEY = "change_status";
     private static final String COPYRIGHTS_KEY = "copyrights";
     private static final String CLEARINGSTATE_KEY = "clearingState";
-    private static final Set<String> PURL_TYPE = Stream.of(
-            "bitbucket", "composer", "deb", "docker",
-            "gem", "generic", "github", "golang", "maven",
-            "npm", "nuget", "p2", "pypi", "rpm").collect(Collectors.toSet());
 
     private String name;
     private String version;
@@ -151,15 +147,14 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     }
 
     @JsonIgnore
-    public Map<String, String> getPurls() {
+    public Map<String, String> getCoordinates() {
         return externalIds.entrySet().stream()
-                .filter(e -> PURL_TYPE.contains(e.getKey()))
+                .filter(e -> Coordinate.Types.all.contains(e.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public SW360Release setPurls(Map<String, String> purls) {
-        externalIds.putAll(purls);
-
+    public SW360Release setCoordinates(Map<String, String> coordinates) {
+        externalIds.putAll(coordinates);
         return this;
     }
 

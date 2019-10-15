@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.policy.testing.rules;
 
-import com.github.packageurl.PackageURL;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.policy.engine.CompareArtifactRule;
 import org.eclipse.sw360.antenna.policy.engine.PolicyViolation;
 import org.eclipse.sw360.antenna.policy.engine.RuleSeverity;
@@ -43,9 +43,9 @@ public class CheckDifferentCoordinates implements CompareArtifactRule {
 
     private long countComponentTypes(ThirdPartyArtifact leftArtifact, ThirdPartyArtifact rightArtifact) {
         return Stream.of(leftArtifact, rightArtifact)
-                .map(ThirdPartyArtifact::getPurls)
+                .map(ThirdPartyArtifact::getCoordinates)
                 .flatMap(Collection::stream)
-                .map(PackageURL::getType)
+                .map(Coordinate::getType)
                 .distinct()
                 .count();
     }

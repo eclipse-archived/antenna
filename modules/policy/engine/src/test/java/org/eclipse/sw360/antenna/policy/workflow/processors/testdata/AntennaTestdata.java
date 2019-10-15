@@ -12,8 +12,7 @@ package org.eclipse.sw360.antenna.policy.workflow.processors.testdata;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
-import org.eclipse.sw360.antenna.model.artifact.facts.GenericArtifactCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
 
 import java.util.Arrays;
@@ -47,13 +46,13 @@ public class AntennaTestdata {
 
     private static Artifact createGenericArtifact() {
         Artifact artifact = new Artifact("Testdata");
-        artifact.addFact(new GenericArtifactCoordinates("Testdata", "1.0.0"));
+        artifact.addCoordinate(new Coordinate("pkg:generic/Testdata@1.0.0"));
         return artifact;
     }
 
     private static Artifact createExactArtifact() {
         Artifact artifact = new Artifact("Testdata");
-        artifact.addFact(new BundleCoordinates("Testdata", "1.0.0"));
+        artifact.addCoordinate(new Coordinate("pkg:p2/Testdata@1.0.0"));
         return artifact;
     }
 

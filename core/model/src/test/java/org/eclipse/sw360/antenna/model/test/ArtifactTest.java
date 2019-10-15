@@ -11,8 +11,9 @@
 package org.eclipse.sw360.antenna.model.test;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
@@ -28,8 +29,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,8 +46,8 @@ public class ArtifactTest {
         mavenSourcesJar = temp.newFile("sourcesJar.jar").toPath();
 
         artifact = new Artifact("Test")
-                .addFact(new MavenCoordinates("artifactId", "groupId", "version"))
-                .addFact(new GenericArtifactCoordinates("name", "version"))
+                .addCoordinate(new Coordinate(Coordinate.Types.MAVEN, "groupId", "artifactId", "version"))
+                .addCoordinate(new Coordinate("name", "version"))
                 .addFact(new ArtifactFile(jar))
                 .addFact(new ArtifactSourceFile(mavenSourcesJar))
                 .addFact(new ArtifactMatchingMetadata(MatchState.EXACT))
@@ -63,19 +62,16 @@ public class ArtifactTest {
     @Test
     public void artifactTest() {
         System.out.println(artifact.prettyPrint());
-        assertThat(artifact.getArtifactIdentifiers().size()).isEqualTo(3);
+        assertThat(artifact.getArtifactIdentifiers().size()).isEqualTo(2);
 
-        Optional<GenericArtifactCoordinates> oArtifactCoordinates = artifact.askFor(GenericArtifactCoordinates.class);
-        assertThat(oArtifactCoordinates.isPresent()).isTrue();
-        GenericArtifactCoordinates artifactCoordinates = oArtifactCoordinates.get();
-        assertThat(artifactCoordinates.getName()).isEqualTo("name");
-        assertThat(artifactCoordinates.getVersion()).isEqualTo("version");
-
-        final MavenCoordinates mavenCoordinates = artifact.askFor(MavenCoordinates.class).get();
-        assertThat(mavenCoordinates.getName()).isEqualTo("groupId:artifactId");
-        assertThat(mavenCoordinates.getVersion()).isEqualTo("version");
-        assertThat(mavenCoordinates.getGroupId()).isEqualTo("groupId");
-        assertThat(mavenCoordinates.getArtifactId()).isEqualTo("artifactId");
+        assertThat(new ArtifactCoordinates(new Coordinate("name", "version")).matches(artifact)).isTrue();
+        assertThat(new ArtifactCoordinates(new Coordinate("name", "otherVersion")).matches(artifact)).isFalse();
+        assertThat(new ArtifactCoordinates(new Coordinate("name", "")).matches(artifact)).isFalse();
+        assertThat(new ArtifactCoordinates(new Coordinate("name", null)).matches(artifact)).isTrue();
+        assertThat(new ArtifactCoordinates(new Coordinate("name", "*")).matches(artifact)).isTrue();
+        assertThat(new ArtifactCoordinates(new Coordinate("name", "v*n")).matches(artifact)).isTrue();
+        assertThat(new ArtifactCoordinates(new Coordinate(Coordinate.Types.P2, "name", "version")).matches(artifact)).isFalse();
+        assertThat(new ArtifactCoordinates(new Coordinate(Coordinate.Types.MAVEN, "groupId", "artifactId", "version")).matches(artifact)).isTrue();
 
         File found = artifact.askForGet(ArtifactFile.class).get().toFile();
         assertThat(found).isEqualTo(jar.toFile());
@@ -83,9 +79,6 @@ public class ArtifactTest {
 
     @Test
     public void artifactIdentifierTest() {
-        assertThat(artifact.askFor(MavenCoordinates.class).get().getArtifactId()).isEqualTo("artifactId");
-        assertThat(artifact.askFor(MavenCoordinates.class).get().getGroupId()).isEqualTo("groupId");
-        assertThat(artifact.askFor(MavenCoordinates.class).get().getVersion()).isEqualTo("version");
         assertThat(artifact.askFor(ArtifactFile.class).isPresent()).isTrue();
         assertThat(artifact.getFlag(Artifact.IS_IGNORE_FOR_DOWNLOAD_KEY)).isTrue();
     }

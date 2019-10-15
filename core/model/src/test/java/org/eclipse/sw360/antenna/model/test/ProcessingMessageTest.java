@@ -10,8 +10,9 @@
  */
 package org.eclipse.sw360.antenna.model.test;
 
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
-import org.eclipse.sw360.antenna.model.artifact.facts.GenericArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
 import org.junit.Before;
@@ -25,7 +26,7 @@ public class ProcessingMessageTest {
 
     @Before
     public void init() {
-        id = new GenericArtifactCoordinates("Name", "Version");
+        id = new ArtifactCoordinates(new Coordinate("Name", "Version"));
         this.processingMessage = new ProcessingMessage(MessageType.UNKNOWN_LICENSE, id.toString(), "test");
     }
 
@@ -40,7 +41,7 @@ public class ProcessingMessageTest {
         ProcessingMessage licenseMessage = new ProcessingMessage(MessageType.HANDLE_AS_VALID, "license", "msg");
         assertThat(licenseMessage).isEqualTo(licenseMessage);
         assertThat(licenseMessage).isNotEqualTo("");
-        ProcessingMessage compareMessage = new ProcessingMessage(MessageType.PROCESSING_FAILURE, new GenericArtifactCoordinates("Name", "Version").toString(), "msg");
+        ProcessingMessage compareMessage = new ProcessingMessage(MessageType.PROCESSING_FAILURE, new ArtifactCoordinates(new Coordinate("Name", "Version")).toString(), "msg");
         assertThat(licenseMessage.equals(compareMessage)).isFalse();
     }
 

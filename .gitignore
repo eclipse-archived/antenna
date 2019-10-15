@@ -1,9 +1,10 @@
-**/.classpath
-**/.project
-**/.settings/
+.classpath
+.project
+.settings/
 /eclipse
-**/target
-**/.checkstyle
+target
+target-checkstyle/
+.checkstyle
 .idea/
 *.iml
 .gitreview
@@ -12,3 +13,4 @@ antenna-testing/antenna-sw360-integration-testing/src/test/resources/postgres/sw
 .gradle
 build
 *.orig
+.attach_pid*

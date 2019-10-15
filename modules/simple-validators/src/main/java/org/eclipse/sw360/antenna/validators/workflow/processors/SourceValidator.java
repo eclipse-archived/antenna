@@ -16,7 +16,7 @@ import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.workflow.stubs.AbstractComplianceChecker;
 import org.eclipse.sw360.antenna.workflow.stubs.DefaultPolicyEvaluation;
@@ -164,10 +164,7 @@ public class SourceValidator extends AbstractComplianceChecker {
 
         artifacts.stream()
                 .filter(artifact -> ! artifact.getFlag(Artifact.IS_PROPRIETARY_FLAG_KEY))
-                .filter(artifact ->  {
-                    final Optional<MavenCoordinates> mavenCoordinates = artifact.askFor(MavenCoordinates.class);
-                    return mavenCoordinates.isPresent() && ! mavenCoordinates.get().isEmpty();
-                })
+                .filter(artifact ->  artifact.getCoordinateForType(Coordinate.Types.MAVEN).isPresent())
                 .forEach(artifact -> validateSources(artifact)
                         .forEach(policyEvaluation::addEvaluationResult));
 

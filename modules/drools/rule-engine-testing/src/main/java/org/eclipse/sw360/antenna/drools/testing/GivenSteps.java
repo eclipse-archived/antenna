@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.droolstesting;
+package org.eclipse.sw360.antenna.drools.testing;
 
 import cucumber.api.java.en.Given;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.eclipse.sw360.antenna.droolstesting.Mappings.*;
+import static org.eclipse.sw360.antenna.drools.testing.Mappings.*;
 
 public class GivenSteps {
     private ScenarioState state;
@@ -135,7 +135,7 @@ public class GivenSteps {
 
     private void addCoordinates(Artifact artifact, List<String> row) {
         if (COORDINATES_FACTORY.containsKey(row.get(1))) {
-            artifact.addFact(COORDINATES_FACTORY.get(row.get(1)).apply(row));
+            artifact.addCoordinate(COORDINATES_FACTORY.get(row.get(1)).apply(row));
         } else {
             throw new ConfigurationException(row.get(1) + " unknown, must be one of " + String.join(", ", COORDINATES_FACTORY.keySet()));
         }

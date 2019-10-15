@@ -20,7 +20,7 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.junit.Rule;
 import org.junit.Test;
@@ -108,12 +108,7 @@ public class MvnDependencyTreeAnalyzerTest {
     private Artifact getExpectedArtifact(int i) {
         Artifact artifact = new Artifact(new MvnDependencyTreeAnalyzer().getName());
 
-        MavenCoordinates.MavenCoordinatesBuilder coordinatesBuilder = new MavenCoordinates.MavenCoordinatesBuilder();
-        coordinatesBuilder.setGroupId("org.eclipse.sw360.antenna");
-        coordinatesBuilder.setArtifactId("artifact-" + i);
-        coordinatesBuilder.setVersion("1.0." + i);
-        final MavenCoordinates coordinates = coordinatesBuilder.build();
-        artifact.addFact(coordinates);
+        artifact.addCoordinate(new Coordinate(Coordinate.Types.MAVEN, "org.eclipse.sw360.antenna", "artifact-" + i, "1.0." + i));
 
         String path = getFilePathForI(i).toString();
         final ArtifactFile artifactFile = new ArtifactFile(Paths.get(path));

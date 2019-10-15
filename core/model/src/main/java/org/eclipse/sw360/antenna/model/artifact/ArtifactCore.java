@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.model.artifact;
 
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,11 +64,24 @@ public class ArtifactCore
         return this;
     }
 
-    public ArtifactCore addFact(ArtifactFactBuilder artifactFactBuilder) {
-        if(artifactFactBuilder != null) {
-            return addFact(artifactFactBuilder.build());
-        }
-        return this;
+    public ArtifactCore addCoordinate(Coordinate coordinate) {
+        return addFact(new ArtifactCoordinates(coordinate));
+    }
+
+    public Set<Coordinate> getCoordinates() {
+        return askFor(ArtifactCoordinates.class)
+                .map(ArtifactCoordinates::getCoordinates)
+                .orElse(Collections.emptySet());
+    }
+
+    public Optional<Coordinate> getCoordinateForType(String type) {
+        return askFor(ArtifactCoordinates.class)
+                .flatMap(a -> a.getCoordinateForType(type));
+    }
+
+    public Optional<Coordinate> getMainCoordinate() {
+        return askFor(ArtifactCoordinates.class)
+                .map(ArtifactCoordinates::getMainCoordinate);
     }
 
     @SuppressWarnings("unchecked")

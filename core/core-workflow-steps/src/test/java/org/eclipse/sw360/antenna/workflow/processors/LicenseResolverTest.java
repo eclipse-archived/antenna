@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.workflow.processors;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
@@ -48,7 +48,7 @@ public class LicenseResolverTest extends AntennaTestWithMockedContext {
 
         Artifact artifact1 = new Artifact();
         artifact1.addFact(new ArtifactFilename("aopalliance-1.0.jar", "0235ba8b489512805ac1"));
-        artifact1.addFact(new MavenCoordinates("aopalliance", "aopalliance", "1.0"));
+        artifact1.addCoordinate(new Coordinate(Coordinate.Types.MAVEN, "aopalliance", "aopalliance", "1.0"));
 
         Artifact artifact2 = new Artifact();
 

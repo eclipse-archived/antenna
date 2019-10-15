@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.p2resolver;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.junit.Test;
 
 import java.io.File;
@@ -33,7 +33,7 @@ public class EclipseProcessBuilderTest {
     @Test
     public void testEclipseProcessBuilderCommandWorksCorrectlyWithHttpRepositoryAndOneArtifact() {
         Artifact artifact = new Artifact();
-        artifact.addFact(new BundleCoordinates("TestBundle", "1.0.0"));
+        artifact.addCoordinate(new Coordinate(Coordinate.Types.P2, "TestBundle", "1.0.0"));
         File installArea = new File("test_file1");
         File downloadArea = new File("test_file2");
 
@@ -49,7 +49,7 @@ public class EclipseProcessBuilderTest {
     @Test
     public void testEclipseProcessBuilderCommandPrependsFileToUriIfItDoesNotHaveAScheme() {
         Artifact artifact = new Artifact();
-        artifact.addFact(new BundleCoordinates("TestBundle", "1.0.0"));
+        artifact.addCoordinate(new Coordinate(Coordinate.Types.P2, "TestBundle", "1.0.0"));
         File installArea = new File("test_file1");
         File downloadArea = new File("test_file2");
 
@@ -64,9 +64,9 @@ public class EclipseProcessBuilderTest {
     @Test
     public void testEclipseProcessBuilderCommandCorrectlyChainsArtifacts() {
         Artifact artifact1 = new Artifact();
-        artifact1.addFact(new BundleCoordinates("TestBundle1", "1.0.0"));
+        artifact1.addCoordinate(new Coordinate(Coordinate.Types.P2, "TestBundle1", "1.0.0"));
         Artifact artifact2 = new Artifact();
-        artifact2.addFact(new BundleCoordinates("TestBundle2", "1.0.0.v201"));
+        artifact2.addCoordinate(new Coordinate(Coordinate.Types.P2, "TestBundle2", "1.0.0.v201"));
         File installArea = new File("test_file1");
         File downloadArea = new File("test_file2");
 
