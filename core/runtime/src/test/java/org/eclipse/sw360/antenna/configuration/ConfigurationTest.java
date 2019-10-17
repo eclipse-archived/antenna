@@ -18,10 +18,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
-import org.eclipse.sw360.antenna.model.xml.generated.AntennaConfig;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
+import org.eclipse.sw360.antenna.model.xml.generated.*;
 import org.eclipse.sw360.antenna.xml.XMLResolverJaxB;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,11 +100,22 @@ public class ConfigurationTest {
                 .map(Map.Entry::getValue)
                 .findAny()
                 .get();
-        assertThat(generatedArtifact.askForGet(DeclaredLicenseInformation.class).get()
+        final LicenseStatement declaredLicenseInformation = (LicenseStatement) generatedArtifact.askForGet(DeclaredLicenseInformation.class).get();
+        assertThat(declaredLicenseInformation
+                .getLicenses()
+                .size()
+        ).isEqualTo(3);
+        assertThat(declaredLicenseInformation
+                .getOp()
+        ).isEqualTo(LicenseOperator.AND);
+        assertThat(declaredLicenseInformation
                 .getLicenses()
                 .get(0)
                 .getName()
         ).isEqualTo("testLicense");
+        assertThat(declaredLicenseInformation
+                .evaluate())
+                .isEqualTo("( testLicense AND ( otherLicense OR thirdLicense ) )");
 
         assertThat(generatedArtifact.askFor(ArtifactFilename.class).get().getFilenames())
                 .contains("overrideName.jar");

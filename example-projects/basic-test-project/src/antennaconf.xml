@@ -33,11 +33,21 @@
                     <version>1.0.0</version>
                 </mavenCoordinates>
             </artifactSelector>
-            <license>
-                <name>PropL</name>
-                <longName>A proprietary License</longName>
-                <text>a very long license text with custom information only relevant for this project.</text>
-            </license>
+            <licenseStatement op="AND">
+                <license>
+                    <name>PropL</name>
+                    <longName>A proprietary License</longName>
+                    <text>a very long license text with custom information only relevant for this project.</text>
+                </license>
+                <licenseStatement op="OR">
+                    <license>
+                        <name>otherLicense</name>
+                    </license>
+                    <license>
+                        <name>thirdLicense</name>
+                    </license>
+                </licenseStatement>
+            </licenseStatement>
         </setFinalLicense>
     </setFinalLicenses>
 </config>

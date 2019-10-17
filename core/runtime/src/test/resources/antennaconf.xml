@@ -45,9 +45,19 @@
 						<bundleVersion>testVersion</bundleVersion>
 					</bundleCoordinates>
 					<declaredLicense>
-						<license>
-							<name>testLicense</name>
-						</license>
+						<licenseStatement op="AND">
+							<license>
+								<name>testLicense</name>
+							</license>
+							<licenseStatement op="OR">
+								<license>
+									<name>otherLicense</name>
+								</license>
+								<license>
+									<name>thirdLicense</name>
+								</license>
+							</licenseStatement>
+						</licenseStatement>
 					</declaredLicense>
 				</artifact>
 			</overrideValue>
