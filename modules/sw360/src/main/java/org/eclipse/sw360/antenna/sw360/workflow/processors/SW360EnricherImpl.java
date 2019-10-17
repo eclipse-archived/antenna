@@ -75,7 +75,7 @@ public class SW360EnricherImpl {
 
         addLicenseFact(Optional.ofNullable(sw360Release.getDeclaredLicense()), artifact, DeclaredLicenseInformation::new, artifact.askFor(DeclaredLicenseInformation.class).isPresent());
         addLicenseFact(Optional.ofNullable(sw360Release.getObservedLicense()), artifact, ObservedLicenseInformation::new, artifact.askFor(ObservedLicenseInformation.class).isPresent());
-        addLicenseFact(Optional.ofNullable(sw360Release.getDetectedLicense()), artifact, OverriddenLicenseInformation::new, artifact.askFor(OverriddenLicenseInformation.class).isPresent());
+        addLicenseFact(Optional.ofNullable(sw360Release.getOverriddenLicense()), artifact, OverriddenLicenseInformation::new, artifact.askFor(OverriddenLicenseInformation.class).isPresent());
 
         Optional.ofNullable(sw360Release.getReleaseTagUrl())
                 .map(ArtifactReleaseTagURL::new)
@@ -104,17 +104,16 @@ public class SW360EnricherImpl {
     private void addLicenseFact(Optional<String> licenseRawData, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator, boolean isAlreadyPresent) {
         licenseRawData.map(this::parseSpdxExpression)
                 .map(licenseCreator)
-                .map(expression -> logOverwriteLicenseInformation(artifact, isAlreadyPresent, expression))
-                .ifPresent(artifact::addFact);
+                .ifPresent(expression -> addFactAndLogWarning(artifact, isAlreadyPresent, expression));
     }
 
-    private ArtifactLicenseInformation logOverwriteLicenseInformation(Artifact artifact, boolean isAlreadyPresent, ArtifactLicenseInformation expression) {
+    private void addFactAndLogWarning(Artifact artifact, boolean isAlreadyPresent, ArtifactLicenseInformation expression) {
         if (isAlreadyPresent) {
             warnAndReport(artifact,
                     "License information of type " + expression.getClass().getSimpleName() + " found in SW360. Overwriting existing information in artifact.",
                     MessageType.OVERRIDE_ARTIFACT_ATTRIBUTES);
         }
-        return expression;
+        artifact.addFact(expression);
     }
 
     private LicenseInformation parseSpdxExpression(String expression) {

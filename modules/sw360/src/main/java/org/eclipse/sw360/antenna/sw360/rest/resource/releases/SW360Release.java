@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 
 public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW360ReleaseEmbedded> {
 
-    private static final String FINAL_LICENSES_KEY = "license";
+    private static final String OVERRIDDEN_LICENSES_KEY = "overridden_license";
     private static final String DECLARED_LICENSE_KEY = "declared_license";
     private static final String OBSERVED_LICENSES_KEY = "observed_license";
     private static final String RELEASE_TAG_URL_KEY = "release_tag";
@@ -154,12 +154,12 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     }
 
     @JsonIgnore
-    public String getDetectedLicense() {
-        return additionalData.get(FINAL_LICENSES_KEY);
+    public String getOverriddenLicense() {
+        return additionalData.get(OVERRIDDEN_LICENSES_KEY);
     }
 
-    public SW360Release setDetectedLicense(String finalLicense) {
-        additionalData.put(FINAL_LICENSES_KEY, finalLicense);
+    public SW360Release setOverriddenLicense(String overriddenLicense) {
+        additionalData.put(OVERRIDDEN_LICENSES_KEY, overriddenLicense);
         return this;
     }
 
