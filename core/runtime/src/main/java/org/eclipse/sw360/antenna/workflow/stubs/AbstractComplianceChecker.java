@@ -10,15 +10,13 @@
  */
 package org.eclipse.sw360.antenna.workflow.stubs;
 
-
 import com.github.packageurl.PackageURL;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
-import org.eclipse.sw360.antenna.api.exceptions.FailCausingException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
+import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
@@ -35,6 +33,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractComplianceChecker.class);
     private IEvaluationResult.Severity failOn;
     protected static final String FAIL_ON_KEY = "failOn";
+    private Set<IEvaluationResult> evaluationResults = Collections.emptySet();
 
     public AbstractComplianceChecker() {
         this.workflowStepOrder = VALIDATOR_BASE_ORDER;
@@ -50,15 +49,18 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         IPolicyEvaluation evaluation = evaluate(artifacts);
         LOGGER.info("Rule evaluation done");
         LOGGER.info("Check evaluation results...");
-        try {
-            execute(evaluation);
-        } catch (FailCausingException e) {
-            // TODO: A FailCausingException should not end the build but should be reflected in the workflow result
-            // Build should not be aborted, but should indicate the failure in the end, so that reports etc. are created.
-            throw new ExecutionException("Fail execution because of compliance check result", e);
-        }
+        execute(evaluation);
         LOGGER.info("Check evaluation results... done.");
         return artifacts;
+    }
+
+    @Override
+    public WorkflowStepResult postProcessResult(WorkflowStepResult result) {
+        WorkflowStepResult pResult = super.postProcessResult(result);
+        if (evaluationResults.size() > 0) {
+            pResult.addFailCausingResults(getWorkflowItemName(), evaluationResults);
+        }
+        return pResult;
     }
 
     @Override
@@ -67,7 +69,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
     }
 
     @SuppressFBWarnings("SF_SWITCH_FALLTHROUGH")
-    public void execute(IPolicyEvaluation evaluation) throws FailCausingException {
+    public void execute(IPolicyEvaluation evaluation) {
         IProcessingReporter reporter = context.getProcessingReporter();
 
         reportResults(reporter, evaluation.getEvaluationResults());
@@ -97,7 +99,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
             String fullMessage = makeStringForEvaluationResults(messagePrefix, failCausingResults);
             reporter.add(MessageType.PROCESSING_FAILURE, fullMessage);
             LOGGER.info(fullMessage);
-            throw new FailCausingException(messagePrefix);
+            this.evaluationResults = failCausingResults;
         }
     }
 
@@ -106,7 +108,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         failCausingResults.forEach(iEvaluationResult ->
                 iEvaluationResult.getFailedArtifacts().forEach(artifact -> {
                             String artifactRepresentation = artifact.toString();
-                            if(! transposedFailCausingResults.containsKey(artifactRepresentation)){
+                            if(!transposedFailCausingResults.containsKey(artifactRepresentation)) {
                                 transposedFailCausingResults.put(artifactRepresentation, new HashSet<>());
                             }
                             transposedFailCausingResults.get(artifactRepresentation).add(iEvaluationResult);
@@ -118,7 +120,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
                 .map(entry -> makeStringForEvaluationResultsForArtifact(entry.getKey(), entry.getValue()))
                 .limit(3)
                 .reduce("", (s1,s2) -> s1 + s2);
-        if (transposedFailCausingResults.size() > 3){
+        if (transposedFailCausingResults.size() > 3) {
             msges += "\n\t - ... and " + (transposedFailCausingResults.size() - 3) + " artifacts more";
         }
         String header = messagePrefix + " Due to:";
@@ -132,7 +134,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
                 .limit(3)
                 .reduce("\n\t- the artifact=[" + artifactRepresentation + "] failed, due to:", (s1,s2) -> s1 + s2);
         if (failCausingResultsForArtifact.size() > 3) {
-            return msg + "\n\t\t- ... and " + (failCausingResultsForArtifact.size() -3 ) + " fail causing results more";
+            return msg + "\n\t\t- ... and " + (failCausingResultsForArtifact.size() - 3) + " fail causing results more";
         }
         return msg;
     }
@@ -161,7 +163,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
                 .orElse(a.prettyPrint());
     }
 
-    protected IEvaluationResult.Severity getSeverityFromConfig(String key, Map<String,String> configMap, IEvaluationResult.Severity defaultSeverity) {
+    protected IEvaluationResult.Severity getSeverityFromConfig(String key, Map<String, String> configMap, IEvaluationResult.Severity defaultSeverity) {
         return Optional.ofNullable(configMap.get(key))
                 .map(IEvaluationResult.Severity::fromValue)
                 .orElse(defaultSeverity);

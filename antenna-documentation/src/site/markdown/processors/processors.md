@@ -19,3 +19,14 @@ specific attributes of the artifacts. Aside from a processor enriching artifact 
 * [Match State Validator](./match-state-validator.html)
 * [Security Issue Validator](./security-issue-validator.html)
 * [Rule Engine](./rule-engine.html)
+
+> **Note**:  
+> Processors that check for compliance (e.g. the rule engine or any validator) might fail due to data errors (e.g. a rule violation).
+> To prevent the Antenna build from failing when there is no configuration error and still produce all output products
+> the Antenna run will fail after the [generator steps](./../generators/generators.html) have run if any evaluation results
+> have a severity that is equal or higher to the `failOn` value that by default is set to`FAIL`.
+> There will be a list of fails causing exceptions in the workflow steps along with an `ExecutionException`.
+
+  
+> *Note*: If you want to have a validator fail at any severity lower than `FAIL`, you need to add the 
+>         `failOn` entry to the configuration of the desired workflow step. 

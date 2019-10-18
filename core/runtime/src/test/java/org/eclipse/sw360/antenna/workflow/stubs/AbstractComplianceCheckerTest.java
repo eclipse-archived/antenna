@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.workflow.stubs;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.exceptions.FailCausingException;
+import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
@@ -79,7 +80,7 @@ public class AbstractComplianceCheckerTest extends AntennaTestWithMockedContext 
         complianceChecker = new AbstractComplianceChecker() {
             @Override
             public IPolicyEvaluation evaluate(Collection<Artifact> artifacts) {
-                return null;
+                return evaluation;
             }
 
             @Override
@@ -111,17 +112,14 @@ public class AbstractComplianceCheckerTest extends AntennaTestWithMockedContext 
     }
 
     @Test
-    public void testSimpleExecutionWithoutFail() throws FailCausingException {
+    public void testSimpleExecutionWithoutFail() {
+        WorkflowStepResult workflowStepResult = new WorkflowStepResult(complianceChecker.process(Collections.EMPTY_SET));
 
+        complianceChecker.postProcessResult(workflowStepResult);
         if(failureExpected) {
-            try {
-                complianceChecker.execute(evaluation);
-            } catch (FailCausingException e) {
-                return; // success
-            }
-            fail("this should not be reached");
+            assertFalse(workflowStepResult.getFailCausingResults().getValue().isEmpty());
         } else {
-            complianceChecker.execute(evaluation);
+            assertNull(workflowStepResult.getFailCausingResults());
             verify(reporterMock, atMost(0))
                     .add(eq(MessageType.PROCESSING_FAILURE), anyString());
         }
