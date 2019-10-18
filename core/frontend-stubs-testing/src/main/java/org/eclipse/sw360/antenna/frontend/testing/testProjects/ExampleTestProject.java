@@ -144,7 +144,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
-        List<WorkflowStep> result = BasicConfiguration.getGenerators(projectRoot.toString());
+        List<WorkflowStep> result = BasicConfiguration.getGenerators();
         WorkflowStep generator = mkWorkflowStep("SW360 Updater", "org.eclipse.sw360.antenna.sw360.workflow.generators.SW360Updater",
                 Stream.of(new String[][] {
                         { "rest.server.url", "http://localhost:8080/resource/api" },

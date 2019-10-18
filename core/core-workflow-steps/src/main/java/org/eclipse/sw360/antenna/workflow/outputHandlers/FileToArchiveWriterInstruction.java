@@ -33,12 +33,12 @@ public class FileToArchiveWriterInstruction {
             throwConfigurationError(instruction, "does not contain a path-in-jar part", reporter);
         }
 
-        String[] newParts = instruction.substring(0, instruction.lastIndexOf(":")).split(":", 2);
+        String[] newParts = instruction.substring(0, instruction.lastIndexOf(':')).split(":", 2);
         if (newParts.length != 2) {
             throwConfigurationError(instruction, "does not contain a type or path", reporter);
         }
 
-        pathInArchive = Paths.get(instruction.substring(instruction.lastIndexOf(":") + 1));
+        pathInArchive = Paths.get(instruction.substring(instruction.lastIndexOf(':') + 1));
         zipFile = Paths.get(newParts[1]);
         outputType = newParts[0];
     }

@@ -43,7 +43,7 @@ import static org.junit.Assume.assumeTrue;
 
 @SuppressWarnings("PMD.UnusedFormalParameter")
 @RunWith(Parameterized.class)
-abstract public class AbstractAntennaFrontendTest {
+public abstract class AbstractAntennaFrontendTest {
 
     private final Supplier<AbstractTestProjectWithExpectations> testDataSupplier;
     protected AbstractTestProjectWithExpectations testData;

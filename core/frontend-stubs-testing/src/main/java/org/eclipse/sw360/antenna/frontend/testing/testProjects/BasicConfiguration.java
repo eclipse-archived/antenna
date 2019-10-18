@@ -68,7 +68,7 @@ public final class BasicConfiguration {
                 validator1, validator2, validator3, validator4, validator5).collect(Collectors.toList());
     }
 
-    public static List<WorkflowStep> getGenerators(String projectRoot) {
+    public static List<WorkflowStep> getGenerators() {
         WorkflowStep generator1 = mkWorkflowStep("HTML Report Writer", "org.eclipse.sw360.antenna.workflow.generators.HTMLReportGenerator");
         WorkflowStep generator2 = mkWorkflowStep("CSV Report Writer", "org.eclipse.sw360.antenna.workflow.generators.CSVGenerator");
         WorkflowStep generator3 = mkWorkflowStep("Source Zip Writer", "org.eclipse.sw360.antenna.workflow.generators.SourceZipWriter");

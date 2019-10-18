@@ -20,23 +20,23 @@ public abstract class AbstractTestProjectWithExpectations extends AbstractTestPr
     }
 
     // Expected parsed parameters:
-    abstract public String getExpectedProjectVersion();
-    abstract public String getExpectedToolConfigurationProductName();
-    abstract public String getExpectedToolConfigurationProductFullName();
-    abstract public String getExpectedToolConfigurationProductVersion();
-    abstract public List<String> getExpectedFilesToAttach();
-    abstract public List<String> getExpectedToolConfigurationConfigFiles();
-    abstract public List<WorkflowStep> getExpectedToolConfigurationAnalyzers();
-    abstract public List<WorkflowStep> getExpectedToolConfigurationGenerators();
-    abstract public List<WorkflowStep> getExpectedToolConfigurationProcessors();
+    public abstract String getExpectedProjectVersion();
+    public abstract String getExpectedToolConfigurationProductName();
+    public abstract String getExpectedToolConfigurationProductFullName();
+    public abstract String getExpectedToolConfigurationProductVersion();
+    public abstract List<String> getExpectedFilesToAttach();
+    public abstract List<String> getExpectedToolConfigurationConfigFiles();
+    public abstract List<WorkflowStep> getExpectedToolConfigurationAnalyzers();
+    public abstract List<WorkflowStep> getExpectedToolConfigurationGenerators();
+    public abstract List<WorkflowStep> getExpectedToolConfigurationProcessors();
     public abstract List<WorkflowStep> getExpectedToolConfigurationOutputHandlers();
-    abstract public int getExpectedProxyPort();
-    abstract public String getExpectedProxyHost();
-    abstract public boolean getExpectedToolConfigurationMavenInstalled();
-    abstract public boolean getExpectedToolConfigurationAttachAll();
-    abstract public boolean getExpectedToolConfigurationSkip();
-    abstract public List<String> getExpectedToolConfigurationConfigFilesEndings();
-    abstract public boolean requiresMaven();
+    public abstract int getExpectedProxyPort();
+    public abstract String getExpectedProxyHost();
+    public abstract boolean getExpectedToolConfigurationMavenInstalled();
+    public abstract boolean getExpectedToolConfigurationAttachAll();
+    public abstract boolean getExpectedToolConfigurationSkip();
+    public abstract List<String> getExpectedToolConfigurationConfigFilesEndings();
+    public abstract boolean requiresMaven();
     public boolean getExpectedConfigurationFailOnIncompleteSources() {
         return false;
     }

@@ -16,7 +16,6 @@ import org.eclipse.sw360.antenna.analysis.filter.MatchStateArtifactFilter;
 import org.eclipse.sw360.antenna.api.Attachable;
 import org.eclipse.sw360.antenna.api.IArtifactFilter;
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -48,7 +47,6 @@ public class SourceZipWriter extends AbstractGenerator {
     private IArtifactFilter notAllowed;
     private IArtifactFilter unknownMatchStateFilter;
     private Path sourceZipPath;
-    private IProcessingReporter reporter;
     private static final Logger LOGGER = LoggerFactory.getLogger(SourceZipWriter.class);
 
     public SourceZipWriter() {
@@ -113,13 +111,13 @@ public class SourceZipWriter extends AbstractGenerator {
                     .orElse(sourceFile.get().toFile().getName())
                     .replaceAll(".jar", "");
             try {
-                LOGGER.debug("Writing File: " + entryName);
+                LOGGER.debug("Writing File: {}", entryName);
                 writeContentToZipEntry(zipOut, sourceFile.get().toFile(), entryName);
             } catch (ZipException e) {
                 if (! e.getMessage().equals("zip file is empty")) {
                     reporter.add(artifact, MessageType.PROCESSING_FAILURE,
                             e.getMessage() + ": caused by File: " + sourceFile);
-                    LOGGER.warn(e.getMessage() + ": caused by File: " + sourceFile);
+                    LOGGER.warn("{}: caused by File: {}", e.getMessage(), sourceFile);
                 }
             } catch (IOException e) {
                 String message = "An Exception occured during the creation of the zip file: source of " + artifact + " could not be resolved: " + e.getMessage();

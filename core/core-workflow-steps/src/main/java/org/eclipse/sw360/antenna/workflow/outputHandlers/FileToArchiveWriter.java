@@ -29,7 +29,7 @@ import java.util.*;
  */
 public class FileToArchiveWriter extends AbstractOutputHandler {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(FileToArchiveWriter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileToArchiveWriter.class);
     private static final String INSTRUCTIONS_KEY = "instructions";
 
     private final List<FileToArchiveWriterInstruction> writeToArchiveInstructions = new ArrayList<>();
@@ -74,7 +74,7 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
         Path sourcePath = generatedOutput.get(key).getFile().toPath();
         Path pathInArchive = instruction.pathInArchive;
 
-        LOGGER.info("Write file=[" + sourcePath + "] to artifact=[" + zipFile + "]");
+        LOGGER.info("Write file=[{}] to artifact=[{}]", sourcePath, zipFile);
 
         addFileToArchive(sourcePath, zipFile, pathInArchive);
     }

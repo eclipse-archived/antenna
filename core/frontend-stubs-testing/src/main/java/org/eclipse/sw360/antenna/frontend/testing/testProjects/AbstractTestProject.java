@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-abstract public class AbstractTestProject {
+public abstract class AbstractTestProject {
 
     private static final String POM = "pom.xml";
 
@@ -117,5 +117,5 @@ abstract public class AbstractTestProject {
         return getProjectRoot().resolve(POM);
     }
 
-    abstract public String getExpectedProjectArtifactId();
+    public abstract String getExpectedProjectArtifactId();
 }

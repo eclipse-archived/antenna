@@ -32,8 +32,7 @@ import java.util.Map;
  */
 public class ConfigurationChecker extends AbstractProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
-    private IProcessingReporter reporter;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationChecker.class);
     private Configuration config;
 
     public ConfigurationChecker(IProcessingReporter reporter, Configuration config) {

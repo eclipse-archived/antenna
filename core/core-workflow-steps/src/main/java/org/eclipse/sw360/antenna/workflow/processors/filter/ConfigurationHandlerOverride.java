@@ -24,10 +24,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class ConfigurationHandlerOverride extends AbstractProcessor {
-
-    private final AntennaContext context;
-    private IProcessingReporter reporter;
-
     /**
      * Resolves the values which are overridden in the config.xml. If an
      * attribute of an artifact is overridden in the config, the value is

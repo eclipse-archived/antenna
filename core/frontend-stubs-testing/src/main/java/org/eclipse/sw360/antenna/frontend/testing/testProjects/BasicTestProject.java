@@ -84,7 +84,7 @@ public class BasicTestProject extends AbstractTestProjectWithExpectations implem
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
-        final List<WorkflowStep> generators = BasicConfiguration.getGenerators(projectRoot.toString());
+        final List<WorkflowStep> generators = BasicConfiguration.getGenerators();
         WorkflowStep generator1 = mkWorkflowStep("First Generator", "full.qualified.generator1.class.name",
                 "configuration_key_1", "configuration_value_1");
         generators.add(generator1);

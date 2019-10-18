@@ -62,7 +62,7 @@ public class SourceValidatorTest extends AntennaTestWithMockedContext {
     }
 
     private void configure(Map<String,String> configMap) {
-        configure(configMap, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+        configure(configMap, Collections.emptyList(), Collections.emptyList());
     }
 
     private void configure(Map<String,String> configMap, List<ArtifactSelector> validForMissingSources, List<ArtifactSelector> validForIncompleteSources) {

@@ -64,7 +64,7 @@ public class FilterTest {
 
     @Test
     public void ConfigurationFilterTest1() {
-        List<ArtifactSelector> examplesList = Collections.EMPTY_LIST;
+        List<ArtifactSelector> examplesList = Collections.emptyList();
         BlacklistFilter filterEmpty = new BlacklistFilter(examplesList);
         Artifact example = new Artifact();
         assertThat(filterEmpty.passed(example)).isTrue();

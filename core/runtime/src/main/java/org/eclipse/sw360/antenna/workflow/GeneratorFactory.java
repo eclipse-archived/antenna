@@ -31,7 +31,7 @@ public class GeneratorFactory extends WorkflowItemFactory {
         }
 
         if(workflow.getGenerators() == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         List<WorkflowStep> generatorsRequested = workflow.getGenerators().getStep();

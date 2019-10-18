@@ -84,7 +84,7 @@ public class P2TestProject extends AbstractTestProjectWithExpectations implement
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
-        return BasicConfiguration.getGenerators(projectRoot.toString());
+        return BasicConfiguration.getGenerators();
     }
 
     @Override

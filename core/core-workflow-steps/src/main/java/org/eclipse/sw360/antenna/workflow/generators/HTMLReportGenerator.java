@@ -40,8 +40,8 @@ public class HTMLReportGenerator extends AbstractGenerator {
     private static final String CLASSIFIER = "antenna-disclosure-doc";
     private static final String TYPE = "html";
 
-    private final String LICENSE_REPORT_TEMPLATE_FILE = "licenseReport.vm";
-    private final String LICENSE_REPORT_FILE = "3rdparty-licenses.html";
+    private static final String LICENSE_REPORT_TEMPLATE_FILE = "licenseReport.vm";
+    private static final String LICENSE_REPORT_FILE = "3rdparty-licenses.html";
     private static final Logger LOGGER = LoggerFactory.getLogger(HTMLReportGenerator.class);
     private Charset encoding;
 
