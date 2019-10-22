@@ -48,12 +48,12 @@ public class MinimalTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<String> getExpectedFilesToAttach() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
     public List<String> getExpectedToolConfigurationConfigFiles() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class MinimalTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
-        return BasicConfiguration.getGenerators(projectRoot.toString());
+        return BasicConfiguration.getGenerators();
     }
 
     @Override
@@ -101,7 +101,7 @@ public class MinimalTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<String> getExpectedToolConfigurationConfigFilesEndings() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override

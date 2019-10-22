@@ -48,6 +48,10 @@ public class JsonReader {
     private final Path recordingFile;
     private final Path dependencyDir;
 
+    private static final String JSON_OBJ_PATHNAMES = "pathnames";
+    private static final String JSON_OBJ_VERSION = "version";
+    private static final String JSON_OBJ_COORDINATES = "coordinates";
+
     private static final Map<String, MissingLicenseReasons> SPECIAL_INFORMATION = Stream.of(new Object[][] {
                 {"No-Sources", MissingLicenseReasons.NO_SOURCES},
                 {"No-Source-License", MissingLicenseReasons.NO_LICENSE_IN_SOURCES},
@@ -109,9 +113,9 @@ public class JsonReader {
     private boolean filterObject(JsonObject object, Optional<List<String>> filterStrings) {
         // Returns true if this object should be filtered (i.e. not included
         // in the results
-        JsonArray pathnames = (JsonArray) object.get("pathnames");
+        JsonArray pathnames = (JsonArray) object.get(JSON_OBJ_PATHNAMES);
         return pathnames != null &&
-                pathnames.size() > 0 &&
+                !pathnames.isEmpty() &&
                 filterStrings.isPresent() &&
                 filterStrings.get().stream()
                         .anyMatch(x -> pathnames.get(0).equals(x));
@@ -199,8 +203,8 @@ public class JsonReader {
 
     private ArtifactFilename mapFilename(JsonObject obj) {
         final String hash = (String) obj.get("hash");
-        if(obj.containsKey("pathnames")) {
-            final JsonArray pathnames = (JsonArray) obj.get("pathnames");
+        if(obj.containsKey(JSON_OBJ_PATHNAMES)) {
+            final JsonArray pathnames = (JsonArray) obj.get(JSON_OBJ_PATHNAMES);
             if (pathnames.size() == 1) {
                 String filename = Optional.ofNullable(Paths.get(pathnames.getString(0)).getFileName())
                         .orElseThrow(() -> new ExecutionException("Getting Path of [" + pathnames.getString(0) + "] returned null"))
@@ -229,13 +233,13 @@ public class JsonReader {
     }
 
     private String[] mapPathNames(JsonObject obj) {
-        JsonArray jPathNames = (JsonArray) obj.get("pathnames");
+        JsonArray jPathNames = (JsonArray) obj.get(JSON_OBJ_PATHNAMES);
         if (jPathNames == null) {
             return new String[]{};
         }
 
         Stream<String> targetStream = jPathNames.stream().map(Object::toString);
-        return targetStream.map(path -> Paths.get(path)).map(path -> {
+        return targetStream.map(Paths::get).map(path -> {
             if (!path.isAbsolute()) {
                 return dependencyDir.resolve(path).toString();
             } else {
@@ -259,7 +263,7 @@ public class JsonReader {
             MavenCoordinates.MavenCoordinatesBuilder c = new MavenCoordinates.MavenCoordinatesBuilder();
             c.setGroupId((String) objCoordinates.get("groupId"));
             c.setArtifactId((String) objCoordinates.get("artifactId"));
-            c.setVersion((String) objCoordinates.get("version"));
+            c.setVersion((String) objCoordinates.get(JSON_OBJ_VERSION));
             return Optional.of(c.build());
         }
         return Optional.empty();
@@ -270,7 +274,7 @@ public class JsonReader {
             JavaScriptCoordinates.JavaScriptCoordinatesBuilder c = new JavaScriptCoordinates.JavaScriptCoordinatesBuilder();
             setJavaScriptCoordinatesPackageName(c, (String) objCoordinates.get("name"));
             setJavaScriptCoordinatesNamespace(c, (String) objCoordinates.get("name"));
-            c.setVersion((String) objCoordinates.get("version"));
+            c.setVersion((String) objCoordinates.get(JSON_OBJ_VERSION));
             return Optional.of(c.build());
         }
         return Optional.empty();
@@ -280,7 +284,7 @@ public class JsonReader {
         if (objCoordinates != null) {
             DotNetCoordinates.DotNetCoordinatesBuilder c = new DotNetCoordinates.DotNetCoordinatesBuilder();
             c.setPackageId((String) objCoordinates.get("packageId"));
-            c.setVersion((String) objCoordinates.get("version"));
+            c.setVersion((String) objCoordinates.get(JSON_OBJ_VERSION));
             return Optional.of(c.build());
         }
         return Optional.empty();
@@ -292,11 +296,11 @@ public class JsonReader {
             String format = (String) objComponentIdentifier.get("format");
             switch (format) {
                 case "a-name":
-                    return mapJavaScriptCoordinates((JsonObject) objComponentIdentifier.get("coordinates"));
+                    return mapJavaScriptCoordinates((JsonObject) objComponentIdentifier.get(JSON_OBJ_COORDINATES));
                 case "maven":
-                    return mapMavenCoordinates((JsonObject) objComponentIdentifier.get("coordinates"));
+                    return mapMavenCoordinates((JsonObject) objComponentIdentifier.get(JSON_OBJ_COORDINATES));
                 case "nuget":
-                    return mapDotNetCoordinates((JsonObject) objComponentIdentifier.get("coordinates"));
+                    return mapDotNetCoordinates((JsonObject) objComponentIdentifier.get(JSON_OBJ_COORDINATES));
             }
         }
         return Optional.empty();
@@ -317,7 +321,7 @@ public class JsonReader {
             jsCoordsBuilder.setPackageName(name);
         } else if (nameParts.length > 1) {
             if (nameParts[0].startsWith("@")) {
-                jsCoordsBuilder.setPackageName(Arrays.asList(nameParts).stream()
+                jsCoordsBuilder.setPackageName(Arrays.stream(nameParts)
                         .skip(1)
                         .collect(Collectors.joining("/")));
             } else {

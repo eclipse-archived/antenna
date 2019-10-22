@@ -116,12 +116,12 @@
         <jxb:bindings node="//xsd:complexType[@name='licenseInformation']">
             <ci:code>
                 <![CDATA[
-                 abstract public String evaluate();
-                 abstract public String evaluateLong();
-                 abstract public boolean isEmpty();
+                 public abstract String evaluate();
+                 public abstract String evaluateLong();
+                 public abstract boolean isEmpty();
 
-                 abstract public java.util.List<License> getLicenses();
-                 abstract public String getLinkStr();
+                 public abstract java.util.List<License> getLicenses();
+                 public abstract String getLinkStr();
 
                  public String toString() {
                     return evaluate() + " " + super.toString();

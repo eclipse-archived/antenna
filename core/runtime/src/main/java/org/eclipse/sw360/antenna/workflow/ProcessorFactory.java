@@ -34,7 +34,7 @@ public class ProcessorFactory extends WorkflowItemFactory {
         }
 
         if(workflow.getProcessors() == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         List<WorkflowStep> processorsRequested = workflow.getProcessors().getStep();

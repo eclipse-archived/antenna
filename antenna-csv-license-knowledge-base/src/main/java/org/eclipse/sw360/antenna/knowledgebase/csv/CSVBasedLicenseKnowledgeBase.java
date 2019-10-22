@@ -39,7 +39,7 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CSVBasedLicenseKnowledgeBase.class);
 
-    private static final String licensesCSV = "Licenses.csv";
+    private static final String LICENSES_CSV = "Licenses.csv";
 
     private static final String KEY_IDENT = "Identifier";
     private static final String KEY_ALIAS = "Aliases";
@@ -78,9 +78,9 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
     }
 
     private void checkThatCSVIsOnClasspath() {
-        final URL resource = CSVBasedLicenseKnowledgeBase.class.getClassLoader().getResource(licensesCSV);
+        final URL resource = CSVBasedLicenseKnowledgeBase.class.getClassLoader().getResource(LICENSES_CSV);
         if(resource == null) {
-            throw new ExecutionException("The required file " + licensesCSV + " was not found on the classpath");
+            throw new ExecutionException("The required file " + LICENSES_CSV + " was not found on the classpath");
         }
     }
 
@@ -149,7 +149,7 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
 
 
         ClassLoader classLoader = this.getClass().getClassLoader();
-        try (InputStream iStream = Optional.ofNullable(classLoader.getResourceAsStream(licensesCSV)).orElseThrow(() -> new ExecutionException("Knowledgebase not found"));
+        try (InputStream iStream = Optional.ofNullable(classLoader.getResourceAsStream(LICENSES_CSV)).orElseThrow(() -> new ExecutionException("Knowledgebase not found"));
              Reader iReader = new InputStreamReader(iStream, encoding);
              CSVParser csvParser = new CSVParser(iReader, csvFormat)) {
             validateHeader(csvParser);
@@ -166,7 +166,7 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
     private void validateHeader(CSVParser csvParser) {
         Collection<String> headers = csvParser.getHeaderMap().keySet();
         List<String> missingHeaders = KEY_LIST.stream().filter(key -> !headers.contains(key)).collect(Collectors.toList());
-        if (missingHeaders.size() > 0) {
+        if (!missingHeaders.isEmpty()) {
             String errMsg = String.format("License knowledgebase malformed. Missing headers: %s", String.join(";", missingHeaders));
             LOGGER.error(errMsg);
             throw new ExecutionException(errMsg);

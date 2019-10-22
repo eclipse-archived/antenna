@@ -158,55 +158,59 @@ public class CsvAnalyzerImpl {
     }
 
     private void addOptionalArtifactFacts(CSVRecord record, Artifact artifact) {
-        if (record.isMapped(EFFECTIVE_LICENSE) && !record.get(EFFECTIVE_LICENSE).isEmpty()) {
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, EFFECTIVE_LICENSE)) {
             License license = new License();
             license.setName(record.get(EFFECTIVE_LICENSE));
             artifact.addFact(new OverriddenLicenseInformation(license));
         }
-        if (record.isMapped(DECLARED_LICENSE) && !record.get(DECLARED_LICENSE).isEmpty()) {
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, DECLARED_LICENSE)) {
             License license = new License();
             license.setName(record.get(DECLARED_LICENSE));
             artifact.addFact(new DeclaredLicenseInformation(license));
         }
-        if (record.isMapped(OBSERVED_LICENSE) && !record.get(OBSERVED_LICENSE).isEmpty()) {
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, OBSERVED_LICENSE)) {
             License license = new License();
             license.setName(record.get(OBSERVED_LICENSE));
             artifact.addFact(new ObservedLicenseInformation(license));
         }
-        if (record.isMapped(COPYRIGHTS) && !record.get(COPYRIGHTS).isEmpty()) {
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, COPYRIGHTS)) {
             artifact.addFact(new CopyrightStatement(record.get(COPYRIGHTS)));
         }
-        if (record.isMapped(HASH) && !record.get(HASH).isEmpty()) {
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, HASH)) {
             artifact.addFact(new ArtifactFilename(null, record.get(HASH)));
         }
-        if (record.isMapped(SOURCE_URL) && !record.get(SOURCE_URL).isEmpty()) {
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, SOURCE_URL)) {
             artifact.addFact(new ArtifactSourceUrl(record.get(SOURCE_URL)));
         }
-        if (record.isMapped(RELEASE_ARTIFACT_URL) && !record.get(RELEASE_ARTIFACT_URL).isEmpty()) {
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, RELEASE_ARTIFACT_URL)) {
             artifact.addFact(new ArtifactReleaseTagURL(record.get(RELEASE_ARTIFACT_URL)));
         }
-        if (record.isMapped(SWH_ID) && !record.get(SWH_ID).isEmpty()) {
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, SWH_ID)) {
             try {
                 artifact.addFact(new ArtifactSoftwareHeritageID.Builder(record.get(SWH_ID)).build());
             } catch (IllegalArgumentException e) {
                 LOGGER.warn(e.getMessage());
             }
         }
-        if (record.isMapped(CLEARING_STATE) && !record.get(CLEARING_STATE).isEmpty()) {
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, CLEARING_STATE)) {
             artifact.addFact(new ArtifactClearingState(
                     ArtifactClearingState.ClearingState.valueOf(record.get(CLEARING_STATE))));
         }
-        if (record.isMapped(CHANGES_STATUS) && !record.get(CHANGES_STATUS).isEmpty()) {
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, CHANGES_STATUS)) {
             artifact.addFact(new ArtifactChangeStatus(
                     ArtifactChangeStatus.ChangeStatus.valueOf(record.get(CHANGES_STATUS))));
         }
-        if (record.isMapped(CPE) && !record.get(CPE).isEmpty()) {
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, CPE)) {
             artifact.addFact(new ArtifactCPE(record.get(CPE)));
         }
-        if (record.isMapped(PATH_NAME) && !record.get(PATH_NAME).isEmpty()) {
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, PATH_NAME)) {
             String pathName = record.get(PATH_NAME);
             String absolutePathName = makePathAbsolute(pathName);
             artifact.addFact(new ArtifactPathnames(absolutePathName));
         }
+    }
+
+    private boolean checkIfRecordIsMappedAndNotEmptyForParameter(CSVRecord record, String parameter) {
+        return record.isMapped(parameter) && !record.get(parameter).isEmpty();
     }
 }

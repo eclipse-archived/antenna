@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class OutputHandlerFactory extends WorkflowItemFactory {
     public static List<AbstractOutputHandler> getOutputHandlers(Workflow workflow, AntennaContext context) {
         if (workflow.getOutputHandlers() == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         List<WorkflowStep> outputHandlerRequested = workflow.getOutputHandlers().getStep();

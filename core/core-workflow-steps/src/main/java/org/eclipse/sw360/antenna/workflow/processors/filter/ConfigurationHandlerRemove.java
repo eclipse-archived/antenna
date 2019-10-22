@@ -14,7 +14,6 @@ package org.eclipse.sw360.antenna.workflow.processors.filter;
 import org.eclipse.sw360.antenna.analysis.filter.BlacklistFilter;
 import org.eclipse.sw360.antenna.analysis.filter.ProprietaryArtifactFilter;
 import org.eclipse.sw360.antenna.api.IArtifactFilter;
-import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.Configuration;
@@ -29,9 +28,6 @@ import java.util.*;
  * is defined in the remove artifacts section.
  */
 public class ConfigurationHandlerRemove extends AbstractProcessor {
-    private final AntennaContext context;
-    private IProcessingReporter reporter;
-
     public ConfigurationHandlerRemove(AntennaContext context) {
         this.context = context;
         this.reporter = context.getProcessingReporter();

@@ -21,7 +21,7 @@ import java.util.Map;
 public class CsvAnalyzer extends ManualAnalyzer {
 
     private static final String DELIMITER = "delimiter";
-    private Character delimiter = ',';
+    private Character rowDelimiter = ',';
 
     public CsvAnalyzer() {
         this.workflowStepOrder = 500;
@@ -31,7 +31,7 @@ public class CsvAnalyzer extends ManualAnalyzer {
     public WorkflowStepResult yield() {
         List<Artifact> artifacts = new CsvAnalyzerImpl(
                 getName(),
-                delimiter,
+                rowDelimiter,
                 componentInfoFile,
                 context.getToolConfiguration().getEncoding(),
                 baseDir).yield();
@@ -43,7 +43,7 @@ public class CsvAnalyzer extends ManualAnalyzer {
     public void configure(Map<String, String> configMap) {
         super.configure(configMap);
         if(configMap.containsKey(DELIMITER))  {
-            this.delimiter = getConfigValue(DELIMITER, configMap).charAt(0);
+            this.rowDelimiter = getConfigValue(DELIMITER, configMap).charAt(0);
         }
     }
 

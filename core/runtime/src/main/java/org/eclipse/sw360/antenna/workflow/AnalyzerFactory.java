@@ -34,7 +34,7 @@ public class AnalyzerFactory extends WorkflowItemFactory {
         }
 
         if(workflow.getAnalyzers() == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
         List<WorkflowStep> analyzersRequested = workflow.getAnalyzers().getStep();
