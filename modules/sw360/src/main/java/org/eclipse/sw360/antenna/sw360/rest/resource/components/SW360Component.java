@@ -10,10 +10,13 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resource.components;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
+import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class SW360Component extends SW360HalResource<LinkObjects, SW360ComponentEmbedded> {
     private String name;
@@ -21,6 +24,14 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
     private String type;
     private String createdOn;
     private String homepage;
+
+    @JsonIgnore
+    public String getComponentId() {
+        return Optional.ofNullable(get_Links())
+                .map(LinkObjects::getSelf)
+                .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink)
+                .orElse(null);
+    }
 
     public String getName() {
         return this.name;

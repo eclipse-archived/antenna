@@ -24,8 +24,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSw360SparseReleases;
 
@@ -62,14 +66,28 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
         }
     }
 
-    public List<SW360SparseRelease> getReleases(HttpHeaders header) {
-        ResponseEntity<Resource<SW360ReleaseList>> response = doRestGET(getEndpoint(), header,
+    // KnownLimitation: this can not properly handle e.g. the hashes,
+    // which are mapped to numbered keys like `hash_1=...`, `hash_2=...`, ...
+    // but can change in the order of the values
+    public List<SW360SparseRelease> getReleasesByExternalIds(Map<String, String> externalIds, HttpHeaders header) {
+        String url = externalIds.entrySet().stream()
+                .map(e -> {
+                    try {
+                        return URLEncoder.encode(e.getKey(), "UTF-8") + "=" + URLEncoder.encode(e.getValue(), "UTF-8");
+                    } catch (UnsupportedEncodingException ex) {
+                        throw new ExecutionException("Failed to generate externalId query URL", ex);
+                    }
+                })
+                .collect(Collectors.joining("&", getEndpoint() + "/searchByExternalIds?", ""));
+
+        ResponseEntity<Resource<SW360ReleaseList>> response = doRestGET(url, header,
                 new ParameterizedTypeReference<Resource<SW360ReleaseList>>() {});
 
         if (response.getStatusCode().is2xxSuccessful()) {
             return getSw360SparseReleases(response);
         } else {
-            throw new ExecutionException("Request to get all releases failed with " + response.getStatusCode());
+            throw new ExecutionException("Request to get release with externalId " + url + " failed with "
+                    + response.getStatusCode());
         }
     }
 

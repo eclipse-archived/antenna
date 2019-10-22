@@ -61,17 +61,6 @@ public class SW360ComponentClient extends SW360Client {
         }
     }
 
-    public List<SW360SparseComponent> getComponents(HttpHeaders header) {
-        ResponseEntity<Resource<SW360ComponentList>> response = doRestGET(getEndpoint(), header,
-                new ParameterizedTypeReference<Resource<SW360ComponentList>>() {});
-
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return getSw360SparseComponents(response);
-        } else {
-            throw new ExecutionException("Request to get all components failed with " + response.getStatusCode());
-        }
-    }
-
     public List<SW360SparseComponent> searchByName(String name, HttpHeaders header) {
         UriComponentsBuilder builder = UriComponentsBuilder
                 .fromUriString(getEndpoint())
