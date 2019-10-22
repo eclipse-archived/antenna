@@ -41,9 +41,8 @@
     </properties>
 
     <scm>
-        <connection>
-            scm:git:https://github.com/eclipse/antenna
-        </connection>
+        <url>https://github.com/eclipse/antenna</url>
+        <connection>scm:git:https://github.com/eclipse/antenna</connection>
         <tag>HEAD</tag>
     </scm>
 
@@ -381,6 +380,11 @@
         </resources>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>com.github.github</groupId>
+                    <artifactId>site-maven-plugin</artifactId>
+                    <version>0.12</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
