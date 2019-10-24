@@ -53,6 +53,8 @@ For more information, please see the [Eclipse Committer Handbook](https://www.ec
 
 Contact the project developers via the [project's "dev" list](https://dev.eclipse.org/mailman/listinfo/antenna-dev).
 
+Or contact us over our [Slack channel](https://join.slack.com/t/sw360chat/shared_invite/enQtNzg5NDQxMTQyNjA5LThiMjBlNTRmOWI0ZjJhYjc0OTk3ODM4MjBmOGRhMWRmN2QzOGVmMzQwYzAzN2JkMmVkZTI1ZjRhNmJlNTY4ZGI)
+
 ## How Can I Contribute?
 
 ### Before Submitting An Issue
