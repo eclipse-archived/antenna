@@ -13,9 +13,9 @@ package org.eclipse.sw360.antenna.sw360.workflow.processors;
 import com.here.ort.spdx.SpdxException;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.model.util.ArtifactUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SW360EnricherImpl {
 
@@ -70,8 +69,8 @@ public class SW360EnricherImpl {
     }
 
     private void mapExternalIdsOnSW360Release(SW360Release sw360Release, Artifact artifact) {
-        mapCoordinatesFromPurls(sw360Release)
-                .forEach(artifact::addFact);
+        artifact.addFact(mapCoordinates(sw360Release));
+
 
         addLicenseFact(Optional.ofNullable(sw360Release.getDeclaredLicense()), artifact, DeclaredLicenseInformation::new, artifact.askFor(DeclaredLicenseInformation.class).isPresent());
         addLicenseFact(Optional.ofNullable(sw360Release.getObservedLicense()), artifact, ObservedLicenseInformation::new, artifact.askFor(ObservedLicenseInformation.class).isPresent());
@@ -126,10 +125,9 @@ public class SW360EnricherImpl {
         }
     }
 
-    private Stream<ArtifactCoordinates> mapCoordinatesFromPurls(SW360Release sw360Release) {
-        final Map<String, String> purls = sw360Release.getPurls();
-        return purls.values().stream()
-                .map(ArtifactUtils::createArtifactCoordinatesFromPurl);
+    private ArtifactCoordinates mapCoordinates(SW360Release sw360Release) {
+        final Map<String, String> coordinates = sw360Release.getCoordinates();
+        return new ArtifactCoordinates(new HashSet<>(coordinates.values()));
     }
 
     private void addSourceUrlIfAvailable(Artifact artifact, SW360Release release) {

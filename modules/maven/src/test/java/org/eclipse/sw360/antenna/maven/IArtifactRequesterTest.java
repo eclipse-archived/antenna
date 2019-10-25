@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.maven;
 
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,32 +25,33 @@ public class IArtifactRequesterTest extends AntennaTestWithMockedContext {
 
     private IArtifactRequester artifactRequester = new IArtifactRequester() {
         @Override
-        public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation) {
+        public Optional<File> requestFile(Coordinate mavenCoordinate, Path targetDirectory, ClassifierInformation classifierInformation) {
             return Optional.empty();
         }
     };
-    private MavenCoordinates mavenCoordinates;
+
+    private Coordinate mavenCoordinate;
 
     @Before
-    public void before() {
-        mavenCoordinates = new MavenCoordinates("groupId","artifactId","version");
+    public void before() throws Exception {
+        mavenCoordinate = new Coordinate("artifactId", "groupId", "version");
     }
 
     @Test
     public void getExpectedJarBaseNameTest() {
-        final String expectedJarBaseName = artifactRequester.getExpectedJarBaseName(mavenCoordinates, ClassifierInformation.DEFAULT_JAR);
+        final String expectedJarBaseName = artifactRequester.getExpectedJarBaseName(mavenCoordinate, ClassifierInformation.DEFAULT_JAR);
         assertThat(expectedJarBaseName).endsWith(MavenInvokerRequester.JAR_EXTENSION);
-        assertThat(expectedJarBaseName).contains(mavenCoordinates.getArtifactId());
-        assertThat(expectedJarBaseName).contains(mavenCoordinates.getVersion());
+        assertThat(expectedJarBaseName).contains(mavenCoordinate.getName());
+        assertThat(expectedJarBaseName).contains(mavenCoordinate.getVersion());
         assertThat(expectedJarBaseName).doesNotContain("/");
     }
 
     @Test
     public void getExpectedJarBaseNameTestSource() {
-        final String expectedJarBaseName = artifactRequester.getExpectedJarBaseName(mavenCoordinates, ClassifierInformation.DEFAULT_SOURCE_JAR);
+        final String expectedJarBaseName = artifactRequester.getExpectedJarBaseName(mavenCoordinate, ClassifierInformation.DEFAULT_SOURCE_JAR);
         assertThat(expectedJarBaseName).endsWith("-sources" + MavenInvokerRequester.JAR_EXTENSION);
-        assertThat(expectedJarBaseName).contains(mavenCoordinates.getArtifactId());
-        assertThat(expectedJarBaseName).contains(mavenCoordinates.getVersion());
+        assertThat(expectedJarBaseName).contains(mavenCoordinate.getName());
+        assertThat(expectedJarBaseName).contains(mavenCoordinate.getVersion());
         assertThat(expectedJarBaseName).doesNotContain("/");
     }
 

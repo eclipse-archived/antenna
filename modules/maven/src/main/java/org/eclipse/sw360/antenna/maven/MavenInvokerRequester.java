@@ -15,7 +15,7 @@ import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,35 +67,34 @@ public class MavenInvokerRequester extends IArtifactRequester {
     }
 
     @Override
-    public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation) {
+    public Optional<File> requestFile(Coordinate mavenCoordinate, Path targetDirectory, ClassifierInformation classifierInformation) {
 
-        File expectedJarFile = getExpectedJarFile(coordinates, targetDirectory, classifierInformation);
+        File expectedJarFile = getExpectedJarFile(mavenCoordinate, targetDirectory, classifierInformation);
 
         if (expectedJarFile.exists()) {
             LOGGER.info("The file " + expectedJarFile + " already exists and won't be downloaded again");
             return Optional.of(expectedJarFile);
         }
 
-        LOGGER.debug("Requesting artifact with id " + coordinates.getArtifactId());
-        boolean requestSuccessful = callMavenInvoker(coordinates, targetDirectory, classifierInformation.classifier);
+        LOGGER.debug("Requesting artifact with id " + mavenCoordinate.toString());
+        boolean requestSuccessful = callMavenInvoker(mavenCoordinate, targetDirectory, classifierInformation.classifier);
 
         String jarType = classifierInformation.isSource ? "sources jar" : classifierInformation.classifier + " jar";
         if (!requestSuccessful) {
-            LOGGER.warn("Failed to find " + jarType + ": Artifact " + coordinates.getName() + " not found in repo.");
+            LOGGER.warn("Failed to find " + jarType + ": Artifact " + mavenCoordinate.toString() + " not found in repo.");
             return Optional.empty();
         } else if (!expectedJarFile.exists()) {
             LOGGER.warn("Failed to find " + jarType + ": Maven call succeeded but Artifact was not generated in the expected place.");
             return Optional.empty();
         }
 
-        return Optional.of(getExpectedJarFile(coordinates, targetDirectory, classifierInformation));
+        return Optional.of(getExpectedJarFile(mavenCoordinate, targetDirectory, classifierInformation));
     }
 
-    private boolean callMavenInvoker(MavenCoordinates coordinates, Path targetDirectory, String classifier) {
-        final List<String> mvnDownloadCmd = buildBasicMvnDownloadCmd(coordinates, targetDirectory);
-        if (sourceRepositoryUrl.isPresent()) {
-            mvnDownloadCmd.add(String.format(MVN_ARG_REPOS, sourceRepositoryUrl.get().toString()));
-        }
+    private boolean callMavenInvoker(Coordinate mavenCoordinate, Path targetDirectory, String classifier) {
+        final List<String> mvnDownloadCmd = buildBasicMvnDownloadCmd(mavenCoordinate, targetDirectory);
+        sourceRepositoryUrl
+                .ifPresent(url -> mvnDownloadCmd.add(String.format(MVN_ARG_REPOS, url.toString())));
         if (!classifier.isEmpty()) {
             mvnDownloadCmd.add(String.format(MVN_ARG_CLASSIFIER, classifier));
         }
@@ -103,12 +102,12 @@ public class MavenInvokerRequester extends IArtifactRequester {
         return callMavenInvocationRequest(request);
     }
 
-    private List<String> buildBasicMvnDownloadCmd(MavenCoordinates coordinates, Path targetDirectory) {
+    private List<String> buildBasicMvnDownloadCmd(Coordinate mavenCoordinate, Path targetDirectory) {
         List<String> mvnDownloadCmd = new ArrayList<>();
 
-        mvnDownloadCmd.add(String.format(MVN_ARG_GROUP_ID, coordinates.getGroupId()));
-        mvnDownloadCmd.add(String.format(MVN_ARG_ARTIFACT_ID, coordinates.getArtifactId()));
-        mvnDownloadCmd.add(String.format(MVN_ARG_VERSION, coordinates.getVersion()));
+        mvnDownloadCmd.add(String.format(MVN_ARG_GROUP_ID, mavenCoordinate.getNamespace()));
+        mvnDownloadCmd.add(String.format(MVN_ARG_ARTIFACT_ID, mavenCoordinate.getName()));
+        mvnDownloadCmd.add(String.format(MVN_ARG_VERSION, mavenCoordinate.getVersion()));
         mvnDownloadCmd.add(String.format(MVN_ARG_DEST, targetDirectory));
         mvnDownloadCmd.add(MVN_DOWNLOAD_CMD);
 
@@ -129,8 +128,8 @@ public class MavenInvokerRequester extends IArtifactRequester {
         return request;
     }
 
-    private File getExpectedJarFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation) {
-        String jarBaseName = getExpectedJarBaseName(coordinates, classifierInformation);
+    private File getExpectedJarFile(Coordinate mavenCoordinate, Path targetDirectory, ClassifierInformation classifierInformation) {
+        String jarBaseName = getExpectedJarBaseName(mavenCoordinate, classifierInformation);
         return new File(targetDirectory.toFile(), jarBaseName);
     }
 

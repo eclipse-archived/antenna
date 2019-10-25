@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.p2resolver.workflow.processors.enricher;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.BundleCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.p2resolver.OperatingSystemSpecifics;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.*;
@@ -68,7 +68,7 @@ public class P2ResolverTest extends AntennaTestWithMockedContext {
         Assume.assumeFalse("The linux looks unusual and probably does not support the p2 product.", OperatingSystemSpecifics.isLinux() && ! Files.exists(Paths.get("/usr/lib/")));
 
         Artifact artifact = new Artifact();
-        artifact.addFact(new BundleCoordinates("org.junit", "4.12.0.v201504281640"));
+        artifact.addCoordinate(new Coordinate(Coordinate.Types.P2, "org.junit", "4.12.0.v201504281640"));
 
 
         List<Artifact> processedArtifacts = new ArrayList<>(resolver.process(Collections.singletonList(artifact)));

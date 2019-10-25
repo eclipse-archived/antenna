@@ -21,7 +21,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,17 +64,17 @@ public class MavenRuntimeRequester extends IArtifactRequester {
     }
 
     @Override
-    public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation) {
+    public Optional<File> requestFile(Coordinate mavenCoordinate, Path targetDirectory, ClassifierInformation classifierInformation) {
         if (classifierInformation.isSource) {
-            return requestFile(coordinates, targetDirectory, "java-source", classifierInformation);
+            return requestFile(mavenCoordinate, targetDirectory, "java-source", classifierInformation);
         }
-        return requestFile(coordinates, targetDirectory, "jar", classifierInformation);
+        return requestFile(mavenCoordinate, targetDirectory, "jar", classifierInformation);
     }
 
-    private Optional<File> requestFile(MavenCoordinates mavenCoordinates, Path targetDirectory, String type, ClassifierInformation classifier) {
-        String groupId = mavenCoordinates.getGroupId();
-        String artifactId = mavenCoordinates.getArtifactId();
-        String version = mavenCoordinates.getVersion();
+    private Optional<File> requestFile(Coordinate mavenCoordinate, Path targetDirectory, String type, ClassifierInformation classifier) {
+        String groupId = mavenCoordinate.getNamespace();
+        String artifactId = mavenCoordinate.getName();
+        String version = mavenCoordinate.getVersion();
 
         Artifact mvnArtifact = classifier.classifier.isEmpty()
                 ? repositorySystem.createArtifact(groupId, artifactId, version, type)

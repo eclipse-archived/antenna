@@ -15,7 +15,7 @@ import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.*;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,16 +115,11 @@ public class AntennaWorkflow {
 
     private String getFailedArtifactsAsString(IEvaluationResult evaluationResult) {
         return evaluationResult.getFailedArtifacts().stream()
-                .map(artifact -> "\n        - " + getCoordinateAsString(artifact))
+                .map(Artifact::getMainCoordinate)
+                .map(c -> c.map(Coordinate::canonicalize))
+                .map(c -> c.orElse("UNKNOWN"))
+                .map(c -> "\n        - " + c)
                 .collect(Collectors.joining());
-    }
-
-    private String getCoordinateAsString(Artifact artifact) {
-        return artifact.askForAll(ArtifactCoordinates.class)
-                .stream()
-                .findFirst()
-                .map(ArtifactCoordinates::getName)
-                .orElse(artifact.toString());
     }
 
     private Collection<WorkflowStepResult> getArtifactsFromAnalyzers() {

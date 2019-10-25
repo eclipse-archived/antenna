@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.policy.engine.model;
 
-import com.github.packageurl.PackageURL;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 
 import java.net.URL;
 import java.util.Collection;
@@ -57,5 +57,5 @@ public interface ThirdPartyArtifact {
      * @return The component coordinates represented as a purl or an empty Optional, if the artifact information is not
      * identified and contains not enough information to at least define a basic purl.
      */
-    Collection<PackageURL> getPurls();
+    Collection<Coordinate> getCoordinates();
 }

@@ -10,10 +10,12 @@
  */
 package org.eclipse.sw360.antenna.workflow.processors.filter;
 
+import com.github.packageurl.PackageURL;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,9 +61,7 @@ public class ConfigurationHandlerOverrideTest extends CommonConfigurationHandler
 
     private Artifact getArtifactToOverwriteWith(MatchState matchState) {
         Artifact artifactToOverwriteWith = new Artifact();
-        MavenCoordinates.MavenCoordinatesBuilder mavenCoordinates = new MavenCoordinates.MavenCoordinatesBuilder();
-        mavenCoordinates.setArtifactId(OVERRIDE_ID);
-        artifactToOverwriteWith.addFact(mavenCoordinates);
+        artifactToOverwriteWith.addCoordinate(new Coordinate(Coordinate.Types.MAVEN, null, OVERRIDE_ID, null));
         Optional.ofNullable(matchState)
                 .ifPresent(ms -> artifactToOverwriteWith.addFact(new ArtifactMatchingMetadata(ms)));
         return artifactToOverwriteWith;
@@ -74,9 +74,9 @@ public class ConfigurationHandlerOverrideTest extends CommonConfigurationHandler
         artifactToOverwriteWith.addFact(new CopyrightStatement(copyrightStatement));
         artifactToOverwriteWith.addFact(new ArtifactModificationStatus(modificationStatus));
         Map<ArtifactSelector, Artifact> overwriteMap = new HashMap<>();
-        overwriteMap.put(new GenericArtifactCoordinates("abc", "def"), generateDummyArtifact("overwriteDummy1"));
+        overwriteMap.put(new ArtifactCoordinates(new Coordinate("abc", "def")), generateDummyArtifact("overwriteDummy1"));
         overwriteMap.put(artifactSelector, artifactToOverwriteWith);
-        overwriteMap.put(new GenericArtifactCoordinates("bcd", "efg"), generateDummyArtifact("overwriteDummy2"));
+        overwriteMap.put(new ArtifactCoordinates(new Coordinate("bcd", "efg")), generateDummyArtifact("overwriteDummy2"));
         return overwriteMap;
     }
 
@@ -99,7 +99,11 @@ public class ConfigurationHandlerOverrideTest extends CommonConfigurationHandler
                 .filter(a -> new ArtifactFilename(FILENAME).matches(a))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException("should not happen"));
-        assertThat(processedArtifact.askFor(MavenCoordinates.class).map(MavenCoordinates::getArtifactId).get())
+        assertThat(processedArtifact.askFor(ArtifactCoordinates.class).get().getCoordinates().stream()
+                .filter(p -> PackageURL.StandardTypes.MAVEN.equals(p.getType()))
+                .findAny()
+                .get()
+                .getName())
                 .isEqualTo(OVERRIDE_ID);
         assertThat(processedArtifact.askFor(ArtifactMatchingMetadata.class).map(ArtifactMatchingMetadata::getMatchState).orElse(null)).isEqualTo(expectedMatchState);
         assertThat(processedArtifact.askForGet(CopyrightStatement.class).get()).isEqualTo(copyrightStatement);

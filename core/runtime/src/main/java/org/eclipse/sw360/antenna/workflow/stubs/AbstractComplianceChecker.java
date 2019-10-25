@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.workflow.stubs;
 
-import com.github.packageurl.PackageURL;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
@@ -18,10 +17,8 @@ import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.model.util.ArtifactUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,9 +154,11 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
     }
 
     private String getCoordinates(Artifact a) {
-        return ArtifactUtils.getMostDominantArtifactCoordinates(Arrays.asList(MavenCoordinates.class), a)
-                .map(ArtifactCoordinates::getPurl)
-                .map(PackageURL::canonicalize)
+        Optional<Coordinate> coordinate = a.getCoordinateForType(Coordinate.Types.MAVEN);
+        if (! coordinate.isPresent()) {
+            coordinate = a.getCoordinates().stream().findFirst();
+        }
+        return coordinate.map(Coordinate::canonicalize)
                 .orElse(a.prettyPrint());
     }
 

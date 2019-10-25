@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.maven;
 
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.util.HttpHelper;
 import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.slf4j.Logger;
@@ -48,8 +48,8 @@ public class HttpRequester extends IArtifactRequester {
     }
 
     @Override
-    public Optional<File> requestFile(MavenCoordinates coordinates, Path targetDirectory, ClassifierInformation classifierInformation) {
-        String jarBaseName = getExpectedJarBaseName(coordinates, classifierInformation);
+    public Optional<File> requestFile(Coordinate mavenCoordinate, Path targetDirectory, ClassifierInformation classifierInformation) {
+        String jarBaseName = getExpectedJarBaseName(mavenCoordinate, classifierInformation);
         File localJarFile = targetDirectory.resolve(jarBaseName).toFile();
 
         if (localJarFile.exists()) {
@@ -57,28 +57,28 @@ public class HttpRequester extends IArtifactRequester {
             return Optional.of(localJarFile);
         }
 
-        Optional<File> downloadedFile = downloadFileFromUserUrl(coordinates, targetDirectory, jarBaseName);
+        Optional<File> downloadedFile = downloadFileFromUserUrl(mavenCoordinate, targetDirectory, jarBaseName);
 
         if (!downloadedFile.isPresent()) {
-            String mavenCentralJarUrl = getJarUrl(coordinates, jarBaseName, MAVEN_CENTRAL_URL);
+            String mavenCentralJarUrl = getJarUrl(mavenCoordinate, jarBaseName, MAVEN_CENTRAL_URL);
             return tryFileDownload(mavenCentralJarUrl, targetDirectory, jarBaseName);
         }
         return downloadedFile;
     }
 
-    private Optional<File> downloadFileFromUserUrl(MavenCoordinates coordinates, Path targetDirectory, String jarBaseName) {
+    private Optional<File> downloadFileFromUserUrl(Coordinate mavenCoordinate, Path targetDirectory, String jarBaseName) {
         if (sourceRepositoryUrl.isPresent()) {
-            String jarUrl = convertToJarUrlTemplate(coordinates, jarBaseName, sourceRepositoryUrl.get().toString());
+            String jarUrl = convertToJarUrlTemplate(mavenCoordinate, jarBaseName, sourceRepositoryUrl.get().toString());
             return tryFileDownload(jarUrl, targetDirectory, jarBaseName);
         }
         return Optional.empty();
     }
 
-    private String convertToJarUrlTemplate(MavenCoordinates coordinates, String jarBaseName, String repoTemplate) {
+    private String convertToJarUrlTemplate(Coordinate mavenCoordinate, String jarBaseName, String repoTemplate) {
         String enrichedTemplate = repoTemplate;
         enrichedTemplate += repoTemplate.endsWith("/") ? "" : "/";
         enrichedTemplate += GROUP_ID_PLACEHOLDER + "/" + ARTIFACT_ID_PLACEHOLDER + "/" + VERSION_PLACEHOLDER + "/";
-        return getJarUrl(coordinates, jarBaseName, enrichedTemplate);
+        return getJarUrl(mavenCoordinate, jarBaseName, enrichedTemplate);
     }
 
     private Optional<File> tryFileDownload(String jarUrl, Path targetDirectory, String jarBaseName) {
@@ -91,15 +91,15 @@ public class HttpRequester extends IArtifactRequester {
         }
     }
 
-    private String getJarUrl(MavenCoordinates coordinates, String remoteFileName, String repoTemplate) {
+    private String getJarUrl(Coordinate mavenCoordinate, String remoteFileName, String repoTemplate) {
         // Construct URL (substitute in groupID, artifactID and version
         // NOTE: There should be no dots in the groupID. Dots delimit
         // directories, so are converted to slashes.
         String repo = repoTemplate
-                .replace(GROUP_ID_PLACEHOLDER, coordinates.getGroupId()
+                .replace(GROUP_ID_PLACEHOLDER, mavenCoordinate.getNamespace()
                         .replace('.', '/'))
-                .replace(ARTIFACT_ID_PLACEHOLDER, coordinates.getArtifactId())
-                .replace(VERSION_PLACEHOLDER, coordinates.getVersion());
+                .replace(ARTIFACT_ID_PLACEHOLDER, mavenCoordinate.getName())
+                .replace(VERSION_PLACEHOLDER, mavenCoordinate.getVersion());
 
         return repo + remoteFileName;
     }

@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.droolstesting;
+package org.eclipse.sw360.antenna.drools.testing;
 
 import org.eclipse.sw360.antenna.drools.DroolsEvaluationResultReader;
 

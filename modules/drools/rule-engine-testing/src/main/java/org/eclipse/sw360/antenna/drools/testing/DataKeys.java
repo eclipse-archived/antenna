@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -9,9 +9,14 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.model.artifact.facts.java;
+package org.eclipse.sw360.antenna.drools.testing;
 
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactCoordinates;
-
-public abstract class JavaCoordinates<T extends JavaCoordinates> extends ArtifactCoordinates<T> {
+public enum DataKeys {
+    LICENSE,
+    LICENSE_ALTERNATIVES,
+    LICENSE_MISSING,
+    PROPRIETARY,
+    MATCH_STATE,
+    COORDINATES,
+    SECURITY_ISSUE
 }

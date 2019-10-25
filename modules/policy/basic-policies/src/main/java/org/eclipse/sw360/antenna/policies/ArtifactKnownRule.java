@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.policies;
 
-import com.github.packageurl.PackageURL;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.policy.engine.PolicyViolation;
 import org.eclipse.sw360.antenna.policy.engine.RuleSeverity;
 import org.eclipse.sw360.antenna.policy.engine.Ruleset;
@@ -38,9 +38,8 @@ public class ArtifactKnownRule implements SingleArtifactRule {
     }
 
     private boolean coordinatesAvailable(final ThirdPartyArtifact thirdPartyArtifact) {
-        return thirdPartyArtifact.getPurls().stream()
-                .filter(purl -> purl.getType() != PackageURL.StandardTypes.GENERIC)
-                .count() > 0;
+        return thirdPartyArtifact.getCoordinates().stream()
+                .anyMatch(purl -> !Coordinate.Types.GENERIC.equals(purl.getType()));
     }
 
     @Override

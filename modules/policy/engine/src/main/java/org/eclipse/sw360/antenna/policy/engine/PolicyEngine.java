@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.policy.engine;
 
-import com.github.packageurl.PackageURL;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.policy.engine.model.ThirdPartyArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +32,9 @@ public class PolicyEngine {
 
     public Collection<PolicyViolation> evaluate(final Collection<ThirdPartyArtifact> thirdPartyArtifacts) {
         LOGGER.debug("Artifacts are " + thirdPartyArtifacts.stream()
-                .map(ThirdPartyArtifact::getPurls)
+                .map(ThirdPartyArtifact::getCoordinates)
                 .flatMap(Collection::stream)
-                .map(PackageURL::canonicalize)
+                .map(Coordinate::canonicalize)
                 .collect(Collectors.joining(",", "[", "]")));
 
         Collection<PolicyViolation> violations =  executors.parallelStream()
@@ -47,7 +47,7 @@ public class PolicyEngine {
         } else {
             LOGGER.info("No violations found");
         }
-        
+
         return violations;
     }
 

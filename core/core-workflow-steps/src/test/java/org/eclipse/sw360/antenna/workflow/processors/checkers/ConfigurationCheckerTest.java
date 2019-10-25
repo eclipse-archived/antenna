@@ -12,10 +12,11 @@ package org.eclipse.sw360.antenna.workflow.processors.checkers;
 
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelectorAndSet;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.reporting.ProcessingMessage;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
@@ -51,11 +52,11 @@ public class ConfigurationCheckerTest {
         artifact = new Artifact();
 
         artifact.addFact(new ArtifactFilename("artifact"));
-        artifact.addFact(new MavenCoordinates("artifact", null, null));
+        artifact.addCoordinate(new Coordinate(Coordinate.Types.MAVEN, null, "artifact", null));
 
         selector = new ArtifactSelectorAndSet(
                 new ArtifactFilename("artifact"),
-                new MavenCoordinates("artifact", null, null)
+                new ArtifactCoordinates(new Coordinate(Coordinate.Types.MAVEN, null, "artifact", null))
         );
 
         config = new Configuration(null);

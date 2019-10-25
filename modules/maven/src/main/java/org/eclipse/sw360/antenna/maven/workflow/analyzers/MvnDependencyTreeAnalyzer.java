@@ -17,10 +17,9 @@ import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.frontend.stub.mojo.WrappedDependencyNodes;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactMatchingMetadata;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.MavenCoordinates;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 
 import java.util.List;
@@ -61,7 +60,7 @@ public class MvnDependencyTreeAnalyzer extends AbstractAnalyzer {
             paths = new String[0];
         }
 
-        antennaArtifact.addFact(getMavenCoordinates(node));
+        antennaArtifact.addCoordinate(getMavenCoordinate(node));
         if(node.getArtifact().getFile() != null) {
             antennaArtifact.addFact(new ArtifactFile(node.getArtifact().getFile().toPath()));
         }
@@ -70,12 +69,12 @@ public class MvnDependencyTreeAnalyzer extends AbstractAnalyzer {
         return antennaArtifact;
     }
 
-    private ArtifactIdentifier getMavenCoordinates(DependencyNode node) {
-        MavenCoordinates.MavenCoordinatesBuilder coordinates = new MavenCoordinates.MavenCoordinatesBuilder();
-        coordinates.setArtifactId(node.getArtifact().getArtifactId());
-        coordinates.setGroupId(node.getArtifact().getGroupId());
-        coordinates.setVersion(node.getArtifact().getVersion());
-        return coordinates.build();
+    private Coordinate getMavenCoordinate(DependencyNode node) {
+        return new Coordinate(
+                Coordinate.Types.MAVEN,
+                node.getArtifact().getGroupId(),
+                node.getArtifact().getArtifactId(),
+                node.getArtifact().getVersion());
     }
 
     @Override
