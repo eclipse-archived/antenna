@@ -75,13 +75,14 @@ public class PolicyEngineProcessor extends AbstractComplianceChecker {
 
     @Override
     public String getRulesetDescription() {
-        StringBuilder resultString = new StringBuilder();
-        policyEngine.getRulesets().forEach(rs -> resultString.append(prepareRulesetInfo(rs)));
-        return resultString.toString();
+        return policyEngine.getRulesets()
+                .stream()
+                .map(this::prepareRulesetInfo)
+                .collect(Collectors.joining(", "));
     }
 
     private String prepareRulesetInfo(Ruleset ruleset) {
-        return String.format("%n - %s in version %s", ruleset.getName(), ruleset.getVersion());
+        return String.format("%s [%s]", ruleset.getName(), ruleset.getVersion());
     }
 
     /**

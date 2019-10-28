@@ -202,7 +202,6 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
         try {
             output.putAll(antennaCore.compose());
         } catch (ExecutionException e) {
-            LOGGER.error("Antenna execution failed due to:", e);
             throw new MojoExecutionException("Exception during Antenna execution", e);
         } finally {
             IAttachable report = antennaCore.writeAnalysisReport();

@@ -56,7 +56,7 @@ public class LicenseQualifiedRule implements SingleArtifactRule {
 
     @Override
     public String getDescription() {
-        return "A license referenced by the artifact does not have enough metadata, it cannot be redistributed!";
+        return "A license referenced by the artifact has no associated license text, it cannot be redistributed!";
     }
 
     @Override

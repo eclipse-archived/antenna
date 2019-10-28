@@ -12,7 +12,6 @@ package org.eclipse.sw360.antenna.workflow.stubs;
 
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
-import org.eclipse.sw360.antenna.api.exceptions.FailCausingException;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
@@ -28,7 +27,8 @@ import org.mockito.Mockito;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 @RunWith(Parameterized.class)
@@ -125,17 +125,6 @@ public class AbstractComplianceCheckerTest extends AntennaTestWithMockedContext 
         }
     }
 
-    @Test
-    public void makeStringForEvaluationResultsForArtifactTestEmpty() {
-
-        String artifactName = "ArtifactName";
-        Set<IEvaluationResult> failCausingResultsForArtifact = new HashSet<>();
-
-        String result = complianceChecker.makeStringForEvaluationResultsForArtifact(artifactName, failCausingResultsForArtifact);
-
-        assertTrue(result.contains(artifactName));
-    }
-
     private Set<Artifact> mkSingletonArtifact(String name){
         final Artifact artifact = new Artifact("forTest");
         artifact.addCoordinate(new Coordinate(Coordinate.Types.MAVEN, name + "GroupId", name + "ArtifactId", "1.0"));
@@ -168,49 +157,5 @@ public class AbstractComplianceCheckerTest extends AntennaTestWithMockedContext 
                 return failedArtifacts;
             }
         };
-    }
-
-    @Test
-    public void makeStringForEvaluationResultsForArtifactTest() {
-        String artifactName = "ArtifactName";
-        Set<IEvaluationResult> failCausingResultsForArtifact = new HashSet<>();
-        failCausingResultsForArtifact.add(mkResult("first result"));
-        failCausingResultsForArtifact.add(mkResult("second result"));
-        failCausingResultsForArtifact.add(mkResult("3rd result"));
-        failCausingResultsForArtifact.add(mkResult("4th result"));
-        failCausingResultsForArtifact.add(mkResult("5th result"));
-
-        String result = complianceChecker.makeStringForEvaluationResultsForArtifact(artifactName, failCausingResultsForArtifact);
-
-        assertTrue(result.contains(artifactName));
-        long numberOfMatches = failCausingResultsForArtifact.stream()
-                .map(evaluationResult -> result.contains(evaluationResult.getDescription()))
-                .filter(b -> b)
-                .count();
-        assertEquals(3, numberOfMatches);
-
-        assertTrue(result.contains("and 2 fail causing results more"));
-    }
-
-    @Test
-    public void makeStringForEvaluationResultsTest() {
-        String header = "Evaluation failed";
-        Set<IEvaluationResult> failCausingResults = new HashSet<>();
-        failCausingResults.add(mkResult("first result", mkSingletonArtifact("Artifact1")));
-        failCausingResults.add(mkResult("second result", mkSingletonArtifact("Artifact1")));
-        failCausingResults.add(mkResult("3rd result", mkSingletonArtifact("Artifact1")));
-        failCausingResults.add(mkResult("4th result", mkSingletonArtifact("Artifact1")));
-        failCausingResults.add(mkResult("5th result", mkSingletonArtifact("Artifact1")));
-        failCausingResults.add(mkResult("another (2) result", mkSingletonArtifact("Artifact2")));
-        failCausingResults.add(mkResult("another (3) result", mkSingletonArtifact("Artifact3")));
-        failCausingResults.add(mkResult("another (4) result", mkSingletonArtifact("Artifact4")));
-        failCausingResults.add(mkResult("another (5) result", mkSingletonArtifact("Artifact5")));
-
-        String result = complianceChecker.makeStringForEvaluationResults(header, failCausingResults);
-
-        assertTrue(result.contains(header));
-        assertTrue(result.contains("Artifact1"));
-        assertTrue(result.contains("and 2 artifacts more"));
-        assertTrue(result.contains("and 2 fail causing results more"));
     }
 }

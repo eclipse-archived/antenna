@@ -136,6 +136,12 @@ public class ArtifactCore
                 .forEach(this::setFlag);
     }
 
+    public String artifactAsCoordinate() {
+        return getMainCoordinate()
+                .map(Coordinate::canonicalize)
+                .orElse(prettyPrint());
+    }
+
     @Override
     public String prettyPrint() {
         final StringBuilder stringBuilder = new StringBuilder();

@@ -14,6 +14,7 @@ package org.eclipse.sw360.antenna.api;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public interface IEvaluationResult {
     enum Severity {
@@ -49,4 +50,15 @@ public interface IEvaluationResult {
      * @return All artifacts that have broken this rule.
      */
     Set<Artifact> getFailedArtifacts();
+
+    default String resultAsMessage() {
+        return String.format("%s (%s): %s%n          %s",
+                getId(),
+                getSeverity(),
+                getFailedArtifacts()
+                        .stream()
+                        .map(Artifact::artifactAsCoordinate)
+                        .collect(Collectors.joining(", ")),
+                getDescription());
+    }
 }
