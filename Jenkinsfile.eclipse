@@ -125,12 +125,14 @@ spec:
                     sh """
                       mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                           --batch-mode \
-                          install -DskipTests ${params.SIGNING_COMMAND}
+                          clean install -DskipTests ${params.SIGNING_COMMAND} \
+                          -P ci
                       mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                           --batch-mode \
-                          install -DskipTests ${params.SIGNING_COMMAND} deploy \
+                          clean install -DskipTests ${params.SIGNING_COMMAND} deploy \
                           -pl '!core/model-testing,!core/frontend-stubs-testing,!modules/drools/rule-engine-testing' \
-                          -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
+                          -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository) \
+                          -P ci
                     """
                 }
                 sh 'ls repository/org/eclipse/sw360/antenna/'
