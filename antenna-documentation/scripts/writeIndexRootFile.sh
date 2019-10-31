@@ -51,7 +51,7 @@ git clean -fd
 
 generateIndexFile | tee index.html
 # if there is a difference after writing the index html, commit
-if ! git diff-index HEAD; then
+if ! git diff-index --quiet HEAD --; then
   git add index.html
   git commit -m "update index file to be according to new version ${CURRENT_COMMIT}" -s
 fi
