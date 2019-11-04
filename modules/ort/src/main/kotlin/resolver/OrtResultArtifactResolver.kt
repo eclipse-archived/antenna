@@ -48,7 +48,7 @@ private fun mapSourceUrl(pkg: Package): ArtifactSourceUrl? =
     }
 
 private fun mapDeclaredLicense(pkg: Package): DeclaredLicenseInformation? =
-    pkg.declaredLicenses.takeUnless { it.isEmpty() }?.let {
+    pkg.declaredLicensesProcessed.allLicenses.takeUnless { it.isEmpty() }?.let {
         DeclaredLicenseInformation(LicenseSupport.mapLicenses(it))
     }
 
