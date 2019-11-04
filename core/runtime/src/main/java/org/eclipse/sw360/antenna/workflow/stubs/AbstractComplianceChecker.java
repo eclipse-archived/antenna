@@ -17,7 +17,6 @@ import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractComplianceChecker.class);
     private IEvaluationResult.Severity failOn;
     protected static final String FAIL_ON_KEY = "failOn";
-    private Set<IEvaluationResult> evaluationResults = Collections.emptySet();
+    private Set<IEvaluationResult> evaluationResults = new HashSet<>();
 
     public AbstractComplianceChecker() {
         this.workflowStepOrder = VALIDATOR_BASE_ORDER;
@@ -44,10 +43,10 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
         LOGGER.info("Evaluate compliance rule set: {}", getRulesetDescription());
         IPolicyEvaluation evaluation = evaluate(artifacts);
-        LOGGER.info("Rule evaluation done");
-        LOGGER.info("Check evaluation results...");
+        LOGGER.debug("Rule evaluation done");
+        LOGGER.debug("Check evaluation results...");
         execute(evaluation);
-        LOGGER.info("Check evaluation results... done.");
+        LOGGER.debug("Check evaluation results... done.");
         return artifacts;
     }
 
@@ -75,8 +74,6 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         Set<IEvaluationResult> warnResults = getResults(evaluation, IEvaluationResult.Severity.WARN);
         Set<IEvaluationResult> infoResults = getResults(evaluation, IEvaluationResult.Severity.INFO);
 
-        Set<IEvaluationResult> failCausingResults = new HashSet<>();
-
         /*
          * The severity is ordered: INFO < WARN < FAIL If the user specified
          * <entry key="failOn" value="INFO"/> the build will fail on INFO, WARN and FAIL If
@@ -85,55 +82,10 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
          * only fail on FAIL (this is the default)
          */
         switch (failOn.value()) {
-            case "INFO": failCausingResults.addAll(infoResults);
-            case "WARN": failCausingResults.addAll(warnResults);
-            case "FAIL": failCausingResults.addAll(failResults);
+            case "INFO": evaluationResults.addAll(infoResults);
+            case "WARN": evaluationResults.addAll(warnResults);
+            case "FAIL": evaluationResults.addAll(failResults);
         }
-
-        // Flag the build as failed if the report engine reports it as so.
-        if (failCausingResults.size() > 0) {
-            String messagePrefix = "Rule engine=[" + getRulesetDescription() + "] failed evaluation.";
-            String fullMessage = makeStringForEvaluationResults(messagePrefix, failCausingResults);
-            reporter.add(MessageType.PROCESSING_FAILURE, fullMessage);
-            LOGGER.info(fullMessage);
-            this.evaluationResults = failCausingResults;
-        }
-    }
-
-    protected String makeStringForEvaluationResults(String messagePrefix, Set<IEvaluationResult> failCausingResults) {
-        Map<String,Set<IEvaluationResult>> transposedFailCausingResults = new HashMap<>();
-        failCausingResults.forEach(iEvaluationResult ->
-                iEvaluationResult.getFailedArtifacts().forEach(artifact -> {
-                            String artifactRepresentation = artifact.toString();
-                            if(!transposedFailCausingResults.containsKey(artifactRepresentation)) {
-                                transposedFailCausingResults.put(artifactRepresentation, new HashSet<>());
-                            }
-                            transposedFailCausingResults.get(artifactRepresentation).add(iEvaluationResult);
-                        }
-                ));
-
-        String msges = transposedFailCausingResults.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .map(entry -> makeStringForEvaluationResultsForArtifact(entry.getKey(), entry.getValue()))
-                .limit(3)
-                .reduce("", (s1,s2) -> s1 + s2);
-        if (transposedFailCausingResults.size() > 3) {
-            msges += "\n\t - ... and " + (transposedFailCausingResults.size() - 3) + " artifacts more";
-        }
-        String header = messagePrefix + " Due to:";
-        return header + msges + "\nSee generated report for details.";
-    }
-
-    protected String makeStringForEvaluationResultsForArtifact(String artifactRepresentation, Set<IEvaluationResult> failCausingResultsForArtifact) {
-        String msg = failCausingResultsForArtifact.stream()
-                .map(iEvaluationResult -> "\n\t\t- " + iEvaluationResult.getDescription())
-                .sorted()
-                .limit(3)
-                .reduce("\n\t- the artifact=[" + artifactRepresentation + "] failed, due to:", (s1,s2) -> s1 + s2);
-        if (failCausingResultsForArtifact.size() > 3) {
-            return msg + "\n\t\t- ... and " + (failCausingResultsForArtifact.size() - 3) + " fail causing results more";
-        }
-        return msg;
     }
 
     private Set<IEvaluationResult> getResults(IPolicyEvaluation evaluation, IEvaluationResult.Severity level) {
@@ -148,18 +100,14 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         }
 
     private void reportSingleResult(IProcessingReporter reporter, IEvaluationResult result) {
-        result.getFailedArtifacts().forEach(a -> reporter.add(MessageType.RULE_ENGINE,
-                result.getId() + " (" + result.getSeverity() + "): "
-                        + getCoordinates(a) + " : " + result.getDescription()));
-    }
-
-    private String getCoordinates(Artifact a) {
-        Optional<Coordinate> coordinate = a.getCoordinateForType(Coordinate.Types.MAVEN);
-        if (! coordinate.isPresent()) {
-            coordinate = a.getCoordinates().stream().findFirst();
+        String resultString = String.format("Policy Violation: " + result.resultAsMessage());
+        if (result.getSeverity().equals(IEvaluationResult.Severity.FAIL)) {
+            LOGGER.error(resultString);
+            result.getFailedArtifacts().forEach(a -> reporter.add(MessageType.PROCESSING_FAILURE, resultString));
+        } else {
+            LOGGER.warn(resultString);
+            result.getFailedArtifacts().forEach(a -> reporter.add(MessageType.RULE_ENGINE, resultString));
         }
-        return coordinate.map(Coordinate::canonicalize)
-                .orElse(a.prettyPrint());
     }
 
     protected IEvaluationResult.Severity getSeverityFromConfig(String key, Map<String, String> configMap, IEvaluationResult.Severity defaultSeverity) {

@@ -94,11 +94,10 @@ public class PolicyEngineProcessorTest {
         configMap.put(RULESETCONFIGKEY, AntennaTestdata.TEST_RULESETS_LIST);
         testee.configure(configMap);
 
-        String[] description = testee.getRulesetDescription().split("\n");
-        assertThat(description.length).isEqualTo(3);
-        assertThat(description[1]).contains("1.0.0");
-        assertThat(description[2]).contains("1.0.0");
-        assertThat(description[1] + description[2]).contains(TestSingleRuleset.class.getSimpleName());
-        assertThat(description[1] + description[2]).contains(TestCompareRuleset.class.getSimpleName());
+        String description = testee.getRulesetDescription();
+        assertThat(description).contains("1.0.0");
+        assertThat(description).contains("2.0.0");
+        assertThat(description).contains(TestSingleRuleset.class.getSimpleName());
+        assertThat(description).contains(TestCompareRuleset.class.getSimpleName());
     }
 }
