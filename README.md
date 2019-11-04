@@ -3,6 +3,8 @@
 [![Eclipse Public License 2.0](https://img.shields.io/badge/license-EPL--2.0-green.svg "Eclipse Public License 2.0")](LICENSE)
 [![Build Status](https://travis-ci.com/eclipse/antenna.svg?branch=master)](https://travis-ci.com/eclipse/antenna)
 [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=sw360antenna&metric=alert_status)](https://sonarcloud.io/dashboard?id=sw360antenna)
+
+[![Slack Channel](https://img.shields.io/badge/slack-sw360antenna--talk-blue.svg?longCache=true&logo=slack)](https://join.slack.com/t/sw360chat/shared_invite/enQtNzg5NDQxMTQyNjA5LThiMjBlNTRmOWI0ZjJhYjc0OTk3ODM4MjBmOGRhMWRmN2QzOGVmMzQwYzAzN2JkMmVkZTI1ZjRhNmJlNTY4ZGI)
  
 Antenna scans artifacts of a project, downloads sources for dependencies, 
 validates sources and licenses and creates:
