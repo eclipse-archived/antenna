@@ -14,7 +14,8 @@ their licenses,
 * a sources.zip containing all sources of the dependencies, and
 * a processing report.
 
-Learn more about Antenna in [What Antenna Does](antenna-documentation/src/site/markdown/index.md.vm).
+Learn more about Antenna in [What Antenna Does](antenna-documentation/src/site/markdown/index.md.vm).  
+Or visit us on our [Eclipse Project Site](https://www.eclipse.org/antenna/) for the latest news of the project.
 
 If you want to contribute to Antenna, please check out the [Contribution guidlines](CONTRIBUTING.md). 
 
