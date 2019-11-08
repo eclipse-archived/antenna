@@ -1,6 +1,6 @@
 # About
 
-${docNameCap} scans artifacts of a project, downloads sources for dependencies, 
+[${docNameCap}](https://www.eclipse.org/antenna/) scans artifacts of a project, downloads sources for dependencies,
 validates sources and licenses and creates:
 
 * a third-party disclosure document that lists all dependencies with 
