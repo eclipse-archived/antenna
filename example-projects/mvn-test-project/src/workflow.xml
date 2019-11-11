@@ -64,6 +64,16 @@
             </configuration>
             <deactivated>true</deactivated>
         </step>
+        <step>
+            <name>Attribution Document</name>
+            <classHint>org.eclipse.sw360.antenna.attribution.document.workflow.generators.AttributionDocumentGenerator</classHint>
+            <configuration>
+                <entry key="attribution.doc.templateKey" value="basic-pdf-template"/>
+                <entry key="attribution.doc.productName" value="Example Project"/>
+                <entry key="attribution.doc.productVersion" value="1.0.0"/>
+                <entry key="attribution.doc.copyrightHolder" value="Copyright (c) 2013-2019 Bosch Software Innovations GmbH"/>
+            </configuration>
+        </step>
     </generators>
     <outputHandlers>
         <step>

@@ -156,8 +156,15 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                         { "proxy.use", "false" },
                         { "upload_sources", "true" }})
                         .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1])));
-
         generator.setDeactivated(true);
+        result.add(generator);
+        generator = mkWorkflowStep("Attribution Document", "org.eclipse.sw360.antenna.attribution.document.workflow.generators.AttributionDocumentGenerator",
+                Stream.of(new String[][] {
+                        { "attribution.doc.templateKey", "basic-pdf-template" },
+                        { "attribution.doc.productVersion", "1.0.0" },
+                        { "attribution.doc.productName", "Example Project" },
+                        { "attribution.doc.copyrightHolder", "Copyright (c) 2013-2019 Bosch Software Innovations GmbH" }})
+                        .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1])));
         result.add(generator);
         return result;
     }

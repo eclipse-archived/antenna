@@ -197,6 +197,30 @@
             <artifactId>spotbugs-annotations</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>xmpbox</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ralfstuckert.pdfbox-layout</groupId>
+            <artifactId>pdfbox2-layout</artifactId>
+        </dependency>
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
             <groupId>junit</groupId>
