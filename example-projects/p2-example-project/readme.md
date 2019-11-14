@@ -11,12 +11,12 @@ To build the example project execute the following maven command in the root fol
 
      mvn clean package
      
-The project is build and in its analyze phase the Antenna maven plugin is executed, which reads entries from a json report and generates the source code bundle and the disclosure document. You can find both artifacts in 
+The project is build and in its analyze phase the Antenna maven plugin is executed, which reads entries from a json report and generates the source code bundle and the attribution document. You can find both artifacts in 
 
      target/antenna-maven-plugin
      
 ## Customize configuration
-To customize the configuration you are most likely want to adjust the product, version and the components enumerated in the disclosure document. 
+To customize the configuration you are most likely want to adjust the product, version and the components enumerated in the attribution document. 
 
 To adjust the product name open the pom.xml and search for the tags
      

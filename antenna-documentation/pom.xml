@@ -34,7 +34,7 @@
         <antennaGradlePluginName>antenna-gradle-plugin</antennaGradlePluginName>
         <antennaGradleJavaFilename>org.eclipse.sw360.antenna.frontend.gradle.GradlePlugin</antennaGradleJavaFilename>
         <antennaGradleRepoAddition></antennaGradleRepoAddition>
-        <antennaDisclosureDocumentName>antenna-disclosure-document-bosch</antennaDisclosureDocumentName>
+        <antennaAttributionDocumentName>antenna-attribution-document-bosch</antennaAttributionDocumentName>
     </properties>
 
     <dependencies>

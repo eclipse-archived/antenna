@@ -12,9 +12,10 @@ package org.eclipse.sw360.antenna.attribution.document.workflow.generators;
 
 import org.eclipse.sw360.antenna.attribution.document.core.model.ArtifactAndLicense;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
-public class ArtifactAndLicenseComparator implements Comparator<ArtifactAndLicense> {
+public class ArtifactAndLicenseComparator implements Comparator<ArtifactAndLicense>, Serializable {
    @Override
    public int compare(ArtifactAndLicense o1, ArtifactAndLicense o2) {
       boolean b1 = o1.getPurl().isPresent();

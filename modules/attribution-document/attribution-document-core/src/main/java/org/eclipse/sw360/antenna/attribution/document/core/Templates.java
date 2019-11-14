@@ -1,3 +1,13 @@
+/**
+ * Copyright (c) Robert Bosch Manufacturing Solutions GmbH 2019.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.eclipse.sw360.antenna.attribution.document.core;
 
 import org.apache.commons.io.IOUtils;
@@ -6,7 +16,6 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
-import org.eclipse.sw360.antenna.attribution.document.core.TemplateBundle;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

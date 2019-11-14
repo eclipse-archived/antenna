@@ -155,7 +155,7 @@ public class P2TestProject extends AbstractTestProjectWithExpectations implement
 
     @Override
     public Collection<String> getExpectedBuildArtifacts() {
-        return Stream.of("artifact-information", "disclosure-doc").collect(Collectors.toSet());
+        return Stream.of("artifact-information", "attribution-doc").collect(Collectors.toSet());
     }
 
     @Override

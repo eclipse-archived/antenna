@@ -14,7 +14,7 @@ Below you can find an example for a possible configuration. If you are using the
     <configuration>
         <!-- MANDATORY properties -->
 
-        <!-- properties for Disclosure Document -->
+        <!-- properties for Attribution Document -->
         <productName>Modeler</productName>
         <productFullname>Visual Rules - Modeler</productFullname>
         <version>6.3.0</version>
@@ -83,7 +83,7 @@ the current build. Defaults to `false`. The default properties are:
 |---------------------|------------------|------|----------------------|
 |sources.zip          |sources-zip       |zip   |${docName}-sources-zip      |
 |${docNameCap}_3rdPartyAnalysisReport.txt    |${docName}-report |txt   |${docName}-processing-report|
-|disclosure document  |disclosure-doc    |pdf   |${docName}-disclosure-doc   |
+|attribution document  |attribution-doc    |pdf   |${docName}-attribution-doc   |
 |${docNameCap}_artifactsInformation.csv|artifact-information|csv |${docName}-artifact-info    |
 |ClmReportData.json   |clm-report        |json  |${docName}-clm-report       |
 |clm-report.pdf       |clm-report-pdf    |pdf   |clm-report-pdf        |

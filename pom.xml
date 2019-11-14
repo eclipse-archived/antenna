@@ -189,7 +189,6 @@
                 <artifactId>commons-io</artifactId>
                 <version>2.6</version>
             </dependency>
-            <!-- TODO: Robert manages v3.9 but antenna manages 3.8.1 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
@@ -210,7 +209,6 @@
                 <artifactId>velocity</artifactId>
                 <version>1.7</version>
             </dependency>
-            <!-- TODO: Robert manages v1.7.25 but antenna manages 1.7.26 -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -310,11 +308,6 @@
                 <version>2.0.16</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.pdfbox</groupId>
-                <artifactId>xmpbox</artifactId>
-                <version>2.0.16</version>
-            </dependency>
-            <dependency>
                 <groupId>com.github.ralfstuckert.pdfbox-layout</groupId>
                 <artifactId>pdfbox2-layout</artifactId>
                 <version>1.0.0</version>
@@ -326,14 +319,12 @@
                 <version>4.12</version>
                 <scope>test</scope>
             </dependency>
-            <!-- TODO: Robert manages v3.12.2 but antenna manages 3.11.1 -->
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>3.11.1</version>
                 <scope>test</scope>
             </dependency>
-            <!-- TODO: Robert manages v2.27.0 but antenna manages 2.23.0 -->
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>

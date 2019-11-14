@@ -32,4 +32,19 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Generates the service provider definitions (i.e. META-INF/services/* -->
+            <plugin>
+                <groupId>eu.somatik.serviceloader-maven-plugin</groupId>
+                <artifactId>serviceloader-maven-plugin</artifactId>
+                <configuration>
+                    <services>
+                        <param>org.eclipse.sw360.antenna.attribution.document.core.TemplateBundle</param>
+                    </services>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

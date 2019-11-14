@@ -41,8 +41,8 @@ Here's an example shell script:
 # Location of main ${docNameCap} jar file
 ${docNameAllCap}_JAR=/path/to/${docName}.jar
 
-# Location of custom disclosure document jar file
-DISCLOSURE_DOCUMENT_JAR=
+# Location of custom attribution document jar file
+ATTRIBUTION_DOCUMENT_JAR=
 
 # toolConfiguration.xml file for your project
 TOOL_CONF_FILE=osmi-configuration/toolConfiguration.xml
@@ -52,7 +52,7 @@ TOOL_CONF_FILE=osmi-configuration/toolConfiguration.xml
 #
 
 # Put these together on the classpath and run ${docNameCap}
-CLASSPATH=$${docNameAllCap}_JAR:$DISCLOSURE_DOCUMENT_JAR
+CLASSPATH=$${docNameAllCap}_JAR:$ATTRIBUTION_DOCUMENT_JAR
 java -cp $CLASSPATH $${antennaCliJavaFilename} $TOOL_CONF_FILE
 ```
 

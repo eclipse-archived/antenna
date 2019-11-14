@@ -203,7 +203,7 @@ antenna
         commons-lang3-3.5.jar
 ```
 
-Congratulations you created your first disclosure document!
+Congratulations you created your first attribution document!
 
 [workflow]: workflow-configuration.html
 [jsonanalyzer]: analyzers/json-analyzer-step.html

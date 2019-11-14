@@ -166,7 +166,7 @@ public class AntennaCLISettingsReader {
         readAntennaStringSetting(reader, "companyName", toolConfigBuilder::setCompanyName);
         readAntennaStringSetting(reader, "copyrightHoldersName", toolConfigBuilder::setCopyrightHoldersName);
         readAntennaStringSetting(reader, "copyrightNotice", toolConfigBuilder::setCopyrightNotice);
-        readAntennaStringSetting(reader, "disclosureDocumentNotes", toolConfigBuilder::setDisclosureDocumentNotes);
+        readAntennaStringSetting(reader, "attributionDocumentNotes", toolConfigBuilder::setAttributionDocumentNotes);
         readAntennaStringSetting(reader, "encodingCharSet", toolConfigBuilder::setEncoding);
         readAntennaStringSetting(reader, "proxyHost", toolConfigBuilder::setProxyHost);
 

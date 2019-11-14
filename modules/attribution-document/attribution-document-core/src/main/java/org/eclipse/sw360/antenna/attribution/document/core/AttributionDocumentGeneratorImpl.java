@@ -11,7 +11,6 @@
 package org.eclipse.sw360.antenna.attribution.document.core;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -44,9 +43,9 @@ import rst.pdfbox.layout.text.TextFlow;
  */
 public class AttributionDocumentGeneratorImpl {
     private static final String PARAGRAPH_TEXT = "The %s utilizes third-party software components. " +
-            "This attribution document lists these software components and their licenses.\n";
-    private static final String PARAGRAPSH_MARKUP = "Components are identified by " +
-            "{color:#0000EE}{link[https://github.com/package-url/purl-spec]}package URL (purl){link}{color:#000000}.\n\n";
+            "This attribution document lists these software components and their licenses.";
+    private static final String PARAGRAPH_MARKUP = "Components are identified by " +
+            "{color:#0000EE}{link[https://github.com/package-url/purl-spec]}package URL (purl){link}{color:#000000}.";
 
     private final String documentName;
     private final File workingDir;
@@ -54,9 +53,10 @@ public class AttributionDocumentGeneratorImpl {
     private final DocumentValues values;
 
     /**
-     * @param workingDir  (non-null) a writable directory to store intermediate and resulting files
-     * @param templateKey (non-blank) the key identifying the {@link TemplateBundle}.
-     * @param values      (non-null)
+     * @param documentName  (non-blank) the name of the attribution document name
+     * @param workingDir    (non-null) a writable directory to store intermediate and resulting files
+     * @param templateKey   (non-blank) the key identifying the {@link TemplateBundle}.
+     * @param values        (non-null)
      */
     public AttributionDocumentGeneratorImpl(String documentName, File workingDir, String templateKey, DocumentValues values) {
         this.documentName = documentName;
@@ -114,8 +114,8 @@ public class AttributionDocumentGeneratorImpl {
 
         try {
             Document document = new Document(40, 60, 80, 80);
-            document.add(createParagraph(String.format(PARAGRAPH_TEXT, values.getProductName()),
-                    PARAGRAPSH_MARKUP,
+            document.add(createParagraph(String.format(PARAGRAPH_TEXT + "%n", values.getProductName()),
+                    String.format(PARAGRAPH_MARKUP + "%n%n"),
                     10,
                     sansFont,
                     boldFont,
@@ -146,7 +146,7 @@ public class AttributionDocumentGeneratorImpl {
             document.add(ControlElement.NEWPAGE);
 
             Paragraph p = new Paragraph();
-            p.addMarkup(String.format("{anchor:%s}*%s*{anchor}%s", license.getKey(), license.getTitle(), "\n\n"),
+            p.addMarkup(String.format("{anchor:%s}*%s*{anchor} %n%n", license.getKey(), license.getTitle()),
                     size,
                     sansFont,
                     boldFont,
@@ -164,7 +164,7 @@ public class AttributionDocumentGeneratorImpl {
                                       PDFont italicFont, PDFont boldItalicFont) throws IOException {
         Paragraph p = new Paragraph();
         if (artifact.getPurl().isPresent()) {
-            p.addMarkup(String.format("*Package URL:* %s%s", artifact.getPurl().get(), "\n"),
+            p.addMarkup(String.format("*Package URL:* %s%n", artifact.getPurl().get()),
                     size,
                     sansFont,
                     boldFont,
@@ -172,7 +172,7 @@ public class AttributionDocumentGeneratorImpl {
                     boldItalicFont);
         }
         if (artifact.getFilename() != null && ! artifact.getFilename().isEmpty()) {
-            p.addMarkup(String.format("*Filename:* %s%s", artifact.getFilename(), "\n"),
+            p.addMarkup(String.format("*Filename:* %s%n", artifact.getFilename()),
                     size,
                     sansFont,
                     boldFont,
@@ -180,7 +180,7 @@ public class AttributionDocumentGeneratorImpl {
                     boldItalicFont);
         }
         if (artifact.getCopyrightStatement().isPresent()) {
-            p.addMarkup(String.format("*Copyright:* %s%s", artifact.getCopyrightStatement().get(), "\n"),
+            p.addMarkup(String.format("*Copyright:* %s%n", artifact.getCopyrightStatement().get()),
                     size,
                     sansFont,
                     boldFont,
@@ -189,8 +189,8 @@ public class AttributionDocumentGeneratorImpl {
         }
         p.addMarkup("*Licenses:*", size, sansFont, boldFont, italicFont, boldItalicFont);
         for (LicenseInfo license : artifact.getLicenses()){
-            p.addMarkup(String.format("%s- {color:#0000EE}{link[#%s]}%s{link}{color:#000000}",
-                                        "\n", license.getKey(), license.getShortName()),
+            p.addMarkup(String.format("%n- {color:#0000EE}{link[#%s]}%s{link}{color:#000000}",
+                                        license.getKey(), license.getShortName()),
                     size,
                     sansFont,
                     boldFont,
@@ -211,7 +211,6 @@ public class AttributionDocumentGeneratorImpl {
     }
 
     private static List<LicenseInfo> sortByTitle(Map<String, LicenseInfo> licenses) {
-
         List<LicenseInfo> list = new ArrayList<>(licenses.values());
         Collections.sort(list,
                 (o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.getTitle(), o2.getTitle()));
@@ -219,7 +218,6 @@ public class AttributionDocumentGeneratorImpl {
     }
 
     private static Map<String, LicenseInfo> extractUniqueLicenses(List<ArtifactAndLicense> artifacts) {
-
         Map<String, LicenseInfo> map = new TreeMap<>();
 
         for (ArtifactAndLicense artifactAndLicense : artifacts) {
@@ -306,7 +304,6 @@ public class AttributionDocumentGeneratorImpl {
             throw new ExecutionException("Could not write page.", e);
         }
     }
-
 
     private File doOverlay(File file, PDDocument template, String newFileName) throws IOException {
         PDDocument content = PDDocument.load(file);

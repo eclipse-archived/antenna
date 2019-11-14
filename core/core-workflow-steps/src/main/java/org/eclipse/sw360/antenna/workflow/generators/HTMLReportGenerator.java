@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
  * Generates an HTML report of component license information.
  */
 public class HTMLReportGenerator extends AbstractGenerator {
-    private static final String IDENTIFIER = "disclosure-doc";
-    private static final String CLASSIFIER = "antenna-disclosure-doc";
+    private static final String IDENTIFIER = "attribution-doc";
+    private static final String CLASSIFIER = "antenna-attribution-doc";
     private static final String TYPE = "html";
 
     private static final String LICENSE_REPORT_TEMPLATE_FILE = "licenseReport.vm";

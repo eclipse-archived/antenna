@@ -45,7 +45,7 @@ shall be ignored during the whole process of ${docNameCap}.
 * `sourceValidation`: In this section parameter for the license
 validation can be set.
 * `setFinalLicenses`: In this section the final license (license, that
-will occure in the disclosure document) can be defined.
+will occure in the attribution document) can be defined.
 * `SW360ProjectCoordinates`: In this section you can set the SW360 project coordinates, giving name and version.
 
 

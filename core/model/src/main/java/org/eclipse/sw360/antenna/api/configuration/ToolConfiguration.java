@@ -48,7 +48,7 @@ public class ToolConfiguration {
     private String companyName;
     private String copyrightHoldersName;
     private String copyrightNotice;
-    private String disclosureDocumentNotes;
+    private String attributionDocumentNotes;
     private Workflow workflow;
     private boolean showCopyrightStatements;
     private Charset encodingCharSet;
@@ -78,7 +78,7 @@ public class ToolConfiguration {
         this.companyName = builder.companyName;
         this.copyrightHoldersName = builder.copyrightHoldersName;
         this.copyrightNotice = builder.copyrightNotice;
-        this.disclosureDocumentNotes = builder.disclosureDocumentNotes;
+        this.attributionDocumentNotes = builder.attributionDocumentNotes;
         this.workflow = builder.workflow;
         this.showCopyrightStatements = builder.showCopyrightStatements;
         if(builder.encodingCharSet != null) {
@@ -154,8 +154,8 @@ public class ToolConfiguration {
         return copyrightNotice;
     }
 
-    public String getDisclosureDocumentNotes() {
-        return disclosureDocumentNotes;
+    public String getAttributionDocumentNotes() {
+        return attributionDocumentNotes;
     }
 
     public Workflow getWorkflow() {
@@ -198,7 +198,7 @@ public class ToolConfiguration {
         private String companyName;
         private String copyrightHoldersName;
         private String copyrightNotice;
-        private String disclosureDocumentNotes;
+        private String attributionDocumentNotes;
         private Workflow workflow;
         private boolean showCopyrightStatements;
         private Charset encodingCharSet;
@@ -290,8 +290,8 @@ public class ToolConfiguration {
             return this;
         }
 
-        public ConfigurationBuilder setDisclosureDocumentNotes(String disclosureDocumentNotes) {
-            this.disclosureDocumentNotes = disclosureDocumentNotes;
+        public ConfigurationBuilder setAttributionDocumentNotes(String attributionDocumentNotes) {
+            this.attributionDocumentNotes = attributionDocumentNotes;
             return this;
         }
 

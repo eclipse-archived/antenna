@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 public class AttributionDocumentGenerator extends AbstractGenerator {
    private static final Logger LOG = LoggerFactory.getLogger(AttributionDocumentGenerator.class);
    private static final String DEFAULT_ATTRIBUTION_DOC_NAME = "attribution-document.pdf";
+   private static final String DEFAULT_TEMPLATE_KEY = "basic-pdf-template";
 
    private static final String IDENTIFIER = "antenna-attribution-doc";
    private static final String CLASSIFIER = "antenna-attribution-doc";
@@ -101,7 +102,7 @@ public class AttributionDocumentGenerator extends AbstractGenerator {
       final String confCopyrightHolder = getConfigValue(CONFIG_COPYRIGHT_HOLDER, configMap);
 
       docName = getConfigValue(CONFIG_DOC_NAME, configMap, DEFAULT_ATTRIBUTION_DOC_NAME);
-      templateKey = getConfigValue(CONFIG_TEMPLATE_KEY, configMap);
+      templateKey = getConfigValue(CONFIG_TEMPLATE_KEY, configMap, DEFAULT_TEMPLATE_KEY);
 
       values = new DocumentValues(confProductName, confProductVersion, confCopyrightHolder);
    }

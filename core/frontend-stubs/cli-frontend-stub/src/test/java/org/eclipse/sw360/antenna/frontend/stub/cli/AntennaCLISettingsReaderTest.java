@@ -147,7 +147,7 @@ public class AntennaCLISettingsReaderTest {
         putToMaps(stringAnswers, stringGetters, "companyName", ToolConfiguration::getCompanyName);
         putToMaps(stringAnswers, stringGetters, "copyrightHoldersName", ToolConfiguration::getCopyrightHoldersName);
         putToMaps(stringAnswers, stringGetters, "copyrightNotice", ToolConfiguration::getCopyrightNotice);
-        putToMaps(stringAnswers, stringGetters, "disclosureDocumentNotes", ToolConfiguration::getDisclosureDocumentNotes);
+        putToMaps(stringAnswers, stringGetters, "attributionDocumentNotes", ToolConfiguration::getAttributionDocumentNotes);
         // putToMaps(stringAnswers, stringGetters, "encodingCharSet", ToolConfiguration::getEncoding);
         putToMaps(stringAnswers, stringGetters, "proxyHost", ToolConfiguration::getProxyHost);
 

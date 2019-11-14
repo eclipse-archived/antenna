@@ -57,7 +57,7 @@ Message type in processing report
 Possible solution
 : Add the license text to the knowledgebase.
 
-#[[###]]# Problem: ${docNameCap} fails because it does not find files for disclosure document
+#[[###]]# Problem: ${docNameCap} fails because it does not find files for attribution document
  
 Possible solution
 : Have a look at your projects path. Unfortunately ${docNameCap} can't deal with 
