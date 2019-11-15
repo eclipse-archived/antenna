@@ -12,7 +12,6 @@
 package org.eclipse.sw360.antenna.sw360.workflow.generators;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.model.SW360ProjectCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -52,9 +51,6 @@ public class SW360Updater extends AbstractGenerator {
 
         // General configuration
         final boolean updateReleases = getBooleanConfigValue(UPDATE_RELEASES, configMap);
-        if (updateReleases) {
-            throw new ExecutionException("The functionality to update releases, activated with the " + UPDATE_RELEASES + " is not yet supported.");
-        }
         Boolean uploadSources = getBooleanConfigValue(UPLOAD_SOURCES, configMap);
 
         sw360MetaDataUpdater = new SW360MetaDataUpdater(sw360ConnectionConfiguration, updateReleases, uploadSources);

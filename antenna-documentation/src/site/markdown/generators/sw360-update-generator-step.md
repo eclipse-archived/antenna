@@ -40,7 +40,7 @@ Add the following step into the `<generators>` section of your workflow.xml
 * `client.id`: The REST API uses a two step authentication, this is general client id used.
 * `client.password`: The password of the client id.
 * `proxy.use`: Enable proxy for communication to SW360.
-* `update_releases`: Update already existsing releases (This feature is currently **not** supported)
+* `update_releases`: Update already existing releases 
 * `update_sources`: Upload sources corresponding to releases to SW360
 
 #### Data Model

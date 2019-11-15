@@ -110,7 +110,7 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
     public SW360Release patchRelease(SW360Release sw360Release, HttpHeaders header) {
         HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
 
-        ResponseEntity<Resource<SW360Release>> response = doRestPATCH(getEndpoint(), httpEntity,
+        ResponseEntity<Resource<SW360Release>> response = doRestPATCH(getEndpoint() + "/" + sw360Release.getReleaseId(), httpEntity,
                 new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
         if (! response.getStatusCode().is2xxSuccessful()) {
