@@ -37,7 +37,11 @@ public class SW360ComponentAdapterUtils {
     }
 
     private static void setComponentType(SW360Component component, Artifact artifact) {
-        if (artifact.isProprietary()) {
+        setComponentType(component, artifact.isProprietary());
+    }
+
+    private static void setComponentType(SW360Component component, boolean isProprietary) {
+        if (isProprietary) {
             component.setComponentType(SW360ComponentType.INTERNAL);
         } else {
             component.setComponentType(SW360ComponentType.OSS);
@@ -47,7 +51,7 @@ public class SW360ComponentAdapterUtils {
     public static SW360Component createFromRelease(SW360Release release) {
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName(release.getName());
-        // TODO: set component type
+        setComponentType(sw360Component, release.isProprietary());
         return sw360Component;
     }
 
