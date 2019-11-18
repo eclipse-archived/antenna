@@ -39,6 +39,7 @@ public class SW360ReleaseAdapterUtils {
         SW360ReleaseAdapterUtils.setClearingStatus(release, artifact);
         SW360ReleaseAdapterUtils.setChangeStatus(release, artifact);
         SW360ReleaseAdapterUtils.setCopyrights(release, artifact);
+        release.setProprietary(artifact.isProprietary());
 
         return release;
     }

@@ -36,6 +36,8 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     private static final String COPYRIGHTS_KEY = "copyrights";
     private static final String CLEARINGSTATE_KEY = "clearingState";
 
+    @JsonIgnore
+    private boolean isProprietary;
     private String name;
     private String version;
     private String cpeId;
@@ -263,6 +265,17 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
 
     public SW360Release setCopyrights(String copyrights) {
         additionalData.put(COPYRIGHTS_KEY, copyrights);
+        return this;
+    }
+
+    @JsonIgnore
+    public boolean isProprietary() {
+        return isProprietary;
+    }
+
+    @JsonIgnore
+    public SW360Release setProprietary(boolean proprietary) {
+        isProprietary = proprietary;
         return this;
     }
 
