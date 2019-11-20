@@ -53,7 +53,7 @@ public class HttpRequester extends IArtifactRequester {
         File localJarFile = targetDirectory.resolve(jarBaseName).toFile();
 
         if (localJarFile.exists()) {
-            LOGGER.info("The file " + localJarFile + " already exists and won't be downloaded again");
+            LOGGER.debug("The file " + localJarFile + " already exists and won't be downloaded again");
             return Optional.of(localJarFile);
         }
 
@@ -83,7 +83,7 @@ public class HttpRequester extends IArtifactRequester {
 
     private Optional<File> tryFileDownload(String jarUrl, Path targetDirectory, String jarBaseName) {
         try {
-            LOGGER.info("HttpRequester with download path " + jarUrl);
+            LOGGER.debug("HttpRequester with download path " + jarUrl);
             return Optional.ofNullable(httpHelper.downloadFile(jarUrl, targetDirectory, jarBaseName));
         } catch (IOException e) {
             LOGGER.warn("Failed to find jar: ", e);

@@ -79,7 +79,7 @@ public class MavenArtifactResolverImpl {
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
         LOGGER.info("Resolve maven artifacts, be patient... this could take a long time");
         resolveArtifacts(artifacts);
-        LOGGER.info("Resolve maven artifacts... done");
+        LOGGER.debug("Resolve maven artifacts... done");
         return artifacts;
 
     }

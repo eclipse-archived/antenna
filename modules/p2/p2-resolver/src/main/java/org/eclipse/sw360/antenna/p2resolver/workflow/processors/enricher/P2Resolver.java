@@ -129,7 +129,7 @@ public class P2Resolver extends AbstractProcessor {
             }
 
             while ((line = outputBufferedReader.readLine()) != null) {
-                LOGGER.info(line);
+                LOGGER.debug(line);
             }
         }
     }

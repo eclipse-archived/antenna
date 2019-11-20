@@ -95,7 +95,7 @@ public class MavenRuntimeRequester extends IArtifactRequester {
         File targetFile = targetDirectory.resolve(artifactFile.getName()).toFile();
         if (targetFile.exists()) {
             if (contentEquals(artifactFile, targetFile)) {
-                LOGGER.info("File " + targetFile + " was already fetched previously");
+                LOGGER.debug("File " + targetFile + " was already fetched previously");
                 return Optional.of(targetFile);
             }
             LOGGER.warn("File " + targetFile + " was already fetched previously, but is different to " + artifactFile + ", fall back to using the second");

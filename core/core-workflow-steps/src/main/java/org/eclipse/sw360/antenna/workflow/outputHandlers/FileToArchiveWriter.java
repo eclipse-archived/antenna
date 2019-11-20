@@ -74,7 +74,7 @@ public class FileToArchiveWriter extends AbstractOutputHandler {
         Path sourcePath = generatedOutput.get(key).getFile().toPath();
         Path pathInArchive = instruction.pathInArchive;
 
-        LOGGER.info("Write file=[{}] to artifact=[{}]", sourcePath, zipFile);
+        LOGGER.debug("Write file=[{}] to artifact=[{}]", sourcePath, zipFile);
 
         addFileToArchive(sourcePath, zipFile, pathInArchive);
     }

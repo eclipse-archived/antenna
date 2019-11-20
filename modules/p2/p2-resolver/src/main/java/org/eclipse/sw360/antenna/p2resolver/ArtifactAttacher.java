@@ -60,7 +60,7 @@ public class ArtifactAttacher {
             File artifactSource = new File(targetDirectory.toString() + File.separator + bundleSourceName);
             FileUtils.copyFile(sourceFile, artifactSource);
             artifact.addFact(new ArtifactSourceFile(artifactSource.toPath()));
-            LOGGER.info("Attached source artifact for " + artifact + ".");
+            LOGGER.debug("Attached source artifact for " + artifact + ".");
         }
     }
 
@@ -71,7 +71,7 @@ public class ArtifactAttacher {
             File artifactFile = new File(targetDirectory.toString() + File.separator + bundleJarName);
             FileUtils.copyFile(jarFile, artifactFile);
             artifact.addFact(new ArtifactFile(artifactFile.toPath()));
-            LOGGER.info("Attached artifact for " + artifact + ".");
+            LOGGER.debug("Attached artifact for " + artifact + ".");
         }
     }
 

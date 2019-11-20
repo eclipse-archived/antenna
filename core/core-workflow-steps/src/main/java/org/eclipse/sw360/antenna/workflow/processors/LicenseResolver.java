@@ -67,9 +67,9 @@ public class LicenseResolver extends AbstractProcessor {
 
     @Override
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
-        LOGGER.info("Resolve licenses...");
+        LOGGER.debug("Resolve licenses...");
         resolveLicenses(artifacts);
-        LOGGER.info("Resolve licenses... done");
+        LOGGER.debug("Resolve licenses... done");
         return artifacts;
     }
 

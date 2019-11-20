@@ -53,17 +53,17 @@ public final class P2RepositoryExtractor {
     public static void extractProductFromJar(String extractionLocation, String jarPath) {
         String extractedFolder = extractionLocation + File.separator + "extracted";
         new File(extractedFolder).mkdir();
-        LOGGER.info("Extracting jar file containing products.");
+        LOGGER.debug("Extracting jar file containing products.");
         unzipFile(new File(jarPath), extractedFolder);
-        LOGGER.info("Extracting jar file complete.");
+        LOGGER.debug("Extracting jar file complete.");
         extractProductFromFilesystem(extractionLocation, extractedFolder);
     }
 
     public static void extractProductFromFilesystem(String extractionLocation, String location) {
         File zipFile = new File(location + File.separator + getProductNameForOS());
-        LOGGER.info("Extracting zip file of product.");
+        LOGGER.debug("Extracting zip file of product.");
         unzipFile(zipFile, extractionLocation);
-        LOGGER.info("Extracted product at: " + extractionLocation);
+        LOGGER.debug("Extracted product at: " + extractionLocation);
     }
 
     private static void unzipFile(File zipFile, String extractionLocation) {

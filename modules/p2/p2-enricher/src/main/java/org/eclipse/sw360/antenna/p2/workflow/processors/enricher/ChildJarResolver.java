@@ -169,9 +169,9 @@ public class ChildJarResolver extends AbstractProcessor {
 
     @Override
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
-        LOGGER.info("Resolving child jars...");
+        LOGGER.debug("Resolving child jars...");
         resolveArtifacts(artifacts);
-        LOGGER.info("Resolving child jars... done");
+        LOGGER.debug("Resolving child jars... done");
         return artifacts;
     }
 

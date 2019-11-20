@@ -40,7 +40,7 @@ public abstract class WorkflowItemFactory {
             instance.setAntennaContext(context);
             instance.overrideStepOrder(stepOrderOveride);
             instance.configure(workflowitemConfig);
-            LOGGER.info("{} loaded and configured", name);
+            LOGGER.debug("{} loaded and configured", name);
             return instance;
         } catch (ClassNotFoundException e) {
             throw new ExecutionException("Could not initialize workflow item [" + name + "], because the class could not be found, reason=[" + e.getMessage() + "]", e);

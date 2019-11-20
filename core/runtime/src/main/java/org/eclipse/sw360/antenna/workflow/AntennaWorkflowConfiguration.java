@@ -30,7 +30,7 @@ public class AntennaWorkflowConfiguration {
     private final List<AbstractOutputHandler> outputHandlers;
 
     public AntennaWorkflowConfiguration(AntennaContext context) {
-        LOGGER.info("Initializing workflow configuration ...");
+        LOGGER.debug("Initializing workflow configuration ...");
         Workflow workflow = context.getToolConfiguration().getWorkflow();
 
         if (workflow == null) {
@@ -58,7 +58,7 @@ public class AntennaWorkflowConfiguration {
 
         outputHandlers = OutputHandlerFactory.getOutputHandlers(workflow, context);
 
-        LOGGER.info("Initializing workflow configuration done");
+        LOGGER.debug("Initializing workflow configuration done");
     }
 
     public Collection<AbstractAnalyzer> getAnalyzers() {
@@ -78,9 +78,9 @@ public class AntennaWorkflowConfiguration {
     }
 
     private void debugLogAndWarnOnDuplicateOrders(String nameOfSteps, List<? extends ConfigurableWorkflowItem> items) {
-        LOGGER.info("The calculated order of " + nameOfSteps + " is:");
+        LOGGER.debug("The calculated order of " + nameOfSteps + " is:");
         for (int i = 0; i < items.size() ; i++) {
-            LOGGER.info("    - " + items.get(i).getWorkflowStepOrder() + ": " + items.get(i).getWorkflowItemName());
+            LOGGER.debug("    - " + items.get(i).getWorkflowStepOrder() + ": " + items.get(i).getWorkflowItemName());
             if (i > 0 && items.get(i - 1).getWorkflowStepOrder() == items.get(i).getWorkflowStepOrder()) {
                 LOGGER.warn("Workflow steps " + items.get(i - 1).getWorkflowItemName() + " and " + items.get(i).getWorkflowItemName() + " have the same step order. The former will be executed before the latter.");
             }

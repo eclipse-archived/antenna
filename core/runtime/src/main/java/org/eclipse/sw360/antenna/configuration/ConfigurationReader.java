@@ -64,7 +64,7 @@ public class ConfigurationReader implements IConfigReader {
     public Configuration readConfigFromUri(URI configFileUri, Path antennaTargetDirectory) {
         Validate.notNull(configFileUri, "Configured config uri is null!");
 
-        LOGGER.info("Validate config file against xsd.");
+        LOGGER.debug("Validate config file against xsd.");
         File configFile = resolveConfigUriAndGetFile(configFileUri, antennaTargetDirectory);
         return checkAndParseConfigXML(configFile, configXsdURL);
 
@@ -75,7 +75,7 @@ public class ConfigurationReader implements IConfigReader {
         Validate.isTrue(configFile.exists(), "Configured config file '" + configFile + "' does not exist!");
         Validate.isTrue(configFile.isFile(), "Configured config file '" + configFile + "' must be a file!");
 
-        LOGGER.info("Validate config file against xsd.");
+        LOGGER.debug("Validate config file against xsd.");
         return checkAndParseConfigXML(configFile, configXsdURL);
     }
 
@@ -89,7 +89,7 @@ public class ConfigurationReader implements IConfigReader {
             try {
                 boolean alreadyExisted = configFromUri.createNewFile();
                 if(alreadyExisted){
-                    LOGGER.info("Destination file already existed, continuing by overwriting the file.");
+                    LOGGER.warn("Destination file already existed, continuing by overwriting the file.");
                 }
                 LOGGER.debug("Copy configuration file to target folder of antenna.");
                 org.apache.commons.io.FileUtils.copyURLToFile(configFileUri.toURL(), configFromUri);

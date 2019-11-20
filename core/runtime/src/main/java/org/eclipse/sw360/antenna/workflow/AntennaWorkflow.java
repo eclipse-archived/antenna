@@ -31,7 +31,7 @@ public class AntennaWorkflow {
     private final List<AbstractOutputHandler> postSinksHooks;
 
     public AntennaWorkflow(AntennaWorkflowConfiguration antennaWFConfig) {
-        LOGGER.info("Initializing workflow ...");
+        LOGGER.debug("Initializing workflow ...");
         analyzers = antennaWFConfig.getAnalyzers();
         processors = antennaWFConfig.getProcessors();
         generators = antennaWFConfig.getGenerators();
@@ -73,7 +73,7 @@ public class AntennaWorkflow {
             LOGGER.debug("Clean up workflow ...");
             cleanup();
             LOGGER.debug("Clean up workflow done");
-            LOGGER.info("Workflow execution done");
+            LOGGER.debug("Workflow execution done");
         }
     }
 
@@ -100,7 +100,7 @@ public class AntennaWorkflow {
     private Collection<WorkflowStepResult> getArtifactsFromAnalyzers() {
         Collection<WorkflowStepResult> results = new HashSet<>();
         for(AbstractAnalyzer source : analyzers){
-            LOGGER.info("\nCollecting dependencies from source {}", source.getWorkflowItemName());
+            LOGGER.info("Run {}", source.getWorkflowItemName());
             results.add(source.yield());
         }
         return results;
@@ -108,7 +108,7 @@ public class AntennaWorkflow {
 
     private void applyProcessors(ProcessingState processingState) {
         for (AbstractProcessor processor : processors) {
-            LOGGER.info("Let {} process dependencies", processor.getWorkflowItemName());
+            LOGGER.info("Run {}", processor.getWorkflowItemName());
             processingState.applyWorkflowStepResult(processor.process(processingState));
         }
     }
@@ -126,7 +126,7 @@ public class AntennaWorkflow {
     private Map<String, IAttachable> generateOutputViaGenerators(ProcessingState processingState) {
         Map<String, IAttachable> generatedOutput = new HashMap<>();
         for (AbstractGenerator sink : generators) {
-            LOGGER.info("Let {} generate output", sink.getWorkflowItemName());
+            LOGGER.info("Run {}", sink.getWorkflowItemName());
             Map<String, IAttachable> oneGeneratedOutput = sink.produce(processingState);
             warnIfKeysCollide(sink, generatedOutput, oneGeneratedOutput);
             generatedOutput.putAll(oneGeneratedOutput);
