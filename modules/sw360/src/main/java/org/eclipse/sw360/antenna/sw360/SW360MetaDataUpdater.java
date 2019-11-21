@@ -22,10 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SW360MetaDataUpdater {
@@ -88,5 +86,14 @@ public class SW360MetaDataUpdater {
             id = projectClientAdapter.addProject(projectName, projectVersion, header);
         }
         projectClientAdapter.addSW360ReleasesToSW360Project(id, releases, header);
+    }
+
+    public boolean isUploadSources() {
+        return uploadSources;
+    }
+
+    public SW360Release uploadAttachments(SW360Release sw360Release, Map<Path, String> attachments) {
+        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
+        return releaseClientAdapter.uploadAttachments(sw360Release, attachments, header);
     }
 }

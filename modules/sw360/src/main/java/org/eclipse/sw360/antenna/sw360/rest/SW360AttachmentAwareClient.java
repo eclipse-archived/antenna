@@ -77,7 +77,7 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
             Validate.validState(response.getBody() != null);
             return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            LOGGER.warn("Request to get attach {} to {} failed with {}", fileToAttach, self, e.getStatusCode());
+            LOGGER.warn("Request to attach {} to {} failed with {}", fileToAttach, self, e.getStatusCode());
             LOGGER.debug("Error: ", e);
             return itemToModify;
         } catch (ExecutionException e) {

@@ -79,14 +79,14 @@ public class SW360ReleaseClientAdapter {
             });
         }
 
-        final SW360Release releaseFromSW360 = releaseClient.createRelease(releaseFromArtifact, header);
+        return releaseClient.createRelease(releaseFromArtifact, header);
+    }
 
-        final Optional<Path> sourceFile = releaseFromArtifact.getSourceFile();
-        if (uploadSource && sourceFile.isPresent()) {
-            return releaseClient.uploadAndAttachAttachment(releaseFromSW360, sourceFile.get(), "SOURCE", header);
-        } else {
-            return releaseFromSW360;
+    public SW360Release uploadAttachments(SW360Release sw360item, Map<Path, String> attachments, HttpHeaders header) {
+        for(Map.Entry<Path, String> attachment : attachments.entrySet()) {
+            sw360item = releaseClient.uploadAndAttachAttachment(sw360item, attachment.getKey(), attachment.getValue(), header);
         }
+        return sw360item;
     }
 
     public Optional<SW360Release> getReleaseById(String releaseId, HttpHeaders header) {
