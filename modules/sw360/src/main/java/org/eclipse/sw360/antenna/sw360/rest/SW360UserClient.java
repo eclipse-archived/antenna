@@ -19,8 +19,11 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
-import java.util.Optional;
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.checkRestStatus;
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSaveOrThrow;
 
 public class SW360UserClient extends SW360Client {
     private static final String USERS_ENDPOINT = "/users";
@@ -37,17 +40,15 @@ public class SW360UserClient extends SW360Client {
     }
 
     public SW360User getUserByEmail(String email, HttpHeaders header) {
-        ResponseEntity<Resource<SW360User>> response = doRestGET(getEndpoint() + "/" + email, header,
-                new ParameterizedTypeReference<Resource<SW360User>>() {});
+        try {
+            ResponseEntity<Resource<SW360User>> response = doRestGET(getEndpoint() + "/" + email, header,
+                    new ParameterizedTypeReference<Resource<SW360User>>() {});
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new ExecutionException("Body was null"))
-                    .getContent();
-        }
-        else {
+            checkRestStatus(response);
+            return getSaveOrThrow(response.getBody(), Resource::getContent);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             throw new ExecutionException("Request to get user " + email + " failed with "
-                    + response.getStatusCode());
+                    + e.getStatusCode());
         }
     }
 }

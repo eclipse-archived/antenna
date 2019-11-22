@@ -33,7 +33,6 @@ public class SW360Attributes {
     public static final String PROJECT_BUSINESS_UNIT = "businessUnit";
     public static final String PROJECT_CLEARING_TEAM= "clearingTeam";
     public static final String PROJECT_VISIBILITY = "visbility";
-    public static final String PROJECT_LINKED_RELEASES = "linkedReleases";
     public static final String PROJECT_RELEASE_ID_TO_USAGE = "releaseIdToUsage";
 
     // Attributes of Sw360Component

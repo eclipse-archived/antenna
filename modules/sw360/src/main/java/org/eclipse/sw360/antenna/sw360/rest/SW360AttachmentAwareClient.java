@@ -10,11 +10,14 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest;
 
+import org.apache.commons.lang3.Validate;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,12 +25,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
+
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.checkRestStatus;
 
 public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>> extends SW360Client {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SW360AttachmentAwareClient.class);
     private static final String ATTACHMENTS_ENDPOINT = "/attachments";
 
     public SW360AttachmentAwareClient(ProxySettings proxySettings) {
@@ -44,7 +51,8 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
 
     public T uploadAndAttachAttachment(T itemToModify, Path fileToAttach, String kindToAttach, HttpHeaders header) {
         if (!Files.exists(fileToAttach)) {
-            throw new ExecutionException("The file=[" + fileToAttach + "], which should be attached to release, does not exist");
+            LOGGER.warn("The file=[" + fileToAttach + "], which should be attached to release, does not exist");
+            return itemToModify;
         }
 
         MultiValueMap<String, Object> multipartRequest = new LinkedMultiValueMap<>();
@@ -62,14 +70,19 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
 
     private T uploadAndAttachAttachment(T itemToModify, Path fileToAttach, HttpEntity<MultiValueMap<String, Object>> requestEntity) {
         final String self = itemToModify.get_Links().getSelf().getHref();
-        ResponseEntity<T> response = restTemplate.postForEntity(self + ATTACHMENTS_ENDPOINT, requestEntity, getHandledClassType());
+        try {
+            ResponseEntity<T> response = restTemplate.postForEntity(self + ATTACHMENTS_ENDPOINT, requestEntity, getHandledClassType());
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new ExecutionException("Body was null"));
-        } else {
-            throw new ExecutionException("Request to get attach " + fileToAttach + " to " + self + " failed with "
-                    + response.getStatusCode());
+            checkRestStatus(response);
+            Validate.validState(response.getBody() != null);
+            return response.getBody();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            LOGGER.warn("Request to get attach {} to {} failed with {}", fileToAttach, self, e.getStatusCode());
+            LOGGER.debug("Error: ", e);
+            return itemToModify;
+        } catch (ExecutionException e) {
+            LOGGER.warn("Request to attach {} to {} failed with {}", fileToAttach, self, e.getMessage());
+            return itemToModify;
         }
     }
 }

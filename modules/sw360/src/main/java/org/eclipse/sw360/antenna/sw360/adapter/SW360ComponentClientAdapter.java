@@ -32,12 +32,12 @@ public class SW360ComponentClientAdapter {
         this.componentClient = new SW360ComponentClient(restUrl, proxySettings);
     }
 
-    public SW360Component getOrCreateComponent(SW360Component componentFromRelease, HttpHeaders header) {
+    public Optional<SW360Component> getOrCreateComponent(SW360Component componentFromRelease, HttpHeaders header) {
         if(componentFromRelease.getComponentId() != null) {
             return getComponentById(componentFromRelease.getComponentId(), header);
         }
-        return getComponentByName(componentFromRelease.getName(), header)
-                .orElseGet(() -> createComponent(componentFromRelease, header));
+        return Optional.of(getComponentByName(componentFromRelease.getName(), header)
+                .orElseGet(() -> createComponent(componentFromRelease, header)));
     }
 
     public SW360Component createComponent(SW360Component component, HttpHeaders header) {
@@ -47,7 +47,7 @@ public class SW360ComponentClientAdapter {
         return componentClient.createComponent(component, header);
     }
 
-    public SW360Component getComponentById(String componentId, HttpHeaders header) {
+    public Optional<SW360Component> getComponentById(String componentId, HttpHeaders header) {
         return componentClient.getComponent(componentId, header);
     }
 
@@ -67,7 +67,8 @@ public class SW360ComponentClientAdapter {
                 .collect(Collectors.toList());
 
         for (String componentId : componentIds) {
-            completeComponents.add(getComponentById(componentId, header));
+            getComponentById(componentId, header)
+                    .map(completeComponents::add);
         }
 
         return completeComponents.stream()

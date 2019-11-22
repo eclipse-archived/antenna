@@ -17,12 +17,16 @@ import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
 import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
+
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.checkRestStatus;
 
 public class SW360AuthenticationClient extends SW360Client {
     private static final String AUTHORIZATION_BASIC_VALUE = "Basic ";
@@ -46,24 +50,26 @@ public class SW360AuthenticationClient extends SW360Client {
     }
 
     public String getOAuth2AccessToken(String username, String password, String clientId, String clientPassword) {
-        String body = String.format("%s=%s&%s=%s&%s=%s", SW360Attributes.AUTHENTICATOR_GRANT_TYPE, GRANT_TYPE_VALUE,
-                SW360Attributes.AUTHENTICATOR_USERNAME, username, SW360Attributes.AUTHENTICATOR_PASSWORD, password);
+        try {
+            String body = String.format("%s=%s&%s=%s&%s=%s", SW360Attributes.AUTHENTICATOR_GRANT_TYPE, GRANT_TYPE_VALUE,
+                    SW360Attributes.AUTHENTICATOR_USERNAME, username, SW360Attributes.AUTHENTICATOR_PASSWORD, password);
 
-        HttpHeaders headers = new HttpHeaders();
-        addBasicAuthentication(headers, clientId, clientPassword);
-        headers.add(HttpHeaders.CONTENT_TYPE, TOKEN_CONTENT_TYPE);
+            HttpHeaders headers = new HttpHeaders();
+            addBasicAuthentication(headers, clientId, clientPassword);
+            headers.add(HttpHeaders.CONTENT_TYPE, TOKEN_CONTENT_TYPE);
 
-        HttpEntity<String> httpEntity = new HttpEntity<>(body, headers);
-        ResponseEntity<String> response = doRestCall(getEndpoint(), HttpMethod.POST, httpEntity, String.class);
+            HttpEntity<String> httpEntity = new HttpEntity<>(body, headers);
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            try {
-                return (String) new ObjectMapper().readValue(response.getBody(), HashMap.class).get(JSON_TOKEN_KEY);
-            } catch (IOException e) {
-                throw new ExecutionException("Error when attempting to deserialize the response body.", e);
-            }
-        } else {
-            throw new ExecutionException("Could not request OAuth2 access token for [" + username + "].");
+            ResponseEntity<String> response = doRestCall(getEndpoint(), HttpMethod.POST, httpEntity, String.class);
+
+            checkRestStatus(response);
+            return (String) new ObjectMapper().readValue(response.getBody(), HashMap.class).get(JSON_TOKEN_KEY);
+
+        } catch (HttpServerErrorException | HttpClientErrorException e) {
+            throw new ExecutionException("Could not authenticate with user credentials [" + username + "]. "
+                    + "Failed with: " + e.getStatusCode());
+        } catch (IOException e) {
+            throw new ExecutionException("Error when attempting to deserialize the response body.", e);
         }
     }
 

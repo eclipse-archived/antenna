@@ -23,14 +23,15 @@ import java.util.List;
 import java.util.Optional;
 
 public class SW360ClientUtils {
+
     private SW360ClientUtils() {
         // Utils
     }
 
-    protected static List<SW360SparseRelease> getSw360SparseReleases(ResponseEntity<Resource<SW360ReleaseList>> response) {
-        SW360ReleaseList resource = Optional.ofNullable(response.getBody())
-                .orElseThrow(() -> new ExecutionException("Body was null"))
-                .getContent();
+    static List<SW360SparseRelease> getSw360SparseReleases(ResponseEntity<Resource<SW360ReleaseList>> response) {
+        checkRestStatus(response);
+        SW360ReleaseList resource = getSaveOrThrow(response.getBody(), Resource::getContent);
+
         if (resource.get_Embedded() != null &&
                 resource.get_Embedded().getReleases() != null) {
             return resource.get_Embedded().getReleases();
@@ -39,15 +40,31 @@ public class SW360ClientUtils {
         }
     }
 
-    protected static List<SW360SparseComponent> getSw360SparseComponents(ResponseEntity<Resource<SW360ComponentList>> response) {
-        SW360ComponentList resource = Optional.ofNullable(response.getBody())
-                .orElseThrow(() -> new ExecutionException("Body was null"))
-                .getContent();
+    static List<SW360SparseComponent> getSw360SparseComponents(ResponseEntity<Resource<SW360ComponentList>> response) {
+        checkRestStatus(response);
+        SW360ComponentList resource = getSaveOrThrow(response.getBody(), Resource::getContent);
+
         if (resource.get_Embedded() != null &&
                 resource.get_Embedded().getComponents() != null) {
             return resource.get_Embedded().getComponents();
         } else {
             return new ArrayList<>();
         }
+    }
+
+    static void checkRestStatus(ResponseEntity response) {
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new ExecutionException(response.getStatusCode().toString());
+        }
+    }
+
+    interface Getter <T, I> {
+        I get(T item);
+    }
+
+    static <T, I> I getSaveOrThrow(T item, Getter<T, I> getter) {
+        return Optional.ofNullable(item)
+                .map(getter::get)
+                .orElseThrow(IllegalStateException::new);
     }
 }

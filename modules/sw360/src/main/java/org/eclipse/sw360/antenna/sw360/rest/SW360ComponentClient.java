@@ -18,12 +18,14 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentLi
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -31,9 +33,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSw360SparseComponents;
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.*;
 
 public class SW360ComponentClient extends SW360Client {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SW360ComponentClient.class);
     private static final String COMPONENTS_ENDPOINT = "/components";
     private final String restUrl;
 
@@ -47,55 +50,54 @@ public class SW360ComponentClient extends SW360Client {
         return restUrl + COMPONENTS_ENDPOINT;
     }
 
-    public SW360Component getComponent(String componentId, HttpHeaders header) {
-        ResponseEntity<Resource<SW360Component>> response = doRestGET(getEndpoint() + "/" + componentId, header,
-                new ParameterizedTypeReference<Resource<SW360Component>>() {});
+    public Optional<SW360Component> getComponent(String componentId, HttpHeaders header) {
+        try {
+            ResponseEntity<Resource<SW360Component>> response = doRestGET(getEndpoint() + "/" + componentId, header,
+                    new ParameterizedTypeReference<Resource<SW360Component>>() {});
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new ExecutionException("Request to get component " + componentId + " returned empty body"))
-                    .getContent();
-        } else {
-            throw new ExecutionException("Request to get component " + componentId + " failed with "
-                    + response.getStatusCode());
+            checkRestStatus(response);
+            return Optional.of(getSaveOrThrow(response.getBody(), Resource::getContent));
+        } catch (ExecutionException e) {
+            LOGGER.error("Request to get component {} failed with {}",
+                    componentId, e.getMessage());
+            return Optional.empty();
         }
     }
 
     public List<SW360SparseComponent> searchByName(String name, HttpHeaders header) {
-        UriComponentsBuilder builder = UriComponentsBuilder
-                .fromUriString(getEndpoint())
-                .queryParam(SW360Attributes.COMPONENT_SEARCH_BY_NAME, name);
+        try {
+            UriComponentsBuilder builder = UriComponentsBuilder
+                    .fromUriString(getEndpoint())
+                    .queryParam(SW360Attributes.COMPONENT_SEARCH_BY_NAME, name);
 
-        ResponseEntity<Resource<SW360ComponentList>> response = doRestGET(builder.build(false).toUriString(), header,
-                new ParameterizedTypeReference<Resource<SW360ComponentList>>() {});
+            ResponseEntity<Resource<SW360ComponentList>> response = doRestGET(builder.build(false).toUriString(), header,
+                    new ParameterizedTypeReference<Resource<SW360ComponentList>>() {});
 
-        if (response.getStatusCode().is2xxSuccessful()) {
             return getSw360SparseComponents(response);
-        }
-        else {
+        } catch (ExecutionException e) {
+            LOGGER.debug("Request to get sparse components failed with {}", e.getMessage());
             return new ArrayList<>();
         }
     }
 
     public SW360Component createComponent(SW360Component sw360Component, HttpHeaders header) {
-        HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Component, header);
-
-        ResponseEntity<Resource<SW360Component>> response;
         try {
-            response = doRestPOST(getEndpoint(), httpEntity,
-                new ParameterizedTypeReference<Resource<SW360Component>>() {});
-        } catch(HttpServerErrorException e) {
-            throw new ExecutionException("Request to create component " + sw360Component.getName() + " failed with "
-                    + e.getStatusCode());
-        }
+            HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Component, header);
 
-        if (response.getStatusCode() == HttpStatus.CREATED) {
-            return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new ExecutionException("Body was null"))
-                    .getContent();
-        } else {
-            throw new ExecutionException("Request to create component " + sw360Component.getName() + " failed with "
-                    + response.getStatusCode());
+            ResponseEntity<Resource<SW360Component>> response = doRestPOST(getEndpoint(), httpEntity,
+                    new ParameterizedTypeReference<Resource<SW360Component>>() {});
+
+            checkRestStatus(response);
+            return getSaveOrThrow(response.getBody(), Resource::getContent);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            LOGGER.error("Request to create component {} failed with {}",
+                    sw360Component.getName(), e.getStatusCode());
+            LOGGER.debug("Error: ", e);
+            return sw360Component;
+        } catch (ExecutionException e) {
+            LOGGER.error("Request to create component {} failed with {}",
+                    sw360Component.getName(), e.getMessage());
+            return sw360Component;
         }
     }
 }

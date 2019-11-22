@@ -24,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -227,43 +226,14 @@ public class SW360ProjectClientTest {
         assertEquals(PROJECT_EMAIL_VALUE_1, project.get_Embedded().getCreatedBy().getEmail());
     }
 
-    @Test( expected = HttpClientErrorException.class )
+    @Test
     public void testCreateProjectWithBadStatusCode() {
         mockedServer.expect(requestTo(PROJECTS_ENDPOINT))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withBadRequest());
-        client.createProject(new SW360Project(), new HttpHeaders());
-    }
-
-    @Test
-    public void testGetProjectWithSuccess() {
-        String projectId = "anyId";
-        String requestUrl = PROJECTS_ENDPOINT + "/" + projectId;
-        String expectedResponseBody = new JsonObject(new HashMap<String, String>() {{
-            put(PROJECT_NAME_KEY, PROJECT_NAME_VALUE_1);
-            put(PROJECT_VERSION_KEY, PROJECT_VERSION_VALUE_1);
-            put(PROJECT_PROJECT_TYPE_KEY, PROJECT_PROJECT_TYPE_VALUE_1);
-        }}).toJson();
-
-        mockedServer.expect(requestTo(requestUrl))
-                .andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
-                .andRespond(withSuccess(expectedResponseBody, MediaType.APPLICATION_JSON));
-
-        SW360Project project = client.getProject(projectId, new HttpHeaders());
-
-        assertNotNull(project);
-        assertEquals(PROJECT_NAME_VALUE_1, project.getName());
-        assertEquals(PROJECT_PROJECT_TYPE_VALUE_1, project.getProjectType().toString());
-        assertEquals(PROJECT_VERSION_VALUE_1, project.getVersion());
-    }
-
-    @Test( expected = HttpClientErrorException.class )
-    public void testGetProjectWithBadStatusCode() {
-        String projectId = "anyId";
-        String requestUrl = PROJECTS_ENDPOINT + "/" + projectId;
-        mockedServer.expect(requestTo(requestUrl))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withBadRequest());
-        client.getProject(projectId, new HttpHeaders());
+        SW360Project sw360Project = new SW360Project();
+        SW360Project projectAfter = client.createProject(sw360Project, new HttpHeaders());
+        assertEquals(sw360Project.hashCode(), projectAfter.hashCode());
+        assertEquals(sw360Project, projectAfter);
     }
 }

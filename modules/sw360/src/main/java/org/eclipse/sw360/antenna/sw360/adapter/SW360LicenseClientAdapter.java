@@ -40,11 +40,11 @@ public class SW360LicenseClientAdapter {
         return licenseClient.createLicense(sw360License, header);
     }
 
-    public SW360License getSW360LicenseByAntennaLicense(License license, HttpHeaders header) {
+    public Optional<SW360License> getSW360LicenseByAntennaLicense(License license, HttpHeaders header) {
         return licenseClient.getLicenseByName(license.getName(), header);
     }
 
     public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense, HttpHeaders headers) {
-        return Optional.of(licenseClient.getLicenseByName(sparseLicense.getShortName(), headers));
+        return licenseClient.getLicenseByName(sparseLicense.getShortName(), headers);
     }
 }
