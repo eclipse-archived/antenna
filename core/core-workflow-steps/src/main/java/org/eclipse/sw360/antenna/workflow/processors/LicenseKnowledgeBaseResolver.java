@@ -134,9 +134,9 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
 
     @Override
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
-        LOGGER.info("Resolve knowledge base...");
+        LOGGER.debug("Resolve knowledge base...");
         resolveKnowledgeBase(artifacts);
-        LOGGER.info("Resolve knowledge base... done");
+        LOGGER.debug("Resolve knowledge base... done");
         return artifacts;
     }
 

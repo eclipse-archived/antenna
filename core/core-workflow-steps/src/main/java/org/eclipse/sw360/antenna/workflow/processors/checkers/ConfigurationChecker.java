@@ -42,9 +42,9 @@ public class ConfigurationChecker extends AbstractProcessor {
 
     @Override
     public Collection<Artifact> process(Collection<Artifact> intermediates) {
-        LOGGER.info("Check for unnecessary configuration configuration ...");
+        LOGGER.debug("Check for unnecessary configuration configuration ...");
         checkForUnnecessaryInformation(intermediates);
-        LOGGER.info("Check for unnecessary configuration configuration... done.");
+        LOGGER.debug("Check for unnecessary configuration configuration... done.");
         return intermediates;
     }
 

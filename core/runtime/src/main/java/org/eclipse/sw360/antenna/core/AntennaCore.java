@@ -45,7 +45,7 @@ public class AntennaCore {
     public Map<String, IAttachable> compose() {
         // Execution workflow begins
         if (context.getToolConfiguration().isSkipAntennaExecution()) {
-            LOGGER.info("Antenna execution is skipped.");
+            LOGGER.warn("Antenna execution is skipped.");
             return new HashMap<>();
         } else {
             return tw.execute();
@@ -61,16 +61,16 @@ public class AntennaCore {
      */
     public AntennaCore(AntennaContext context) {
         this.context = context;
-        LOGGER.info("Initializing core ...");
+        LOGGER.debug("Initializing core ...");
         AntennaWorkflowConfiguration twc = new AntennaWorkflowConfiguration(context);
         tw = new AntennaWorkflow(twc);
-        LOGGER.info("Initializing core done");
+        LOGGER.debug("Initializing core done");
     }
 
     public IAttachable writeAnalysisReport() {
-        LOGGER.info("Create Analysis Report...");
+        LOGGER.debug("Create Analysis Report...");
         final IAttachable report = this.context.getProcessingReporter().writeReportToReportPath();
-        LOGGER.info("Create Analysis Report...done");
+        LOGGER.debug("Create Analysis Report...done");
         return report;
     }
 

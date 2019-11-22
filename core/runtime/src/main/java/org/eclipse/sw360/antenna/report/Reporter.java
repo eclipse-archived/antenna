@@ -173,7 +173,7 @@ public class Reporter implements IProcessingReporter {
     public IAttachable writeReportToReportPath() {
         try {
             createReportPath();
-            LOGGER.info("Writing report to {}", reportPath.toString());
+            LOGGER.debug("Writing report to {}", reportPath.toString());
             try (OutputStream out = new FileOutputStream(reportPath.toFile())) {
                 writeReport(out);
             }

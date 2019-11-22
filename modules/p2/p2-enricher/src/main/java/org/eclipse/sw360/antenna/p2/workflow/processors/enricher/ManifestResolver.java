@@ -165,9 +165,9 @@ public class ManifestResolver extends AbstractProcessor {
 
     @Override
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
-        LOGGER.info("Resolve manifest...");
+        LOGGER.debug("Resolve manifest...");
         resolveManifest(artifacts);
-        LOGGER.info("Resolve manifest... done");
+        LOGGER.debug("Resolve manifest... done");
         return artifacts;
     }
 }

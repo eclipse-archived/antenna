@@ -15,6 +15,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.eclipse.sw360.antenna.api.Attachable;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
@@ -22,9 +23,6 @@ import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.api.Attachable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -42,7 +40,6 @@ public class HTMLReportGenerator extends AbstractGenerator {
 
     private static final String LICENSE_REPORT_TEMPLATE_FILE = "licenseReport.vm";
     private static final String LICENSE_REPORT_FILE = "3rdparty-licenses.html";
-    private static final Logger LOGGER = LoggerFactory.getLogger(HTMLReportGenerator.class);
     private Charset encoding;
 
     public HTMLReportGenerator() {
@@ -51,8 +48,6 @@ public class HTMLReportGenerator extends AbstractGenerator {
 
     @Override
     public Map<String, IAttachable> produce(Collection<Artifact> artifacts){
-        LOGGER.info("Generating HTML report.");
-
         // Get path to disclosure documents
         ToolConfiguration toolConfig = context.getToolConfiguration();
         Path reportFilePath = toolConfig.getAntennaTargetDirectory().resolve(LICENSE_REPORT_FILE);

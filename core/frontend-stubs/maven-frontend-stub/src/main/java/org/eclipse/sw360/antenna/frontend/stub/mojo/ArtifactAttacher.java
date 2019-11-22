@@ -88,7 +88,7 @@ public class ArtifactAttacher {
     }
 
     private void attachArtifact(IAttachable attachable) {
-        LOGGER.info("Attaching artifact {}", attachable.getFile());
+        LOGGER.debug("Attaching artifact {}", attachable.getFile());
         try {
             projectHelper.attachArtifact(currentProject, attachable.getType(), attachable.getClassifier(),
                     attachable.getFile());

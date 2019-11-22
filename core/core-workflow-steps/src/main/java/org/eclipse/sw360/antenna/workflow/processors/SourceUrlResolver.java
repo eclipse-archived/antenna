@@ -40,9 +40,9 @@ public class SourceUrlResolver extends AbstractProcessor {
 
     @Override
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
-        LOGGER.info("Resolve source urls...");
+        LOGGER.debug("Resolve source urls...");
         resolveSourceUrls(artifacts);
-        LOGGER.info("Resolve source urls... done");
+        LOGGER.debug("Resolve source urls... done");
         return artifacts;
     }
 

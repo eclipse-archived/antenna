@@ -86,7 +86,7 @@ public class SW360EnricherImpl {
                     .map(ArtifactSoftwareHeritageID.Builder::build)
                     .ifPresent(artifact::addFact);
         } catch (IllegalArgumentException e) {
-            LOGGER.info(e.getMessage());
+            LOGGER.debug(e.getMessage());
         }
         sw360Release.getHashes().stream()
                 .map(hash -> new ArtifactFilename(null, hash))
@@ -147,14 +147,14 @@ public class SW360EnricherImpl {
 
         final SW360ReleaseEmbedded embedded = release.get_Embedded();
         if (embedded == null) {
-            LOGGER.info("No license information available in SW360.");
+            LOGGER.debug("No license information available in SW360.");
             return;
         }
         List<SW360SparseLicense> releaseLicenses = new ArrayList<>(embedded.getLicenses());
 
         if (!artifactLicenses.isEmpty()) {
             if (releaseLicenses.isEmpty()) {
-                LOGGER.info("License information available in antenna but not in SW360.");
+                LOGGER.debug("License information available in antenna but not in SW360.");
             } else {
                 updateLicenseInformation(artifactLicenses, releaseLicenses);
             }
@@ -174,7 +174,7 @@ public class SW360EnricherImpl {
             return updatedLicense.get();
         }
 
-        LOGGER.info("Could not get details for license " + sparseLicense.getFullName());
+        LOGGER.warn("Could not get details for license " + sparseLicense.getFullName());
         return license;
     }
 
@@ -190,7 +190,7 @@ public class SW360EnricherImpl {
     }
 
     private void warnAndReport(Artifact artifact, String message, MessageType messageType) {
-        LOGGER.warn(message);
+        LOGGER.debug(message);
         reporter.add(
                 artifact,
                 messageType,

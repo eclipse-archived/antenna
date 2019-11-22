@@ -65,7 +65,7 @@ public class HttpHelper {
 
     private CloseableHttpClient getConfiguredHttpClient(ProxySettings proxySettings) {
         if (proxySettings.isProxyUse()) {
-            LOGGER.info("Using proxy on host {} and port {}", proxySettings.getProxyHost(), proxySettings.getProxyPort());
+            LOGGER.debug("Using proxy on host {} and port {}", proxySettings.getProxyHost(), proxySettings.getProxyPort());
             return HttpClients.custom()
                     .useSystemProperties()
                     .setProxy(new HttpHost(proxySettings.getProxyHost(), proxySettings.getProxyPort()))
@@ -78,7 +78,7 @@ public class HttpHelper {
     private CloseableHttpResponse getFromUrl(String url) throws IOException {
         try {
             HttpGet getRequest = new HttpGet(url);
-            LOGGER.info("Downloading {}", url);
+            LOGGER.debug("Downloading {}", url);
             return httpClient.execute(getRequest);
         } catch (IOException e) {
             throw new IOException("Error while downloading " + url + ": " + e.getMessage());

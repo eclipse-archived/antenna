@@ -72,7 +72,7 @@ public class MavenInvokerRequester extends IArtifactRequester {
         File expectedJarFile = getExpectedJarFile(mavenCoordinate, targetDirectory, classifierInformation);
 
         if (expectedJarFile.exists()) {
-            LOGGER.info("The file " + expectedJarFile + " already exists and won't be downloaded again");
+            LOGGER.debug("The file " + expectedJarFile + " already exists and won't be downloaded again");
             return Optional.of(expectedJarFile);
         }
 
@@ -135,7 +135,7 @@ public class MavenInvokerRequester extends IArtifactRequester {
 
     private boolean callMavenInvocationRequest(InvocationRequest request) {
         try {
-            LOGGER.info("Calling Maven Invoker with command " + String.join(", ", request.getGoals()));
+            LOGGER.debug("Calling Maven Invoker with command " + String.join(", ", request.getGoals()));
             return defaultInvoker.execute(request)
                     .getExitCode() == 0;
         } catch (MavenInvocationException e) {

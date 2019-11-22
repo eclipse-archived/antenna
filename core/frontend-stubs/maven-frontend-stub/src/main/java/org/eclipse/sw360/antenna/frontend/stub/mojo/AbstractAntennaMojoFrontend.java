@@ -163,19 +163,19 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
                     .filter(Proxy::isActive)
                     .peek(proxy -> {
                         if(!"http".equals(proxy.getProtocol())){
-                            LOGGER.info("Maven settings contain proxy with unsupportet protocol=[" + proxy.getProtocol() + "]");
+                            LOGGER.warn("Maven settings contain proxy with unsupportet protocol=[" + proxy.getProtocol() + "]");
                         }
                     })
                     .filter(proxy -> "http".equals(proxy.getProtocol()))
                     .filter(proxy -> "".equals(proxyId) || proxy.getId().equals(proxyId))
                     .peek(proxy -> {
                         if (proxyContainsUnsupportedConfiguration.test(proxy)) {
-                            LOGGER.info("Maven settings contain proxy configuration which can not be handled by antenna completely (e.g. authentication, nonProxyHosts)");
+                            LOGGER.warn("Maven settings contain proxy configuration which can not be handled by antenna completely (e.g. authentication, nonProxyHosts)");
                         }
                     })
                     .forEach(proxy -> {
                         if (proxy.getHost() != null && !"".equals(proxy.getHost()) && proxy.getPort() > 0) {
-                            LOGGER.info("Use proxy configuration with id=[" + proxy.getId() + "] from Maven settings");
+                            LOGGER.debug("Use proxy configuration with id=[" + proxy.getId() + "] from Maven settings");
                             proxyHost = proxy.getHost();
                             proxyPort = proxy.getPort();
                         }
@@ -207,10 +207,10 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
             IAttachable report = antennaCore.writeAnalysisReport();
             output.put(IProcessingReporter.getIdentifier(), report);
 
-            LOGGER.info("Attaching artifacts to project");
+            LOGGER.debug("Attaching artifacts to project");
             ArtifactAttacher attacher = new ArtifactAttacher(context);
             attacher.attach(output);
-            LOGGER.info("Attaching artifacts to project..done");
+            LOGGER.debug("Attaching artifacts to project..done");
         }
     }
 
