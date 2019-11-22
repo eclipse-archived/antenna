@@ -38,7 +38,7 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
     private ILicenseManagementKnowledgeBase knowledgeBase;
 
     public LicenseKnowledgeBaseResolver() {
-        this.workflowStepOrder = 600;
+        this.workflowStepOrder = 9000;
     }
 
     public LicenseKnowledgeBaseResolver(ILicenseManagementKnowledgeBase knowledgeBase) {
