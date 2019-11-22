@@ -11,26 +11,24 @@
 package org.eclipse.sw360.antenna.sw360.utils;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.ArtifactFactWithPayload;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
 public class SW360AttachmentAdapterUtils {
 
-    public static Map<Path, String> getAttachmentsFromArtifact(Artifact artifact) {
-        Map<Path, String> attachments = new HashMap<>();
-
-        getSourceFile(artifact).map(sourceFile -> attachments.put(sourceFile, "SOURCE"));
-
-        return attachments;
+    public static Map<Path, SW360AttachmentType> getAttachmentsFromArtifact(Artifact artifact) {
+        return getSourceFile(artifact)
+                .map(sourceFile ->
+                        Collections.singletonMap(sourceFile, SW360AttachmentType.SOURCE))
+                .orElse(Collections.emptyMap());
     }
 
     private static Optional<Path> getSourceFile(Artifact artifact) {
-        Optional<ArtifactSourceFile> artifactSourceFile = artifact.askFor(ArtifactSourceFile.class);
-        return artifactSourceFile.map(ArtifactFactWithPayload::get);
+        return artifact.askForGet(ArtifactSourceFile.class);
     }
 }

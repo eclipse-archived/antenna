@@ -11,6 +11,8 @@
 package org.eclipse.sw360.antenna.sw360.rest;
 
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentList;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
@@ -47,6 +49,18 @@ public class SW360ClientUtils {
         if (resource.get_Embedded() != null &&
                 resource.get_Embedded().getComponents() != null) {
             return resource.get_Embedded().getComponents();
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    static List<SW360SparseAttachment> getSw360SparseAttachments(ResponseEntity<Resource<SW360AttachmentList>> response) {
+        checkRestStatus(response);
+        SW360AttachmentList resource = getSaveOrThrow(response.getBody(), Resource::getContent);
+
+        if (resource.get_Embedded() != null &&
+                resource.get_Embedded().getAttachments() != null) {
+            return resource.get_Embedded().getAttachments();
         } else {
             return new ArrayList<>();
         }

@@ -14,35 +14,32 @@ import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
+
 import java.nio.file.Path;
 import java.util.Optional;
 
 public class SW360Attachment extends SW360HalResource<LinkObjects, Embedded> {
     private final String filename;
-    private final String attachmentType;
+    private final SW360AttachmentType attachmentType;
 
-    public SW360Attachment(Path path, String attachmentType) {
+    public SW360Attachment(Path path, SW360AttachmentType attachmentType) {
         this(Optional.ofNullable(path)
                 .map(Path::getFileName)
                 .orElseThrow(() -> new ExecutionException("Tried to add null path.")).toString(),
                 attachmentType);
     }
 
-    public SW360Attachment(String filename, String attachmentType) {
+    public SW360Attachment(String filename, SW360AttachmentType attachmentType) {
         this.filename = Optional.ofNullable(filename)
                 .orElseThrow(() -> new ExecutionException("Filename is not allowed to be null."));
         this.attachmentType = attachmentType;
-    }
-
-    public SW360Attachment(String filename) {
-        this(filename, "DOCUMENT");
     }
 
     public String getFilename() {
         return filename;
     }
 
-    public String getAttachmentType() {
+    public SW360AttachmentType getAttachmentType() {
         return attachmentType;
     }
 

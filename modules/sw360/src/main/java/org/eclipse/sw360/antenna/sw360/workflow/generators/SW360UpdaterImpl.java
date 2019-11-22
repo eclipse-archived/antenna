@@ -15,6 +15,7 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.utils.SW360AttachmentAdapterUtils;
@@ -55,7 +56,7 @@ public class SW360UpdaterImpl {
             if (sw360MetaDataUpdater.isUploadSources()
                     && sw360ReleaseFinal.get_Links().getSelf() != null
                     && !sw360ReleaseFinal.get_Links().getSelf().getHref().isEmpty()) {
-                Map<Path, String> attachments = SW360AttachmentAdapterUtils.getAttachmentsFromArtifact(artifact);
+                Map<Path, SW360AttachmentType> attachments = SW360AttachmentAdapterUtils.getAttachmentsFromArtifact(artifact);
                 sw360ReleaseFinal = sw360MetaDataUpdater.uploadAttachments(sw360ReleaseFinal, attachments);
             }
             releases.add(sw360ReleaseFinal);

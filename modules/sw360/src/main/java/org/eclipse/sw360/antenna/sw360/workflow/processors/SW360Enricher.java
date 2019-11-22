@@ -17,10 +17,17 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
 
 public class SW360Enricher extends AbstractProcessor {
+    private static final String DOWNLOAD_ATTACHMENTS = "download.attachments";
+    private static final String DOWNLOAD_ATTACHMENTS_DIR="download.directory";
+    private boolean downloadAttachments;
+    private Path downloadPath;
+
     private IProcessingReporter reporter;
 
     private SW360MetaDataReceiver connector;
@@ -39,6 +46,14 @@ public class SW360Enricher extends AbstractProcessor {
         String sw360ProxyHost = context.getToolConfiguration().getProxyHost();
         int sw360ProxyPort = context.getToolConfiguration().getProxyPort();
 
+        downloadAttachments = getBooleanConfigValue(DOWNLOAD_ATTACHMENTS, configMap);
+        if (downloadAttachments) {
+            downloadPath = Paths.get(getConfigValue(DOWNLOAD_ATTACHMENTS_DIR, configMap,
+                    context.getToolConfiguration().getAntennaTargetDirectory().toString()))
+                    .normalize()
+                    .toAbsolutePath();
+        }
+
         SW360ConnectionConfiguration sw360ConnectionConfiguration = new SW360ConnectionConfiguration(key -> getConfigValue(key, configMap),
                 key -> getBooleanConfigValue(key, configMap),
                 sw360ProxyHost, sw360ProxyPort);
@@ -48,6 +63,6 @@ public class SW360Enricher extends AbstractProcessor {
 
     @Override
     public Collection<Artifact> process(Collection<Artifact> intermediates) {
-        return new SW360EnricherImpl(reporter, connector).process(intermediates);
+        return new SW360EnricherImpl(reporter, connector, downloadAttachments, downloadPath).process(intermediates);
     }
 }

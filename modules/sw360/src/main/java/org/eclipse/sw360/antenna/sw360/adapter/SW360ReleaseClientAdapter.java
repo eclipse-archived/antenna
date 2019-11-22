@@ -14,6 +14,8 @@ import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.rest.SW360ReleaseClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentEmbedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
@@ -82,8 +84,8 @@ public class SW360ReleaseClientAdapter {
         return releaseClient.createRelease(releaseFromArtifact, header);
     }
 
-    public SW360Release uploadAttachments(SW360Release sw360item, Map<Path, String> attachments, HttpHeaders header) {
-        for(Map.Entry<Path, String> attachment : attachments.entrySet()) {
+    public SW360Release uploadAttachments(SW360Release sw360item, Map<Path, SW360AttachmentType> attachments, HttpHeaders header) {
+        for(Map.Entry<Path, SW360AttachmentType> attachment : attachments.entrySet()) {
             sw360item = releaseClient.uploadAndAttachAttachment(sw360item, attachment.getKey(), attachment.getValue(), header);
         }
         return sw360item;
@@ -149,5 +151,14 @@ public class SW360ReleaseClientAdapter {
             }
         }
         return Optional.empty();
+    }
+
+    public List<SW360SparseAttachment> getAttachmentsOfRelease(SW360Release release, HttpHeaders header) {
+        return releaseClient.getItemAttachments(release, header);
+    }
+
+    public Optional<Path> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath, HttpHeaders header) {
+        return Optional.ofNullable(release.get_Links().getSelf())
+                .flatMap(self -> releaseClient.downloadAttachment(self.getHref(), attachment, downloadPath, header));
     }
 }

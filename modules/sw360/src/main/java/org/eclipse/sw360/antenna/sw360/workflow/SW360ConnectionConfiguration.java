@@ -33,6 +33,7 @@ public class SW360ConnectionConfiguration {
     private final String password;
     private final String clientId;
     private final String clientPassword;
+
     private final ProxySettings proxySettings;
     private final SW360AuthenticationClient authenticationClient;
 

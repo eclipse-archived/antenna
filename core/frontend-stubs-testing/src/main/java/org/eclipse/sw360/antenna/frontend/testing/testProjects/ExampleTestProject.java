@@ -134,7 +134,9 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                         { "user.password", "12345" },
                         { "client.id", "trusted-sw360-client" },
                         { "client.password", "sw360-secret" },
-                        { "proxy.use", "false" }})
+                        { "proxy.use", "false" },
+                        { "download.attachments", "true" },
+                        { "download.directory", projectRoot.toString() + File.separator + "target/" + "antenna/sources" }})
                         .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1])));
 
         enricher.setDeactivated(true);

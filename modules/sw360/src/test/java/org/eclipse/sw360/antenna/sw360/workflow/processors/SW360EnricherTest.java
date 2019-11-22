@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,9 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     private String copyrights = "Copyright 2006-2010 The Apache Software Foundation.";
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
+        when(toolConfigMock.getAntennaTargetDirectory())
+                .thenReturn(temporaryFolder.newFolder("target").toPath());
         Artifact artifact0 = new Artifact();
         artifact0.addFact(new ArtifactFilename("filename0"));
 
