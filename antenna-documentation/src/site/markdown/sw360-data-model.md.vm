@@ -24,13 +24,14 @@ In the following section there is an outline what data of SW360 ${docNameCap} ma
   | External Ids | Additional information can be put here in a `Map<String,String>` format |
 
 #[[###]]# Licenses
- All licenses are created separately from the components and releases.
- Enriching and updating is also done separately.
+ All licenses are stored separately from the components and releases.
+ Enriching of license information is done as part of the enriching process. Updating is not done actively, since
+ license data is sensitive and therefore has to be provided by compliance experts
 
   | Variable Name         | Meaning                       |
   |-----------------------|-------------------------------|
   | Text | The text of the license |
-  | Short Name | The short name of the license. E.g. `Apache-2.0` |
+  | Short Name | The short name of the license. E.g. `Apache-2.0`, if possible the SPDX identifier |
   | Full Name | The full, long name of the license. E.g. `Apache Software License 2.0` |
  
 #[[###]]# Components
@@ -40,31 +41,36 @@ In the following section there is an outline what data of SW360 ${docNameCap} ma
 
  | Variable Name         | Meaning                       |
  |-----------------------|-------------------------------|
- | Name | the name of the component E.g. Junit:Junit |
- | Component Type| Can be `INTERNAL`, meaning it is proprietary, or `OSS`, meaning it is open source. |
+ | Name | the name of the component E.g. Junit:Junit stored in the `Name` field. |
+ | Component Type| Can be `Internal`, meaning it is proprietary, or `OSS`, meaning it is open source. |
  | Created On| Date of creation in SW360 instance |
- | Homepage| Link to the homepage of the OSS Component |
+ | Homepage| Link to the homepage of the OSS Component stored in the `Homepage` field. |
  
 #[[###]]# Releases
  An individual release is a release of a component, meaning it always has a version and always has a component it belongs to.
- All license and copyright information can be found here.
+ All known license and copyright information can be found here.
 
   | Variable Name         | Meaning                       |
   |-----------------------|-------------------------------|
-  | Component ID | ID of the component this release belongs to. E.g. The ID of the Junit component |
-  | Name | Name of the release, which should equal the component name. E.g. `junit:junit` |
-  | Version | Version of the release. E.g 4.8.1, which would come to the component `junit:junit:3.8.1` |
-  | CPE ID | Common Platform Enumeration ID |
-  | Download Url | Link to the source archive. E.g., used to aggregate the sources of the used OSS components for the FOSS compliance bundle. |
-  | Main License IDs | IDs of the final licenses. The IDs have been extracted from the SPDX license format. |
-  | Coordinates | These are the corresponding ${docName} coordinates that are saved under an external ID in the release object. It is a list of key-value pairs of Strings. E.g. "mvn junit:junit:3.8.1" |
-  | License | The licenses of the main license IDs in a SPDX license expression that displays the relationship of the licenses as one String. |
-  | Declared License | The licenses declared by the release in a SPDX license expression that displays the relationship of the licenses as one String. |
-  | Observed License | The licenses observed during the ${docName} run in the SPDX license expression that displays the relationship of the licenses as one String. |
-  | Release Tag Url | This is a link to the OSS repos tag of the release used. |
-  | Software Heritage ID | A release ID in software heritage in the format "swh:1:rel:*" |
-  | Hashes | A set of hashes associated with the release. |
-  | Clearing State | Data Approval State |
-  | Change Status | OSS Usage |
-  | Copyrights | Copyrights of the release, given in a String. Individual copyrights are separated by line. |
- 
+  | Component ID | ID of the component this release belongs to. E.g. The ID of the Junit component. |
+  | Name | Name of the release, which should equal the component name stored in the `Name` field. |
+  | Version | Version of the release stored in the `Version` field. |
+  | Download Url | Local link to the source archive stored in the `Download URL` field. I.e., the link to the local storage where the sources of the release are stored. |
+  | Main License IDs | IDs of the final licenses in the `Main License Ids` field. The IDs have been extracted from the license information below and link to licenses in the License database. |
+  | Purls | These are the corresponding release coordinates that are saved under an external ID as purls. It is a list of key-value pairs of Strings, with the purl type as key, e.g., `maven`, and the purl as value. There can be multiple coordinates. |
+  | Overwritten License | The manually defined license of the release in a SPDX license expression represented as String in the additional data with `overwritten_license` as key. |
+  | Declared License | The declared licenses of the release in a SPDX license expression represented as String in the additional data with `declared_license` as key. |
+  | Observed License | The obsserved licenses of the release in a SPDX license expression  represented as String in the additional data with `observed_license` as key. |
+  | Release Tag Url | This is a link to the OSS repos tag of the release used stored as external id with key `orig_repo`. |
+  | Software Heritage ID | A release ID in software heritage in the format "swh:1:rel:*", stored as external id with key `swh`. |
+  | Copyrights | Copyrights of the release, given in a String. Individual copyrights are separated by line. Stored in the additional data section with key `copyrights` |
+  | Change Status | An enumeration with values `changed` or `as-is` stored as additional data with key `change_status`. A changed component release should be stored as own release with an appendix to the original version, e.g. `1.2.3_modified_xyz`. Currently the implementation can only handle `as-is` components. |
+
+#[[###]]## Used Attachments
+ Attachments are used to store additional elements in files, like sources and known binaries.
+
+  | Attachment Type       | Meaning                       |
+  |-----------------------|-------------------------------|
+  | Source File | A zipped folder with the sources of the component. Typically uploaded by the SW360 Uploader |
+  | Binary | A known binary of the component, stores also e.g. the hash that can be used to search for the metadata based on a hash. Typically uploaded by the SW360 Uploader |
+  | Clearing Report | A file with curated data and the approval state. If the status of this attachment is `Accepted`, the Clearing State of the component release is `Approved`. Typically uploaded by compliance office tooling. |
