@@ -3,7 +3,7 @@
 [${docNameCap}](https://www.eclipse.org/antenna/) scans artifacts of a project, downloads sources for dependencies,
 validates sources and licenses and creates:
 
-* a third-party disclosure document that lists all dependencies with 
+* a third-party attribution document that lists all dependencies with
 their licenses
 * an artifact information *.csv-file containing a list of the artifacts coordinate and license data
 * a sources.zip containing all sources of the dependencies
@@ -48,11 +48,11 @@ It is possible to add more steps here that validate the sources for different cr
 
 #[[###]]# <span style="color:#ff7873">Phase 3 - Generators</span>
 
-In the last phase ${docNameCap} generates the disclosure document and bundles all existing sources into a zip file.
+In the last phase ${docNameCap} generates the attribution document and bundles all existing sources into a zip file.
 
-#[[####]]# Creation of disclosure document:
+#[[####]]# Creation of attribution document:
 
-All information from the artifacts list is added to the disclosure 
+All information from the artifacts list is added to the attribution
 document. The document contains a list of artifacts with filename,
 maven coordinates and licenses.
 

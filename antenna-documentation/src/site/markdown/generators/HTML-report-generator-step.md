@@ -17,4 +17,4 @@ Add this configuration to the workflow.xml
 
 ### Magic string for output handlers
 
-When configuring output handlers, the output of the HTML report generator can be referred to by `disclosure-doc`.
+When configuring output handlers, the output of the HTML report generator can be referred to by `attribution-doc`.

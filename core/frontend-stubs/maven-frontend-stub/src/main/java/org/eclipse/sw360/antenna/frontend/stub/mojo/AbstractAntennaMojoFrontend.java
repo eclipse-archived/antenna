@@ -96,7 +96,7 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
     @Parameter(property = "skip", defaultValue = "false")
     private boolean skip;
 
-    // parameter for disclosure document
+    // parameter for attribution document
     @Parameter(property = "fullname", defaultValue = "${project.name}")
     private String productFullname;
 
@@ -115,8 +115,8 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
     @Parameter(property = "copyrightNotice")
     private String copyrightNotice;
 
-    @Parameter(property = "disclosureDocumentNotes")
-    private String disclosureDocumentNotes;
+    @Parameter(property = "attributionDocumentNotes")
+    private String attributionDocumentNotes;
 
     @Parameter(property = "filesToAttach")
     private List<String> filesToAttach;
@@ -275,7 +275,7 @@ public abstract class AbstractAntennaMojoFrontend extends AbstractMojo implement
                 .setSkipAntennaExecution(skip)
                 .setMavenInstalled(true)  // when using the maven plugin, maven is surely available
                 .setCopyrightHoldersName(copyrightHoldersName).setCopyrightNotice(copyrightNotice)
-                .setDisclosureDocumentNotes(disclosureDocumentNotes).setWorkflow(finalWorkflow)
+                .setAttributionDocumentNotes(attributionDocumentNotes).setWorkflow(finalWorkflow)
                 .setProxyHost(proxyHost).setProxyPort(proxyPort)
                 .setShowCopyrightStatements(showCopyrightStatements).setEncoding(encodingCharSet);
 

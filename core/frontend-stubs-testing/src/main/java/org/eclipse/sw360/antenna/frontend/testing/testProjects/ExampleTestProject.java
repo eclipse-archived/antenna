@@ -156,8 +156,14 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                         { "proxy.use", "false" },
                         { "upload_sources", "true" }})
                         .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1])));
-
         generator.setDeactivated(true);
+        result.add(generator);
+        generator = mkWorkflowStep("Attribution Document", "org.eclipse.sw360.antenna.attribution.document.workflow.generators.AttributionDocumentGenerator",
+                Stream.of(new String[][] {
+                        { "attribution.doc.productVersion", "1.0.0" },
+                        { "attribution.doc.productName", "Example Project" },
+                        { "attribution.doc.copyrightHolder", "Copyright (c) 2013-2019 Bosch Software Innovations GmbH" }})
+                        .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1])));
         result.add(generator);
         return result;
     }
@@ -165,8 +171,8 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationOutputHandlers() {
         return Collections.singletonList(mkWorkflowStep(
-                "Add disclosure document to jar", "org.eclipse.sw360.antenna.workflow.outputHandlers.FileToArchiveWriter",
-                "instructions", "disclosure-doc:" + projectRoot.toString() + File.separator + "target/" + getExpectedProjectArtifactId() + "-" +getExpectedProjectVersion() + ".jar:/legalnotice/DisclosureDoc.html"));
+                "Add attribution document to jar", "org.eclipse.sw360.antenna.workflow.outputHandlers.FileToArchiveWriter",
+                "instructions", "attribution-doc:" + projectRoot.toString() + File.separator + "target/" + getExpectedProjectArtifactId() + "-" +getExpectedProjectVersion() + ".jar:/legalnotice/AttributionDoc.html"));
     }
 
     @Override
@@ -201,7 +207,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public Collection<String> getExpectedBuildArtifacts() {
-        return Stream.of("artifact-information", "disclosure-doc", "sources-zip", "antenna-report").collect(Collectors.toSet());
+        return Stream.of("artifact-information", "attribution-doc", "sources-zip", "antenna-report").collect(Collectors.toSet());
     }
 
     @Override

@@ -25,7 +25,7 @@ import java.nio.file.*;
 import java.util.*;
 
 /**
- * Writes the disclosure document to the given archive
+ * Writes the attribution document to the given archive
  */
 public class FileToArchiveWriter extends AbstractOutputHandler {
 

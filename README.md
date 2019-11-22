@@ -9,7 +9,7 @@
 Antenna scans artifacts of a project, downloads sources for dependencies, 
 validates sources and licenses and creates:
 
-* a third-party disclosure document that lists all dependencies with 
+* a third-party attribution document that lists all dependencies with 
 their licenses,
 * a sources.zip containing all sources of the dependencies, and
 * a processing report.

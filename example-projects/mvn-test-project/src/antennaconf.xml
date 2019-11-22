@@ -81,7 +81,7 @@
          <matchState>EXACT</matchState>
       </artifact>
 
-      <!-- Add further artifacts, which you need in your disclosure document here -->
+      <!-- Add further artifacts, which you need in your attribution document here -->
 
    </addArtifact>
 
@@ -99,7 +99,7 @@
    </sourceResolving>
 
    <setFinalLicenses>
-      <!-- Expectation: the final license of jackons-annotations is set to Apache-2.0 in disclosure document -->
+      <!-- Expectation: the final license of jackons-annotations is set to Apache-2.0 in attribution document -->
       <setFinalLicense>
          <artifactSelector>
             <filename>jackson-annotations-2.8.4.jar</filename>

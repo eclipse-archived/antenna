@@ -35,9 +35,9 @@ Or bind the analyze goal to a phase:
 </executions>
 ```
 
-#[[##]]# Customizing the disclosure document
+#[[##]]# Customizing the attribution document
 
-${docNameCap} provides a built-in disclosure document template that works out of 
+${docNameCap} provides a built-in attribution document template that works out of
 the box. However, you can install jar files that apply a different theme 
 to the document.
  
@@ -47,7 +47,7 @@ install the ${docNameCap} plugin, something like this:
 ```xml
 <dependency>
     <groupId>${antennaMavenGroupId}</groupId>
-    <artifactId>${antennaDisclosureDocumentName}</artifactId>
+    <artifactId>${antennaAttributionDocumentName}</artifactId>
 </dependency>
 ```
 
