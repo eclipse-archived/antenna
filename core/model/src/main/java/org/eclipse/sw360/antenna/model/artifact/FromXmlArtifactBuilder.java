@@ -116,17 +116,17 @@ public class FromXmlArtifactBuilder implements IArtifactBuilder {
 
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class JavaScriptCoordinatesBuilder implements CoordinatesBuilder {
-        protected String artifactId;
-        protected String name;
+        protected String namespace;
+        protected String packageName;
         protected String version;
 
-        public JavaScriptCoordinatesBuilder setArtifactId(String value) {
-            this.artifactId = value;
+        public JavaScriptCoordinatesBuilder setNamespace(String value) {
+            this.namespace = value;
             return this;
         }
 
-        public JavaScriptCoordinatesBuilder setName(String value) {
-            this.name = value;
+        public JavaScriptCoordinatesBuilder setPackageName(String value) {
+            this.packageName = value;
             return this;
         }
 
@@ -137,7 +137,7 @@ public class FromXmlArtifactBuilder implements IArtifactBuilder {
 
         @Override
         public Coordinate build() {
-            return new Coordinate(Coordinate.Types.NPM, name, artifactId, version); // TODO: this is broken
+            return new Coordinate(Coordinate.Types.NPM, namespace, packageName, version); // TODO: this is broken
         }
     }
 
