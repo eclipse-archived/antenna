@@ -33,7 +33,7 @@ public abstract class PackageURLFacade {
         try {
             packageURL = new PackageURL(packageURLString);
         } catch (MalformedPackageURLException e) {
-            throw new ExecutionException("Failed to create PackageURL in Coordinate", e);
+            throw new ExecutionException("Failed to create PackageURL in Coordinate for string " + packageURLString, e);
         }
     }
 
@@ -41,7 +41,8 @@ public abstract class PackageURLFacade {
         try {
             packageURL = new PackageURL(type, namespace, name, version, qualifiers, subpath);
         } catch (MalformedPackageURLException e) {
-            throw new ExecutionException("Failed to create PackageURL in Coordinate", e);
+            throw new ExecutionException(String.format("Failed to create PackageURL in Coordinate for data: %s %s %s %s %s %s",
+                    type, namespace, name, version, qualifiers, subpath), e);
         }
     }
 
