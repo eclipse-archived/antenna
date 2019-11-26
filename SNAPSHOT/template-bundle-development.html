@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20191126" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>antenna-documentation &#x2013; Source Code Management</title>
+    <title>antenna-documentation &#x2013; Template Bundle Development</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.6.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -75,20 +75,64 @@
           </div>
         </div>
         <div id="bodyColumn"  class="span10" >
+<h1>Template Bundle Development</h1>
+<p>The Antenna&#x2019;s own template bundle is a basic implementation without any styling or customization. It is used automatically when no other bundle is configured. This guide will show how to create a custom template bundle and integrate it in the Antenna workflow run.</p>
 <div class="section">
-<h2><a name="Overview"></a>Overview</h2><a name="Overview"></a>
-<p>This project uses <a class="externalLink" href="https://git-scm.com/">Git</a> to manage its source code. Instructions on Git use can be found at <a class="externalLink" href="https://git-scm.com/documentation">https://git-scm.com/documentation</a>.</p></div>
+<h2><a name="Custom_Template_Bundle"></a>Custom Template Bundle</h2>
 <div class="section">
-<h2><a name="Web_Browser_Access"></a>Web Browser Access</h2><a name="Web_Browser_Access"></a>
-<p>The following is a link to a browsable version of the source repository:</p>
-<div class="source"><pre class="prettyprint"><a class="externalLink" href="https://github.com/eclipse/antenna/antenna-documentation">https://github.com/eclipse/antenna/antenna-documentation</a></pre></div></div>
+<h3><a name="Basic_folder_structure"></a>Basic folder structure</h3>
+
+<div>
+<div>
+<pre class="source">custom-template-bumdle-project
+&#x251c;&#x2500;&#x2500; attribution-document-basic-bundle.iml
+&#x251c;&#x2500;&#x2500; pom.xml
+&#x2514;&#x2500;&#x2500; src
+    &#x2514;&#x2500;&#x2500; main
+    &#xa0; &#xa0; &#x251c;&#x2500;&#x2500; java
+    &#xa0; &#xa0; &#x2502;&#xa0;&#xa0; &#x2514;&#x2500;&#x2500; org
+    &#xa0; &#xa0; &#x2502;&#xa0;&#xa0;     &#x2514;&#x2500;&#x2500; example
+    &#xa0; &#xa0; &#x2502;&#xa0;&#xa0;         &#x2514;&#x2500;&#x2500; company
+    &#xa0; &#xa0; &#x2502;&#xa0;&#xa0;             &#x2514;&#x2500;&#x2500; antenna
+    &#xa0; &#xa0; &#x2502;&#xa0;&#xa0;                 &#x2514;&#x2500;&#x2500; workflow
+    &#xa0; &#xa0; &#x2502;&#xa0;&#xa0;                     &#x2514;&#x2500;&#x2500; generators
+    &#xa0; &#xa0; &#x2502;&#xa0;&#xa0;                         &#x2514;&#x2500;&#x2500; CustomTemplateBundle.java
+    &#xa0; &#xa0; &#x2514;&#x2500;&#x2500; resources
+    &#xa0; &#xa0;     &#x251c;&#x2500;&#x2500; META-INF
+    &#xa0; &#xa0;     &#x2502;&#xa0;&#xa0; &#x2514;&#x2500;&#x2500; services
+    &#xa0; &#xa0;     &#x2502;&#xa0;&#xa0;     &#x2514;&#x2500;&#x2500; org.eclipse.sw360.antenna.attribution.document.core.TemplateBundle
+    &#xa0; &#xa0;     &#x251c;&#x2500;&#x2500; fonts
+    &#xa0;&#xa0;      &#x2514;&#x2500;&#x2500; templates
+    &#xa0; &#xa0;         &#x251c;&#x2500;&#x2500; custom_back.pdf
+    &#xa0;&#xa0;          &#x251c;&#x2500;&#x2500; custom_content.pdf
+    &#xa0; &#xa0;         &#x251c;&#x2500;&#x2500; custom_copyright.pdf
+    &#xa0;&#xa0;          &#x2514;&#x2500;&#x2500; custom_title.pdf
+</pre></div></div>
+</div>
 <div class="section">
-<h2><a name="Anonymous_Access"></a>Anonymous Access</h2><a name="Anonymous_Access"></a>
-<p>The source can be checked out anonymously from Git with this command (See <a class="externalLink" href="https://git-scm.com/docs/git-clone">https://git-scm.com/docs/git-clone</a>):</p>
-<div class="source"><pre class="prettyprint">$ git clone https://github.com/eclipse/antenna/antenna-documentation</pre></div></div>
+<h3><a name="Project_setup"></a>Project setup</h3>
+<ol style="list-style-type: decimal">
+
+<li>Create a new Maven project.</li>
+<li>Add a new java class which implements the interface TemplateBundle. The interface has the following methods:<br />
+Mandatory: key(), loadTitleTemplate(), loadCopyrightTemplate(), loadContentTemplate(), loadBackPageTemplate()<br />
+Optional: loadSansFont(), loadSansItalicFont(), loadSansBoldFont(), loadSansBoldItalicFont()
+<ul>
+
+<li><tt>key</tt>: Returns the unique key of the custom bundle.</li>
+<li><tt>loadTitleTemplate</tt>: Provides an <tt>InputStream</tt> of the cover page.</li>
+<li><tt>loadCopyrightTemplate</tt>: Provides an <tt>InputStream</tt> of the copyright page.</li>
+<li><tt>loadContentTemplate</tt>: Provides an <tt>InputStream</tt> of the content page.</li>
+<li><tt>loadBackPageTemplate</tt>: Provides an <tt>InputStream</tt> of the back page.</li>
+<li><tt>loadSansFont, loadSansItalicFont, loadSansBoldFont, loadSansBoldItalicFont:</tt> Provides an <tt>InputStream</tt> of your Font.</li>
+</ul>
+</li>
+<li>Add the provider configuration file of the service (TemplateBundle) in the <tt>META-INF/services</tt> directory, which contains the fully-qualified binary name of your concrete provider e.g. <tt>org.example.company.antenna.workflow.generators.CustomTemplateBundle</tt>.</li>
+<li>Add for each cover, copyright, content and back page a one page pdf file with your customization.</li>
+</ol></div>
 <div class="section">
-<h2><a name="Access_from_Behind_a_Firewall"></a>Access from Behind a Firewall</h2><a name="Access_from_Behind_a_Firewall"></a>
-<p>Refer to the documentation of the SCM used for more information about access behind a firewall.</p></div>
+<h3><a name="Usage_in_Antenna"></a>Usage in Antenna</h3>
+<p>After setting up your custom template bundle project, you have to package it to a JAR file and put it on the classpath of your Antenna run (e.g. in Maven: add your project as a dependency to the antenna-maven-plugin build). Additionally you have to configure the Attribution Document generator in your workflow.xml file with your specified unique key.</p></div></div>
         </div>
       </div>
     </div>

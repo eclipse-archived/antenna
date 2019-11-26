@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20191126" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>antenna-documentation &#x2013; Child Jar resolver</title>
+    <title>antenna-documentation &#x2013; Attribution Document generator</title>
     <link rel="stylesheet" href="../css/apache-maven-fluido-1.6.min.css" />
     <link rel="stylesheet" href="../css/site.css" />
     <link rel="stylesheet" href="../css/print.css" media="print" />
@@ -75,20 +75,44 @@
           </div>
         </div>
         <div id="bodyColumn"  class="span10" >
+<h1>Attribution Document generator</h1>
 <div class="section">
-<h2><a name="Child_Jar_resolver"></a>Child Jar resolver</h2>
-<p>The Child Jar resolver checks for each artifact if a pathname contains more than one jar/zip/war.</p></div>
 <div class="section">
-<h2><a name="HowTo_use"></a>HowTo use</h2>
-<p>Add the following step into the <tt>&lt;processors&gt;</tt> section of your workflow.xml</p>
+<h3><a name="How_to_use"></a>How to use</h3>
+<p>Add this configuration to the workflow.xml</p>
 
 <div>
 <div>
-<pre class="source">&lt;step&gt;
-    &lt;name&gt;Child Jar Resolver&lt;/name&gt;
-    &lt;classHint&gt;org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ChildJarResolver&lt;/classHint&gt;
-&lt;/step&gt;
-</pre></div></div></div>
+<pre class="source">&lt;workflow&gt;
+    &lt;generators&gt;
+        &lt;step&gt;
+            &lt;name&gt;Attribution Document Generator&lt;/name&gt;
+            &lt;classHint&gt;org.eclipse.sw360.antenna.attribution.document.workflow.generators.AttributionDocumentGenerator&lt;/classHint&gt;
+            &lt;configuration&gt;
+                &lt;entry key=&quot;attribution.doc.templateKey&quot; value=&quot;basic-pdf-template&quot;/&gt;
+                &lt;entry key=&quot;attribution.doc.name&quot; value=&quot;&quot;/&gt;
+                &lt;entry key=&quot;attribution.doc.productName&quot; value=&quot;&quot;/&gt;
+                &lt;entry key=&quot;attribution.doc.productVersion&quot; value=&quot;&quot;/&gt;
+                &lt;entry key=&quot;attribution.doc.copyrightHolder&quot; value=&quot;&quot;/&gt;
+            &lt;/configuration&gt;
+        &lt;/step&gt;
+    &lt;/generators&gt;
+&lt;/workflow&gt;
+</pre></div></div>
+
+<div class="section">
+<h4><a name="Explanation_of_parameters"></a>Explanation of parameters</h4>
+<ul>
+
+<li><tt>attribution.doc.templateKey</tt>: Specifies the bundle, which will be used for the generation of the attribution document. The default bundle key is <tt>basic-pdf-template</tt>. If you have your custom bundle please use your unique key, specified in your implementation.</li>
+<li><tt>attribution.doc.name</tt>: <i>(optional)</i> Specifies the filename of your attribution document. If not specified, the attribution document is placed at <tt>${project.build.directory}/antenna/attribution-document.pdf</tt>.</li>
+<li><tt>attribution.doc.productName</tt>: Specifies the name of the product, for which the attribution document is generated. It will be appear in the title page of the document.</li>
+<li><tt>attribution.doc.productVersion</tt>: Specifies the version of the product, for which the attribution document is generated. It will be appear in the title page of the document, below the product name.</li>
+<li><tt>attribution.doc.copyrightHolder</tt>: Specifies the Copyright Holder of the product, which will be appear in the footer of the attribution document.</li>
+</ul></div>
+<div class="section">
+<h4><a name="Template_development"></a>Template development</h4>
+<p>Please have a look in the <a href="../template-bundle-development.html">Template Bundle Development</a>, if you want to create your own template bundle with customized and company-related look.</p></div></div></div>
         </div>
       </div>
     </div>
