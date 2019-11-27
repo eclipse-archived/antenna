@@ -139,6 +139,8 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
         enricher.setDeactivated(true);
         processors.add(enricher);
+        enricher = mkWorkflowStep("ORT Downloader", "org.eclipse.sw360.antenna.ort.workflow.processors.enricher.OrtDownloaderProcessor");
+        processors.add(enricher);
         return processors;
     }
 

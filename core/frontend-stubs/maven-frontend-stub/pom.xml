@@ -217,6 +217,10 @@
             <groupId>com.github.ralfstuckert.pdfbox-layout</groupId>
             <artifactId>pdfbox2-layout</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+            <artifactId>downloader</artifactId>
+        </dependency>
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
             <groupId>junit</groupId>
