@@ -29,8 +29,9 @@ import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 
 /**
  * This adapter helps to encapsulate Antenna API.
- * <p />
- * In the current state it may still be changed and this should help to limit the places that need to change to < 2.
+ * <p>
+ * In the current state it may still be changed and this should help to limit the places that need to change to
+ * {@literal <} 2.
  */
 public class ArtifactAdapter implements ArtifactAndLicense {
 

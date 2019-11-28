@@ -22,7 +22,6 @@
     </parent>
 
     <artifactId>attribution-document-demo-bundle</artifactId>
-    <name>Attribution Document::Demo Bundle</name>
     <description>A demo bundle showing how the templating works.</description>
 
     <dependencies>

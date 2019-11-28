@@ -21,7 +21,6 @@
     </parent>
 
     <artifactId>attribution-document</artifactId>
-    <name>attribution-document-module</name>
     <packaging>pom</packaging>
 
 
