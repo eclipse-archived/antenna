@@ -15,7 +15,7 @@ buildscript{
     }
 
     dependencies{
-        classpath 'org.eclipse.sw360.antenna:gradle-plugin:1.0.0-SNAPSHOT'
+        classpath 'org.eclipse.sw360.antenna:gradle-plugin:1.0.0-RC8'
     }
 }
 
