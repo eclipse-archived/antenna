@@ -1,11 +1,11 @@
 /**
  * Copyright (c) Robert Bosch Manufacturing Solutions GmbH 2019.
- * <p>
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.eclipse.sw360.antenna.attribution.document.core.model;
@@ -26,7 +26,7 @@ public interface ArtifactAndLicense {
     /**
      * @return (non - null) the package-url as String representation. This should be present if the artifact is a component
      * (e.g. a Maven artifact, a NPM module, ..)
-     * @see https://github.com/package-url/purl-spec
+     * @see <a href="https://github.com/package-url/purl-spec">PURL specification</a>
      */
     Optional<String> getPurl();
 

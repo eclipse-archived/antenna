@@ -22,7 +22,6 @@
     </parent>
 
     <artifactId>attribution-document-generator</artifactId>
-    <name>Attribution Document::Generator</name>
     <description>Antenna integration for the generation of the attribution document.</description>
 
     <dependencies>

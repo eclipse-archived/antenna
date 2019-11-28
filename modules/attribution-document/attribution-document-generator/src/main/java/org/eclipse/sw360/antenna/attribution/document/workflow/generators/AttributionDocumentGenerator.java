@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Attribution Document Generator for Antenna.
- * <p />
+ * <p>
  * This can be added as a step in the workflow configuration of Antenna. Please consult the Antenna documentation on how
  * to do this.
  */

@@ -19,11 +19,11 @@ import java.util.Optional;
  * Describes the templates to be used in document generation.
  *
  * This is used as service provider interface, so this is used to load implementations from classpath (via
- * {@link java.util.ServiceLoader}.
- * <p />
+ * {@link java.util.ServiceLoader}).
+ * <p>
  * As there potentially might be multiple template bundles available, this must return a key, that is used by
  * {@link TemplateLoaderUtil} to select the correct implementation.
- * <p />
+ * <p>
  * As an optional feature, you can provide your own fonts here. Typically this would mean to load a ttf-file from
  * classpath using PDType0Font.
  *
@@ -32,7 +32,7 @@ import java.util.Optional;
 public interface TemplateBundle {
    /**
     * The key identifies this bundle.
-    * <p />
+    * <p>
     * It is intended to be used in the configuration in order to load the correct template. Thus, this should have a
     * meaningful name and to some degree unique.
     *

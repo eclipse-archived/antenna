@@ -21,7 +21,6 @@
         <relativePath>../</relativePath>
     </parent>
     <artifactId>attribution-document-core</artifactId>
-    <name>Attribution Document::Core</name>
     <description>Core library for the generation of the attribution document</description>
 
     <dependencies>
