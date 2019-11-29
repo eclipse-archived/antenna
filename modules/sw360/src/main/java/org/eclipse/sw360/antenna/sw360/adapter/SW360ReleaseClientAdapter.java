@@ -68,14 +68,15 @@ public class SW360ReleaseClientAdapter {
 
         if (releaseFromArtifact.getComponentId() == null) {
             final SW360Component componentFromRelease = SW360ComponentAdapterUtils.createFromRelease(releaseFromArtifact);
-            final SW360Component componentFromSW360 = sw360ComponentClientAdapter.getOrCreateComponent(componentFromRelease, header);
-            if (componentFromSW360.get_Embedded().getReleases().stream()
-                    .map(SW360SparseRelease::getVersion)
-                    .anyMatch(releaseFromArtifact.getVersion()::equals)) {
-                throw new ExecutionException("The release already exists in the found component");
-            }
-
-            releaseFromArtifact.setComponentId(componentFromSW360.getComponentId());
+            final Optional<SW360Component> componentFromSW360 = sw360ComponentClientAdapter.getOrCreateComponent(componentFromRelease, header);
+            componentFromSW360.ifPresent(cfs -> {
+                if (cfs.get_Embedded().getReleases().stream()
+                        .map(SW360SparseRelease::getVersion)
+                        .anyMatch(releaseFromArtifact.getVersion()::equals)) {
+                    throw new ExecutionException("The release already exists in the found component");
+                }
+                releaseFromArtifact.setComponentId(cfs.getComponentId());
+            });
         }
 
         final SW360Release releaseFromSW360 = releaseClient.createRelease(releaseFromArtifact, header);
@@ -88,11 +89,11 @@ public class SW360ReleaseClientAdapter {
         }
     }
 
-    public SW360Release getReleaseById(String releaseId, HttpHeaders header) {
+    public Optional<SW360Release> getReleaseById(String releaseId, HttpHeaders header) {
         return releaseClient.getRelease(releaseId, header);
     }
 
-    public SW360Release enrichSparseRelease(SW360SparseRelease sparseRelease, HttpHeaders header) {
+    public Optional<SW360Release> enrichSparseRelease(SW360SparseRelease sparseRelease, HttpHeaders header) {
         return getReleaseById(sparseRelease.getReleaseId(), header);
     }
 
@@ -106,7 +107,9 @@ public class SW360ReleaseClientAdapter {
 
     public Optional<SW360Release> getRelease(SW360Release sw360ReleaseFromArtifact, HttpHeaders header) {
         return getSparseRelease(sw360ReleaseFromArtifact, header)
-                .map(sr -> enrichSparseRelease(sr, header));
+                .map(sr -> enrichSparseRelease(sr, header))
+                .filter(Optional::isPresent)
+                .map(Optional::get);
     }
 
     public Optional<SW360SparseRelease> getReleaseByExternalIds(Map<String,String> externalIds, HttpHeaders headers) {
@@ -142,7 +145,7 @@ public class SW360ReleaseClientAdapter {
                     .findFirst()
                     .flatMap(release -> SW360HalResourceUtility.getLastIndexOfSelfLink(release.get_Links()));
             if (releaseId.isPresent()) {
-                return Optional.of(getReleaseById(releaseId.get(), header));
+                return getReleaseById(releaseId.get(), header);
             }
         }
         return Optional.empty();

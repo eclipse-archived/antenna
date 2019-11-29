@@ -17,19 +17,25 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.checkRestStatus;
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSaveOrThrow;
+
 public class SW360LicenseClient extends SW360Client {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SW360LicenseClient.class);
     private static final String LICENSES_ENDPOINT = "/licenses";
     private final String restUrl;
 
@@ -44,56 +50,55 @@ public class SW360LicenseClient extends SW360Client {
     }
 
     public List<SW360SparseLicense> getLicenses(HttpHeaders header) {
-        ResponseEntity<Resource<SW360LicenseList>> response = doRestGET(getEndpoint(), header,
-                new ParameterizedTypeReference<Resource<SW360LicenseList>>() {});
+        try {
+            ResponseEntity<Resource<SW360LicenseList>> response = doRestGET(getEndpoint(), header,
+                    new ParameterizedTypeReference<Resource<SW360LicenseList>>() {});
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            SW360LicenseList resource = Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new ExecutionException("Body was null"))
-                    .getContent();
+            checkRestStatus(response);
+            SW360LicenseList resource = getSaveOrThrow(response.getBody(), Resource::getContent);
             if (resource.get_Embedded() != null &&
                     resource.get_Embedded().getLicenses() != null) {
                 return new ArrayList<>(resource.get_Embedded().getLicenses());
             } else {
                 return new ArrayList<>();
             }
-        } else {
-            throw new ExecutionException("Request to get all licenses failed with " + response.getStatusCode());
+        } catch (ExecutionException e) {
+            LOGGER.debug("Request to get all licenses failed with {}", e.getMessage());
+            return new ArrayList<>();
         }
     }
 
-    public SW360License getLicenseByName(String name, HttpHeaders header) {
-        ResponseEntity<Resource<SW360License>> response = doRestGET(getEndpoint() + "/" + name, header,
-                new ParameterizedTypeReference<Resource<SW360License>>() {});
+    public Optional<SW360License> getLicenseByName(String name, HttpHeaders header) {
+        try {
+            ResponseEntity<Resource<SW360License>> response = doRestGET(getEndpoint() + "/" + name, header,
+                    new ParameterizedTypeReference<Resource<SW360License>>() {});
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new ExecutionException("Body was null"))
-                    .getContent();
-        } else {
-            throw new ExecutionException("Request to get license " + name + " failed with "
-                    + response.getStatusCode());
+            checkRestStatus(response);
+            return Optional.of(getSaveOrThrow(response.getBody(), Resource::getContent));
+        } catch (ExecutionException e) {
+            LOGGER.debug("Request to get license {} failed with {}",
+                    name, e.getMessage());
+            return Optional.empty();
         }
     }
 
     public SW360License createLicense(SW360License sw360License, HttpHeaders header) {
-        HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360License, header);
-        ResponseEntity<Resource<SW360License>> response;
         try {
-            response = doRestPOST(getEndpoint(), httpEntity,
+            HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360License, header);
+            ResponseEntity<Resource<SW360License>> response = doRestPOST(getEndpoint(), httpEntity,
                 new ParameterizedTypeReference<Resource<SW360License>>() {});
-        } catch (HttpClientErrorException e) {
-            throw new ExecutionException("Request to create license " + sw360License.getFullName() + " failed with "
-                    + e.getStatusCode());
-        }
 
-        if (response.getStatusCode() == HttpStatus.CREATED) {
-            return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new ExecutionException("Body was null"))
-                    .getContent();
-        } else {
-            throw new ExecutionException("Request to create license " + sw360License.getFullName() + " failed with "
-                    + response.getStatusCode());
+            checkRestStatus(response);
+            return getSaveOrThrow(response.getBody(), Resource::getContent);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            LOGGER.error("Request to create license {} failed with {}",
+                    sw360License.getFullName(), e.getStatusCode());
+            LOGGER.debug("Error: ", e);
+            return sw360License;
+        } catch (ExecutionException e) {
+            LOGGER.error("Request to create license {} failed with {}",
+                    sw360License.getFullName(), e.getMessage());
+            return sw360License;
         }
     }
 }

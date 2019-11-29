@@ -17,23 +17,25 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSw360SparseReleases;
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.*;
 
 public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SW360ReleaseClient.class);
     private static final String RELEASES_ENDPOINT_APPENDIX = "/releases";
     private final String restUrl;
 
@@ -52,17 +54,16 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
         return restUrl + RELEASES_ENDPOINT_APPENDIX;
     }
 
-    public SW360Release getRelease(String releaseId, HttpHeaders header) {
-        ResponseEntity<Resource<SW360Release>> response = doRestGET(getEndpoint() + "/" + releaseId, header,
-                new ParameterizedTypeReference<Resource<SW360Release>>() {});
+    public Optional<SW360Release> getRelease(String releaseId, HttpHeaders header) {
+        try {
+            ResponseEntity<Resource<SW360Release>> response = doRestGET(getEndpoint() + "/" + releaseId, header,
+                    new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new ExecutionException("Body was null"))
-                    .getContent();
-        } else {
-            throw new ExecutionException("Request to get release " + releaseId + " failed with "
-                    + response.getStatusCode());
+            checkRestStatus(response);
+            return Optional.of(getSaveOrThrow(response.getBody(), Resource::getContent));
+        } catch (ExecutionException e) {
+            LOGGER.debug(e.getMessage());
+            return Optional.empty();
         }
     }
 
@@ -70,7 +71,25 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
     // which are mapped to numbered keys like `hash_1=...`, `hash_2=...`, ...
     // but can change in the order of the values
     public List<SW360SparseRelease> getReleasesByExternalIds(Map<String, String> externalIds, HttpHeaders header) {
-        String url = externalIds.entrySet().stream()
+        try {
+            String url = getExternalIdUrl(externalIds);
+
+            ResponseEntity<Resource<SW360ReleaseList>> response = doRestGET(url, header,
+                    new ParameterizedTypeReference<Resource<SW360ReleaseList>>() {});
+
+            return getSw360SparseReleases(response);
+        } catch (HttpClientErrorException e) {
+            LOGGER.debug("Request to get releases with externalId {} failed with {}", externalIds.toString(), e.getStatusCode());
+            LOGGER.debug("Error: ", e);
+            return Collections.emptyList();
+        } catch (ExecutionException e) {
+            LOGGER.debug("Request to get releases with externalId {} failed with {}", externalIds.toString(), e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    private String getExternalIdUrl(Map<String, String> externalIds) {
+        return externalIds.entrySet().stream()
                 .map(e -> {
                     try {
                         return URLEncoder.encode(e.getKey(), "UTF-8") + "=" + URLEncoder.encode(e.getValue(), "UTF-8");
@@ -79,49 +98,43 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
                     }
                 })
                 .collect(Collectors.joining("&", getEndpoint() + "/searchByExternalIds?", ""));
-
-        ResponseEntity<Resource<SW360ReleaseList>> response = doRestGET(url, header,
-                new ParameterizedTypeReference<Resource<SW360ReleaseList>>() {});
-
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return getSw360SparseReleases(response);
-        } else {
-            throw new ExecutionException("Request to get release with externalId " + url + " failed with "
-                    + response.getStatusCode());
-        }
     }
 
     public SW360Release createRelease(SW360Release sw360Release, HttpHeaders header) {
-        HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
+        try {
+            HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
 
-        ResponseEntity<Resource<SW360Release>> response = doRestPOST(getEndpoint(), httpEntity,
-                new ParameterizedTypeReference<Resource<SW360Release>>() {});
+            ResponseEntity<Resource<SW360Release>> response = doRestPOST(getEndpoint(), httpEntity,
+                    new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
-        if (response.getStatusCode() == HttpStatus.CREATED) {
-            return Optional.ofNullable(response.getBody())
-                    .orElseThrow(() -> new ExecutionException("Body was null"))
-                    .getContent();
-        } else {
-            throw new ExecutionException("Request to create release " + sw360Release.getName() + " failed with "
-                    + response.getStatusCode());
+            checkRestStatus(response);
+            return getSaveOrThrow(response.getBody(), Resource::getContent);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            LOGGER.error("Request to create release {} failed with {}", sw360Release.getName(), e.getStatusCode());
+            LOGGER.debug("Error: ", e);
+            return sw360Release;
+        } catch (ExecutionException e) {
+            LOGGER.error("Request to create release {} failed with {}", sw360Release.getName(), e.getMessage());
+            return sw360Release;
         }
     }
 
     public SW360Release patchRelease(SW360Release sw360Release, HttpHeaders header) {
-        HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
+        try {
+            HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
 
-        ResponseEntity<Resource<SW360Release>> response = doRestPATCH(getEndpoint() + "/" + sw360Release.getReleaseId(), httpEntity,
-                new ParameterizedTypeReference<Resource<SW360Release>>() {});
+            ResponseEntity<Resource<SW360Release>> response = doRestPATCH(getEndpoint() + "/" + sw360Release.getReleaseId(), httpEntity,
+                    new ParameterizedTypeReference<Resource<SW360Release>>() {});
 
-        if (! response.getStatusCode().is2xxSuccessful()) {
-            throw new ExecutionException("Request to create release " + sw360Release.getName() + " failed with "
-                    + response.getStatusCode());
+            checkRestStatus(response);
+            return getSaveOrThrow(response.getBody(), Resource::getContent);
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            LOGGER.error("Request to update release {} failed with {}", sw360Release.getName(), e.getStatusCode());
+            LOGGER.debug("Error: ", e);
+            return sw360Release;
+        } catch (ExecutionException e) {
+            LOGGER.error("Request to update release {} failed with {}", sw360Release.getName(), e.getMessage());
+            return sw360Release;
         }
-        Resource<SW360Release> body = response.getBody();
-        if (body == null) {
-            throw new ExecutionException("Request to create release " + sw360Release.getName() + " returned empty body");
-        }
-
-        return body.getContent();
     }
 }
