@@ -38,6 +38,7 @@
         <spring.version>5.1.2.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ort.rev>3f85d301f7</ort.rev>
+        <ort.maven.version>3.6.3</ort.maven.version>
     </properties>
 
     <scm>
