@@ -37,9 +37,6 @@ import static org.mockito.Mockito.*;
 
 @RunWith(Parameterized.class)
 public class HttpRequesterTest extends AntennaTestWithMockedContext {
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
     private HttpHelper httpHelperMock = Mockito.mock(HttpHelper.class);
     private HttpRequester hr;
     private Coordinate mavenCoordinate;
