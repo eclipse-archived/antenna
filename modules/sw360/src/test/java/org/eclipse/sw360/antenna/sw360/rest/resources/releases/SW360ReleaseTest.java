@@ -10,9 +10,8 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resources.releases;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.rest.resources.SW360ResourcesTestUtils;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -21,8 +20,9 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SW360ReleaseTest {
-    public SW360Release prepareRelease() {
+public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
+    @Override
+    public SW360Release prepareItem() {
         SW360Release release = new SW360Release();
         release.setName("Release Name");
         release.setVersion("1.2.3");
@@ -33,6 +33,11 @@ public class SW360ReleaseTest {
         release.setComponentId("COMPONENT_ID");
         release.setMainLicenseIds(Stream.of("MIT","BSD-3-Clause").collect(Collectors.toSet()));
         return release;
+    }
+
+    @Override
+    public Class<SW360Release> getHandledClassType() {
+        return SW360Release.class;
     }
 
     @Test
@@ -75,23 +80,7 @@ public class SW360ReleaseTest {
 
     @Test
     public void equalsTest() {
-        assertThat(prepareRelease())
-                .isEqualTo(prepareRelease());
-    }
-
-    @Test
-    public void serializationTest() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        final SW360Release release = prepareRelease();
-
-        final String jsonBody = objectMapper.writeValueAsString(release);
-        final SW360Release deserialized = objectMapper.readValue(jsonBody, SW360Release.class);
-
-        assertThat(deserialized.get_Embedded())
-                .isEqualTo(release.get_Embedded());
-        assertThat(deserialized)
-                .isEqualTo(release);
+        assertThat(prepareItem())
+                .isEqualTo(prepareItem());
     }
 }

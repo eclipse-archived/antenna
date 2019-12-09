@@ -10,15 +10,12 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resources.licenses;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
-import org.junit.Test;
+import org.eclipse.sw360.antenna.sw360.rest.resources.SW360ResourcesTestUtils;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class SW360LicenseTest {
-    public SW360License prepareLicense() {
+public class SW360LicenseTest extends SW360ResourcesTestUtils<SW360License> {
+    @Override
+    public SW360License prepareItem() {
         SW360License sw360License = new SW360License();
         sw360License.setShortName("Test-2.0");
         sw360License.setFullName("Test License 2.0");
@@ -26,19 +23,8 @@ public class SW360LicenseTest {
         return sw360License;
     }
 
-    @Test
-    public void serializationTest() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        final SW360License release = prepareLicense();
-
-        final String jsonBody = objectMapper.writeValueAsString(release);
-        final SW360License deserialized = objectMapper.readValue(jsonBody, SW360License.class);
-
-        assertThat(deserialized.get_Embedded())
-                .isEqualTo(release.get_Embedded());
-        assertThat(deserialized)
-                .isEqualTo(release);
+    @Override
+    public Class<SW360License> getHandledClassType() {
+        return SW360License.class;
     }
 }

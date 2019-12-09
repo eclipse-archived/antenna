@@ -10,16 +10,13 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resources.components;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentType;
-import org.junit.Test;
+import org.eclipse.sw360.antenna.sw360.rest.resources.SW360ResourcesTestUtils;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class SW360ComponentsTest {
-    public SW360Component prepareComponent() {
+public class SW360ComponentsTest extends SW360ResourcesTestUtils<SW360Component> {
+    @Override
+    public SW360Component prepareItem() {
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName("Component Name");
         sw360Component.setComponentType(SW360ComponentType.COTS);
@@ -28,19 +25,8 @@ public class SW360ComponentsTest {
         return sw360Component;
     }
 
-    @Test
-    public void serializationTest() throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-        final SW360Component release = prepareComponent();
-
-        final String jsonBody = objectMapper.writeValueAsString(release);
-        final SW360Component deserialized = objectMapper.readValue(jsonBody, SW360Component.class);
-
-        assertThat(deserialized.get_Embedded())
-                .isEqualTo(release.get_Embedded());
-        assertThat(deserialized)
-                .isEqualTo(release);
+    @Override
+    public Class<SW360Component> getHandledClassType() {
+        return SW360Component.class;
     }
 }
