@@ -11,6 +11,7 @@
 
 package org.eclipse.sw360.antenna.sw360.rest.resource.projects;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
@@ -22,7 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbedded> {
-    private String type;
     private String name;
     private String version;
     private SW360ProjectType projectType;
@@ -45,15 +45,7 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
         visibility = SW360Visibility.BUISNESSUNIT_AND_MODERATORS;
     }
 
-    public String getType() {
-        return this.type;
-    }
-
-    public SW360Project setType(String type) {
-        this.type = type;
-        return this;
-    }
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getName() {
         return this.name;
     }
@@ -63,6 +55,7 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getVersion() {
         return this.version;
     }
@@ -72,6 +65,7 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getDescription() {
         return this.description;
     }
@@ -81,6 +75,7 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public Map<String, String> getExternalIds() {
         return this.externalIds;
     }
@@ -90,6 +85,7 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getCreatedOn() {
         return this.createdOn;
     }
@@ -99,6 +95,7 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getBusinessUnit() {
         return this.businessUnit;
     }
@@ -108,6 +105,7 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public SW360ProjectType getProjectType() {
         return this.projectType;
     }
@@ -117,6 +115,7 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getClearingTeam() {
         return this.clearingTeam;
     }
@@ -126,6 +125,7 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public SW360Visibility getVisibility() {
         return this.visibility;
     }
@@ -170,21 +170,19 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         SW360Project that = (SW360Project) o;
-        return Objects.equals(type, that.type) &&
-                Objects.equals(name, that.name) &&
+        return Objects.equals(name, that.name) &&
                 Objects.equals(version, that.version) &&
                 projectType == that.projectType &&
                 Objects.equals(description, that.description) &&
                 Objects.equals(externalIds, that.externalIds) &&
                 Objects.equals(createdOn, that.createdOn) &&
                 Objects.equals(businessUnit, that.businessUnit) &&
-                Objects.equals(clearingTeam, that.clearingTeam) &&
                 visibility == that.visibility &&
                 Objects.equals(releaseIdToUsage, that.releaseIdToUsage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), type, name, version, projectType, description, externalIds, createdOn, businessUnit, clearingTeam, visibility, releaseIdToUsage);
+        return Objects.hash(super.hashCode(), name, version, projectType, description, externalIds, createdOn, businessUnit, visibility, releaseIdToUsage);
     }
 }

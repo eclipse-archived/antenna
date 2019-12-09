@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resource.licenses;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
@@ -30,6 +31,7 @@ public class SW360License extends SW360HalResource<LinkObjects, Embedded> {
         this.text = license.getText();
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getText() {
         return this.text;
     }
@@ -39,6 +41,7 @@ public class SW360License extends SW360HalResource<LinkObjects, Embedded> {
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getShortName() {
         return this.shortName;
     }
@@ -48,6 +51,7 @@ public class SW360License extends SW360HalResource<LinkObjects, Embedded> {
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getFullName() {
         return this.fullName;
     }

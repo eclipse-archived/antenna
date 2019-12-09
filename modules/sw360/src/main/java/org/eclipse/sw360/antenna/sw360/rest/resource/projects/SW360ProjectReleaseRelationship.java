@@ -11,6 +11,8 @@
 
 package org.eclipse.sw360.antenna.sw360.rest.resource.projects;
 
+import java.util.Objects;
+
 public class SW360ProjectReleaseRelationship {
     public SW360ReleaseRelationship releaseRelation;
     public SW360MainlineState mainlineState;
@@ -39,5 +41,19 @@ public class SW360ProjectReleaseRelationship {
     public SW360ProjectReleaseRelationship setMainlineState(SW360MainlineState mainlineState) {
         this.mainlineState = mainlineState;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SW360ProjectReleaseRelationship that = (SW360ProjectReleaseRelationship) o;
+        return releaseRelation == that.releaseRelation &&
+                mainlineState == that.mainlineState;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(releaseRelation, mainlineState);
     }
 }
