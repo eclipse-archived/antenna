@@ -36,13 +36,6 @@ public class SW360ProjectAdapterUtils {
         }
     }
 
-    public static void setClearingTeam(SW360Project project, String clearingTeam) {
-        if (clearingTeam != null &&
-                !clearingTeam.isEmpty()) {
-            project.setClearingTeam(clearingTeam);
-        }
-    }
-
     public static void prepareProject(SW360Project sw360Project, String projectName, String projectVersion) {
         SW360ProjectAdapterUtils.setName(sw360Project, projectName);
         SW360ProjectAdapterUtils.setVersion(sw360Project, projectVersion);

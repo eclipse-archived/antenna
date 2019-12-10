@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.sw360.rest.resource.components;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
@@ -21,7 +22,6 @@ import java.util.Optional;
 public class SW360Component extends SW360HalResource<LinkObjects, SW360ComponentEmbedded> {
     private String name;
     private SW360ComponentType componentType;
-    private String type;
     private String createdOn;
     private String homepage;
 
@@ -33,6 +33,7 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
                 .orElse(null);
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getName() {
         return this.name;
     }
@@ -42,15 +43,7 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
         return this;
     }
 
-    public String getType() {
-        return this.type;
-    }
-
-    public SW360Component setType(String type) {
-        this.type = type;
-        return this;
-    }
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getCreatedOn() {
         return this.createdOn;
     }
@@ -60,6 +53,7 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public SW360ComponentType getComponentType() {
         return this.componentType;
     }
@@ -69,6 +63,7 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
         return this;
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getHomepage() {
         return this.homepage;
     }
@@ -96,13 +91,12 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
         SW360Component that = (SW360Component) o;
         return Objects.equals(name, that.name) &&
                 componentType == that.componentType &&
-                Objects.equals(type, that.type) &&
                 Objects.equals(createdOn, that.createdOn) &&
                 Objects.equals(homepage, that.homepage);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), name, componentType, type, createdOn, homepage);
+        return Objects.hash(super.hashCode(), name, componentType, createdOn, homepage);
     }
 }
