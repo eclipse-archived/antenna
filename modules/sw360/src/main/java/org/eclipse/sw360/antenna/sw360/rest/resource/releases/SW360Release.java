@@ -103,10 +103,10 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
 
     @JsonIgnore
     public boolean isSetMainLicenseIds() {
-        return get_Embedded().getLicenses() != null;
+        return !get_Embedded().getLicenses().isEmpty();
     }
 
-    @JsonIgnore
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public Set<String> getMainLicenseIds() {
         return Optional.ofNullable(get_Embedded().getLicenses())
                 .map(lics -> lics
@@ -116,7 +116,6 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
                 .orElse(Collections.emptySet());
     }
 
-    @JsonIgnore
     public SW360Release setMainLicenseIds(Set<String> mainLicenseIds) {
         if (mainLicenseIds.size() > 0) {
             List<SW360SparseLicense> licenses = mainLicenseIds.stream()
