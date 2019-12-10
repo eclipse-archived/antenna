@@ -81,7 +81,6 @@ public class MavenArtifactResolverImpl {
         resolveArtifacts(artifacts);
         LOGGER.debug("Resolve maven artifacts... done");
         return artifacts;
-
     }
 
     /**
@@ -97,13 +96,7 @@ public class MavenArtifactResolverImpl {
             dir.mkdirs();
         }
 
-        IArtifactRequester artifactRequester = sourcesRepositoryUrl != null
-                ? ArtifactRequesterFactory.getArtifactRequester(
-                optionalRepositorySystem, optionalMavenProject, optionalLegacySupport,
-                basedir, proxySettings, isMavenInstalled, sourcesRepositoryUrl)
-                : ArtifactRequesterFactory.getArtifactRequester(
-                optionalRepositorySystem, optionalMavenProject, optionalLegacySupport,
-                basedir, proxySettings, isMavenInstalled);
+        IArtifactRequester artifactRequester = getArtifactRequester();
 
         List<Artifact> filteredArtifacts = artifacts.stream()
                 .filter(getFilterPredicate())
@@ -146,6 +139,16 @@ public class MavenArtifactResolverImpl {
         if (!artifact.getSourceFile().isPresent() && !artifact.getFile().isPresent()) {
             processingReporter.add(artifact, MessageType.MISSING_SOURCES, "Maven Artifact Coordinates present but non resolvable sources (maybe sources are available using P2).");
         }
+    }
+
+    IArtifactRequester getArtifactRequester(){
+        return sourcesRepositoryUrl != null
+                ? ArtifactRequesterFactory.getArtifactRequester(
+                optionalRepositorySystem, optionalMavenProject, optionalLegacySupport,
+                basedir, proxySettings, isMavenInstalled, sourcesRepositoryUrl)
+                : ArtifactRequesterFactory.getArtifactRequester(
+                optionalRepositorySystem, optionalMavenProject, optionalLegacySupport,
+                basedir, proxySettings, isMavenInstalled);
     }
 
 
