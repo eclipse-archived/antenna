@@ -15,7 +15,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -52,14 +51,6 @@ public class RestUtils {
         license.put(SW360Attributes.LICENSE_SHORT_NAME, shortName);
         license.put(SW360Attributes.LICENSE_TEXT, sw360License.getText());
         return getHttpEntity(license, header);
-    }
-
-    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360Attachment sw360Attachment, HttpHeaders header) {
-        Map<String, Object> attachment = new HashMap<>();
-        attachment.put("filename", sw360Attachment.getFilename());
-        attachment.put("attachmentType", sw360Attachment.getAttachmentType());
-        attachment.put("checkStatus", "NOTCHECKED");
-        return getHttpEntity(attachment, header);
     }
 
     public static HttpHeaders deepCopyHeaders(HttpHeaders header) {

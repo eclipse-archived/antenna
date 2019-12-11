@@ -74,12 +74,10 @@ public enum SW360AttachmentType {
                 return LICENSE_AGREEMENT;
             case 15:
                 return SCREENSHOT;
-            case 16:
-                return OTHER;
             case 17:
                 return README_OSS;
             default:
-                return null;
+                return OTHER;
         }
     }
 }

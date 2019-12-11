@@ -28,14 +28,14 @@ public abstract class SW360ResourcesTestUtils<T extends SW360HalResource<?,?>> {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        final T release = prepareItem();
+        final T item = prepareItem();
 
-        final String jsonBody = objectMapper.writeValueAsString(release);
+        final String jsonBody = objectMapper.writeValueAsString(item);
         final T deserialized = objectMapper.readValue(jsonBody, getHandledClassType());
 
         assertThat(deserialized.get_Embedded())
-                .isEqualTo(release.get_Embedded());
+                .isEqualTo(item.get_Embedded());
         assertThat(deserialized)
-                .isEqualTo(release);
+                .isEqualTo(item);
     }
 }
