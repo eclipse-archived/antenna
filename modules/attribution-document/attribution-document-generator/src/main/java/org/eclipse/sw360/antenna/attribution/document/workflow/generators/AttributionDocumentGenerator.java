@@ -119,17 +119,19 @@ public class AttributionDocumentGenerator extends AbstractGenerator {
 
    @Override
    public void cleanup() {
-      Path cleanUpDir = docGenDir.toPath();
+      if (docGenDir != null) {
+         Path cleanUpDir = docGenDir.toPath();
 
-      if (!context.getDebug()) {
-         try {
-            Files.walk(cleanUpDir)
-                    .filter(p -> ! p.getFileName().equals(Paths.get(docName)))
-                    .map(Path::toFile)
-                    .forEach(File::delete);
-         } catch (IOException e) {
-            LOG.debug("Failed to clean up temporary directory=[" + docGenDir +
-                    "] for the generation of the attribution document");
+         if (!context.getDebug()) {
+            try {
+               Files.walk(cleanUpDir)
+                       .filter(p -> ! p.getFileName().equals(Paths.get(docName)))
+                       .map(Path::toFile)
+                       .forEach(File::delete);
+            } catch (IOException e) {
+               LOG.debug("Failed to clean up temporary directory=[" + docGenDir +
+                       "] for the generation of the attribution document");
+            }
          }
       }
    }
