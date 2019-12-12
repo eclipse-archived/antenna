@@ -61,10 +61,6 @@
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>com.github.jsonld-java.jsonld-java</groupId>
-                    <artifactId>jsonld-java</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
         <!-- ################################ compliance dependency ########################### -->
