@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentListEmbedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentEmbedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentListEmbedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseListEmbedded;
@@ -40,6 +41,8 @@ public class SW360ResourceDeserializer extends JsonDeserializer<Embedded> {
             return mapper.readValue(root.toString(), SW360ReleaseListEmbedded.class);
         } else if (root.has("sw360:licenses")) {
             return mapper.readValue(root.toString(), SW360LicenseListEmbedded.class);
+        } else if (root.has("sw360:attachments")) {
+            return mapper.readValue(root.toString(), SW360AttachmentListEmbedded.class);
         } else if (root.has("createdBy")) {
             return mapper.readValue(root.toString(), SW360ProjectEmbedded.class);
         }

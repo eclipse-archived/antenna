@@ -73,7 +73,7 @@ public class SW360EnricherImpl {
     }
 
     private void downloadAttachments(SW360Release sw360Release, Artifact artifact) {
-        List<SW360SparseAttachment> attachments = connector.getAttachmentsOfRelease(sw360Release);
+        List<SW360SparseAttachment> attachments = sw360Release.get_Embedded().getAttachments();
 
         attachments.stream()
                 .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)

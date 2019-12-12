@@ -10,34 +10,31 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.hateoas.Resource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
-import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.*;
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.checkRestStatus;
 
 public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>> extends SW360Client {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360AttachmentAwareClient.class);
@@ -92,26 +89,13 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
         }
     }
 
-    public List<SW360SparseAttachment> getItemAttachments(T itemToModify, HttpHeaders header) {
-        final String self = itemToModify.get_Links().getSelf().getHref();
-        try {
-            ResponseEntity<Resource<SW360AttachmentList>> response = doRestGET(self + ATTACHMENTS_ENDPOINT, header,
-                    new ParameterizedTypeReference<Resource<SW360AttachmentList>>() {});
-            checkRestStatus(response);
-            Validate.validState(response.getBody() != null);
-            return getSw360SparseAttachments(response);
-        } catch (HttpServerErrorException e) {
-            LOGGER.warn("Request to get attachments from {} failed with {}", self, e.getStatusCode());
-            LOGGER.debug("Error: ", e);
-            return new ArrayList<>();
-        } catch (ExecutionException e) {
-            LOGGER.warn("Request to get attachments from {} failed with {}", self, e.getMessage());
-            LOGGER.debug("Error: ", e);
-            return new ArrayList<>();
-        }
-    }
-
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     public Optional<Path> downloadAttachment(String itemHref, SW360SparseAttachment attachment, Path downloadPath, HttpHeaders header) {
+        File dir = downloadPath.toFile();
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
         String attachmentId = attachment.getAttachmentId();
         String url = itemHref + "/attachments/" + attachmentId;
         try {

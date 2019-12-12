@@ -57,7 +57,9 @@ public class SW360UpdaterImpl {
                     && sw360ReleaseFinal.get_Links().getSelf() != null
                     && !sw360ReleaseFinal.get_Links().getSelf().getHref().isEmpty()) {
                 Map<Path, SW360AttachmentType> attachments = SW360AttachmentAdapterUtils.getAttachmentsFromArtifact(artifact);
-                sw360ReleaseFinal = sw360MetaDataUpdater.uploadAttachments(sw360ReleaseFinal, attachments);
+                if (!attachments.isEmpty()) {
+                    sw360ReleaseFinal = sw360MetaDataUpdater.uploadAttachments(sw360ReleaseFinal, attachments);
+                }
             }
             releases.add(sw360ReleaseFinal);
         }

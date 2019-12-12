@@ -86,9 +86,16 @@ public class SW360ReleaseClientAdapter {
 
     public SW360Release uploadAttachments(SW360Release sw360item, Map<Path, SW360AttachmentType> attachments, HttpHeaders header) {
         for(Map.Entry<Path, SW360AttachmentType> attachment : attachments.entrySet()) {
-            sw360item = releaseClient.uploadAndAttachAttachment(sw360item, attachment.getKey(), attachment.getValue(), header);
+            if (!attachmentIsPotentialDuplicate(attachment.getKey(), sw360item.get_Embedded().getAttachments())) {
+                sw360item = releaseClient.uploadAndAttachAttachment(sw360item, attachment.getKey(), attachment.getValue(), header);
+            }
         }
         return sw360item;
+    }
+
+    private boolean attachmentIsPotentialDuplicate(Path attachment, List<SW360SparseAttachment> attachments) {
+        return attachments.stream()
+                .anyMatch(attachment1 -> attachment1.getFilename().equals(attachment.getFileName().toString()));
     }
 
     public Optional<SW360Release> getReleaseById(String releaseId, HttpHeaders header) {
@@ -151,10 +158,6 @@ public class SW360ReleaseClientAdapter {
             }
         }
         return Optional.empty();
-    }
-
-    public List<SW360SparseAttachment> getAttachmentsOfRelease(SW360Release release, HttpHeaders header) {
-        return releaseClient.getItemAttachments(release, header);
     }
 
     public Optional<Path> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath, HttpHeaders header) {

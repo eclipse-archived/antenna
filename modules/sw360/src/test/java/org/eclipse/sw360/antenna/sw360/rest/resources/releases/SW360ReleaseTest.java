@@ -10,10 +10,13 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resources.releases;
 
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resources.SW360ResourcesTestUtils;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,6 +35,18 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
         release.setReleaseId("RELEASE_ID");
         release.setComponentId("COMPONENT_ID");
         release.setMainLicenseIds(Stream.of("MIT","BSD-3-Clause").collect(Collectors.toSet()));
+        ArrayList<SW360SparseAttachment> sparseAttachmentList = new ArrayList<>();
+        sparseAttachmentList.add(new SW360SparseAttachment().setFilename("").setAttachmentType(SW360AttachmentType.SOURCE));
+        release.get_Embedded().setAttachments(sparseAttachmentList);
+        return release;
+    }
+
+    @Override
+    public SW360Release prepareItemWithoutOptionalInput() {
+        SW360Release release = new SW360Release();
+        release.setName("Release Name");
+        release.setVersion("1.2.3");
+        release.setComponentId("COMPONENT_ID");
         return release;
     }
 
@@ -76,11 +91,5 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
         sw360Release1.mergeWith(sw360Release2);
 
         assertThat(sw360Release1.getCpeId()).isNotEqualTo(sw360Release2.getCpeId());
-    }
-
-    @Test
-    public void equalsTest() {
-        assertThat(prepareItem())
-                .isEqualTo(prepareItem());
     }
 }

@@ -15,8 +15,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @JsonDeserialize(as = SW360AttachmentListEmbedded.class)
 public class SW360AttachmentListEmbedded implements Embedded {
@@ -25,7 +27,9 @@ public class SW360AttachmentListEmbedded implements Embedded {
     private List<SW360SparseAttachment> attachments;
 
     public List<SW360SparseAttachment> getAttachments() {
-        return this.attachments;
+        return Optional.ofNullable(attachments)
+                .map(ArrayList::new)
+                .orElse(new ArrayList<>());
     }
 
     public SW360AttachmentListEmbedded setAttachments(List<SW360SparseAttachment> attachments) {

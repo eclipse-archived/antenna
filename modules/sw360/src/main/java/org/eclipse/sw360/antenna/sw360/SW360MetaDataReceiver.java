@@ -26,7 +26,6 @@ import org.springframework.http.MediaType;
 
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 public class SW360MetaDataReceiver {
@@ -56,11 +55,6 @@ public class SW360MetaDataReceiver {
     public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense) {
         HttpHeaders headers = sw360ConnectionConfiguration.getHttpHeaders();
         return licenseClientAdapter.getLicenseDetails(sparseLicense, headers);
-    }
-
-    public List<SW360SparseAttachment> getAttachmentsOfRelease(SW360Release release) {
-        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
-        return releaseClientAdapter.getAttachmentsOfRelease(release, header);
     }
 
     public Optional<Path> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath) {

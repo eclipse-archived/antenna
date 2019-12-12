@@ -12,12 +12,20 @@ package org.eclipse.sw360.antenna.sw360.rest.resources.attachments;
 
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resources.SW360ResourcesTestUtils;
 
-public class SW360AttachmentTest extends SW360ResourcesTestUtils {
+public class SW360AttachmentTest extends SW360ResourcesTestUtils<SW360Attachment> {
     @Override
     public SW360Attachment prepareItem() {
         SW360Attachment sw360Attachment = new SW360Attachment("test.doc", SW360AttachmentType.SOURCE);
+        return sw360Attachment;
+    }
+
+    @Override
+    public SW360Attachment prepareItemWithoutOptionalInput() {
+        SW360Attachment sw360Attachment = new SW360Attachment();
+        sw360Attachment.setFilename("");
         return sw360Attachment;
     }
 
