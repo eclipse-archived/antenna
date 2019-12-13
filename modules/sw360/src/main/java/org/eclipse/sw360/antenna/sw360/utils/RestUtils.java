@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
+import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +34,7 @@ public class RestUtils {
             throw new ExecutionException("Error when attempting to serialise the request body.", e);
         }
     }
-    public static <T> HttpEntity<String> convertSW360ResourceToHttpEntity(T itemToConvert, HttpHeaders header) {
+    public static <T extends SW360HalResource<?, ?>> HttpEntity<String> convertSW360ResourceToHttpEntity(T itemToConvert, HttpHeaders header) {
         try {
             String jsonBody = objectMapper.writeValueAsString(itemToConvert);
             return new HttpEntity<>(jsonBody, header);
