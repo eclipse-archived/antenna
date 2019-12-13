@@ -14,6 +14,8 @@ import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.rest.SW360ReleaseClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentEmbedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
@@ -79,14 +81,21 @@ public class SW360ReleaseClientAdapter {
             });
         }
 
-        final SW360Release releaseFromSW360 = releaseClient.createRelease(releaseFromArtifact, header);
+        return releaseClient.createRelease(releaseFromArtifact, header);
+    }
 
-        final Optional<Path> sourceFile = releaseFromArtifact.getSourceFile();
-        if (uploadSource && sourceFile.isPresent()) {
-            return releaseClient.uploadAndAttachAttachment(releaseFromSW360, sourceFile.get(), "SOURCE", header);
-        } else {
-            return releaseFromSW360;
+    public SW360Release uploadAttachments(SW360Release sw360item, Map<Path, SW360AttachmentType> attachments, HttpHeaders header) {
+        for(Map.Entry<Path, SW360AttachmentType> attachment : attachments.entrySet()) {
+            if (!attachmentIsPotentialDuplicate(attachment.getKey(), sw360item.get_Embedded().getAttachments())) {
+                sw360item = releaseClient.uploadAndAttachAttachment(sw360item, attachment.getKey(), attachment.getValue(), header);
+            }
         }
+        return sw360item;
+    }
+
+    private boolean attachmentIsPotentialDuplicate(Path attachment, List<SW360SparseAttachment> attachments) {
+        return attachments.stream()
+                .anyMatch(attachment1 -> attachment1.getFilename().equals(attachment.getFileName().toString()));
     }
 
     public Optional<SW360Release> getReleaseById(String releaseId, HttpHeaders header) {
@@ -149,5 +158,10 @@ public class SW360ReleaseClientAdapter {
             }
         }
         return Optional.empty();
+    }
+
+    public Optional<Path> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath, HttpHeaders header) {
+        return Optional.ofNullable(release.get_Links().getSelf())
+                .flatMap(self -> releaseClient.downloadAttachment(self.getHref(), attachment, downloadPath, header));
     }
 }

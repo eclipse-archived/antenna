@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch Software Innovations GmbH 2019.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -8,22 +8,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.rest.resource.releases;
+package org.eclipse.sw360.antenna.sw360.rest.resource.attachments;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentListEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseListEmbedded;
+import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@JsonDeserialize(as = SW360ReleaseEmbedded.class)
-public class SW360ReleaseEmbedded extends SW360LicenseListEmbedded {
+@JsonDeserialize(as = SW360AttachmentListEmbedded.class)
+public class SW360AttachmentListEmbedded implements Embedded {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("sw360:attachments")
     private List<SW360SparseAttachment> attachments;
@@ -36,20 +34,19 @@ public class SW360ReleaseEmbedded extends SW360LicenseListEmbedded {
 
     public SW360AttachmentListEmbedded setAttachments(List<SW360SparseAttachment> attachments) {
         this.attachments = attachments;
-        return new SW360AttachmentListEmbedded().setAttachments(attachments);
+        return this;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        SW360ReleaseEmbedded that = (SW360ReleaseEmbedded) o;
+        SW360AttachmentListEmbedded that = (SW360AttachmentListEmbedded) o;
         return Objects.equals(attachments, that.attachments);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), attachments);
+        return Objects.hash(attachments);
     }
 }

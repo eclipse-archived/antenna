@@ -24,6 +24,13 @@ public class SW360LicenseTest extends SW360ResourcesTestUtils<SW360License> {
     }
 
     @Override
+    public SW360License prepareItemWithoutOptionalInput() {
+        SW360License sw360License = new SW360License();
+        sw360License.setFullName("Test License 2.0");
+        return sw360License;
+    }
+
+    @Override
     public Class<SW360License> getHandledClassType() {
         return SW360License.class;
     }

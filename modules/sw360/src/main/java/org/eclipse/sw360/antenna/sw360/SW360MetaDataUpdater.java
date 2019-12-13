@@ -15,6 +15,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
@@ -22,10 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SW360MetaDataUpdater {
@@ -88,5 +87,14 @@ public class SW360MetaDataUpdater {
             id = projectClientAdapter.addProject(projectName, projectVersion, header);
         }
         projectClientAdapter.addSW360ReleasesToSW360Project(id, releases, header);
+    }
+
+    public boolean isUploadSources() {
+        return uploadSources;
+    }
+
+    public SW360Release uploadAttachments(SW360Release sw360Release, Map<Path, SW360AttachmentType> attachments) {
+        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
+        return releaseClientAdapter.uploadAttachments(sw360Release, attachments, header);
     }
 }

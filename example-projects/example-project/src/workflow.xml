@@ -58,6 +58,8 @@
                 <entry key="client.id" value="trusted-sw360-client"/>
                 <entry key="client.password" value="sw360-secret"/>
                 <entry key="proxy.use" value="false"/>
+                <entry key="download.attachments" value="true"/>
+                <entry key="download.directory" value="${project.build.directory}/antenna/sources"/>
             </configuration>
             <deactivated>true</deactivated>
         </step>

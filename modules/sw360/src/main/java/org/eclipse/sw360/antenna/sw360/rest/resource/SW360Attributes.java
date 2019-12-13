@@ -20,10 +20,6 @@ public class SW360Attributes {
     public static final String PROJECT_RELEASES_TRANSITIVE ="transitive";
     public static final String COMPONENT_SEARCH_BY_NAME = "name";
 
-    // Attributes of Sw360Attachment
-    public static final String ATTACHMENT_ATTACHMENT_TYPE = "attachmentType";
-    public static final String ATTACHMENT_CHECK_STATUS = "checkStatus";
-
     // Attributes of Sw360License
     public static final String LICENSE_TEXT = "text";
     public static final String LICENSE_SHORT_NAME = "shortName";

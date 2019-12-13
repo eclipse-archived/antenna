@@ -39,6 +39,13 @@ public class SW360ProjectTests extends SW360ResourcesTestUtils<SW360Project> {
     }
 
     @Override
+    public SW360Project prepareItemWithoutOptionalInput() {
+        SW360Project sw360Project = new SW360Project();
+        sw360Project.setName("Project Name");
+        return sw360Project;
+    }
+
+    @Override
     public Class<SW360Project> getHandledClassType() {
         return SW360Project.class;
     }

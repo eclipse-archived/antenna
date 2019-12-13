@@ -19,6 +19,8 @@ import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
@@ -27,6 +29,7 @@ import org.eclipse.sw360.antenna.util.LicenseSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -37,10 +40,14 @@ public class SW360EnricherImpl {
 
     private final IProcessingReporter reporter;
     private final SW360MetaDataReceiver connector;
+    private final boolean downloadAttachments;
+    private final Path downloadPath;
 
-    public SW360EnricherImpl(IProcessingReporter reporter, SW360MetaDataReceiver connector) {
+    public SW360EnricherImpl(IProcessingReporter reporter, SW360MetaDataReceiver connector, boolean downloadAttachments, Path downloadPath) {
         this.reporter = reporter;
         this.connector = connector;
+        this.downloadAttachments = downloadAttachments;
+        this.downloadPath = downloadPath;
     }
 
     public Collection<Artifact> process(Collection<Artifact> intermediates) {
@@ -54,11 +61,28 @@ public class SW360EnricherImpl {
                 addClearingStateIfAvailable(artifact, sw360Release);
                 mapExternalIdsOnSW360Release(sw360Release, artifact);
                 updateLicenses(artifact, sw360Release);
+
+                if (downloadAttachments) {
+                    downloadAttachments(sw360Release, artifact);
+                }
             } else {
                 warnAndReport(artifact, "No SW360 release found for artifact.", MessageType.PROCESSING_FAILURE);
             }
         }
         return intermediates;
+    }
+
+    private void downloadAttachments(SW360Release sw360Release, Artifact artifact) {
+        List<SW360SparseAttachment> attachments = sw360Release.get_Embedded().getAttachments();
+
+        attachments.stream()
+                .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)
+                .forEach(attachment -> mapSourceAttachmentOnArtifact(sw360Release, attachment, artifact));
+    }
+
+    private void mapSourceAttachmentOnArtifact(SW360Release sw360Release, SW360SparseAttachment attachment, Artifact artifact) {
+        Optional<Path> attachmentPath = connector.downloadAttachment(sw360Release, attachment, downloadPath);
+        attachmentPath.map( path -> artifact.addFact(new ArtifactSourceFile(path)));
     }
 
     private void addClearingStateIfAvailable(Artifact artifact, SW360Release release) {

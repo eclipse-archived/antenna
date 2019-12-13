@@ -15,13 +15,17 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
+import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Optional;
 
 public class SW360MetaDataReceiver {
@@ -51,5 +55,11 @@ public class SW360MetaDataReceiver {
     public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense) {
         HttpHeaders headers = sw360ConnectionConfiguration.getHttpHeaders();
         return licenseClientAdapter.getLicenseDetails(sparseLicense, headers);
+    }
+
+    public Optional<Path> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath) {
+        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
+        header.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
+        return releaseClientAdapter.downloadAttachment(release, attachment, downloadPath, header);
     }
 }

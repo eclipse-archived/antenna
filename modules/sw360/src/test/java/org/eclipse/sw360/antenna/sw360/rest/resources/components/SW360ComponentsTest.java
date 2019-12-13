@@ -26,6 +26,13 @@ public class SW360ComponentsTest extends SW360ResourcesTestUtils<SW360Component>
     }
 
     @Override
+    public SW360Component prepareItemWithoutOptionalInput() {
+        SW360Component sw360Component = new SW360Component();
+        sw360Component.setName("Component Name");
+        return sw360Component;
+    }
+
+    @Override
     public Class<SW360Component> getHandledClassType() {
         return SW360Component.class;
     }
