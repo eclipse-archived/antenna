@@ -10,19 +10,31 @@
  */
 package org.eclipse.sw360.antenna.sw360.utils;
 
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename.ArtifactFilenameEntry;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class SW360ComponentAdapterUtils {
     public static String createComponentName(Artifact artifact) {
         return artifact.askFor(ArtifactCoordinates.class)
                 .map(ArtifactCoordinates::getMainCoordinate)
-                .map(Coordinate::getName)
-                .orElse(artifact.toString()); // TODO: ugly hack
+                .map(o -> Stream.of(o.getNamespace(), o.getName()))
+                .map(o -> o.collect(Collectors.joining("/")))
+                .orElseGet(() -> artifact.askFor(ArtifactFilename.class)
+                        .flatMap(ArtifactFilename::getBestFilenameEntryGuess)
+                        .map(ArtifactFilenameEntry::getFilename)
+                        .orElseThrow(() -> new ExecutionException("Artifact " + artifact.prettyPrint() + " does not have " +
+                                "enough facts to create a component name. Please provide more information " +
+                                "by an analyzer (" + artifact.getAnalysisSource() + ")")));
     }
 
     public static String createComponentVersion(Artifact artifact) {
