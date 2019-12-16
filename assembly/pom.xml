@@ -29,7 +29,6 @@
         <module>maven-plugin</module>
         <module>gradle-plugin</module>
         <module>spdx-license-knowledge-base</module>
-        <module>common-rules</module>
     </modules>
 
 </project>
