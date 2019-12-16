@@ -100,7 +100,7 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         }
 
     private void reportSingleResult(IProcessingReporter reporter, IEvaluationResult result) {
-        String resultString = String.format("Policy Violation: " + result.resultAsMessage());
+        String resultString = "Policy Violation: " + result.resultAsMessage();
         if (result.getSeverity().equals(IEvaluationResult.Severity.FAIL)) {
             LOGGER.error(resultString);
             result.getFailedArtifacts().forEach(a -> reporter.add(MessageType.PROCESSING_FAILURE, resultString));
