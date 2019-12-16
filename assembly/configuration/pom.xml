@@ -32,11 +32,6 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>common-rules</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>maven-module</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
