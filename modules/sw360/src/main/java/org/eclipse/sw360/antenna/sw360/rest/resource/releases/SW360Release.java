@@ -39,6 +39,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     private boolean isProprietary;
     private String name;
     private String version;
+    private String createdOn;
     private String cpeId;
     private String downloadurl;
     private final Map<String, String> externalIds = new HashMap<>();
@@ -88,6 +89,16 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
 
     public SW360Release setVersion(String version) {
         this.version = version;
+        return this;
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public String getCreatedOn() {
+        return createdOn;
+    }
+
+    public SW360Release setCreatedOn(String createdOn) {
+        this.createdOn = createdOn;
         return this;
     }
 
