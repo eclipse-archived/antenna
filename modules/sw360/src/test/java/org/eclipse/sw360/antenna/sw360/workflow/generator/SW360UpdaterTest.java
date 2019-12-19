@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.workflow.generator;
 
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
@@ -20,7 +21,9 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,6 +34,9 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SW360UpdaterTest extends AntennaTestWithMockedContext {
+
+    @Rule
+    public ExpectedException thrownException = ExpectedException.none();
 
     private String sourceUrl = "https://thrift.apache.org/";
     private String releaseTagUrl = "https://github.com/apache/thrift/releases/tag/0.10.0";
@@ -178,4 +184,14 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         assertThat(release.getMainLicenseIds().isEmpty()).isTrue();
     }
 
+    @Test
+    public void testArtifactWithoutFacts() {
+        Artifact artifact = new Artifact()
+                .setProprietary(false);
+
+        thrownException.expect(ExecutionException.class);
+        thrownException.expectMessage("does not have enough facts to create a component name.");
+
+        SW360ReleaseAdapterUtils.convertToRelease(artifact);
+    }
 }

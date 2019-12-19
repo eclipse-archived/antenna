@@ -18,6 +18,8 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ComponentAdapterUtils;
 import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import java.util.ArrayList;
@@ -26,6 +28,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SW360ComponentClientAdapter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SW360ComponentClientAdapter.class);
+
     private final SW360ComponentClient componentClient;
 
     public SW360ComponentClientAdapter(String restUrl, ProxySettings proxySettings) {
@@ -52,9 +56,14 @@ public class SW360ComponentClientAdapter {
     }
 
     public Optional<SW360Component> getComponentByArtifact(Artifact artifact, HttpHeaders header) {
-        String componentName = SW360ComponentAdapterUtils.createComponentName(artifact);
-
-        return getComponentByName(componentName, header);
+        try {
+            String componentName = SW360ComponentAdapterUtils.createComponentName(artifact);
+            return getComponentByName(componentName, header);
+        } catch (ExecutionException e) {
+            LOGGER.debug("No component found for {}. Reason: {}", artifact.prettyPrint(), e.getMessage());
+            LOGGER.debug("Error: ", e);
+            return Optional.empty();
+        }
     }
 
     public Optional<SW360Component> getComponentByName(String componentName, HttpHeaders header) {
