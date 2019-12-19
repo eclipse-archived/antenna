@@ -58,6 +58,10 @@
             <groupId>com.github.heremaps.oss-review-toolkit</groupId>
             <artifactId>model</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+            <artifactId>downloader</artifactId>
+        </dependency>
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
             <groupId>org.assertj</groupId>

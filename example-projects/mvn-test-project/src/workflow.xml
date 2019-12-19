@@ -49,6 +49,10 @@
             </configuration>
             <deactivated>true</deactivated>
         </step>
+        <step>
+            <name>ORT Downloader</name>
+            <classHint>org.eclipse.sw360.antenna.ort.workflow.processors.enricher.OrtDownloaderProcessor</classHint>
+        </step>
     </processors>
     <generators>
         <step>

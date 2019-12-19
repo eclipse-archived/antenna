@@ -92,6 +92,14 @@ public class OrtResultAnalyzerTest {
                 .flatMap(s -> Stream.of(s.split("\n"))).toArray())
                 .hasSize(4);
 
+        assertThat(artifacts.stream()
+                .map(artifact -> artifact.askFor(ArtifactVcsInfo.class))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .anyMatch(o -> "https://github.com/babel/babel/tree/master/packages/babel-generator"
+                        .equals(o.getVcsInfo().getUrl())))
+                .isTrue();
+
         assertThat(sourceUrls).hasSize(1);
 
         assertThat(sourceUrls).contains("https://registry.npmjs.org/babel-generator/-/babel-generator-6.26.0.tgz");
