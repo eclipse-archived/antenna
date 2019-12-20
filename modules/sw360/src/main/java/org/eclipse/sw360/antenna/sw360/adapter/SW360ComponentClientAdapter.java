@@ -85,4 +85,8 @@ public class SW360ComponentClientAdapter {
                 .findFirst();
 
     }
+
+    public List<SW360SparseComponent> getComponents(HttpHeaders header) {
+        return componentClient.getComponents(header);
+    }
 }
