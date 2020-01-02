@@ -29,7 +29,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ~/.sonar/cache
-        key: ${{ runner.os }}-sonar-${{ hashFiles('**/sonar-java-plugin.jar') }}
+        key: ${{ runner.os }}-sonar-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-sonar-
 
