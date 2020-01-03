@@ -6,12 +6,11 @@
 # http://www.eclipse.org/legal/epl-v20.html
 #
 # SPDX-License-Identifier: EPL-2.0
-name: Antenna Push Build
+name: Antenna Pull Request Build
 on: pull_request
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -33,10 +32,49 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-sonar-
 
-    - name: Set up JDK 1.8
+    - name: Setup JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
 
+    - name: Build P2
+      run: bash ./modules/p2/prepareDependenciesForP2.sh
+
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -B clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+    - name: Run SCA Analysis
+      run: mvn verify -DskipTests pmd:pmd checkstyle:checkstyle-aggregate spotbugs:check
+
+#    - name: Run SonarCloud Analysis
+#      run: mvn -B clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=sw360antenna -Dsonar.host.url=https://sonarcloud.io
+#      env:
+#        SONAR_TOKEN: "BUTatbx6/JcZdOtZ0qAYEsu0AVtOGT/OggNwD4wcaVfyvC3dq/QAkEmEvFPZVADSvu1CzWMgLuUdW3TCbJgDBzC/87ZeUAFJ3a24K7LH7AROsr/js7TazkuCjS7/eZzDCC9lAlTjPxaqb4R+/+Fmdaz2y2k0LfhPlCvyp5nzJvP4/5nD6IEYNC26qCBhw55pyO+JBp/yVnO+7tNiQSntri53vNrFLeSa2XRaEKKV937I5edAUM6LyjHM+hVSwKqYqGOdf2+StAsW6WxU869Jt7RCvnEB4gIUEi1ormnyinIZ8Nn5iNCSNYU1JvyS4PzAXfd/oNtOs2YKPhszYqZURbudvnVDrZiNd7YY3wxdmsSthHGVkKa/BXLz/XxyN/oV4junlU4W4f2l/l0QE0QS91QfKXV93a5lR/0+GG2K8nBfxumJV6nI3+EwkGg1hA5d+yNjIhpXaEWPgxCx/5tnytd+WRSkMglnt1liINHKA9stgxHSzcgWH/6jLuEHBZIa3X4Smlhb3/PjuLSeYRITOo+eCHKWKXMtEqBTMrKyyHxUYaojAztG6Sab5RmimQUImZxwmM7+GEMuVR1XTZSPP4q7qRxyoxnkptiv8az1hZT90quapVf+6FNxtl4F4iOWGoyJCAS6rfkFwNbiT4Ez7yS3nDZTXb6wfCgPIFL7COw="
+
+#    - name: Run Example Project Test with JDK8
+#      run: |
+#        cd example-projects/example-project
+#        mvn clean package --> jsonld issue
+
+    - name: CLI Frontend Test
+      run: bash .ci-scripts/test-ExampleTestProject-with-CLI.sh
+
+    - name: Gradle Frontend Test
+      run: bash .ci-scripts/test-ExampleTestProject-with-gradle.sh
+
+#    - name: p2Test
+#      run: bash .ci-scripts/test-p2-end2end.sh --> jsonld issue
+
+    - name: Antenna Documentation Test
+      run: bash .ci-scripts/test-antenna-documentation-site-tests.sh
+
+    - name: Test for License Headers
+      run: bash .ci-scripts/test-for-licenseHeaders.sh
+
+#    - name: Setup JDK 11
+#      uses: actions/setup-java@v1
+#      with:
+#        java-version: 11
+
+#    - name: Test with JDK 11
+#      run: mvn -B test
