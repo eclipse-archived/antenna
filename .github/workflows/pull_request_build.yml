@@ -41,15 +41,15 @@ jobs:
       run: bash ./modules/p2/prepareDependenciesForP2.sh
 
     - name: Build with Maven
-      run: mvn -B clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      run: mvn -B clean install -Pcoverage -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
     - name: Run SCA Analysis
       run: mvn verify -DskipTests pmd:pmd checkstyle:checkstyle-aggregate spotbugs:check
 
-#    - name: Run SonarCloud Analysis
-#      run: mvn -B clean verify sonar:sonar -Pcoverage -Dsonar.projectKey=sw360antenna -Dsonar.host.url=https://sonarcloud.io
-#      env:
-#        SONAR_TOKEN: "BUTatbx6/JcZdOtZ0qAYEsu0AVtOGT/OggNwD4wcaVfyvC3dq/QAkEmEvFPZVADSvu1CzWMgLuUdW3TCbJgDBzC/87ZeUAFJ3a24K7LH7AROsr/js7TazkuCjS7/eZzDCC9lAlTjPxaqb4R+/+Fmdaz2y2k0LfhPlCvyp5nzJvP4/5nD6IEYNC26qCBhw55pyO+JBp/yVnO+7tNiQSntri53vNrFLeSa2XRaEKKV937I5edAUM6LyjHM+hVSwKqYqGOdf2+StAsW6WxU869Jt7RCvnEB4gIUEi1ormnyinIZ8Nn5iNCSNYU1JvyS4PzAXfd/oNtOs2YKPhszYqZURbudvnVDrZiNd7YY3wxdmsSthHGVkKa/BXLz/XxyN/oV4junlU4W4f2l/l0QE0QS91QfKXV93a5lR/0+GG2K8nBfxumJV6nI3+EwkGg1hA5d+yNjIhpXaEWPgxCx/5tnytd+WRSkMglnt1liINHKA9stgxHSzcgWH/6jLuEHBZIa3X4Smlhb3/PjuLSeYRITOo+eCHKWKXMtEqBTMrKyyHxUYaojAztG6Sab5RmimQUImZxwmM7+GEMuVR1XTZSPP4q7qRxyoxnkptiv8az1hZT90quapVf+6FNxtl4F4iOWGoyJCAS6rfkFwNbiT4Ez7yS3nDZTXb6wfCgPIFL7COw="
+    - name: Run SonarCloud Analysis
+      run: mvn sonar:sonar -Dsonar.organization=sw360antenna -Dsonar.projectKey=sw360antenna -Dsonar.host.url=https://sonarcloud.io
+      env:
+        SONAR_TOKEN: "e5dbb8f62a0b8bf02dbbcf4c9fd745c31b63f4b3"
 
 #    - name: Run Example Project Test with JDK8
 #      run: |
@@ -77,4 +77,6 @@ jobs:
 #        java-version: 11
 
 #    - name: Test with JDK 11
-#      run: mvn -B test
+#      run: |
+#        cd example-projects/example-project
+#        mvn -B test
