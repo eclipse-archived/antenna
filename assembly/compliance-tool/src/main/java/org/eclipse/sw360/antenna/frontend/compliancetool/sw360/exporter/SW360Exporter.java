@@ -44,6 +44,22 @@ public class SW360Exporter {
         releaseClientAdapter = connectionConfiguration.getSW360ReleaseClientAdapter();
     }
 
+    public void setComponentClientAdapter(SW360ComponentClientAdapter componentClientAdapter) {
+        this.componentClientAdapter = componentClientAdapter;
+    }
+
+    public void setReleaseClientAdapter(SW360ReleaseClientAdapter releaseClientAdapter) {
+        this.releaseClientAdapter = releaseClientAdapter;
+    }
+
+    public void setConnectionConfiguration(SW360ConnectionConfiguration sw360ConnectionConfiguration) {
+        this.connectionConfiguration = sw360ConnectionConfiguration;
+    }
+
+    public void setConfiguration(SW360Configuration configuration) {
+        this.configuration = configuration;
+    }
+
     public void execute() {
         HttpHeaders headers = connectionConfiguration.getHttpHeaders();
 
