@@ -51,10 +51,10 @@ jobs:
       env:
         SONAR_TOKEN: "e5dbb8f62a0b8bf02dbbcf4c9fd745c31b63f4b3"
 
-#    - name: Run Example Project Test with JDK8
-#      run: |
-#        cd example-projects/example-project
-#        mvn clean package --> jsonld issue
+    - name: Run Example Project Test with JDK8
+      run: |
+        cd example-projects/example-project
+        mvn -B clean verify
 
     - name: CLI Frontend Test
       run: bash .ci-scripts/test-ExampleTestProject-with-CLI.sh
@@ -62,8 +62,8 @@ jobs:
     - name: Gradle Frontend Test
       run: bash .ci-scripts/test-ExampleTestProject-with-gradle.sh
 
-#    - name: p2Test
-#      run: bash .ci-scripts/test-p2-end2end.sh --> jsonld issue
+    - name: p2Test
+      run: bash .ci-scripts/test-p2-end2end.sh
 
     - name: Antenna Documentation Test
       run: bash .ci-scripts/test-antenna-documentation-site-tests.sh
@@ -71,12 +71,12 @@ jobs:
     - name: Test for License Headers
       run: bash .ci-scripts/test-for-licenseHeaders.sh
 
-#    - name: Setup JDK 11
-#      uses: actions/setup-java@v1
-#      with:
-#        java-version: 11
+    - name: Setup JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
 
-#    - name: Test with JDK 11
-#      run: |
-#        cd example-projects/example-project
-#        mvn -B test
+    - name: Test with JDK 11
+      run: |
+        cd example-projects/example-project
+        mvn -B clean verify -Dmaven.compiler.source=11 -Dmaven.compiler.target=11
