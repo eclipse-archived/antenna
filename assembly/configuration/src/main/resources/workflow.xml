@@ -32,6 +32,7 @@
         <step>
             <name>Manifest Resolver</name>
             <classHint>org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ManifestResolver</classHint>
+            <deactivated>true</deactivated>
         </step>
         <step>
             <name>License Resolver</name>
