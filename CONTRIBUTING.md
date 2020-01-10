@@ -74,7 +74,7 @@ If it has *and the issue is still open*, add a comment to the existing issue ins
 
 This section guides you through submitting a bug report.
 Before creating bug reports, please check [the "before-submitting-an-issue" list](#before-submitting-an-issue) as you might find out that you don't need to create one.
-Fill out [the required template](https://github.com/bsinno/osm-antenna/issues/new?labels=bug&template=bug_template.md).
+Fill out [the required template](https://github.com/bosch-io/osm-antenna/issues/new?labels=bug&template=bug_template.md).
 
 #### How Do I Submit A (Good) Bug Report?
 
@@ -120,7 +120,7 @@ Include details about your configuration and environment:
 ### Suggesting Enhancements
 
 This section guides you through submitting an enhancement or feature suggestion.
-Fill in [the template](https://github.com/bsinno/osm-antenna/issues/new?template=feature_template.md), including the steps that you imagine you would take if the feature you're requesting existed.
+Fill in [the template](https://github.com/bosch-io/osm-antenna/issues/new?template=feature_template.md), including the steps that you imagine you would take if the feature you're requesting existed.
 
 #### How Do I Submit A (Good) Enhancement Suggestion?
 
