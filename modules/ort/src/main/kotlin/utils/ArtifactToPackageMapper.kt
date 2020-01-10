@@ -31,7 +31,7 @@ class ArtifactToPackageMapper : Function<Artifact, Package> {
                 homepageUrl = "",
                 binaryArtifact = RemoteArtifact.EMPTY,
                 sourceArtifact = mapSourceRemoteArtifact(artifact) ?: RemoteArtifact.EMPTY,
-                vcs = mapVcsInfo(artifact) ?: VcsInfo.EMPTY
+                vcs = mapToVcsInfo(artifact) ?: VcsInfo.EMPTY
         )
     }
 
@@ -51,7 +51,7 @@ class ArtifactToPackageMapper : Function<Artifact, Package> {
                 Identifier(type = ortType, namespace = namespace, name = name, version = version)
             }
 
-    private fun mapVcsInfo(artifact: Artifact) : VcsInfo? =
+    private fun mapToVcsInfo(artifact: Artifact) : VcsInfo? =
         artifact.askFor(ArtifactVcsInfo::class.java).takeIf { it.isPresent }?.let {
             val vcsInfo = it.get().vcsInfo
             VcsInfo(type = VcsType(vcsInfo.type), url = vcsInfo.url, revision = vcsInfo.revision)
