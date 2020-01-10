@@ -61,6 +61,4 @@ class ArtifactToPackageMapper : Function<Artifact, Package> {
         artifact.askForGet(ArtifactSourceUrl::class.java).takeIf { it.isPresent }?.let {
             RemoteArtifact.EMPTY.copy(url = it.get())
         }
-
-
 }

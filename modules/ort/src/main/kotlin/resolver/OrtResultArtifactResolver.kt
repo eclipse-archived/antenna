@@ -48,7 +48,7 @@ private fun mapSourceUrl(pkg: Package): ArtifactSourceUrl? =
     }
 
 private fun mapVcsInfo(pkg: Package) : ArtifactVcsInfo? =
-        pkg.vcs.takeUnless { it == VcsInfo.EMPTY }?.let {
+        pkg.vcsProcessed.takeUnless { it == VcsInfo.EMPTY }?.let {
             ArtifactVcsInfo(it.type.toString(), it.url, it.revision)
         }
 
