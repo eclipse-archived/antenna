@@ -10,7 +10,8 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
-import org.junit.Ignore;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter.SW360Exporter;
+import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
@@ -18,7 +19,14 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AntennaComplianceToolTest {
     @Rule
@@ -26,14 +34,35 @@ public class AntennaComplianceToolTest {
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
-    @Ignore
-    //is ignore because static method calls can neither be mocked nor verified and powermock is not desired in code.
     @Test
-    public void testMainSucceedsWithExporter() {
-        exit.expectSystemExitWithStatus(0);
-        String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).getPath();
-        String[] args = new String[]{"exporter", propertiesFilePath};
-        AntennaComplianceTool.main(args);
+    public void testMainInitWithExporter() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException, NoSuchFieldException {
+        Path propertiesFile = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).getFile());
+
+        Object[] obj = {new SW360Exporter(), propertiesFile};
+        Class<?>[] params = new Class[obj.length];
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] instanceof SW360Exporter) {
+                params[i] = SW360Exporter.class;
+            } else if (obj[i] != null) {
+                params[i] = Path.class;
+            }
+        }
+
+        String methodName = "init";
+
+        AntennaComplianceTool antennaComplianceTool = new AntennaComplianceTool();
+        Method initMethod = antennaComplianceTool.getClass().getDeclaredMethod(methodName, params);
+        initMethod.setAccessible(true);
+        SW360Exporter exporter = (SW360Exporter) initMethod.invoke(antennaComplianceTool, obj);
+
+        Field connectionConfiguration = exporter.getClass().getDeclaredField("connectionConfiguration");
+        connectionConfiguration.setAccessible(true);
+        assertThat(((SW360ConnectionConfiguration) connectionConfiguration.get(exporter)).getSW360ReleaseClientAdapter()).isNotNull();
+        assertThat(((SW360ConnectionConfiguration) connectionConfiguration.get(exporter)).getSW360ComponentClientAdapter()).isNotNull();
+
+        Field csvFile = exporter.getClass().getDeclaredField("csvFile");
+        csvFile.setAccessible(true);
+        assertThat(((File) csvFile.get(exporter)).getName()).isNotEmpty();
     }
 
     @Test

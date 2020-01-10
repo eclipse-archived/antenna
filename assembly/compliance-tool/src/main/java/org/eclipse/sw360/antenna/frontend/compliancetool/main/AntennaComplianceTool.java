@@ -10,57 +10,52 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter.SW360Exporter;
+import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
 
 public class AntennaComplianceTool {
     private static final Logger LOGGER = LoggerFactory.getLogger(AntennaComplianceTool.class);
 
     public static void main(String[] args) {
-        if (args.length < 2) {
+        if (args.length != 2) {
             LOGGER.warn("Number of arguments: {}", args.length);
             Arrays.asList(args).forEach(LOGGER::warn);
             LOGGER.warn("Usage: java -jar compliancetool.jar <complianceMode> <propertiesFilePath>");
             System.exit(1);
         }
-        try {
-            Path propertiesFilePath = Paths.get(args[1]).toAbsolutePath();
-            File propertiesFile = propertiesFilePath.toFile();
-            if (!propertiesFile.exists()) {
-                throw new IllegalArgumentException("Cannot find " + propertiesFilePath.toString() + ". Please check the path.");
-            }
 
-            List<String> argList = Arrays.asList(args);
+        String mode = args[0];
+        Path propertiesFile = Paths.get(args[1]).toAbsolutePath();
 
-            if (argList.contains("exporter")) {
-                executeSW360Exporter(propertiesFile);
-            } else if (argList.contains("updater")) {
+        System.exit(new AntennaComplianceTool().execute(mode, propertiesFile));
+    }
+
+    private int execute(String mode, Path propertiesFile) {
+        switch (mode) {
+            case "exporter":
+                init(new SW360Exporter(), propertiesFile).execute();
+                return 0;
+            case "updater":
                 LOGGER.error("Updater is not yet implemented.");
-                System.exit(0);
-            } else {
+                return 0;
+            default:
                 LOGGER.error("You did not supply any compliance task.");
-                System.exit(1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
+                return 1;
         }
     }
 
-    public static void executeSW360Exporter(File propertiesFile) {
-        try {
-            new SW360Exporter(propertiesFile).execute();
-        } catch (ExecutionException e) {
-            LOGGER.error("Error occured while executing the SW360 Exporter");
-            LOGGER.error("Failure: ", e);
-        }
+    private SW360Exporter init(SW360Exporter executor, Path propertiesFile) {
+        SW360Configuration configuration = new SW360Configuration(propertiesFile.toFile());
+        executor.setCsvFile(configuration.getCsvFile());
+        SW360ConnectionConfiguration connectionConfiguration = configuration.getConnectionConfiguration();
+        executor.setConnectionConfiguration(connectionConfiguration);
+        return executor;
     }
 }

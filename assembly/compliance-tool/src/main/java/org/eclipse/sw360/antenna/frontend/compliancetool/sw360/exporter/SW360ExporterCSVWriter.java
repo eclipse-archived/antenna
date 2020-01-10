@@ -22,14 +22,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class SW360ExporterCSVWriter {
+class SW360ExporterCSVWriter {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360ExporterCSVWriter.class);
 
-    public static void writeReleasesToCsvFile(List<SW360Release> sw360ReleasesNotApproved, File csvFile) {
+    static void writeReleasesToCsvFile(Collection<SW360Release> sw360ReleasesNotApproved, File csvFile) {
         try (BufferedWriter writer = Files.newBufferedWriter(csvFile.toPath());
              CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(
                      "Artifact Id",

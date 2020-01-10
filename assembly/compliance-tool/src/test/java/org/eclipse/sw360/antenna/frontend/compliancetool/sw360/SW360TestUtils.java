@@ -30,23 +30,40 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 public class SW360TestUtils {
+    private static final String RELEASE_VERSION1 = "1.0.0";
+    private static final String RELEASE_DOWNLOAD_URL = "https://organisation-test.org/";
+    private static final String RELEASE_CLEARING_STATE = "PROJECT_APPROVED";
+    private static final String RELEASE_DECLEARED_LICENSE = "The-Test-License";
+    private static final String RELEASE_OBSERVED_LICENSE = "A-Test-License";
+    private static final String RELEASE_RELEASE_TAG_URL = "https://gitTool.com/project/repository";
+    private static final String RELEASE_MAVEN_COORDINATES = "pkg:maven/test/test1@1.0.0";
+    private static final String RELEASE_SOFTWAREHERITGAE_ID = "swh:1:rel:12345";
+    private static final String RELEASE_HASH1= "b2a4d4ae21c789b689dd162deb819665567f481c";
+    private static final String RELEASE_CHANGESTATUS = "AS_IS";
+    private static final String RELEASE_COPYRIGHT = "Copyright xxxx Some Copyright Enterprise";
+    private static final String RELEADE_SELF = "http://localhost:8080/releases/12345";
+
+    private static final SW360ComponentType COMPONENT_TYPE = SW360ComponentType.INTERNAL;
+    private static final String COMPONENT_SELF = "http://localhost:8080/components/12345";
+
+
     public static SW360Release mkSW360Release(String name) {
         SW360Release sw360Release = new SW360Release();
 
         sw360Release.setName(name);
-        sw360Release.setVersion("1.0.0");
+        sw360Release.setVersion(RELEASE_VERSION1);
 
-        sw360Release.setDownloadurl("https://thrift.apache.org/");
-        sw360Release.setClearingState("PROJECT_APPROVED");
+        sw360Release.setDownloadurl(RELEASE_DOWNLOAD_URL);
+        sw360Release.setClearingState(RELEASE_CLEARING_STATE);
 
-        sw360Release.setDeclaredLicense("Apache-2.0");
-        sw360Release.setObservedLicense("A-Test-License");
-        sw360Release.setCoordinates(Collections.singletonMap(Coordinate.Types.MAVEN, "pkg:maven/test/test1@1.2.3"));
-        sw360Release.setReleaseTagUrl("https://github.com/apache/thrift/releases/tag/0.10.0");
-        sw360Release.setSoftwareHeritageId("swh:1:rel:ae93ff0b4bdbd6749f75c23ad23311b512230894");
-        sw360Release.setHashes(Collections.singleton("b2a4d4ae21c789b689dd162deb819665567f481c"));
-        sw360Release.setChangeStatus("AS_IS");
-        sw360Release.setCopyrights("Copyright 2006-2010 The Apache Software Foundation.");
+        sw360Release.setDeclaredLicense(RELEASE_DECLEARED_LICENSE);
+        sw360Release.setObservedLicense(RELEASE_OBSERVED_LICENSE);
+        sw360Release.setCoordinates(Collections.singletonMap(Coordinate.Types.MAVEN, RELEASE_MAVEN_COORDINATES));
+        sw360Release.setReleaseTagUrl(RELEASE_RELEASE_TAG_URL);
+        sw360Release.setSoftwareHeritageId(RELEASE_SOFTWAREHERITGAE_ID);
+        sw360Release.setHashes(Collections.singleton(RELEASE_HASH1));
+        sw360Release.setChangeStatus(RELEASE_CHANGESTATUS);
+        sw360Release.setCopyrights(RELEASE_COPYRIGHT);
 
         return sw360Release;
     }
@@ -54,8 +71,8 @@ public class SW360TestUtils {
     public static SW360SparseRelease mkSW3SparseRelease(String name) {
         SW360SparseRelease sparseRelease = new SW360SparseRelease();
         sparseRelease.setName(name);
-        sparseRelease.setVersion("1.0.0");
-        Self self = new Self("http://localhost:8080/releases/12345");
+        sparseRelease.setVersion(RELEASE_VERSION1);
+        Self self = new Self(RELEADE_SELF);
         LinkObjects linkObjectsWithSelf = new LinkObjects()
                 .setSelf(self);
         sparseRelease.set_Links(linkObjectsWithSelf);
@@ -65,7 +82,7 @@ public class SW360TestUtils {
     public static SW360Component mkSW360Component(String name) {
         SW360Component component = new SW360Component();
         component.setName(name);
-        component.setComponentType(SW360ComponentType.INTERNAL);
+        component.setComponentType(COMPONENT_TYPE);
         SW360ComponentEmbedded componentEmbedded = new SW360ComponentEmbedded();
         componentEmbedded.setReleases(Collections.singletonList(mkSW3SparseRelease(name)));
         component.set_Embedded(componentEmbedded);
@@ -75,8 +92,8 @@ public class SW360TestUtils {
     public static SW360SparseComponent mkSW360SparseComponent(String name) {
         SW360SparseComponent sparseComponent = new SW360SparseComponent();
         sparseComponent.setName(name);
-        sparseComponent.setComponentType(SW360ComponentType.INTERNAL);
-        Self self = new Self("http://localhost:8080/components/12345");
+        sparseComponent.setComponentType(COMPONENT_TYPE);
+        Self self = new Self(COMPONENT_SELF);
         LinkObjects linkObjectsWithSelf = new LinkObjects()
                 .setSelf(self);
         sparseComponent.set_Links(linkObjectsWithSelf);

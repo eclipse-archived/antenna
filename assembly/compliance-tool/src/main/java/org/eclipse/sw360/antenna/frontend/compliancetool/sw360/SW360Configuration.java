@@ -34,7 +34,7 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
         csvFile = new File(properties.get("csvFilePath"));
     }
 
-    public SW360ConnectionConfiguration makeConnectionConfiguration() {
+    private SW360ConnectionConfiguration makeConnectionConfiguration() {
         Map<String, String> configMap = Stream.of(new String[][]{
                 {"rest.server.url", getConfigValue("sw360restServerUrl", properties)},
                 {"auth.server.url", getConfigValue("sw360authServerUrl", properties)},
@@ -51,7 +51,11 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
                 properties.get("proxyHost"), Integer.parseInt(properties.get("proxyPort")));
     }
 
-    public static Map<String, String> mapPropertiesFile(File propertiesFile) {
+    private static Map<String, String> mapPropertiesFile(File propertiesFile) {
+        if (!propertiesFile.exists()) {
+            throw new IllegalArgumentException("Cannot find " + propertiesFile.toString() + ". Please check the path.");
+        }
+
         try (InputStream input = new FileInputStream(propertiesFile)) {
             Properties prop = new Properties();
             prop.load(input);
@@ -65,7 +69,7 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
         }
     }
 
-    public File getCsvFileName() {
+    public File getCsvFile() {
         return csvFile;
     }
 
