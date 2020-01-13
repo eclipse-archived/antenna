@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.eclipse.sw360.antenna.frontend.testing.testProjects.TestProjectUtils.mkDeactivatedWorkflowStep;
 import static org.eclipse.sw360.antenna.frontend.testing.testProjects.TestProjectUtils.mkWorkflowStep;
 
 public final class BasicConfiguration {
@@ -35,7 +36,7 @@ public final class BasicConfiguration {
         // enricher
         WorkflowStep enricher1 = mkWorkflowStep("Maven Artifact Resolver", "org.eclipse.sw360.antenna.maven.workflow.processors.enricher.MavenArtifactResolver");
         WorkflowStep enricher3 = mkWorkflowStep("Child Jar Resolver", "org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ChildJarResolver");
-        WorkflowStep enricher4 = mkWorkflowStep("Manifest Resolver", "org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ManifestResolver");
+        WorkflowStep enricher4 = mkDeactivatedWorkflowStep("Manifest Resolver", "org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ManifestResolver");
         WorkflowStep enricher5 = mkWorkflowStep("License Resolver", "org.eclipse.sw360.antenna.workflow.processors.LicenseResolver");
         WorkflowStep enricher6 = mkWorkflowStep("License Knowledgebase Resolver", "org.eclipse.sw360.antenna.workflow.processors.LicenseKnowledgeBaseResolver");
         // validators
