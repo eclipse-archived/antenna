@@ -48,7 +48,7 @@ class OrtDownloaderProcessor : AbstractProcessor() {
         intermediates.filterNot {
             it.sourceFile.isPresent
         }.forEach { artifact ->
-            val pkg = ArtifactToPackageMapper().apply(artifact)
+            var pkg = ArtifactToPackageMapper().apply(artifact)
             val name = artifact.askFor(ArtifactCoordinates::class.java).takeIf {
                 fact -> fact.isPresent
             }?.get()?.mainCoordinate?.canonicalize() ?: artifact.askFor(ArtifactFilename::class.java).takeIf {
@@ -61,6 +61,13 @@ class OrtDownloaderProcessor : AbstractProcessor() {
             try {
                 LOGGER.debug("Download sources via ORT Downloader for '${name}'")
                 val ortDownloadDirectory = createTempDir("ortDownloaderDirectory").also { it.deleteOnExit() }
+                // In some cases, the protocol of a VcsInfo.url is SSH, which leads to hanging builds,
+                // because it's prompting for a password. To avoid this, we are replacing the protocol from ssh
+                // to https for github.com hosts.
+                if (pkg.vcsProcessed.url.startsWith("ssh://git@github.com")){
+                    val newUrl = pkg.vcsProcessed.url.replace("ssh://git@github.com", "https://github.com")
+                    pkg = pkg.copy(vcsProcessed = pkg.vcsProcessed.copy(url = newUrl) )
+                }
                 val downloadResult = Downloader().download(pkg, ortDownloadDirectory)
                 if (downloadResult.downloadDirectory.isDirectory) {
                     val zipFile = File(

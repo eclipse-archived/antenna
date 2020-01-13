@@ -47,8 +47,8 @@ private fun mapSourceUrl(pkg: Package): ArtifactSourceUrl? =
         ArtifactSourceUrl(it)
     }
 
-private fun mapVcsInfo(pkg: Package) : ArtifactVcsInfo? =
-        pkg.vcs.takeUnless { it == VcsInfo.EMPTY }?.let {
+private fun mapToArtifactVcsInfo(pkg: Package) : ArtifactVcsInfo? =
+        pkg.vcsProcessed.takeUnless { it == VcsInfo.EMPTY }?.let {
             ArtifactVcsInfo(it.type.toString(), it.url, it.revision)
         }
 
@@ -91,7 +91,7 @@ class OrtResultArtifactResolver(result: OrtResult) : Function<Package, Artifact>
             a.addCoordinate(mapCoordinates(pkg))
 
             mapSourceUrl(pkg)?.let { a.addFact(it) }
-            mapVcsInfo(pkg)?.let { a.addFact(it) }
+            mapToArtifactVcsInfo(pkg)?.let { a.addFact(it) }
             mapDeclaredLicense(pkg)?.let { a.addFact(it) }
             mapFilename(pkg)?.let { a.addFact(it) }
             mapHomepage(pkg)?.let { a.addFact(it) }
