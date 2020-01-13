@@ -64,6 +64,20 @@ public class SW360ComponentClient extends SW360Client {
         }
     }
 
+    public List<SW360SparseComponent> getComponents(HttpHeaders header) {
+        try {
+            ResponseEntity<Resource<SW360ComponentList>> response = doRestGET(getEndpoint(), header,
+                    new ParameterizedTypeReference<Resource<SW360ComponentList>>() {
+                    });
+
+            checkRestStatus(response);
+            return getSw360SparseComponents(response);
+        } catch (ExecutionException e) {
+            LOGGER.error("Request to get components failed with {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
     public List<SW360SparseComponent> searchByName(String name, HttpHeaders header) {
         try {
             UriComponentsBuilder builder = UriComponentsBuilder
