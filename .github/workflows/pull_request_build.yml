@@ -6,12 +6,11 @@
 # http://www.eclipse.org/legal/epl-v20.html
 #
 # SPDX-License-Identifier: EPL-2.0
-name: Antenna Push Build
+name: Antenna Pull Request Build
 on: pull_request
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -33,10 +32,51 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-sonar-
 
-    - name: Set up JDK 1.8
+    - name: Setup JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
 
+    - name: Build P2
+      run: bash ./modules/p2/prepareDependenciesForP2.sh
+
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -B clean install -Pcoverage -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+    - name: Run SCA Analysis
+      run: mvn verify -DskipTests pmd:pmd checkstyle:checkstyle-aggregate spotbugs:check
+
+    - name: Run SonarCloud Analysis
+      run: mvn sonar:sonar -Dsonar.organization=sw360antenna -Dsonar.projectKey=sw360antenna -Dsonar.host.url=https://sonarcloud.io
+      env:
+        SONAR_TOKEN: "e5dbb8f62a0b8bf02dbbcf4c9fd745c31b63f4b3"
+
+    - name: Run Example Project Test with JDK8
+      run: |
+        cd example-projects/example-project
+        mvn -B clean verify
+
+    - name: CLI Frontend Test
+      run: bash .ci-scripts/test-ExampleTestProject-with-CLI.sh
+
+    - name: Gradle Frontend Test
+      run: bash .ci-scripts/test-ExampleTestProject-with-gradle.sh
+
+    - name: p2Test
+      run: bash .ci-scripts/test-p2-end2end.sh
+
+    - name: Antenna Documentation Test
+      run: bash .ci-scripts/test-antenna-documentation-site-tests.sh
+
+    - name: Test for License Headers
+      run: bash .ci-scripts/test-for-licenseHeaders.sh
+
+    - name: Setup JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+
+    - name: Test with JDK 11
+      run: |
+        cd example-projects/example-project
+        mvn -B clean verify -Dmaven.compiler.source=11 -Dmaven.compiler.target=11
