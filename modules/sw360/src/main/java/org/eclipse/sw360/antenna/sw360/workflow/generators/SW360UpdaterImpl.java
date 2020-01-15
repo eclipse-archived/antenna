@@ -45,29 +45,10 @@ public class SW360UpdaterImpl {
     public Map<String, IAttachable> produce(Collection<Artifact> intermediates) {
         List<SW360Release> releases = new ArrayList<>();
         for (Artifact artifact : intermediates) {
-            List<License> availableLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
-
-            Set<SW360License> detectedLicenses = sw360MetaDataUpdater.getLicenses(availableLicenses);
-            Set<String> licenseIds = Collections.emptySet();
-            if (detectedLicenses.size() == availableLicenses.size()) {
-                licenseIds = detectedLicenses.stream()
-                        .map(SW360License::getShortName)
-                        .collect(Collectors.toSet());
-            }
             try {
-                final SW360Release sw360ReleaseFromArtifact = SW360ReleaseAdapterUtils.convertToRelease(artifact);
-                sw360ReleaseFromArtifact.setMainLicenseIds(licenseIds);
-                SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(sw360ReleaseFromArtifact);
-                if (sw360MetaDataUpdater.isUploadSources()
-                        && sw360ReleaseFinal.get_Links().getSelf() != null
-                        && !sw360ReleaseFinal.get_Links().getSelf().getHref().isEmpty()) {
-                    Map<Path, SW360AttachmentType> attachments = SW360AttachmentAdapterUtils.getAttachmentsFromArtifact(artifact);
-                    if (!attachments.isEmpty()) {
-                        sw360ReleaseFinal = sw360MetaDataUpdater.uploadAttachments(sw360ReleaseFinal, attachments);
-                    }
-                }
+                SW360Release sw360ReleaseFinal = artifactToReleaseInSW360(artifact);
                 releases.add(sw360ReleaseFinal);
-            } catch(ExecutionException e) {
+            } catch (ExecutionException e) {
                 LOGGER.error("Release will not be created in SW360. Reason: {}", e.getMessage());
                 LOGGER.debug("Error: ", e);
             }
@@ -75,5 +56,35 @@ public class SW360UpdaterImpl {
 
         sw360MetaDataUpdater.createProject(projectName, projectVersion, releases);
         return Collections.emptyMap();
+    }
+    
+    public SW360Release artifactToReleaseInSW360(Artifact artifact) {
+        Set<String> licenseIds = getSetOfLicenseIds(artifact);
+
+        final SW360Release sw360ReleaseFromArtifact = SW360ReleaseAdapterUtils.convertToRelease(artifact);
+        sw360ReleaseFromArtifact.setMainLicenseIds(licenseIds);
+        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(sw360ReleaseFromArtifact);
+        if (sw360MetaDataUpdater.isUploadSources()
+                && sw360ReleaseFinal.get_Links().getSelf() != null
+                && !sw360ReleaseFinal.get_Links().getSelf().getHref().isEmpty()) {
+            Map<Path, SW360AttachmentType> attachments = SW360AttachmentAdapterUtils.getAttachmentsFromArtifact(artifact);
+            if (!attachments.isEmpty()) {
+                sw360ReleaseFinal = sw360MetaDataUpdater.uploadAttachments(sw360ReleaseFinal, attachments);
+            }
+        }
+        return sw360ReleaseFinal;
+    }
+
+    private Set<String> getSetOfLicenseIds(Artifact artifact) {
+        List<License> availableLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
+
+        Set<SW360License> detectedLicenses = sw360MetaDataUpdater.getLicenses(availableLicenses);
+        Set<String> licenseIds = Collections.emptySet();
+        if (detectedLicenses.size() == availableLicenses.size()) {
+            licenseIds = detectedLicenses.stream()
+                    .map(SW360License::getShortName)
+                    .collect(Collectors.toSet());
+        }
+        return licenseIds;
     }
 }

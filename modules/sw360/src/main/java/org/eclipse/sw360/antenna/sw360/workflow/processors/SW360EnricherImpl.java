@@ -54,22 +54,24 @@ public class SW360EnricherImpl {
         for (Artifact artifact : intermediates) {
             Optional<SW360Release> release = connector.findReleaseForArtifact(artifact);
             if (release.isPresent()) {
-                final SW360Release sw360Release = release.get();
-
-                addSourceUrlIfAvailable(artifact, sw360Release);
-                addCPEIdIfAvailable(artifact, sw360Release);
-                addClearingStateIfAvailable(artifact, sw360Release);
-                mapExternalIdsOnSW360Release(sw360Release, artifact);
-                updateLicenses(artifact, sw360Release);
-
-                if (downloadAttachments) {
-                    downloadAttachments(sw360Release, artifact);
-                }
+                mapReleaseToArtifact(release.get(), artifact);
             } else {
                 warnAndReport(artifact, "No SW360 release found for artifact.", MessageType.PROCESSING_FAILURE);
             }
         }
         return intermediates;
+    }
+
+    private void mapReleaseToArtifact(SW360Release sw360Release, Artifact artifact) {
+        addSourceUrlIfAvailable(artifact, sw360Release);
+        addCPEIdIfAvailable(artifact, sw360Release);
+        addClearingStateIfAvailable(artifact, sw360Release);
+        mapExternalIdsOnArtifact(sw360Release, artifact);
+        updateLicenses(artifact, sw360Release);
+
+        if (downloadAttachments) {
+            downloadAttachments(sw360Release, artifact);
+        }
     }
 
     private void downloadAttachments(SW360Release sw360Release, Artifact artifact) {
@@ -92,7 +94,7 @@ public class SW360EnricherImpl {
         }
     }
 
-    private void mapExternalIdsOnSW360Release(SW360Release sw360Release, Artifact artifact) {
+    private void mapExternalIdsOnArtifact(SW360Release sw360Release, Artifact artifact) {
         artifact.addFact(mapCoordinates(sw360Release));
 
 
