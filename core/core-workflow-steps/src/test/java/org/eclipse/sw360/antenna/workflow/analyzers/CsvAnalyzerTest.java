@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -18,7 +19,6 @@ import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
-import org.eclipse.sw360.antenna.model.coordinates.PackageURLFacade;
 import org.eclipse.sw360.antenna.model.util.ClassCodeSourceLocation;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
@@ -67,19 +67,40 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
 
         Set<Artifact> artifacts = analyzer.yield().getArtifacts();
 
-        assertThat(artifacts).hasSize(2);
+        assertThat(artifacts).hasSize(7);
 
-        Artifact foundArtifact = artifacts.stream()
-                .filter(artifact -> "commons-csv".equals(artifact.getCoordinateForType(PackageURL.StandardTypes.MAVEN)
-                        .map(Coordinate::getName)
-                        .orElse("")))
-                .findFirst()
-                .get();
+        Collection<String> typesToTest = new ArrayList<>();
+        typesToTest.add(Coordinate.Types.MAVEN);
+        typesToTest.add(Coordinate.Types.P2);
+        typesToTest.add(Coordinate.Types.NPM);
+        typesToTest.add(Coordinate.Types.NUGET);
+        typesToTest.add(Coordinate.Types.GENERIC);
 
-        commonsCsvFullDependencyCheck(foundArtifact);
-
-        assertThat(foundArtifact.askFor(CopyrightStatement.class).get()).isEqualTo(new CopyrightStatement("Copyright 2005-2016 The Apache Software Foundation"));
+        assertThat(typesToTest.stream()
+                .filter(type -> artifacts.stream().anyMatch(
+                        artifact -> artifact.getCoordinateForType(type).isPresent()
+                )).count())
+                .isEqualTo(typesToTest.size());
     }
+
+     @Test
+     public void testThatDataIsFullyMapped() throws URISyntaxException {
+         configureAnalyzer("dependencies.csv", ",");
+
+         Set<Artifact> artifacts = analyzer.yield().getArtifacts();
+
+
+         Artifact foundArtifact = artifacts.stream()
+                 .filter(artifact -> "commons-csv".equals(artifact.getCoordinateForType(PackageURL.StandardTypes.MAVEN)
+                         .map(Coordinate::getName)
+                         .orElse("")))
+                 .findFirst()
+                 .get();
+
+         commonsCsvFullDependencyCheck(foundArtifact);
+
+         assertThat(foundArtifact.askFor(CopyrightStatement.class).get()).isEqualTo(new CopyrightStatement("Copyright 2005-2016 The Apache Software Foundation"));
+     }
 
     @Test
     public void testCopyrightsIsParsedCorrectly() throws URISyntaxException {

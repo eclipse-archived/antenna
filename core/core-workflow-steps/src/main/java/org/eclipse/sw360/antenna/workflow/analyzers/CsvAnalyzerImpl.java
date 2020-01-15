@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2017,2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -135,12 +136,15 @@ public class CsvAnalyzerImpl {
             final String type = record.get(COORDINATE_TYPE);
             switch (type) {
                 case "mvn":
+                case "maven":
                     builder.withType(Coordinate.Types.MAVEN);
                     builder.withNamespace(record.get(GROUP));
                     break;
+                case "nuget":
                 case "dotnet":
                     builder.withType(Coordinate.Types.NUGET);
                     break;
+                case "npm":
                 case "javascript":
                     builder.withType(Coordinate.Types.NPM);
                     builder.withNamespace(record.get(GROUP));
