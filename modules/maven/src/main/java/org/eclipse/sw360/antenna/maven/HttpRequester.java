@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -30,7 +31,7 @@ public class HttpRequester extends IArtifactRequester {
     private static final String GROUP_ID_PLACEHOLDER = "{groupId}";
     private static final String ARTIFACT_ID_PLACEHOLDER = "{artifactId}";
     private static final String VERSION_PLACEHOLDER = "{version}";
-    private static final String MAVEN_CENTRAL_URL = "http://repo2.maven.org/maven2/" + GROUP_ID_PLACEHOLDER + "/" + ARTIFACT_ID_PLACEHOLDER + "/" + VERSION_PLACEHOLDER + "/";
+    private static final String MAVEN_CENTRAL_URL = "https://repo1.maven.org/maven2/" + GROUP_ID_PLACEHOLDER + "/" + ARTIFACT_ID_PLACEHOLDER + "/" + VERSION_PLACEHOLDER + "/";
 
     private HttpHelper httpHelper;
     private Optional<URL> sourceRepositoryUrl;
