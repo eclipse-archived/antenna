@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -8,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.frontend.stub.mojo;
+package org.eclipse.sw360.antenna.maven;
 
 import org.apache.maven.shared.dependency.graph.DependencyNode;
 
