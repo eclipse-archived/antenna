@@ -117,3 +117,10 @@ SECRET=password12345 gradle analyze
 
 Should you execute it within the command, the variable will not be saved in your environment but only exist for the run of the command.
 ${docNameCap} adheres to standards and only renders environment variables that are written in upper case letters.
+
+#[[####]]# Note
+
+As explained in this [Gradle blog post](https://blog.gradle.org/decommissioning-http) a decommissioning of HTTP for Gradle Services
+started in January 2020.
+Should your builds fail with the reason "HTTPS required" it is most likely that you are using a decommissioned URL and
+need to change it to HTTPS.
