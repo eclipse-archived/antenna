@@ -13,30 +13,29 @@ package org.eclipse.sw360.antenna.csvreader;
 import com.github.packageurl.PackageURL;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.ArtifactFactWithPayload;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.coordinates.CoordinateBuilder;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CSVReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(CSVReader.class);
@@ -69,6 +68,104 @@ public class CSVReader {
         this.encoding = encoding;
         this.delimiter = delimiter;
         this.baseDir = baseDir;
+    }
+
+    public Path writeArtifactsToCsvFile(Collection<Artifact> artifacts) {
+        try (BufferedWriter writer = Files.newBufferedWriter(csvFile);
+             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(
+                     NAME,
+                     GROUP,
+                     VERSION,
+                     COORDINATE_TYPE,
+                     EFFECTIVE_LICENSE,
+                     DECLARED_LICENSE,
+                     OBSERVED_LICENSE,
+                     COPYRIGHTS,
+                     HASH,
+                     SOURCE_URL,
+                     RELEASE_ARTIFACT_URL,
+                     SWH_ID,
+                     CLEARING_STATE,
+                     CHANGES_STATUS,
+                     CPE,
+                     PATH_NAME
+             ))
+        ) {
+            for (Artifact artifact : artifacts) {
+                csvPrinter.printRecords(makeCsvRecordsFromArtifact(artifact));
+            }
+            csvPrinter.flush();
+            return csvFile.toAbsolutePath();
+        } catch (IOException e) {
+            LOGGER.error("Error when writing the csv file", e);
+            return null;
+        }
+    }
+
+    private Object[] makeCsvRecordsFromArtifact(Artifact artifact) {
+        List<Object> csvRecords = new ArrayList<>();
+
+        List<Coordinate> coordinates = new ArrayList<>(artifact.getCoordinates());
+
+        if (!coordinates.isEmpty()) {
+            Set<String> hashes = artifact.askForAll(ArtifactFilename.class)
+                    .stream()
+                    .map(ArtifactFilename::getArtifactFilenameEntries)
+                    .flatMap(Collection::stream)
+                    .map(ArtifactFilename.ArtifactFilenameEntry::getHash)
+                    .collect(Collectors.toSet());
+
+            if (hashes.isEmpty()) {
+                csvRecords.add(
+                        makeCsvRecordFromArtifact(artifact, "", coordinates.get(0)));
+            } else {
+                for (String hash : hashes) {
+                    csvRecords.add(
+                            makeCsvRecordFromArtifact(artifact, hash, coordinates.get(0)));
+                }
+            }
+            if (coordinates.size() > 1) {
+                coordinates.remove(0);
+                for (Coordinate coordinate : coordinates) {
+                    Artifact tempArtifact = new Artifact()
+                            .addCoordinate(coordinate);
+                    csvRecords.add(
+                            makeCsvRecordFromArtifact(tempArtifact, "", coordinate));
+                }
+            }
+        } else {
+            String name = artifact.getMainCoordinate().map(Coordinate::getName).orElse("No Name");
+            String namespace = artifact.getMainCoordinate().map(Coordinate::getNamespace).orElse("");
+            LOGGER.debug("{}:{} failed to write to csv file, since it does not have coordinates",
+                    namespace, name);
+        }
+        return csvRecords.toArray();
+    }
+
+    private Object[] makeCsvRecordFromArtifact(Artifact artifact, String hash, Coordinate coordinate) {
+        List<String> csvRecordString = new ArrayList<>();
+        csvRecordString.add(coordinate.getName());
+        if (!coordinate.getNamespace().isEmpty()) {
+            csvRecordString.add(coordinate.getNamespace());
+        } else {
+            csvRecordString.add("");
+        }
+        csvRecordString.add(coordinate.getVersion());
+        csvRecordString.add(coordinate.getType());
+        csvRecordString.add(mapOverriddenLicenseToString(artifact));
+        csvRecordString.add(mapDeclaredLicenseToString(artifact));
+        csvRecordString.add(mapObservedLicenseToString(artifact));
+        csvRecordString.add(mapCopyrightsToString(artifact));
+        csvRecordString.add(hash);
+        csvRecordString.add(mapSourceUrlToString(artifact));
+        csvRecordString.add(mapReleaseTagUrlToString(artifact));
+        csvRecordString.add(mapSoftwareHeritagToString(artifact));
+        csvRecordString.add(mapClearingStatusToString(artifact));
+        csvRecordString.add(mapChangeStatusToString(artifact));
+        csvRecordString.add(mapCPEIdToString(artifact));
+        csvRecordString.add(mapFileNameToString(artifact));
+
+        return csvRecordString.toArray();
     }
 
     public Collection<Artifact> createArtifactsList() {
@@ -220,7 +317,7 @@ public class CSVReader {
         return builder.build();
     }
 
-    List<CSVRecord> getRecordsFromCsvFile() {
+    private List<CSVRecord> getRecordsFromCsvFile() {
         CSVFormat csvFormat = CSVFormat.DEFAULT;
         csvFormat = csvFormat.withFirstRecordAsHeader();
         csvFormat = csvFormat.withDelimiter(delimiter);
@@ -239,5 +336,69 @@ public class CSVReader {
         }
 
         return records;
+    }
+
+    private static String mapOverriddenLicenseToString(Artifact artifact) {
+        return artifact.askForGet(OverriddenLicenseInformation.class)
+                .map(LicenseInformation::evaluate)
+                .orElse("");
+    }
+
+    private static String mapDeclaredLicenseToString(Artifact artifact) {
+        return artifact.askForGet(DeclaredLicenseInformation.class)
+                .map(LicenseInformation::evaluate)
+                .orElse("");
+    }
+
+    private static String mapObservedLicenseToString(Artifact artifact) {
+        return artifact.askForGet(ObservedLicenseInformation.class)
+                .map(LicenseInformation::evaluate)
+                .orElse("");
+    }
+
+    private static String mapSourceUrlToString(Artifact artifact) {
+        return artifact.askForGet(ArtifactSourceUrl.class)
+                .orElse("");
+    }
+
+    private static String mapReleaseTagUrlToString(Artifact artifact) {
+        return artifact.askForGet(ArtifactReleaseTagURL.class)
+                .orElse("");
+    }
+
+    private static String mapSoftwareHeritagToString(Artifact artifact) {
+        return artifact.askForGet(ArtifactSoftwareHeritageID.class)
+                .orElse("");
+    }
+
+    private static String mapClearingStatusToString(Artifact artifact) {
+        Optional<ArtifactClearingState.ClearingState> cs = artifact.askForGet(ArtifactClearingState.class);
+        return cs.map(ArtifactClearingState.ClearingState::toString)
+                .orElse("");
+    }
+
+    private static String mapChangeStatusToString(Artifact artifact) {
+        Optional<ArtifactChangeStatus.ChangeStatus> cs = artifact.askForGet(ArtifactChangeStatus.class);
+        return cs.map(ArtifactChangeStatus.ChangeStatus::toString)
+                .orElse("");
+    }
+
+    private static String mapCopyrightsToString(Artifact artifact) {
+        Optional<CopyrightStatement> cs = artifact.askFor(CopyrightStatement.class);
+        return cs.map(CopyrightStatement::toString)
+                .orElse("");
+    }
+
+    private static String mapCPEIdToString(Artifact artifact) {
+        return artifact.askForGet(ArtifactCPE.class)
+        .orElse("");
+    }
+
+    private static String mapFileNameToString(Artifact artifact) {
+        return artifact.askFor(ArtifactSourceFile.class)
+                .map(ArtifactFactWithPayload::get)
+                .map(Path::toAbsolutePath)
+                .map(Path::toString)
+                .orElse("");
     }
 }
