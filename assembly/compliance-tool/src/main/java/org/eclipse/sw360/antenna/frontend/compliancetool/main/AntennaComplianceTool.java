@@ -56,7 +56,9 @@ public class AntennaComplianceTool {
 
     private SW360Exporter init(SW360Exporter executor, Path propertiesFile) {
         SW360Configuration configuration = new SW360Configuration(propertiesFile.toFile());
-        executor.setCsvFile(configuration.getCsvFile());
+        executor.setCsvFile(configuration.getTargetDir()
+                .resolve(configuration.getCsvFileName())
+                .toFile());
         SW360ConnectionConfiguration connectionConfiguration = configuration.getConnectionConfiguration();
         executor.setConnectionConfiguration(connectionConfiguration);
         return executor;

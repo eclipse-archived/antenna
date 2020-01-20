@@ -15,6 +15,8 @@ import org.eclipse.sw360.antenna.api.workflow.ConfigurableWorkflowItem;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,13 +25,15 @@ import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.Compliance
 
 public class SW360Configuration extends ConfigurableWorkflowItem {
     private final Map<String, String> properties;
-    private final File csvFile;
+    private final String csvFileName;
     private final SW360ConnectionConfiguration connectionConfiguration;
+    private final Path targetDir;
 
     public SW360Configuration(File propertiesFile) {
         properties = mapPropertiesFile(propertiesFile);
+        targetDir = Paths.get(properties.get("targetDir"));
         connectionConfiguration = makeConnectionConfiguration();
-        csvFile = new File(properties.get("csvFilePath"));
+        csvFileName = properties.get("csvFilePath");
     }
 
     private SW360ConnectionConfiguration makeConnectionConfiguration() {
@@ -49,8 +53,12 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
                 properties.get("proxyHost"), Integer.parseInt(properties.get("proxyPort")));
     }
 
-    public File getCsvFile() {
-        return csvFile;
+    public Path getTargetDir() {
+        return targetDir;
+    }
+
+    public String getCsvFileName() {
+        return csvFileName;
     }
 
     public Map<String, String> getProperties() {
