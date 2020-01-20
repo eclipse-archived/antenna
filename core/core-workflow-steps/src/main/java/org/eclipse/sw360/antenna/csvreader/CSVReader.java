@@ -1,5 +1,4 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2016-2017,2019.
  * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
@@ -9,8 +8,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.workflow.analyzers;
+package org.eclipse.sw360.antenna.csvreader;
 
+import com.github.packageurl.PackageURL;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -26,16 +26,20 @@ import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public class CsvAnalyzerImpl {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CsvAnalyzerImpl.class);
+public class CSVReader {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CSVReader.class);
 
     private static final String NAME = "Artifact Id";
     private static final String GROUP = "Group Id";
@@ -53,26 +57,27 @@ public class CsvAnalyzerImpl {
     private static final String CHANGES_STATUS = "Change Status";
     private static final String CPE = "CPE";
     private static final String PATH_NAME = "File Name";
-    private final String nameOfAnalyzer;
-    private final Character delimiter;
-    private final String csvFile;
-    private final Charset encoding;
-    private final Path baseDir;
 
-    public CsvAnalyzerImpl(String nameOfAnalyzer, Character delimiter, File csvFile, Charset encoding, Path baseDir) {
-        this.nameOfAnalyzer = nameOfAnalyzer;
-        this.delimiter = delimiter;
-        this.csvFile = csvFile.getAbsolutePath();
+    private Path csvFile;
+    private Charset encoding;
+    private char delimiter;
+    private Path baseDir;
+
+
+    public CSVReader(Path csvFile, Charset encoding, char delimiter, Path baseDir) {
+        this.csvFile = csvFile;
         this.encoding = encoding;
+        this.delimiter = delimiter;
         this.baseDir = baseDir;
     }
 
-    public List<Artifact> yield() {
+    public Collection<Artifact> createArtifactsList() {
+
         List<Artifact> artifacts = new ArrayList<>();
-        List<CSVRecord> records = getRecords();
+        List<CSVRecord> records = getRecordsFromCsvFile();
 
         for (CSVRecord record : records) {
-            Artifact newArtifact = createNewArtifact(record);
+            Artifact newArtifact = mapRecordToArtifact(record);
 
             final Optional<Artifact> oldArtifact = artifactListContainsArtifact(artifacts, newArtifact);
             if(oldArtifact.isPresent()) {
@@ -97,87 +102,12 @@ public class CsvAnalyzerImpl {
                 .findFirst();
     }
 
-    private Artifact createNewArtifact(CSVRecord record) {
-        Artifact artifact = new Artifact(nameOfAnalyzer)
+    private Artifact mapRecordToArtifact(CSVRecord record) {
+        Artifact artifact = new Artifact("CSV")
                 .addCoordinate(createCoordinates(record))
                 .addFact(new ArtifactMatchingMetadata(MatchState.EXACT));
         addOptionalArtifactFacts(record, artifact);
         return artifact;
-    }
-
-    private List<CSVRecord> getRecords() {
-        CSVFormat csvFormat = CSVFormat.DEFAULT;
-        csvFormat = csvFormat.withFirstRecordAsHeader();
-        csvFormat = csvFormat.withDelimiter(delimiter);
-        String filename = csvFile;
-        List<CSVRecord> records;
-
-        try (FileInputStream fs = new FileInputStream(filename);
-             InputStreamReader isr = new InputStreamReader(fs, encoding);
-             CSVParser csvParser = new CSVParser(isr, csvFormat)) {
-            records = csvParser.getRecords();
-        } catch (FileNotFoundException e) {
-            throw new ExecutionException(
-                    "Antenna is configured to read a CSV configuration file (" + filename + "), but the file wasn't found",
-                    e);
-        } catch (IOException e) {
-            throw new ExecutionException("Error when attempting to parse CSV configuration file: " + filename, e);
-        }
-
-        return records;
-    }
-
-    private Coordinate createCoordinates(CSVRecord record) {
-        final CoordinateBuilder builder = Coordinate.builder()
-                .withName(record.get(NAME))
-                .withVersion(record.get(VERSION));
-
-        if (record.isMapped(COORDINATE_TYPE)) {
-            final String type = record.get(COORDINATE_TYPE);
-            switch (type) {
-                case "mvn":
-                case "maven":
-                    builder.withType(Coordinate.Types.MAVEN);
-                    builder.withNamespace(record.get(GROUP));
-                    break;
-                case "nuget":
-                case "dotnet":
-                    builder.withType(Coordinate.Types.NUGET);
-                    break;
-                case "npm":
-                case "javascript":
-                    builder.withType(Coordinate.Types.NPM);
-                    builder.withNamespace(record.get(GROUP));
-                    break;
-                case "bundle":
-                    builder.withType(Coordinate.Types.P2);
-                    break;
-                default:
-                    if (Coordinate.Types.all.contains(type)) {
-                        builder.withType(type);
-                    } else {
-                        builder.withType(Coordinate.Types.GENERIC);
-                    }
-
-                    if (record.isMapped(GROUP)) {
-                        builder.withNamespace(record.get(GROUP));
-                    }
-                    break;
-            }
-        } else {
-            builder.withType(Coordinate.Types.GENERIC);
-            if (record.isMapped(GROUP)) {
-                builder.withNamespace(record.get(GROUP));
-            }
-        }
-
-        return builder.build();
-    }
-
-    private String makePathAbsolute(String pathName) {
-        return Paths.get(pathName).isAbsolute()
-                ? Paths.get(pathName).toString()
-                : baseDir.resolve(Paths.get(pathName)).toAbsolutePath().toString();
     }
 
     private void addOptionalArtifactFacts(CSVRecord record, Artifact artifact) {
@@ -233,7 +163,81 @@ public class CsvAnalyzerImpl {
         }
     }
 
+    private String makePathAbsolute(String pathName) {
+        return Paths.get(pathName).isAbsolute()
+                ? Paths.get(pathName).toString()
+                : baseDir.resolve(Paths.get(pathName)).toAbsolutePath().toString();
+    }
+
     private boolean checkIfRecordIsMappedAndNotEmptyForParameter(CSVRecord record, String parameter) {
         return record.isMapped(parameter) && !record.get(parameter).isEmpty();
+    }
+
+    private Coordinate createCoordinates(CSVRecord record) {
+        final CoordinateBuilder builder = Coordinate.builder()
+                .withName(record.get(NAME))
+                .withVersion(record.get(VERSION));
+
+        if (record.isMapped(COORDINATE_TYPE)) {
+            final String type = record.get(COORDINATE_TYPE);
+            switch (type) {
+                case "mvn":
+                case "maven":
+                    builder.withType(PackageURL.StandardTypes.MAVEN);
+                    builder.withNamespace(record.get(GROUP));
+                    break;
+                case "nuget":
+                case "dotnet":
+                    builder.withType(PackageURL.StandardTypes.NUGET);
+                    break;
+                case "npm":
+                case "javascript":
+                    builder.withType(PackageURL.StandardTypes.NPM);
+                    builder.withNamespace(record.get(GROUP));
+                    break;
+                case "bundle":
+                    builder.withType(Coordinate.Types.P2);
+                    break;
+                default:
+                    if (Coordinate.Types.all.contains(type)) {
+                        builder.withType(type);
+                    } else {
+                        builder.withType(PackageURL.StandardTypes.GENERIC);
+                    }
+
+                    if (record.isMapped(GROUP)) {
+                        builder.withNamespace(record.get(GROUP));
+                    }
+                    break;
+            }
+        } else {
+            builder.withType(PackageURL.StandardTypes.GENERIC);
+            if (record.isMapped(GROUP)) {
+                builder.withNamespace(record.get(GROUP));
+            }
+        }
+
+        return builder.build();
+    }
+
+    List<CSVRecord> getRecordsFromCsvFile() {
+        CSVFormat csvFormat = CSVFormat.DEFAULT;
+        csvFormat = csvFormat.withFirstRecordAsHeader();
+        csvFormat = csvFormat.withDelimiter(delimiter);
+        List<CSVRecord> records;
+
+        try (FileInputStream fs = new FileInputStream(csvFile.toAbsolutePath().toString());
+             InputStreamReader isr = new InputStreamReader(fs, encoding);
+             CSVParser csvParser = new CSVParser(isr, csvFormat)) {
+            records = csvParser.getRecords();
+        } catch (FileNotFoundException e) {
+            throw new ExecutionException(
+                    "Antenna is configured to read a CSV configuration file (" + csvFile.toString() + "), but the file wasn't found",
+                    e);
+        } catch (IOException e) {
+            throw new ExecutionException("Error when attempting to parse CSV configuration file: " + csvFile.toString(), e);
+        }
+
+        return records;
     }
 }

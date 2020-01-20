@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2017,2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -13,9 +14,10 @@ package org.eclipse.sw360.antenna.workflow.analyzers;
 
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
+import org.eclipse.sw360.antenna.csvreader.CSVReader;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 public class CsvAnalyzer extends ManualAnalyzer {
@@ -29,12 +31,11 @@ public class CsvAnalyzer extends ManualAnalyzer {
 
     @Override
     public WorkflowStepResult yield() {
-        List<Artifact> artifacts = new CsvAnalyzerImpl(
-                getName(),
-                rowDelimiter,
-                componentInfoFile,
+        Collection<Artifact> artifacts = new CSVReader(
+                componentInfoFile.toPath(),
                 context.getToolConfiguration().getEncoding(),
-                baseDir).yield();
+                rowDelimiter,
+                baseDir).createArtifactsList();
 
         return new WorkflowStepResult(artifacts, true);
     }
