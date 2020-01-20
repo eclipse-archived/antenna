@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2020.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -31,5 +31,16 @@ public class SW360ConfigurationTest {
         assertThat(configuration.getCsvFile().getName()).isEqualTo("<example-path>");
         assertThat(configuration.getConnectionConfiguration().getSW360ReleaseClientAdapter()).isNotNull();
         assertThat(configuration.getConnectionConfiguration().getSW360ComponentClientAdapter()).isNotNull();
+    }
+
+    @Test
+    public void testConfigurationWithUpdaterPropertiesFile() {
+        String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).getPath();
+        File propertiesFile = new File(propertiesFilePath);
+        SW360Configuration configuration = new SW360Configuration(propertiesFile);
+        assertThat(configuration.getCsvFile().getName()).isEqualTo("compliancetool_updater_test.csv");
+        assertThat(configuration.getProperties().get("delimiter")).isEqualTo(";");
+        assertThat(configuration.getProperties().get("sw360updateReleases")).isEqualTo("true");
+        assertThat(configuration.getProperties().get("sw360uploadSources")).isEqualTo("false");
     }
 }
