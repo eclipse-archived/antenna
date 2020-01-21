@@ -1,0 +1,3 @@
+Group Id;Artifact Id;Version;Coordinate Type;Effective License;Declared License;Observed License;Copyrights;Hash;Source URL;Release Tag URL;Software Heritage ID;Clearing State;Change Status;CPE;File Name
+com.sun.xml.bind;jaxb-xjc;2.2.10;mvn;;;;;;;;;;;;
+org.infinispan;infinispan-cachestore-remote;9.4.14.Final;mvn;Apache-2.0;Apache-2.0;Apache-2.0;;;https://repo.bosch-si.com/service/local/repositories/inst-thirdparty-sources/content/org/infinispan/infinispan-cachestore-remote/9.4.14.Final/infinispan-cachestore-remote-9.4.14.Final-sources.jar;;;OSM_APPROVED;;;infinispan-cachestore-remote-9.4.14.Final-sources.jar

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,28 +11,29 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.ConfigurableWorkflowItem;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils.mapPropertiesFile;
+
 public class SW360Configuration extends ConfigurableWorkflowItem {
     private final Map<String, String> properties;
-    private final File csvFile;
+    private final String csvFileName;
     private final SW360ConnectionConfiguration connectionConfiguration;
+    private final Path targetDir;
 
     public SW360Configuration(File propertiesFile) {
         properties = mapPropertiesFile(propertiesFile);
+        targetDir = Paths.get(properties.get("targetDir"));
         connectionConfiguration = makeConnectionConfiguration();
-        csvFile = new File(properties.get("csvFilePath"));
+        csvFileName = properties.get("csvFilePath");
     }
 
     private SW360ConnectionConfiguration makeConnectionConfiguration() {
@@ -51,29 +53,23 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
                 properties.get("proxyHost"), Integer.parseInt(properties.get("proxyPort")));
     }
 
-    private static Map<String, String> mapPropertiesFile(File propertiesFile) {
-        if (!propertiesFile.exists()) {
-            throw new IllegalArgumentException("Cannot find " + propertiesFile.toString() + ". Please check the path.");
-        }
-
-        try (InputStream input = new FileInputStream(propertiesFile)) {
-            Properties prop = new Properties();
-            prop.load(input);
-
-            return prop.entrySet().stream()
-                    .collect(Collectors.toMap(
-                            p -> p.getKey().toString(),
-                            p -> p.getValue().toString()));
-        } catch (IOException e) {
-            throw new ConfigurationException("IO exception when reading properties file: " + e.getMessage());
-        }
+    public Path getTargetDir() {
+        return targetDir;
     }
 
-    public File getCsvFile() {
-        return csvFile;
+    public String getCsvFileName() {
+        return csvFileName;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
     public SW360ConnectionConfiguration getConnectionConfiguration() {
         return connectionConfiguration;
+    }
+
+    public Boolean getBooleanConfigValue(String key) {
+        return getBooleanConfigValue(key, properties);
     }
 }
