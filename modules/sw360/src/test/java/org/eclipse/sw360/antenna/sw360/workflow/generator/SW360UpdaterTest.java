@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -48,7 +49,7 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         Artifact artifact = mkArtifact("Test1", true);
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName("artifactIdtest1");
-        SW360Release release = SW360ReleaseAdapterUtils.convertToRelease(artifact);
+        SW360Release release = SW360ReleaseAdapterUtils.convertToReleaseWithoutAttachments(artifact);
         release.setComponentId(sw360Component.getComponentId());
         release.setMainLicenseIds(Collections.EMPTY_SET);
 
@@ -85,7 +86,7 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         Artifact artifact = mkArtifact("Test1", false);
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName("artifactIdtest1");
-        SW360Release release = SW360ReleaseAdapterUtils.convertToRelease(artifact);
+        SW360Release release = SW360ReleaseAdapterUtils.convertToReleaseWithoutAttachments(artifact);
 
         assertThat(release.getClearingState()).isEqualTo(ArtifactClearingState.ClearingState.PROJECT_APPROVED.toString());
         assertThat(release.getChangeStatus()).isEqualTo(ArtifactChangeStatus.ChangeStatus.CHANGED.toString());
@@ -176,7 +177,7 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
 
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName("artifactIdTest");
-        SW360Release release = SW360ReleaseAdapterUtils.convertToRelease(artifact);
+        SW360Release release = SW360ReleaseAdapterUtils.convertToReleaseWithoutAttachments(artifact);
         release.setComponentId(sw360Component.getComponentId());
         release.setMainLicenseIds(Collections.EMPTY_SET);
 
@@ -192,6 +193,6 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
         thrownException.expect(ExecutionException.class);
         thrownException.expectMessage("does not have enough facts to create a component name.");
 
-        SW360ReleaseAdapterUtils.convertToRelease(artifact);
+        SW360ReleaseAdapterUtils.convertToReleaseWithoutAttachments(artifact);
     }
 }

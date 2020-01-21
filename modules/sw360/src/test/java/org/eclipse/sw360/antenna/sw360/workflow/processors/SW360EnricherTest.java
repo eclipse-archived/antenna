@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -215,7 +216,6 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         sw360Enricher.process(artifacts);
 
-        verify(reporterMock).add(any(Artifact.class), any(), any());
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses()).hasSize(1);
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().get(0).getName()).isEqualTo("mit");
     }

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,11 +11,10 @@
  */
 package org.eclipse.sw360.antenna.sw360.workflow.processors;
 
-import com.here.ort.spdx.SpdxException;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
-import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactLicenseInformation;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
@@ -25,13 +25,15 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
-import org.eclipse.sw360.antenna.util.LicenseSupport;
+import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SW360EnricherImpl {
@@ -63,10 +65,7 @@ public class SW360EnricherImpl {
     }
 
     private void mapReleaseToArtifact(SW360Release sw360Release, Artifact artifact) {
-        addSourceUrlIfAvailable(artifact, sw360Release);
-        addCPEIdIfAvailable(artifact, sw360Release);
-        addClearingStateIfAvailable(artifact, sw360Release);
-        mapExternalIdsOnArtifact(sw360Release, artifact);
+        SW360ReleaseAdapterUtils.convertToArtifact(sw360Release, artifact);
         updateLicenses(artifact, sw360Release);
 
         if (downloadAttachments) {
@@ -85,81 +84,6 @@ public class SW360EnricherImpl {
     private void mapSourceAttachmentOnArtifact(SW360Release sw360Release, SW360SparseAttachment attachment, Artifact artifact) {
         Optional<Path> attachmentPath = connector.downloadAttachment(sw360Release, attachment, downloadPath);
         attachmentPath.map( path -> artifact.addFact(new ArtifactSourceFile(path)));
-    }
-
-    private void addClearingStateIfAvailable(Artifact artifact, SW360Release release) {
-        if (release.getClearingState() != null && !release.getClearingState().isEmpty()) {
-            artifact.addFact(new ArtifactClearingState(
-                    ArtifactClearingState.ClearingState.valueOf(release.getClearingState())));
-        }
-    }
-
-    private void mapExternalIdsOnArtifact(SW360Release sw360Release, Artifact artifact) {
-        artifact.addFact(mapCoordinates(sw360Release));
-
-
-        addLicenseFact(Optional.ofNullable(sw360Release.getDeclaredLicense()), artifact, DeclaredLicenseInformation::new, artifact.askFor(DeclaredLicenseInformation.class).isPresent());
-        addLicenseFact(Optional.ofNullable(sw360Release.getObservedLicense()), artifact, ObservedLicenseInformation::new, artifact.askFor(ObservedLicenseInformation.class).isPresent());
-        addLicenseFact(Optional.ofNullable(sw360Release.getOverriddenLicense()), artifact, OverriddenLicenseInformation::new, artifact.askFor(OverriddenLicenseInformation.class).isPresent());
-
-        Optional.ofNullable(sw360Release.getReleaseTagUrl())
-                .map(ArtifactReleaseTagURL::new)
-                .ifPresent(artifact::addFact);
-
-        try {
-            Optional.ofNullable(sw360Release.getSoftwareHeritageId())
-                    .map(ArtifactSoftwareHeritageID.Builder::new)
-                    .map(ArtifactSoftwareHeritageID.Builder::build)
-                    .ifPresent(artifact::addFact);
-        } catch (IllegalArgumentException e) {
-            LOGGER.debug(e.getMessage());
-        }
-        sw360Release.getHashes().stream()
-                .map(hash -> new ArtifactFilename(null, hash))
-                .forEach(artifact::addFact);
-        Optional.ofNullable(sw360Release.getChangeStatus())
-                .map(ArtifactChangeStatus.ChangeStatus::valueOf)
-                .map(ArtifactChangeStatus::new)
-                .ifPresent(artifact::addFact);
-        Optional.ofNullable(sw360Release.getCopyrights())
-                .map(CopyrightStatement::new)
-                .ifPresent(artifact::addFact);
-    }
-
-    private void addLicenseFact(Optional<String> licenseRawData, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator, boolean isAlreadyPresent) {
-        licenseRawData.map(this::parseSpdxExpression)
-                .map(licenseCreator)
-                .ifPresent(expression -> addFactAndLogWarning(artifact, isAlreadyPresent, expression));
-    }
-
-    private void addFactAndLogWarning(Artifact artifact, boolean isAlreadyPresent, ArtifactLicenseInformation expression) {
-        if (isAlreadyPresent) {
-            warnAndReport(artifact,
-                    "License information of type " + expression.getClass().getSimpleName() + " found in SW360. Overwriting existing information in artifact.",
-                    MessageType.OVERRIDE_ARTIFACT_ATTRIBUTES);
-        }
-        artifact.addFact(expression);
-    }
-
-    private LicenseInformation parseSpdxExpression(String expression) {
-        try {
-            return LicenseSupport.fromSPDXExpression(expression);
-        } catch (SpdxException e) {
-            License unparsableExpression = new License();
-            unparsableExpression.setName(expression);
-            return unparsableExpression;
-        }
-    }
-
-    private ArtifactCoordinates mapCoordinates(SW360Release sw360Release) {
-        final Map<String, String> coordinates = sw360Release.getCoordinates();
-        return new ArtifactCoordinates(new HashSet<>(coordinates.values()));
-    }
-
-    private void addSourceUrlIfAvailable(Artifact artifact, SW360Release release) {
-        if (release.getDownloadurl() != null && !release.getDownloadurl().isEmpty()) {
-            artifact.addFact(new ArtifactSourceUrl(release.getDownloadurl()));
-        }
     }
 
     private void updateLicenses(Artifact artifact, SW360Release release) {
@@ -187,10 +111,15 @@ public class SW360EnricherImpl {
         }
     }
 
-    private License makeLicenseFromLicenseDetails(License license, SW360License licenseDetails) {
-        license.setLongName(licenseDetails.getFullName());
-        license.setText(licenseDetails.getText());
-        return license;
+    private void updateLicenseInformation(List<License> artifactLicenses, List<SW360SparseLicense> sw360licenses) {
+        artifactLicenses.forEach(license -> updateLicense(license, sw360licenses));
+    }
+
+    private void updateLicense(License license, List<SW360SparseLicense> sw360licenses) {
+        sw360licenses.stream()
+                .filter(l -> l.getShortName().equals(license.getName()))
+                .findFirst()
+                .ifPresent(l -> enrichLicenseWithSW360Data(license, l));
     }
 
     private License enrichLicenseWithSW360Data(License license, SW360SparseLicense sparseLicense) {
@@ -204,15 +133,10 @@ public class SW360EnricherImpl {
         return license;
     }
 
-    private void updateLicenseInformation(List<License> artifactLicenses, List<SW360SparseLicense> sw360licenses) {
-        artifactLicenses.forEach(license -> updateLicense(license, sw360licenses));
-    }
-
-    private void updateLicense(License license, List<SW360SparseLicense> sw360licenses) {
-        sw360licenses.stream()
-                .filter(l -> l.getShortName().equals(license.getName()))
-                .findFirst()
-                .ifPresent(l -> enrichLicenseWithSW360Data(license, l));
+    private License makeLicenseFromLicenseDetails(License license, SW360License licenseDetails) {
+        license.setLongName(licenseDetails.getFullName());
+        license.setText(licenseDetails.getText());
+        return license;
     }
 
     private void warnAndReport(Artifact artifact, String message, MessageType messageType) {
@@ -222,13 +146,4 @@ public class SW360EnricherImpl {
                 messageType,
                 message);
     }
-
-    private void addCPEIdIfAvailable(Artifact artifact, SW360Release release) {
-        String cpeId = release.getCpeId();
-        if (cpeId != null && cpeId.startsWith("cpe:")) {
-            artifact.addFact(new ArtifactCPE(cpeId));
-        }
-    }
-
-
 }
