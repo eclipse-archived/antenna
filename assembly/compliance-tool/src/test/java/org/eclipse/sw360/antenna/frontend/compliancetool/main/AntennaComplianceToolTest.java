@@ -37,7 +37,7 @@ public class AntennaComplianceToolTest {
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     @Test
-    public void testMainInitWithExporter() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException, NoSuchFieldException {
+    public void testMainInitWithExporter() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         Path propertiesFile = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).getFile());
 
         Object[] obj = {new SW360Exporter(), propertiesFile};
@@ -57,14 +57,10 @@ public class AntennaComplianceToolTest {
         initMethod.setAccessible(true);
         SW360Exporter exporter = (SW360Exporter) initMethod.invoke(antennaComplianceTool, obj);
 
-        Field connectionConfiguration = exporter.getClass().getDeclaredField("connectionConfiguration");
-        connectionConfiguration.setAccessible(true);
-        assertThat(((SW360ConnectionConfiguration) connectionConfiguration.get(exporter)).getSW360ReleaseClientAdapter()).isNotNull();
-        assertThat(((SW360ConnectionConfiguration) connectionConfiguration.get(exporter)).getSW360ComponentClientAdapter()).isNotNull();
-
-        Field csvFile = exporter.getClass().getDeclaredField("csvFile");
-        csvFile.setAccessible(true);
-        assertThat(((File) csvFile.get(exporter)).getName()).isNotEmpty();
+        Field configuration = exporter.getClass().getDeclaredField("configuration");
+        configuration.setAccessible(true);
+        assertThat(((SW360Configuration) configuration.get(exporter)).getConnectionConfiguration()).isNotNull();
+        assertThat(((SW360Configuration) configuration.get(exporter)).getProperties()).isNotNull();
     }
 
     @Test

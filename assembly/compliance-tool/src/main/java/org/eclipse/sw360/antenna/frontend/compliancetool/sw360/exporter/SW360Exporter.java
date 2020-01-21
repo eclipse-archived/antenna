@@ -11,32 +11,35 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter;
 
+import org.eclipse.sw360.antenna.csvreader.CSVReader;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.springframework.http.HttpHeaders;
 
 import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SW360Exporter {
-    private File csvFile;
+    private SW360Configuration configuration;
     private SW360ConnectionConfiguration connectionConfiguration;
 
-    public void setConnectionConfiguration(SW360ConnectionConfiguration sw360ConnectionConfiguration) {
-        this.connectionConfiguration = sw360ConnectionConfiguration;
-    }
-
-    public void setCsvFile(File csvFile) {
-        this.csvFile = csvFile;
+    public void setConfiguration(SW360Configuration configuration) {
+        this.configuration = configuration;
     }
 
     public void execute() {
+        connectionConfiguration = configuration.getConnectionConfiguration();
         HttpHeaders headers = connectionConfiguration.getHttpHeaders();
 
         Collection<SW360SparseComponent> components = connectionConfiguration.getSW360ComponentClientAdapter().getComponents(headers);
@@ -45,8 +48,20 @@ public class SW360Exporter {
 
         Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases, headers);
 
-        SW360ExporterCSVWriter
-                .writeReleasesToCsvFile(sw360ReleasesNotApproved, csvFile);
+        List<Artifact> artifacts = sw360ReleasesNotApproved.stream()
+                .map(release -> SW360ReleaseAdapterUtils.convertToArtifact(release, new Artifact("SW360")))
+                .collect(Collectors.toList());
+
+        File csvFile = configuration.getTargetDir()
+                .resolve(configuration.getCsvFileName())
+                .toFile();
+
+        CSVReader csvReader = new CSVReader(csvFile.toPath(),
+                Charset.forName(configuration.getProperties().get("encoding")),
+                configuration.getProperties().get("delimiter").charAt(0),
+                Paths.get(configuration.getProperties().get("basedir")));
+
+        csvReader.writeArtifactsToCsvFile(artifacts);
     }
 
     private Collection<SW360SparseRelease> getReleasesFromComponents(Collection<SW360SparseComponent> components, HttpHeaders headers) {
