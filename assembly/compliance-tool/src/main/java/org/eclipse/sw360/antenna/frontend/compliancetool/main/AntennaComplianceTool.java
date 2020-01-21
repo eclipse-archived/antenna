@@ -14,7 +14,6 @@ import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuratio
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter.SW360Exporter;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater.SW360Updater;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +55,7 @@ public class AntennaComplianceTool {
 
     private SW360Exporter init(SW360Exporter executor, Path propertiesFile) {
         SW360Configuration configuration = new SW360Configuration(propertiesFile.toFile());
-        executor.setCsvFile(configuration.getTargetDir()
-                .resolve(configuration.getCsvFileName())
-                .toFile());
-        SW360ConnectionConfiguration connectionConfiguration = configuration.getConnectionConfiguration();
-        executor.setConnectionConfiguration(connectionConfiguration);
+        executor.setConfiguration(configuration);
         return executor;
     }
 

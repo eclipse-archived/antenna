@@ -11,16 +11,15 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
+import org.eclipse.sw360.antenna.csvreader.CSVReader;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer;
-import org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzerImpl;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -48,7 +47,7 @@ public class ComplianceFeatureUtils {
         }
     }
 
-    public static List<Artifact> getArtifactsFromCsvFile(Map<String, String> properties) {
+    public static Collection<Artifact> getArtifactsFromCsvFile(Map<String, String> properties) {
         char delimiter = properties.get("delimiter").charAt(0);
         File csvFile = new File(properties.get("csvFilePath"));
         if (!csvFile.exists()) {
@@ -56,6 +55,6 @@ public class ComplianceFeatureUtils {
         }
         Charset encoding = Charset.forName(properties.get("encoding"));
 
-        return new CsvAnalyzerImpl(new CsvAnalyzer().getName(), delimiter, csvFile, encoding, csvFile.getParentFile().toPath()).yield();
+        return new CSVReader(csvFile.toPath(), encoding, delimiter, csvFile.getParentFile().toPath()).createArtifactsList();
     }
 }

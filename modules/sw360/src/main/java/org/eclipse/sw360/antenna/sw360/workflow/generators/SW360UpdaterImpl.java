@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2017-2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -61,7 +62,7 @@ public class SW360UpdaterImpl {
     public SW360Release artifactToReleaseInSW360(Artifact artifact) {
         Set<String> licenseIds = getSetOfLicenseIds(artifact);
 
-        final SW360Release sw360ReleaseFromArtifact = SW360ReleaseAdapterUtils.convertToRelease(artifact);
+        final SW360Release sw360ReleaseFromArtifact = SW360ReleaseAdapterUtils.convertToReleaseWithoutAttachments(artifact);
         sw360ReleaseFromArtifact.setMainLicenseIds(licenseIds);
         SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(sw360ReleaseFromArtifact);
         if (sw360MetaDataUpdater.isUploadSources()

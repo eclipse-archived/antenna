@@ -11,6 +11,8 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter;
 
 import org.apache.commons.csv.CSVParser;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
@@ -27,7 +29,11 @@ import org.springframework.http.HttpHeaders;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +52,9 @@ public class SW360ExporterTest {
 
     @Mock
     SW360ReleaseClientAdapter releaseClientAdapterMock = mock(SW360ReleaseClientAdapter.class);
+
+    @Mock
+    SW360Configuration configurationMock = mock(SW360Configuration.class);
 
     @Mock
     SW360ConnectionConfiguration connectionConfigurationMock = mock(SW360ConnectionConfiguration.class);
@@ -74,14 +83,23 @@ public class SW360ExporterTest {
         when(connectionConfigurationMock.getSW360ReleaseClientAdapter())
                 .thenReturn(releaseClientAdapterMock);
 
+        when(configurationMock.getConnectionConfiguration())
+                .thenReturn(connectionConfigurationMock);
         csvFile = folder.newFile("sample.csv");
+        when(configurationMock.getCsvFileName())
+                .thenReturn(csvFile.getName());
+        when(configurationMock.getTargetDir())
+                .thenReturn(folder.getRoot().toPath());
+        String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).getPath();
+        Map<String, String> propertiesMap = ComplianceFeatureUtils.mapPropertiesFile(new File(propertiesFilePath));
+        when(configurationMock.getProperties()).
+                thenReturn(propertiesMap);
     }
 
     @Test
     public void testExporter() throws IOException {
         SW360Exporter sw360Exporter = new SW360Exporter();
-        sw360Exporter.setConnectionConfiguration(connectionConfigurationMock);
-        sw360Exporter.setCsvFile(csvFile);
+        sw360Exporter.setConfiguration(configurationMock);
         sw360Exporter.execute();
 
         assertThat(csvFile).exists();

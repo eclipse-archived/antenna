@@ -37,7 +37,7 @@ public class SW360TestUtils {
     private static final String RELEASE_OBSERVED_LICENSE = "A-Test-License";
     private static final String RELEASE_RELEASE_TAG_URL = "https://gitTool.com/project/repository";
     private static final String RELEASE_MAVEN_COORDINATES = "pkg:maven/test/test1@1.0.0";
-    private static final String RELEASE_SOFTWAREHERITGAE_ID = "swh:1:rel:12345";
+    private static final String RELEASE_SOFTWAREHERITGAE_ID = "swh:1:rel:1234512345123451234512345123451234512345";
     private static final String RELEASE_HASH1= "b2a4d4ae21c789b689dd162deb819665567f481c";
     private static final String RELEASE_CHANGESTATUS = "AS_IS";
     private static final String RELEASE_COPYRIGHT = "Copyright xxxx Some Copyright Enterprise";

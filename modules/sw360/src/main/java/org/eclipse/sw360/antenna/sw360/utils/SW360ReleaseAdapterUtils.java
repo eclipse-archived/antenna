@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,17 +11,98 @@
  */
 package org.eclipse.sw360.antenna.sw360.utils;
 
+import com.here.ort.spdx.SpdxException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.util.LicenseSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SW360ReleaseAdapterUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SW360ReleaseAdapterUtils.class);
 
-    public static SW360Release convertToRelease(Artifact artifact) {
+    public static Artifact convertToArtifact(SW360Release release, Artifact artifact) {
+        artifact.setProprietary(release.isProprietary());
+        Optional.ofNullable(release.getCoordinates())
+                .map(Map::values)
+                .map(HashSet::new)
+                .map(ArtifactCoordinates::new)
+                .ifPresent(artifact::addFact);
+
+        addLicenseFact(Optional.ofNullable(release.getDeclaredLicense()), artifact, DeclaredLicenseInformation::new, artifact.askFor(DeclaredLicenseInformation.class).isPresent());
+        addLicenseFact(Optional.ofNullable(release.getObservedLicense()), artifact, ObservedLicenseInformation::new, artifact.askFor(ObservedLicenseInformation.class).isPresent());
+        addLicenseFact(Optional.ofNullable(release.getOverriddenLicense()), artifact, OverriddenLicenseInformation::new, artifact.askFor(OverriddenLicenseInformation.class).isPresent());
+
+        String cpeId = release.getCpeId();
+        if (cpeId != null && cpeId.startsWith("cpe:")) {
+            artifact.addFact(new ArtifactCPE(cpeId));
+        }
+        Optional.ofNullable(release.getDownloadurl())
+                .map(ArtifactSourceUrl::new)
+                .ifPresent(artifact::addFact);
+        Optional.ofNullable(release.getReleaseTagUrl())
+                .map(ArtifactReleaseTagURL::new)
+                .ifPresent(artifact::addFact);
+        try {
+            Optional.ofNullable(release.getSoftwareHeritageId())
+                    .map(ArtifactSoftwareHeritageID.Builder::new)
+                    .map(ArtifactSoftwareHeritageID.Builder::build)
+                    .ifPresent(artifact::addFact);
+        } catch (IllegalArgumentException e) {
+            LOGGER.debug(e.getMessage());
+        }
+        Optional.ofNullable(release.getChangeStatus())
+                .map(ArtifactChangeStatus.ChangeStatus::valueOf)
+                .map(ArtifactChangeStatus::new)
+                .ifPresent(artifact::addFact);
+        Optional.ofNullable(release.getClearingState())
+                .map(ArtifactClearingState.ClearingState::valueOf)
+                .map(ArtifactClearingState::new)
+                .ifPresent(artifact::addFact);
+        Optional.ofNullable(release.getCopyrights())
+                .map(CopyrightStatement::new)
+                .ifPresent(artifact::addFact);
+        if (release.getHashes() != null) {
+            Set<String> hashes = release.getHashes();
+            hashes.forEach(hash ->
+                    artifact.addFact(new ArtifactFilename("", hash)));
+        }
+        // TODO missing way to get attachments into facts without downloading which isn't appropriate in utils class
+        return artifact;
+    }
+
+    private static void addLicenseFact(Optional<String> licenseRawData, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator, boolean isAlreadyPresent) {
+        licenseRawData.map(SW360ReleaseAdapterUtils::parseSpdxExpression)
+                .map(licenseCreator)
+                .ifPresent(expression -> addFactAndLogWarning(artifact, isAlreadyPresent, expression));
+    }
+
+    private static void addFactAndLogWarning(Artifact artifact, boolean isAlreadyPresent, ArtifactLicenseInformation expression) {
+        if (isAlreadyPresent) {
+            LOGGER.debug("License information of type {} found in SW360. Overwriting existing information in artifact.", expression.getClass().getSimpleName());
+        }
+        artifact.addFact(expression);
+    }
+
+    private static LicenseInformation parseSpdxExpression(String expression) {
+        try {
+            return LicenseSupport.fromSPDXExpression(expression);
+        } catch (SpdxException e) {
+            License unparsableExpression = new License();
+            unparsableExpression.setName(expression);
+            return unparsableExpression;
+        }
+    }
+
+    public static SW360Release convertToReleaseWithoutAttachments(Artifact artifact) {
         SW360Release release = new SW360Release();
         String componentName = SW360ComponentAdapterUtils.createComponentName(artifact);
 
@@ -32,8 +114,8 @@ public class SW360ReleaseAdapterUtils {
         SW360ReleaseAdapterUtils.setOverriddenLicense(release, artifact);
         SW360ReleaseAdapterUtils.setDeclaredLicense(release, artifact);
         SW360ReleaseAdapterUtils.setObservedLicense(release, artifact);
-        SW360ReleaseAdapterUtils.setSources(release, artifact);
-        SW360ReleaseAdapterUtils.setOriginalRepo(release, artifact);
+        SW360ReleaseAdapterUtils.setSourceUrl(release, artifact);
+        SW360ReleaseAdapterUtils.setReleaseTagUrl(release, artifact);
         SW360ReleaseAdapterUtils.setSwhId(release, artifact);
         SW360ReleaseAdapterUtils.setHashes(release, artifact);
         SW360ReleaseAdapterUtils.setClearingStatus(release, artifact);
@@ -95,12 +177,12 @@ public class SW360ReleaseAdapterUtils {
                 .ifPresent(licenseInformation -> release.setObservedLicense(licenseInformation.evaluate()));
     }
 
-    private static void setSources(SW360Release release, Artifact artifact) {
+    private static void setSourceUrl(SW360Release release, Artifact artifact) {
         artifact.askForGet(ArtifactSourceUrl.class)
                 .ifPresent(release::setDownloadurl);
     }
 
-    private static void setOriginalRepo(SW360Release release, Artifact artifact) {
+    private static void setReleaseTagUrl(SW360Release release, Artifact artifact) {
         artifact.askForGet(ArtifactReleaseTagURL.class)
                 .ifPresent(release::setReleaseTagUrl);
     }

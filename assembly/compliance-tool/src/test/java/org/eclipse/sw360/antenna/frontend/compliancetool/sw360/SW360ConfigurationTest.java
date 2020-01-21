@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 import org.junit.Test;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +29,7 @@ public class SW360ConfigurationTest {
         String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).getPath();
         File propertiesFile = new File(propertiesFilePath);
         SW360Configuration configuration = new SW360Configuration(propertiesFile);
+        assertThat(configuration.getTargetDir()).isEqualTo(Paths.get("build/compliancetool/"));
         assertThat(configuration.getCsvFileName()).isEqualTo("<example-path>");
         assertThat(configuration.getConnectionConfiguration().getSW360ReleaseClientAdapter()).isNotNull();
         assertThat(configuration.getConnectionConfiguration().getSW360ComponentClientAdapter()).isNotNull();
