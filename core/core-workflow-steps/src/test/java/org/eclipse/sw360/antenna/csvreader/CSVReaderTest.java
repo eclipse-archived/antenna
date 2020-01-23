@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.csvreader;
 
+import com.here.ort.spdx.SpdxException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -18,6 +19,8 @@ import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
+import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
+import org.eclipse.sw360.antenna.util.LicenseSupport;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,7 +30,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 
@@ -72,6 +77,16 @@ public class CSVReaderTest {
             "File Name"};
 
     @Test
+    public void testRoundTripWriteRead() {
+        List<Artifact> artifacts = new ArrayList<>();
+        artifacts.add(mkArtifact("test", false).addFact(new ArtifactMatchingMetadata(MatchState.EXACT)));
+        CSVReader csvReader = new CSVReader(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
+        csvReader.writeArtifactsToCsvFile(artifacts);
+        Collection<Artifact> csvReaderArtifacts = csvReader.createArtifactsList();
+        assertThat(csvReaderArtifacts).isEqualTo(artifacts);
+    }
+
+    @Test
     public void writeReleaseListToCSVFileTest() throws IOException {
         List<Artifact> artifacts = new ArrayList<>();
         artifacts.add(mkArtifact("test", false));
@@ -85,6 +100,41 @@ public class CSVReaderTest {
 
         CSVParser csvParser = getCsvParser(csvFile);
         assertThat(csvParser.getRecords().size()).isEqualTo(3);
+    }
+
+    @Test
+    public void writeFilenameToCSVFileTest() throws URISyntaxException {
+        Artifact artifact =
+                mkArtifact("test", false)
+                        .addFact(new ArtifactSourceFile(
+                                Paths.get(this.getClass().getClassLoader().getResource("CsvAnalyzerTest/test_source.txt").toURI())));
+        List<Artifact> artifacts = Collections.singletonList(artifact);
+
+        CSVReader csvReader = new CSVReader(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
+        csvReader.writeArtifactsToCsvFile(artifacts);
+
+        assertThat(csvFile.exists()).isTrue();
+
+        List<Artifact> artifactsList = (List<Artifact>) csvReader.createArtifactsList();
+        assertThat(artifactsList).hasSize(1);
+        assertThat(artifactsList.get(0).askFor(ArtifactSourceFile.class)).isPresent();
+    }
+
+    @Test
+    public void writeNonExistentFilenameToCSVFileTest() {
+        Artifact artifact =
+                mkArtifact("test", false)
+                        .addFact(new ArtifactSourceFile(Paths.get("non-existent-source-file.tgz")));
+        List<Artifact> artifacts = Collections.singletonList(artifact);
+
+        CSVReader csvReader = new CSVReader(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
+        csvReader.writeArtifactsToCsvFile(artifacts);
+
+        assertThat(csvFile.exists()).isTrue();
+
+        List<Artifact> artifactsList = (List<Artifact>) csvReader.createArtifactsList();
+        assertThat(artifactsList).hasSize(1);
+        assertThat(artifactsList.get(0).askFor(ArtifactSourceFile.class)).isNotPresent();
     }
 
     @Test
@@ -121,55 +171,40 @@ public class CSVReaderTest {
     }
 
     private Artifact mkArtifact(String name, boolean withOverridden) {
-        // License information
-        Function<String, LicenseInformation> mkLicenseInformation = licenseName -> new LicenseInformation() {
-            @Override
-            public String evaluate() {
-                return licenseName;
-            }
-
-            @Override
-            public String evaluateLong() {
-                return "long " + licenseName;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @Override
-            public List<License> getLicenses() {
-                License license = new License();
-                license.setLongName(evaluateLong());
-                license.setText("license text for: " + evaluate());
-                license.setName(evaluate());
-                return Collections.singletonList(license);
-            }
-
-            @Override
-            public String getLinkStr() {
-                return "https://link.to.license" + name + ".invalid";
-            }
-        };
-        Artifact artifact = new Artifact("CSV");
-        artifact.setProprietary(false);
+                Artifact artifact = new Artifact("CSV");
         artifact.addCoordinate(new Coordinate(ARTIFACT_MAVEN_COORDINATES));
-        artifact.addFact(new DeclaredLicenseInformation(mkLicenseInformation.apply("Declared-1.0")));
-        artifact.addFact(new ObservedLicenseInformation(mkLicenseInformation.apply("Observed-2.0")));
+
+        addLicenseFact(Optional.of("Declared-1.0"), artifact, DeclaredLicenseInformation::new, artifact.askFor(DeclaredLicenseInformation.class).isPresent());
+        addLicenseFact(Optional.of("Observed-2.0"), artifact, ObservedLicenseInformation::new, artifact.askFor(ObservedLicenseInformation.class).isPresent());
         if (withOverridden) {
-            artifact.addFact(new OverriddenLicenseInformation(mkLicenseInformation.apply("Overridden-1.2")));
+            addLicenseFact(Optional.of("Overridden-1.2"), artifact, OverriddenLicenseInformation::new, artifact.askFor(OverriddenLicenseInformation.class).isPresent());
         }
         artifact.addFact(new ArtifactSourceUrl(ARTIFACT_DOWNLOAD_URL));
         artifact.addFact(new ArtifactReleaseTagURL(ARTIFACT_TAG_URL));
         artifact.addFact(new ArtifactSoftwareHeritageID.Builder(ARTIFACT_SOFTWAREHERITAGE_ID).build());
-        artifact.addFact(new ArtifactFilename("test1-file.jar", ("12345678" + name)));
-        artifact.addFact(new ArtifactFilename("test2-file.jar", ("12345678" + name)));
+        artifact.addFact(new ArtifactFilename(null, ("12345678" + name)));
+        artifact.addFact(new ArtifactFilename(null, ("12345678" + name)));
         artifact.addFact(new ArtifactClearingState(ArtifactClearingState.ClearingState.valueOf(ARTIFACT_CLEARING_STATE)));
         artifact.addFact(new ArtifactChangeStatus(ArtifactChangeStatus.ChangeStatus.valueOf(ARTIFACT_CHANGESTATUS)));
         artifact.addFact(new CopyrightStatement(ARTIFACT_COPYRIGHT));
 
         return artifact;
+    }
+
+    private void addLicenseFact(Optional<String> licenseRawData, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator, boolean isAlreadyPresent) {
+        licenseRawData.map(this::parseSpdxExpression)
+                .map(licenseCreator)
+                .ifPresent(artifact::addFact);
+    }
+
+    private LicenseInformation parseSpdxExpression(String expression) {
+        try {
+            return LicenseSupport.fromSPDXExpression(expression);
+        } catch (SpdxException e) {
+            License unparsableExpression = new License();
+            unparsableExpression.setName(expression);
+            return unparsableExpression;
+        }
     }
 
     private static CSVParser getCsvParser(File currentCsvFile) throws IOException {
