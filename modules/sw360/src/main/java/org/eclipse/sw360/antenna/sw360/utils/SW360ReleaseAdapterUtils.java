@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class SW360ReleaseAdapterUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360ReleaseAdapterUtils.class);
 
-    public static Artifact convertToArtifact(SW360Release release, Artifact artifact) {
+    public static Artifact convertToArtifactWithoutSourceFile(SW360Release release, Artifact artifact) {
         artifact.setProprietary(release.isProprietary());
         Optional.ofNullable(release.getCoordinates())
                 .map(Map::values)
@@ -75,11 +75,10 @@ public class SW360ReleaseAdapterUtils {
             hashes.forEach(hash ->
                     artifact.addFact(new ArtifactFilename("", hash)));
         }
-        // TODO missing way to get attachments into facts without downloading which isn't appropriate in utils class
         return artifact;
     }
 
-    private static void addLicenseFact(Optional<String> licenseRawData, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator, boolean isAlreadyPresent) {
+    static void addLicenseFact(Optional<String> licenseRawData, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator, boolean isAlreadyPresent) {
         licenseRawData.map(SW360ReleaseAdapterUtils::parseSpdxExpression)
                 .map(licenseCreator)
                 .ifPresent(expression -> addFactAndLogWarning(artifact, isAlreadyPresent, expression));

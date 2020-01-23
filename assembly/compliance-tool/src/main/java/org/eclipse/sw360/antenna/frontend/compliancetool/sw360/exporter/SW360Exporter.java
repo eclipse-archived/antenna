@@ -49,7 +49,7 @@ public class SW360Exporter {
         Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases, headers);
 
         List<Artifact> artifacts = sw360ReleasesNotApproved.stream()
-                .map(release -> SW360ReleaseAdapterUtils.convertToArtifact(release, new Artifact("SW360")))
+                .map(release -> SW360ReleaseAdapterUtils.convertToArtifactWithoutSourceFile(release, new Artifact("SW360")))
                 .collect(Collectors.toList());
 
         File csvFile = configuration.getTargetDir()

@@ -65,15 +65,22 @@ public class SW360UpdaterImpl {
         final SW360Release sw360ReleaseFromArtifact = SW360ReleaseAdapterUtils.convertToReleaseWithoutAttachments(artifact);
         sw360ReleaseFromArtifact.setMainLicenseIds(licenseIds);
         SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(sw360ReleaseFromArtifact);
+
+        sw360ReleaseFinal = handleSources(sw360ReleaseFinal, artifact);
+
+        return sw360ReleaseFinal;
+    }
+
+    public SW360Release handleSources(SW360Release release, Artifact artifact) {
         if (sw360MetaDataUpdater.isUploadSources()
-                && sw360ReleaseFinal.get_Links().getSelf() != null
-                && !sw360ReleaseFinal.get_Links().getSelf().getHref().isEmpty()) {
+                && release.get_Links().getSelf() != null
+                && !release.get_Links().getSelf().getHref().isEmpty()) {
             Map<Path, SW360AttachmentType> attachments = SW360AttachmentAdapterUtils.getAttachmentsFromArtifact(artifact);
             if (!attachments.isEmpty()) {
-                sw360ReleaseFinal = sw360MetaDataUpdater.uploadAttachments(sw360ReleaseFinal, attachments);
+                release = sw360MetaDataUpdater.uploadAttachments(release, attachments);
             }
         }
-        return sw360ReleaseFinal;
+        return release;
     }
 
     private Set<String> getSetOfLicenseIds(Artifact artifact) {
