@@ -15,8 +15,11 @@ import org.eclipse.sw360.antenna.csvreader.CSVReader;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
@@ -26,6 +29,7 @@ import org.springframework.http.HttpHeaders;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,7 +53,7 @@ public class SW360Exporter {
         Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases, headers);
 
         List<Artifact> artifacts = sw360ReleasesNotApproved.stream()
-                .map(release -> SW360ReleaseAdapterUtils.convertToArtifactWithoutSourceFile(release, new Artifact("SW360")))
+                .map(release -> releaseAsArtifact(release, headers))
                 .collect(Collectors.toList());
 
         File csvFile = configuration.getTargetDir()
@@ -62,6 +66,24 @@ public class SW360Exporter {
                 Paths.get(configuration.getProperties().get("basedir")));
 
         csvReader.writeArtifactsToCsvFile(artifacts);
+    }
+
+    private Artifact releaseAsArtifact(SW360Release release, HttpHeaders headers) {
+        Artifact artifact = SW360ReleaseAdapterUtils.convertToArtifactWithoutSourceFile(release, new Artifact("SW360"));
+        Set<SW360SparseAttachment> sparseAttachments = getSparseAttachmentsSource(release);
+        sparseAttachments.forEach(sparseAttachment -> {
+            Optional<Path> path = connectionConfiguration.getSW360ReleaseClientAdapter().downloadAttachment(release, sparseAttachment, configuration.getSourcesPath(), headers);
+            path.ifPresent(pth -> artifact.addFact(new ArtifactSourceFile(pth)));
+        });
+        return artifact;
+    }
+
+    private Set<SW360SparseAttachment> getSparseAttachmentsSource(SW360Release release) {
+        List<SW360SparseAttachment> attachments = release.get_Embedded().getAttachments();
+
+        return attachments.stream()
+                .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)
+                .collect(Collectors.toSet());
     }
 
     private Collection<SW360SparseRelease> getReleasesFromComponents(Collection<SW360SparseComponent> components, HttpHeaders headers) {
