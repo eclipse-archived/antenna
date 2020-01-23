@@ -1,8 +1,8 @@
 Artifact Id;Group Id;Version;Coordinate Type;Effective License;Declared License;Observed License;Copyrights;Hash;Source URL;Release Tag URL;Software Heritage ID;Clearing State;Change Status;CPE;File Name
-commons-csv;org.apache.commons;1.4;mvn;Apache-2.0;Apache-2.0;Apache-2.0 OR MIT;Copyright 2005-2016 The Apache Software Foundation;620580a88953cbcf4528459e485054e7c27c0889;http://archive.apache.org/dist/commons/csv/source/commons-csv-1.4-src.zip;https://github.com/apache/commons-csv/tree/csv-1.4;swh:1:cnt:60dbac0aafd98c9ca461256a0cefd8a7aaea8bda;OSM_APPROVED;AS_IS;cpe:2.3:a:apache:commons-csv:1.4;commons-csv.jar
+commons-csv;org.apache.commons;1.4;mvn;Apache-2.0;Apache-2.0;Apache-2.0 OR MIT;Copyright 2005-2016 The Apache Software Foundation;620580a88953cbcf4528459e485054e7c27c0889;http://archive.apache.org/dist/commons/csv/source/commons-csv-1.4-src.zip;https://github.com/apache/commons-csv/tree/csv-1.4;swh:1:cnt:60dbac0aafd98c9ca461256a0cefd8a7aaea8bda;OSM_APPROVED;AS_IS;cpe:2.3:a:apache:commons-csv:1.4;
 commons-csv;org.apache.commons;1.4;mvn;;;;Copyright, 2020 the fake;1,23E+16;;;;;;;
 commons-csv;org.apache.commons;1.4;mvn;;;;"Copyright fake; the third";;;;;;;;
-commons-cli;org.apache.commons;1.4;mvn;Apache-2.0;Apache-2.0;;Copyright 2005-2016 The Apache Software Foundation;2a26e60c745cdeb99a96f21adec508f43b5d25a5;http://archive.apache.org/dist/commons/cli/source/commons-cli-1.4-src.zip;https://github.com/apache/commons-cli/tree/cli-1.4;swh:1:cnt:fb91f0e6b0e7b2f89fe5e1a2b1b375775e4839d4;OSM_APPROVED;AS_IS;cpe:2.3:a:apache:commons-cli:1.4;commons-cli.jar
+commons-cli;org.apache.commons;1.4;mvn;Apache-2.0;Apache-2.0;;Copyright 2005-2016 The Apache Software Foundation;2a26e60c745cdeb99a96f21adec508f43b5d25a5;http://archive.apache.org/dist/commons/cli/source/commons-cli-1.4-src.zip;https://github.com/apache/commons-cli/tree/cli-1.4;swh:1:cnt:fb91f0e6b0e7b2f89fe5e1a2b1b375775e4839d4;OSM_APPROVED;AS_IS;cpe:2.3:a:apache:commons-cli:1.4;
 commons-cli;org.apache.commons;1.4;mvn;;;;copy & paste;;;;;;;;
 commons-cli;org.apache.commons;1.4;mvn;;;;this is $ it;;;;;;;;
 commons-cli;org.apache.commons;1.4;mvn;;;;!nevermind;;;;;;;;

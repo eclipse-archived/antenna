@@ -20,7 +20,6 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactFactWithPayload;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.coordinates.CoordinateBuilder;
 import org.eclipse.sw360.antenna.model.xml.generated.License;
@@ -255,15 +254,20 @@ public class CSVReader {
         }
         if (checkIfRecordIsMappedAndNotEmptyForParameter(record, PATH_NAME)) {
             String pathName = record.get(PATH_NAME);
-            String absolutePathName = makePathAbsolute(pathName);
-            artifact.addFact(new ArtifactPathnames(absolutePathName));
+            Path path = getPathFromPathname(pathName);
+            if (Files.exists(path)) {
+                artifact.addFact(new ArtifactSourceFile(path));
+            } else {
+                artifact.getMainCoordinate().ifPresent(coordinate ->
+                        LOGGER.debug("The given source file {} for artifact {} does not exist.", path, coordinate));
+            }
         }
     }
 
-    private String makePathAbsolute(String pathName) {
+    private Path getPathFromPathname(String pathName) {
         return Paths.get(pathName).isAbsolute()
-                ? Paths.get(pathName).toString()
-                : baseDir.resolve(Paths.get(pathName)).toAbsolutePath().toString();
+                ? Paths.get(pathName)
+                : baseDir.resolve(Paths.get(pathName)).toAbsolutePath();
     }
 
     private boolean checkIfRecordIsMappedAndNotEmptyForParameter(CSVRecord record, String parameter) {

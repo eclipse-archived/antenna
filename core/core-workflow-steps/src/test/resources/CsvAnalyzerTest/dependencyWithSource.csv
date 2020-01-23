@@ -1,0 +1,2 @@
+Artifact Id,Group Id,Version,Coordinate Type,File Name
+test,test,1.4,maven,CsvAnalyzerTest/test_source.txt
