@@ -95,7 +95,7 @@ public class MultipleConfigsResolverTest {
 
     @Test
     public void testFinalLicenses() {
-        assertThat(this.mergedConfigs.getFinalLicenses().size()).isEqualTo(1);
+        assertThat(this.mergedConfigs.getFinalLicenses().size()).isEqualTo(2);
     }
 
     @Test

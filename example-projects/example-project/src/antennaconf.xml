@@ -26,7 +26,12 @@
          <declaredLicense>
             <license>
                <name>CC-BY-SA-3.0</name>
-               <threatGroup>NON_VERBATIM</threatGroup>
+               <properties>
+                  <entry>
+                     <key>threatGroup</key>
+                     <value>Non Verbatim</value>
+                  </entry>
+               </properties>
             </license>
          </declaredLicense>
          <isProprietary>false</isProprietary>

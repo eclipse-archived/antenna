@@ -36,6 +36,26 @@
             <jxb:class ref="org.eclipse.sw360.antenna.model.artifact.FromXmlArtifactBuilder"/>
         </jxb:bindings>
 
+        <jxb:bindings node="//xsd:complexType[@name='licenseInformation']">
+            <jxb:class ref="org.eclipse.sw360.antenna.model.license.FromXmlLicenseInformationBuilder.AbstractLicenseInformation"/>
+        </jxb:bindings>
+
+        <jxb:bindings node="//xsd:complexType[@name='license']">
+            <jxb:class ref="org.eclipse.sw360.antenna.model.license.FromXmlLicenseInformationBuilder.LicenseBuilder"/>
+        </jxb:bindings>
+
+        <jxb:bindings node="//xsd:complexType[@name='licenseStatement']">
+            <jxb:class ref="org.eclipse.sw360.antenna.model.license.FromXmlLicenseInformationBuilder.LicenseStatementBuilder"/>
+        </jxb:bindings>
+
+        <jxb:bindings node="//xsd:complexType[@name='withLicense']">
+            <jxb:class ref="org.eclipse.sw360.antenna.model.license.FromXmlLicenseInformationBuilder.WithLicenseBuilder"/>
+        </jxb:bindings>
+
+        <jxb:bindings node="//xsd:simpleType[@name='licenseOperator']">
+            <jxb:typesafeEnumClass ref="org.eclipse.sw360.antenna.model.license.LicenseOperator"/>
+        </jxb:bindings>
+
         <jxb:bindings node="//xsd:complexType[@name='artifactSelector']">
             <jxb:class name="FromXmlArtifactSelectorBuilder"/>
             <ci:code>
@@ -62,16 +82,6 @@
                  }
                  ]]>
             </ci:code>
-        </jxb:bindings>
-
-        <jxb:bindings node="//xsd:simpleType[@name='licenseClassification']/xsd:restriction/xsd:enumeration[@value='Yes']">
-            <jxb:typesafeEnumMember name="COVERED"/>
-        </jxb:bindings>
-        <jxb:bindings node="//xsd:simpleType[@name='licenseClassification']/xsd:restriction/xsd:enumeration[@value='No']">
-            <jxb:typesafeEnumMember name="NOT_COVERED"/>
-        </jxb:bindings>
-        <jxb:bindings node="//xsd:simpleType[@name='licenseClassification']/xsd:restriction/xsd:enumeration[@value='']">
-            <jxb:typesafeEnumMember name="NOT_CLASSIFIED"/>
         </jxb:bindings>
 
         <jxb:bindings node="//xsd:element[@name='config']">
@@ -113,145 +123,6 @@
             <jxb:typesafeEnumMember name="CONFIRMED"/>
         </jxb:bindings>
 
-        <jxb:bindings node="//xsd:complexType[@name='licenseInformation']">
-            <ci:code>
-                <![CDATA[
-                 public abstract String evaluate();
-                 public abstract String evaluateLong();
-                 public abstract boolean isEmpty();
-
-                 public abstract java.util.List<License> getLicenses();
-                 public abstract String getLinkStr();
-
-                 public String toString() {
-                    return evaluate() + " " + super.toString();
-                 }
-                 ]]>
-            </ci:code>
-        </jxb:bindings>
-
-        <jxb:bindings node="//xsd:complexType[@name='license']">
-            <ci:code>
-                <![CDATA[
-                 public String evaluate() {
-                    return getName();
-                 }
-
-                 public boolean isEmpty() {
-                    return (getName() == null);
-                 }
-
-                 public String evaluateLong() {
-                    return getLongName();
-                 }
-
-                 public java.util.List<License> getLicenses(){
-                    return java.util.Collections.singletonList(this);
-                 }
-
-                 public String getLinkStr(){
-                    return String.format("<listitem><xref linkend=\"sect_%s\" endterm=\"sect_shortTitle_%s\"/></listitem>", org.apache.commons.text.StringEscapeUtils.escapeXml11(getName()), org.apache.commons.text.StringEscapeUtils.escapeXml11(getName()));
-                 }
-                 ]]>
-            </ci:code>
-        </jxb:bindings>
-
-        <jxb:bindings node="//xsd:complexType[@name='licenseStatement']">
-            <ci:code>
-                <![CDATA[
-
-                public LicenseStatement(){
-                    getLicenseInfo();
-                }
-
-                public void setLeftStatement(LicenseInformation value){
-                    javax.xml.bind.JAXBElement<? extends LicenseInformation> info = new javax.xml.bind.JAXBElement<>(new javax.xml.namespace.QName("licenseInfo"), LicenseInformation.class ,value);
-                    this.licenseInfo.add(info);
-                }
-
-                public LicenseInformation getLeftStatement() {
-                    if(licenseInfo.isEmpty()){
-                        return null;
-                    }
-                    return licenseInfo.get(0).getValue();
-                }
-
-                public void setRightStatement(LicenseInformation value){
-                    javax.xml.bind.JAXBElement<? extends LicenseInformation> info = new javax.xml.bind.JAXBElement<>(new javax.xml.namespace.QName("licenseInfo"), LicenseInformation.class ,value);
-                    this.licenseInfo.add(info);
-                }
-
-                public LicenseInformation getRightStatement() {
-                    if(licenseInfo.isEmpty()){
-                        return null;
-                    }
-                    return licenseInfo.get(1).getValue();
-                }
-
-                public boolean isEmpty() {
-                    return (getLeftStatement() == null || getRightStatement() == null);
-                }
-
-                public String evaluate() {
-                    if (isEmpty()) {
-                        return "";
-                    }
-                    if (getLeftStatement() == null) {
-                        return getRightStatement().evaluate();
-                    }
-                    if (getRightStatement() == null) {
-                        return getLeftStatement().evaluate();
-                    }
-                    return String.format("( %s %s %s )", getLeftStatement().evaluate(), op.value(), getRightStatement().evaluate());
-                }
-
-                public String evaluateLong() {
-                    if (isEmpty()) {
-                        return "";
-                    }
-                    if (getLeftStatement() == null) {
-                        return getRightStatement().evaluateLong();
-                    }
-                    if (getRightStatement() == null) {
-                        return getLeftStatement().evaluateLong();
-                    }
-                    return String.format("( %s %s %s )", getLeftStatement().evaluateLong(), op.value(), getRightStatement().evaluateLong());
-                }
-
-                public java.util.List<License> getLicenses(){
-                    if (this.isEmpty()) {
-                        return new java.util.ArrayList<>();
-                    }
-                    return java.util.stream.Stream.of(getLeftStatement().getLicenses(), getRightStatement().getLicenses())
-                            .filter(java.util.Objects::nonNull)
-                            .flatMap(java.util.Collection::stream)
-                            .distinct()
-                            .collect(java.util.stream.Collectors.toList());
-                }
-
-                public String getLinkStr(){
-                    if(getLeftStatement() == null && getRightStatement() == null) {
-                        return "";
-                    }
-                    if(getLeftStatement() == null) {
-                        return getRightStatement().getLinkStr();
-                    }
-                    if(getRightStatement() == null) {
-                        return getLeftStatement().getLinkStr();
-                    }
-
-                    if(op == LicenseOperator.OR){
-                        return String.format("<listitem><itemizedlist>%s %s</itemizedlist></listitem>", getLeftStatement().getLinkStr() , getRightStatement().getLinkStr());
-                    }
-                    else{
-                        return String.format(" %s %s ", getLeftStatement().getLinkStr() , getRightStatement().getLinkStr());
-                    }
-                }
-                ]]>
-            </ci:code>
-        </jxb:bindings>
-    </jxb:bindings>
-
     <jxb:bindings schemaLocation="workflow.xsd">
         <jxb:bindings node="//xsd:element[@name='workflow']">
             <!--<jxb:class ref="org.eclipse.sw360.antenna.model.Workflow"/>-->
@@ -291,5 +162,5 @@
             ]]></ci:code>
         </jxb:bindings>
     </jxb:bindings>
-
+    </jxb:bindings>
 </jxb:bindings>

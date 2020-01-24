@@ -121,24 +121,32 @@
         </ignoreForSourceResolving>
     </sourceResolving>
 
-    <setFinalLicenses>
-        <!-- set effective license for Artifact -->
-        <setFinalLicense>
-            <artifactSelector>
-                <filename>overrideName.jar</filename>
-            </artifactSelector>
-            <license>
-                <name>EPL-2.0</name>
-            </license>
-        </setFinalLicense>
-    </setFinalLicenses>
+	<setFinalLicenses>
+		<!-- set effective license for Artifact -->
+		<setFinalLicense>
+			<artifactSelector>
+				<filename>overrideName.jar</filename>
+			</artifactSelector>
+			<license>
+				<name>EPL-2.0</name>
+			</license>
+		</setFinalLicense>
+		<setFinalLicense>
+			<artifactSelector>
+				<filename>setFinalLicenses.jar</filename>
+			</artifactSelector>
+			<license>
+				<id>Apache-2.0</id>
+			</license>
+		</setFinalLicense>
+	</setFinalLicenses>
 
-    <sourceValidation failOnMissingSources="true" failOnIncompleteSources="false">
-        <!-- ignore for sourceValidation -->
-        <handleSourceAsValid incompleteSources="true" missingSources="true">
-            <artifactSelector>
-                <filename>org.eclipse.emf.source.jar</filename>
-            </artifactSelector>
-        </handleSourceAsValid>
-    </sourceValidation>
+	<sourceValidation failOnMissingSources="true" failOnIncompleteSources="false">
+		<!-- ignore for sourceValidation -->
+		<handleSourceAsValid incompleteSources="true" missingSources="true">
+			<artifactSelector>
+				<filename>org.eclipse.emf.source.jar</filename>
+			</artifactSelector>
+		</handleSourceAsValid>
+	</sourceValidation>
 </config>

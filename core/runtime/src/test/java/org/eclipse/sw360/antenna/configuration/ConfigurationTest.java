@@ -135,4 +135,24 @@ public class ConfigurationTest {
         assertThat(artifact.getMatchState())
                 .isEqualTo(MatchState.EXACT);
     }
+
+    @Test
+    public void testSetFinalLicensesWithMultipleXmlElements() {
+        ArtifactIdentifier artifactIdentifier = new ArtifactFilename("overrideName.jar");
+        License licenseWithName = (License) configuration.getFinalLicenses().entrySet().stream()
+                .filter(e -> e.getKey().matches(artifactIdentifier))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .get();
+        assertThat(licenseWithName.getName()).isEqualTo("EPL-2.0");
+
+        ArtifactIdentifier artifactIdentifier2 = new ArtifactFilename("setFinalLicenses.jar");
+        License licenseWithId = (License) configuration.getFinalLicenses().entrySet()
+                .stream()
+                .filter(e -> e.getKey().matches(artifactIdentifier2))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .get();
+        assertThat(licenseWithId.getName()).isEqualTo("Apache-2.0");
+    }
 }
