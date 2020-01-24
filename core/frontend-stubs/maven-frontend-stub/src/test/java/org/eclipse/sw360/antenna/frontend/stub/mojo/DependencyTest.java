@@ -61,7 +61,9 @@ public class DependencyTest {
             dependency("org.gradle", "gradle-base-services"),
             dependency("org.gradle", "gradle-base-services-groovy"),
             dependency("org.gradle", "gradle-logging"),
-            dependency("org.codehaus.groovy", "groovy")
+            dependency("org.codehaus.groovy", "groovy"),
+            dependency("org.apache.logging.log4j", "log4j-jcl"),
+            dependency("org.apache.logging.log4j", "log4j-slf4j-impl")
     );
 
     @Test
