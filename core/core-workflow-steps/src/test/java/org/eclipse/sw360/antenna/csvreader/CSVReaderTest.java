@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
@@ -46,6 +48,7 @@ public class CSVReaderTest {
     private static final String ARTIFACT_CHANGESTATUS = "AS_IS";
     private static final String ARTIFACT_COPYRIGHT = "Copyright xxxx Some Copyright Enterprise";
     private static final char DELIMITER = ',';
+    private static final String CLEARING_DOC_NAME = "clearing.doc";
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -71,6 +74,7 @@ public class CSVReaderTest {
             "Release Tag URL",
             "Software Heritage ID",
             "Clearing State",
+            "Clearing Document",
             "Change Status",
             "CPE",
             "File Name"};
@@ -184,10 +188,23 @@ public class CSVReaderTest {
         artifact.addFact(new ArtifactFilename(null, ("12345678" + name)));
         artifact.addFact(new ArtifactFilename(null, ("12345678" + name)));
         artifact.addFact(new ArtifactClearingState(ArtifactClearingState.ClearingState.valueOf(ARTIFACT_CLEARING_STATE)));
+        artifact.addFact(new ArtifactClearingDocument(createClearingDocument()));
         artifact.addFact(new ArtifactChangeStatus(ArtifactChangeStatus.ChangeStatus.valueOf(ARTIFACT_CHANGESTATUS)));
         artifact.addFact(new CopyrightStatement(ARTIFACT_COPYRIGHT));
 
         return artifact;
+    }
+
+    private Path createClearingDocument() {
+        Path clearingDoc = folder.getRoot().toPath().resolve(CLEARING_DOC_NAME);
+        if (!Files.exists(clearingDoc)) {
+            try {
+                folder.newFile(CLEARING_DOC_NAME);
+            } catch (IOException e) {
+                throw new AssertionError("Could not create clearing document file", e);
+            }
+        }
+        return clearingDoc;
     }
 
     private void addLicenseFact(Optional<String> licenseRawData, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator, boolean isAlreadyPresent) {

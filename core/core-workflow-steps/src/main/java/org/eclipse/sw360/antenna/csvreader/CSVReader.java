@@ -86,10 +86,10 @@ public class CSVReader {
                      RELEASE_ARTIFACT_URL,
                      SWH_ID,
                      CLEARING_STATE,
+                     CLEARING_DOCUMENT_PATH,
                      CHANGES_STATUS,
                      CPE,
-                     PATH_NAME,
-                     CLEARING_DOCUMENT_PATH
+                     PATH_NAME
              ))
         ) {
             for (Artifact artifact : artifacts) {
@@ -163,6 +163,7 @@ public class CSVReader {
         csvRecordString.add(mapReleaseTagUrlToString(artifact));
         csvRecordString.add(mapSoftwareHeritagToString(artifact));
         csvRecordString.add(mapClearingStatusToString(artifact));
+        csvRecordString.add(mapClearingDocumentToString(artifact));
         csvRecordString.add(mapChangeStatusToString(artifact));
         csvRecordString.add(mapCPEIdToString(artifact));
         csvRecordString.add(getFilepathAsString(artifact));
@@ -390,6 +391,14 @@ public class CSVReader {
     private static String mapClearingStatusToString(Artifact artifact) {
         Optional<ArtifactClearingState.ClearingState> cs = artifact.askForGet(ArtifactClearingState.class);
         return cs.map(ArtifactClearingState.ClearingState::toString)
+                .orElse("");
+    }
+
+    private static String mapClearingDocumentToString(Artifact artifact) {
+        Optional<ArtifactClearingDocument> cd = artifact.askFor(ArtifactClearingDocument.class);
+        return cd.map(ArtifactClearingDocument::get)
+                .filter(Files::exists)
+                .map(Path::toString)
                 .orElse("");
     }
 
