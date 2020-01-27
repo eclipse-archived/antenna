@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -12,13 +13,11 @@ package org.eclipse.sw360.antenna.util;
 
 import com.here.ort.spdx.*;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
+import org.eclipse.sw360.antenna.model.license.*;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
 public class LicenseSupport {
     public static LicenseInformation mapLicenses(Collection<String> licenses) {
@@ -28,24 +27,24 @@ public class LicenseSupport {
     public static LicenseInformation mapLicenses(Collection<String> licenses, LicenseOperator operator) {
         Iterator<String> iterator = licenses.iterator();
         if (!iterator.hasNext()) {
-            return new LicenseStatement();
+            return new License();
         }
 
-        return computeRecursiveLicenseStatement(iterator, new LicenseStatement(), operator);
-    }
-
-    private static LicenseInformation computeRecursiveLicenseStatement(
-            Iterator<String> iterator, LicenseStatement leftLicense, LicenseOperator operator) {
         License license = new License();
         license.setName(iterator.next());
-
-        if (iterator.hasNext()) {
-            leftLicense.setLeftStatement(license);
-            leftLicense.setOp(operator);
-            leftLicense.setRightStatement(computeRecursiveLicenseStatement(iterator, new LicenseStatement(), operator));
-            return leftLicense;
+        if (licenses.size() == 1) {
+            return license;
+        } else {
+            LicenseStatement licenseStatement = new LicenseStatement();
+            licenseStatement.setOp(operator);
+            licenseStatement.setLicenses(
+                    licenses
+                            .stream()
+                            .map(License::new)
+                            .collect(Collectors.toList())
+            );
+            return licenseStatement;
         }
-        return license;
     }
 
     public static LicenseInformation fromSPDXExpression(String spdxExpressionString) {
@@ -56,45 +55,25 @@ public class LicenseSupport {
     public static LicenseInformation fromSPDXExpression(SpdxExpression spdxExpression) {
         if (spdxExpression instanceof SpdxCompoundExpression) {
             SpdxCompoundExpression spdxCompoundExpression = (SpdxCompoundExpression) spdxExpression;
-            final SpdxExpression left = spdxCompoundExpression.component1();
             final SpdxOperator operator = spdxCompoundExpression.component2();
-            final SpdxExpression right = spdxCompoundExpression.component3();
 
-            LicenseStatement result = new LicenseStatement();
-            result.setLeftStatement(fromSPDXExpression(left));
-            result.setRightStatement(fromSPDXExpression(right));
-            if(SpdxOperator.AND.equals(operator)){
-                result.setOp(LicenseOperator.AND);
-                return result;
-            }
-            if (SpdxOperator.OR.equals(operator)) {
-                result.setOp(LicenseOperator.OR);
-                return result;
-            }
             if (SpdxOperator.WITH.equals(operator)) {
-                throw new ExecutionException("SPDX expression=[" + spdxExpression.toString() + "] contains unsupported WITH operator");
+                return fromSpdxWithLicense(spdxCompoundExpression);
             }
+
+            return fromSPDXCompoundExpression(spdxCompoundExpression, new LicenseStatement());
         }
         if (spdxExpression instanceof SpdxLicenseIdExpression) {
             SpdxLicenseIdExpression spdxLicenseIdExpression = (SpdxLicenseIdExpression) spdxExpression;
-            String licenseId = spdxLicenseIdExpression.component1();
-            boolean isOrLater = spdxLicenseIdExpression.component2();
-            if (isOrLater) {
-                licenseId += "+";
-            }
-            License license = new License();
-            license.setName(licenseId);
-            return license;
+            return fromSpdxLicenseIdExpression(spdxLicenseIdExpression);
         }
         if (spdxExpression instanceof SpdxLicenseReferenceExpression) {
             SpdxLicenseReferenceExpression spdxLicenseReferenceExpression = (SpdxLicenseReferenceExpression) spdxExpression;
-            String licenseId = spdxLicenseReferenceExpression.component1();
-            License license = new License();
-            license.setName(licenseId);
-            return license;
+            return fromSpdxLicenseReferenceExpression(spdxLicenseReferenceExpression);
         }
         if (spdxExpression instanceof SpdxLicenseExceptionExpression) {
-            throw new ExecutionException("SPDX expression=[" + spdxExpression.toString() + "] contains an exception, which is currently unsupported");
+            SpdxLicenseExceptionExpression spdxLicenseExceptionExpression = (SpdxLicenseExceptionExpression) spdxExpression;
+            return fromSpdxLicenseExceptionExpression(spdxLicenseExceptionExpression);
         }
         throw new ExecutionException("SPDX expression=[" + spdxExpression.toString() + "] could not be parsed");
     }
@@ -107,5 +86,82 @@ public class LicenseSupport {
             unparsableExpression.setName(expression);
             return unparsableExpression;
         }
+    }
+
+    private static LicenseInformation fromSpdxWithLicense(SpdxCompoundExpression spdxCompoundExpression) {
+        final SpdxExpression license = spdxCompoundExpression.component1();
+        final SpdxExpression exception = spdxCompoundExpression.component3();
+        return new WithLicense((License) fromSPDXExpression(license), (License) fromSPDXExpression(exception));
+    }
+
+    public static LicenseInformation fromSpdxLicenseExceptionExpression(SpdxLicenseExceptionExpression spdxLicenseExceptionExpression) {
+        String exceptionId = spdxLicenseExceptionExpression.getId();
+        return new License(exceptionId);
+    }
+
+    public static LicenseInformation fromSpdxLicenseReferenceExpression(SpdxLicenseReferenceExpression spdxLicenseReferenceExpression) {
+        String licenseId = spdxLicenseReferenceExpression.component1();
+        License license = new License();
+        license.setName(licenseId);
+        return license;
+    }
+
+    public static LicenseInformation fromSpdxLicenseIdExpression(SpdxLicenseIdExpression spdxLicenseIdExpression) {
+        String licenseId = spdxLicenseIdExpression.component1();
+        boolean isOrLater = spdxLicenseIdExpression.component2();
+        if (isOrLater) {
+            licenseId += "+";
+        }
+        License license = new License();
+        license.setName(licenseId);
+        return license;
+    }
+
+    public static LicenseInformation fromSPDXCompoundExpression(SpdxCompoundExpression spdxCompoundExpression, LicenseStatement license) {
+        final SpdxExpression left = spdxCompoundExpression.component1();
+        final SpdxOperator operator = spdxCompoundExpression.component2();
+        final SpdxExpression right = spdxCompoundExpression.component3();
+
+        if (license.getOp() == null || license.getOp().toString().isEmpty()) {
+            if (SpdxOperator.AND.equals(operator)) {
+                license.setOp(LicenseOperator.AND);
+            }
+            if (SpdxOperator.OR.equals(operator)) {
+                license.setOp(LicenseOperator.OR);
+            }
+        }
+        if (left instanceof SpdxCompoundExpression) {
+            checkCompoundChild((SpdxCompoundExpression) left, license);
+        } else {
+            license.addLicenseInformation(fromSPDXExpression(left));
+        }
+        if (right instanceof SpdxCompoundExpression) {
+            checkCompoundChild((SpdxCompoundExpression) right, license);
+        } else {
+            license.addLicenseInformation(fromSPDXExpression(right));
+        }
+
+        return license;
+    }
+
+    private static LicenseInformation checkCompoundChild(SpdxCompoundExpression spdxCompoundExpression, LicenseStatement license) {
+        final SpdxExpression left = spdxCompoundExpression.component1();
+        final SpdxOperator operator = spdxCompoundExpression.component2();
+        final SpdxExpression right = spdxCompoundExpression.component3();
+        if (operator.toString().equals(license.getOp().toString())) {
+            if (left instanceof SpdxCompoundExpression) {
+                checkCompoundChild((SpdxCompoundExpression) left, license);
+            } else {
+                license.addLicenseInformation(fromSPDXExpression(left));
+            }
+            if (right instanceof SpdxCompoundExpression) {
+                checkCompoundChild((SpdxCompoundExpression) right, license);
+            } else {
+                license.addLicenseInformation(fromSPDXExpression(right));
+            }
+        } else {
+            license.addLicenseInformation(fromSPDXExpression(spdxCompoundExpression));
+        }
+        return license;
     }
 }

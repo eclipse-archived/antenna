@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -11,9 +12,7 @@
 
 package org.eclipse.sw360.antenna.util;
 
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
+import org.eclipse.sw360.antenna.model.license.*;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -37,7 +36,7 @@ public class LicenseSupportTest {
         LicenseInformation actualLicenseSupport = LicenseSupport.mapLicenses(license);
 
         assertThat(actualLicenseSupport.toString())
-                .startsWith("( First License AND ( Second License AND Third License ) )");
+                .startsWith("( First License AND Second License AND Third License )");
     }
 
     @Test
@@ -110,5 +109,38 @@ public class LicenseSupportTest {
                 .isEqualTo(1);
         assertThat(licenseInformation.getLicenses().get(0).getName())
                 .isEqualTo(license);
+    }
+
+    @Test
+    public void testSPDXParsing5() {
+        final LicenseInformation licenseInformation = LicenseSupport.fromSPDXExpression("((MIT AND BSD) AND (EPL OR GPL AND APACHE-2.0))");
+        assertThat(licenseInformation.getLicenses().size())
+                .isEqualTo(5);
+        assertThat(licenseInformation.evaluate())
+                .isEqualTo("( MIT AND BSD AND ( EPL OR ( GPL AND APACHE-2.0 ) ) )");
+
+        LicenseStatement licenseStatement = (LicenseStatement) licenseInformation;
+        assertThat(licenseStatement.getOp())
+                .isEqualTo(LicenseOperator.AND);
+        final LicenseInformation licenseInformation1 = LicenseSupport.fromSPDXExpression(licenseInformation.evaluate());
+        assertThat(licenseInformation)
+                .isEqualTo(licenseInformation1);
+    }
+
+    @Test
+    public void testSPDXParsing6() {
+        final LicenseInformation licenseInformation = LicenseSupport.fromSPDXExpression("BSD WITH Exception");
+        assertThat(licenseInformation.getLicenses().size())
+                .isEqualTo(2);
+        assertThat(licenseInformation).isInstanceOf(WithLicense.class);
+        assertThat(((WithLicense) licenseInformation).getLicense().getName()).isEqualTo("BSD");
+        assertThat(((WithLicense) licenseInformation).getException().getName()).isEqualTo("Exception");
+    }
+
+    @Test
+    public void testSPDXParsing7() {
+        final LicenseInformation licenseInformation = LicenseSupport.fromSPDXExpression("Apache-2.0");
+        assertThat(licenseInformation).isInstanceOf(License.class);
+        assertThat(((License) licenseInformation).getName()).isEqualTo("Apache-2.0");
     }
 }
