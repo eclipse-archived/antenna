@@ -98,4 +98,14 @@ public class LicenseSupport {
         }
         throw new ExecutionException("SPDX expression=[" + spdxExpression.toString() + "] could not be parsed");
     }
+
+    public static LicenseInformation parseSpdxExpression(String expression) {
+        try {
+            return LicenseSupport.fromSPDXExpression(expression);
+        } catch (SpdxException e) {
+            License unparsableExpression = new License();
+            unparsableExpression.setName(expression);
+            return unparsableExpression;
+        }
+    }
 }

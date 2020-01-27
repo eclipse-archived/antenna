@@ -12,7 +12,6 @@
 
 package org.eclipse.sw360.antenna.sw360.workflow.processors;
 
-import com.github.packageurl.MalformedPackageURLException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
@@ -27,6 +26,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
+import org.eclipse.sw360.antenna.sw360.utils.TestUtils;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
 import org.junit.Before;
@@ -46,12 +46,6 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     private List<Artifact> artifacts;
     private SW360Enricher sw360Enricher;
     private SW360MetaDataReceiver connector;
-
-    private String sourceUrl = "https://thrift.apache.org/";
-    private String releaseTagUrl = "https://github.com/apache/thrift/releases/tag/0.10.0";
-    private String swhID = "swh:1:rel:ae93ff0b4bdbd6749f75c23ad23311b512230894";
-    private String hashString = "b2a4d4ae21c789b689dd162deb819665567f481c";
-    private String copyrights = "Copyright 2006-2010 The Apache Software Foundation.";
 
     @Before
     public void setUp() throws IOException {
@@ -89,8 +83,8 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
 
     @Test
-    public void releaseIsMappedToArtifactCorrectly() throws MalformedPackageURLException {
-        SW360Release release0 = mkSW360Release("test1");
+    public void releaseIsMappedToArtifactCorrectly() {
+        SW360Release release0 = TestUtils.mkSW360Release("test1");
         release0.set_Embedded(new SW360ReleaseEmbedded());
         release0.get_Embedded().setLicenses(Collections.emptyList());
 
@@ -101,23 +95,23 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         assertThat(artifacts.size()).isEqualTo(1);
         Artifact artifact0 = artifacts.get(0);
 
-        assertThat(artifact0.getCoordinateForType(Coordinate.Types.MAVEN).get().canonicalize()).isEqualTo("pkg:maven/test/test1@1.2.3");
+        assertThat(artifact0.getCoordinateForType(Coordinate.Types.MAVEN).get().canonicalize()).isEqualTo("pkg:maven/org.group.id/artifactIdtest1@" + TestUtils.RELEASE_VERSION1);
 
         assertThat(artifact0.askFor(ArtifactSourceUrl.class).isPresent()).isTrue();
-        assertThat(artifact0.askForGet(ArtifactSourceUrl.class).get()).isEqualTo(sourceUrl);
+        assertThat(artifact0.askForGet(ArtifactSourceUrl.class).get()).isEqualTo(TestUtils.RELEASE_DOWNLOAD_URL);
         assertThat(artifact0.askFor(ArtifactReleaseTagURL.class).isPresent()).isTrue();
-        assertThat(artifact0.askForGet(ArtifactReleaseTagURL.class).get()).isEqualTo(releaseTagUrl);
+        assertThat(artifact0.askForGet(ArtifactReleaseTagURL.class).get()).isEqualTo(TestUtils.RELEASE_RELEASE_TAG_URL);
         assertThat(artifact0.askFor(ArtifactSoftwareHeritageID.class).isPresent()).isTrue();
-        assertThat(artifact0.askForGet(ArtifactSoftwareHeritageID.class).get()).isEqualTo(swhID);
+        assertThat(artifact0.askForGet(ArtifactSoftwareHeritageID.class).get()).isEqualTo(TestUtils.RELEASE_SOFTWAREHERITGAE_ID);
 
         assertThat(artifact0.askFor(DeclaredLicenseInformation.class).isPresent()).isTrue();
         License tempDLicense = new License();
-        tempDLicense.setName("Apache-2.0");
+        tempDLicense.setName(TestUtils.RELEASE_DECLEARED_LICENSE);
         assertThat(artifact0.askForGet(DeclaredLicenseInformation.class).get().getLicenses()).contains(tempDLicense);
 
         assertThat(artifact0.askFor(ObservedLicenseInformation.class).isPresent()).isTrue();
         License tempOLicense = new License();
-        tempOLicense.setName("A-Test-License");
+        tempOLicense.setName(TestUtils.RELEASE_OBSERVED_LICENSE);
         assertThat(artifact0.askForGet(ObservedLicenseInformation.class).get().getLicenses()).contains(tempOLicense);
 
         LicenseStatement licenseStatement = new LicenseStatement();
@@ -130,7 +124,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         assertThat(artifact0.askFor(ArtifactFilename.class).isPresent()).isTrue();
         assertThat(artifact0.askFor(ArtifactFilename.class).get().getArtifactFilenameEntries()
                 .stream()
-                .filter(entry -> entry.getHash() == hashString)
+                .filter(entry -> entry.getHash() == TestUtils.RELEASE_HASH1)
                 .collect(Collectors.toList()))
                 .hasSize(1);
 
@@ -141,7 +135,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         assertThat(artifact0.askForGet(ArtifactChangeStatus.class).get()).isEqualTo(ArtifactChangeStatus.ChangeStatus.AS_IS);
 
         assertThat(artifact0.askFor(CopyrightStatement.class).isPresent()).isTrue();
-        assertThat(artifact0.askForGet(CopyrightStatement.class).get()).isEqualTo(copyrights);
+        assertThat(artifact0.askForGet(CopyrightStatement.class).get()).isEqualTo(TestUtils.RELEASE_COPYRIGHT);
 
     }
 
@@ -236,26 +230,5 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         license.setText(text);
         license.set_Links(sparseLicense.get_Links());
         return license;
-    }
-
-    private SW360Release mkSW360Release(String name) throws MalformedPackageURLException {
-        SW360Release sw360Release = new SW360Release();
-
-        sw360Release.setName(name);
-
-        sw360Release.setDownloadurl(sourceUrl);
-        sw360Release.setClearingState("PROJECT_APPROVED");
-
-
-        sw360Release.setDeclaredLicense("Apache-2.0");
-        sw360Release.setObservedLicense("A-Test-License");
-        sw360Release.setCoordinates(Collections.singletonMap(Coordinate.Types.MAVEN, "pkg:maven/test/test1@1.2.3"));
-        sw360Release.setReleaseTagUrl(releaseTagUrl);
-        sw360Release.setSoftwareHeritageId(swhID);
-        sw360Release.setHashes(Collections.singleton(hashString));
-        sw360Release.setChangeStatus("AS_IS");
-        sw360Release.setCopyrights(copyrights);
-
-        return sw360Release;
     }
 }

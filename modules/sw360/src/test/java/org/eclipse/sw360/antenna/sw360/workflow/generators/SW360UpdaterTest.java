@@ -21,6 +21,7 @@ import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
+import org.eclipse.sw360.antenna.sw360.utils.TestUtils;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,31 +40,26 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
     @Rule
     public ExpectedException thrownException = ExpectedException.none();
 
-    private String sourceUrl = "https://thrift.apache.org/";
-    private String releaseTagUrl = "https://github.com/apache/thrift/releases/tag/0.10.0";
-    private String swhID = "swh:1:rel:ae93ff0b4bdbd6749f75c23ad23311b512230894";
-    private String copyrights = "Copyright 2006-2010 The Apache Software Foundation.";
-
     @Test
     public void artifactIsMappedToSw360ReleaseCorrectlyWithOverwritten() {
-        Artifact artifact = mkArtifact("Test1", true);
+        Artifact artifact = TestUtils.mkArtifact("Test1", true);
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName("artifactIdtest1");
         SW360Release release = SW360ReleaseAdapterUtils.convertToReleaseWithoutAttachments(artifact);
         release.setComponentId(sw360Component.getComponentId());
         release.setMainLicenseIds(Collections.EMPTY_SET);
 
-        assertThat(release.getClearingState()).isEqualTo(ArtifactClearingState.ClearingState.PROJECT_APPROVED.toString());
-        assertThat(release.getChangeStatus()).isEqualTo(ArtifactChangeStatus.ChangeStatus.CHANGED.toString());
+        assertThat(release.getClearingState()).isEqualTo(TestUtils.RELEASE_CLEARING_STATE);
+        assertThat(release.getChangeStatus()).isEqualTo(TestUtils.RELEASE_CHANGESTATUS);
 
-        assertThat(release.getDownloadurl()).isEqualTo(sourceUrl);
-        assertThat(release.getReleaseTagUrl()).isEqualTo(releaseTagUrl);
-        assertThat(release.getSoftwareHeritageId()).isEqualTo(swhID);
-        assertThat(new ArtifactSoftwareHeritageID.Builder(release.getSoftwareHeritageId()).build().toString()).isEqualTo(swhID);
+        assertThat(release.getDownloadurl()).isEqualTo(TestUtils.RELEASE_DOWNLOAD_URL);
+        assertThat(release.getReleaseTagUrl()).isEqualTo(TestUtils.RELEASE_RELEASE_TAG_URL);
+        assertThat(release.getSoftwareHeritageId()).isEqualTo(TestUtils.RELEASE_SOFTWAREHERITGAE_ID);
+        assertThat(new ArtifactSoftwareHeritageID.Builder(release.getSoftwareHeritageId()).build().toString()).isEqualTo(TestUtils.RELEASE_SOFTWAREHERITGAE_ID);
 
         assertThat(release.getCoordinates()).hasSize(1);
         assertThat(release.getCoordinates().containsKey("maven")).isTrue();
-        assertThat(release.getCoordinates().get("maven")).isEqualTo("pkg:maven/org.group.id/artifactIdTest1@1.2.3");
+        assertThat(release.getCoordinates().get("maven")).isEqualTo("pkg:maven/org.group.id/artifactIdTest1@" + TestUtils.RELEASE_VERSION1);
 
         assertThat(release.getHashes()).hasSize(1);
         assertThat(release.getHashes()).
@@ -74,31 +70,31 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
                         .map(ArtifactFilename.ArtifactFilenameEntry::getHash)
                         .collect(Collectors.toSet()));
 
-        assertThat(release.getOverriddenLicense()).isEqualTo("Overridden");
-        assertThat(release.getDeclaredLicense()).isEqualTo("Declared");
-        assertThat(release.getObservedLicense()).isEqualTo("Observed");
+        assertThat(release.getOverriddenLicense()).isEqualTo(TestUtils.RELEASE_OVERRIDEN_LICENSE);
+        assertThat(release.getDeclaredLicense()).isEqualTo(TestUtils.RELEASE_DECLEARED_LICENSE);
+        assertThat(release.getObservedLicense()).isEqualTo(TestUtils.RELEASE_OBSERVED_LICENSE);
 
-        assertThat(release.getCopyrights()).isEqualTo(copyrights);
+        assertThat(release.getCopyrights()).isEqualTo(TestUtils.RELEASE_COPYRIGHT);
     }
 
     @Test
     public void artifactIsMappedToSw360ReleaseCorrectlyWithoutOverwritten() {
-        Artifact artifact = mkArtifact("Test1", false);
+        Artifact artifact = TestUtils.mkArtifact("Test1", false);
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName("artifactIdtest1");
         SW360Release release = SW360ReleaseAdapterUtils.convertToReleaseWithoutAttachments(artifact);
 
-        assertThat(release.getClearingState()).isEqualTo(ArtifactClearingState.ClearingState.PROJECT_APPROVED.toString());
-        assertThat(release.getChangeStatus()).isEqualTo(ArtifactChangeStatus.ChangeStatus.CHANGED.toString());
+        assertThat(release.getClearingState()).isEqualTo(TestUtils.RELEASE_CLEARING_STATE);
+        assertThat(release.getChangeStatus()).isEqualTo(TestUtils.RELEASE_CHANGESTATUS);
 
-        assertThat(release.getDownloadurl()).isEqualTo(sourceUrl);
-        assertThat(release.getReleaseTagUrl()).isEqualTo(releaseTagUrl);
-        assertThat(release.getSoftwareHeritageId()).isEqualTo(swhID);
+        assertThat(release.getDownloadurl()).isEqualTo(TestUtils.RELEASE_DOWNLOAD_URL);
+        assertThat(release.getReleaseTagUrl()).isEqualTo(TestUtils.RELEASE_RELEASE_TAG_URL);
+        assertThat(release.getSoftwareHeritageId()).isEqualTo(TestUtils.RELEASE_SOFTWAREHERITGAE_ID);
         new ArtifactSoftwareHeritageID.Builder(release.getSoftwareHeritageId()).build();
 
         assertThat(release.getCoordinates()).containsKeys("maven");
         assertThat(release.getCoordinates()).hasSize(1);
-        assertThat(release.getCoordinates()).containsValue("pkg:maven/org.group.id/artifactIdTest1@1.2.3");
+        assertThat(release.getCoordinates()).containsValue("pkg:maven/org.group.id/artifactIdTest1@" + TestUtils.RELEASE_VERSION1);
 
         assertThat(release.getHashes()).hasSize(1);
         assertThat(release.getHashes()).
@@ -110,67 +106,15 @@ public class SW360UpdaterTest extends AntennaTestWithMockedContext {
                         .collect(Collectors.toSet()));
 
         assertThat(release.getOverriddenLicense()).isNull();
-        assertThat(release.getDeclaredLicense()).isEqualTo("Declared");
-        assertThat(release.getObservedLicense()).isEqualTo("Observed");
+        assertThat(release.getObservedLicense()).isEqualTo(TestUtils.RELEASE_OBSERVED_LICENSE);
+        assertThat(release.getDeclaredLicense()).isEqualTo(TestUtils.RELEASE_DECLEARED_LICENSE);
 
-        assertThat(release.getCopyrights()).isEqualTo(copyrights);
-    }
-
-    private Artifact mkArtifact(String name, boolean withOverridden) {
-        // License information
-        Function<String,LicenseInformation> mkLicenseInformation = licname -> new LicenseInformation() {
-            @Override
-            public String evaluate() {
-                return licname;
-            }
-
-            @Override
-            public String evaluateLong() {
-                return "long " + licname;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @Override
-            public List<License> getLicenses() {
-                License license = new License();
-                license.setLongName(evaluateLong());
-                license.setText("license text for: " + evaluate());
-                license.setName(evaluate());
-                return Collections.singletonList(license);
-            }
-
-            @Override
-            public String getLinkStr() {
-                return "https://link.to.license" + name + ".invalid";
-            }
-        };
-        Artifact artifact = new Artifact("JSON");
-        artifact.setProprietary(false);
-        artifact.addCoordinate(new Coordinate(Coordinate.Types.MAVEN, "org.group.id", "artifactId" + name + "", "1.2.3"));
-        artifact.addFact(new DeclaredLicenseInformation(mkLicenseInformation.apply("Declared")));
-        artifact.addFact(new ObservedLicenseInformation(mkLicenseInformation.apply("Observed")));
-        if (withOverridden) {
-            artifact.addFact(new OverriddenLicenseInformation(mkLicenseInformation.apply("Overridden")));
-        }
-        artifact.addFact(new ArtifactSourceUrl(sourceUrl));
-        artifact.addFact(new ArtifactReleaseTagURL(releaseTagUrl));
-        artifact.addFact(new ArtifactSoftwareHeritageID.Builder(swhID).build());
-        artifact.addFact(new ArtifactFilename("test1-file.jar", ("12345678" + name)));
-        artifact.addFact(new ArtifactFilename("test2-file.jar", ("12345678" + name)));
-        artifact.addFact(new ArtifactClearingState(ArtifactClearingState.ClearingState.valueOf("PROJECT_APPROVED")));
-        artifact.addFact(new ArtifactChangeStatus(ArtifactChangeStatus.ChangeStatus.valueOf("CHANGED")));
-        artifact.addFact(new CopyrightStatement(copyrights));
-
-        return artifact;
+        assertThat(release.getCopyrights()).isEqualTo(TestUtils.RELEASE_COPYRIGHT);
     }
 
     @Test
     public void testMainLicenseIsEmptyAndDetectedLicenseNull() {
-        Artifact artifact = new Artifact("JSON");
+        Artifact artifact = new Artifact("SW360");
         artifact.setProprietary(false);
         artifact.addCoordinate(new Coordinate(Coordinate.Types.MAVEN, "org.group.id", "artifactIdTest", "1.2.3"));
         artifact.addFact(new DeclaredLicenseInformation(new LicenseStatement()));

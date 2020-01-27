@@ -19,16 +19,17 @@ import java.util.Collections;
 import java.util.Optional;
 
 public class TestUtils {
-    private static final String RELEASE_VERSION1 = "1.0.0";
-    private static final String RELEASE_DOWNLOAD_URL = "https://organisation-test.org/";
-    private static final String RELEASE_CLEARING_STATE = "PROJECT_APPROVED";
-    private static final String RELEASE_DECLEARED_LICENSE = "The-Test-License";
-    private static final String RELEASE_OBSERVED_LICENSE = "A-Test-License";
-    private static final String RELEASE_RELEASE_TAG_URL = "https://gitTool.com/project/repository";
-    private static final String RELEASE_SOFTWAREHERITGAE_ID = "swh:1:rel:1234512345123451234512345123451234512345";
-    private static final String RELEASE_HASH1= "b2a4d4ae21c789b689dd162deb819665567f481c";
-    private static final String RELEASE_CHANGESTATUS = "AS_IS";
-    private static final String RELEASE_COPYRIGHT = "Copyright xxxx Some Copyright Enterprise";
+    public static final String RELEASE_VERSION1 = "1.0.0";
+    public static final String RELEASE_DOWNLOAD_URL = "https://organisation-test.org/";
+    public static final String RELEASE_CLEARING_STATE = "PROJECT_APPROVED";
+    public static final String RELEASE_DECLEARED_LICENSE = "The-Test-License";
+    public static final String RELEASE_OBSERVED_LICENSE = "A-Test-License";
+    public static final String RELEASE_OVERRIDEN_LICENSE = "Overriden";
+    public static final String RELEASE_RELEASE_TAG_URL = "https://gitTool.com/project/repository";
+    public static final String RELEASE_SOFTWAREHERITGAE_ID = "swh:1:rel:1234512345123451234512345123451234512345";
+    public static final String RELEASE_HASH1= "b2a4d4ae21c789b689dd162deb819665567f481c";
+    public static final String RELEASE_CHANGESTATUS = "AS_IS";
+    public static final String RELEASE_COPYRIGHT = "Copyright xxxx Some Copyright Enterprise";
 
     public static SW360Release mkSW360Release(String name) {
         SW360Release sw360Release = new SW360Release();
@@ -63,7 +64,7 @@ public class TestUtils {
         SW360ReleaseAdapterUtils.addLicenseFact(Optional.of(RELEASE_DECLEARED_LICENSE), artifact, DeclaredLicenseInformation::new, artifact.askFor(DeclaredLicenseInformation.class).isPresent());
         SW360ReleaseAdapterUtils.addLicenseFact(Optional.of(RELEASE_OBSERVED_LICENSE), artifact, ObservedLicenseInformation::new, artifact.askFor(ObservedLicenseInformation.class).isPresent());
         if (withOverridden) {
-            SW360ReleaseAdapterUtils.addLicenseFact(Optional.of("Overridden"), artifact, OverriddenLicenseInformation::new, artifact.askFor(OverriddenLicenseInformation.class).isPresent());
+            SW360ReleaseAdapterUtils.addLicenseFact(Optional.of(RELEASE_OVERRIDEN_LICENSE), artifact, OverriddenLicenseInformation::new, artifact.askFor(OverriddenLicenseInformation.class).isPresent());
         }
         artifact.addFact(new ArtifactSourceUrl(RELEASE_DOWNLOAD_URL));
         artifact.addFact(new ArtifactReleaseTagURL(RELEASE_RELEASE_TAG_URL));

@@ -10,14 +10,12 @@
  */
 package org.eclipse.sw360.antenna.csvreader;
 
-import com.here.ort.spdx.SpdxException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
@@ -192,19 +190,9 @@ public class CSVReaderTest {
     }
 
     private void addLicenseFact(Optional<String> licenseRawData, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator, boolean isAlreadyPresent) {
-        licenseRawData.map(this::parseSpdxExpression)
+        licenseRawData.map(LicenseSupport::parseSpdxExpression)
                 .map(licenseCreator)
                 .ifPresent(artifact::addFact);
-    }
-
-    private LicenseInformation parseSpdxExpression(String expression) {
-        try {
-            return LicenseSupport.fromSPDXExpression(expression);
-        } catch (SpdxException e) {
-            License unparsableExpression = new License();
-            unparsableExpression.setName(expression);
-            return unparsableExpression;
-        }
     }
 
     private static CSVParser getCsvParser(File currentCsvFile) throws IOException {
