@@ -55,6 +55,7 @@ public class CSVReader {
     private static final String CHANGES_STATUS = "Change Status";
     private static final String CPE = "CPE";
     private static final String PATH_NAME = "File Name";
+    private static final String CLEARING_DOCUMENT_PATH = "Clearing Document";
 
     private Path csvFile;
     private Charset encoding;
@@ -87,7 +88,8 @@ public class CSVReader {
                      CLEARING_STATE,
                      CHANGES_STATUS,
                      CPE,
-                     PATH_NAME
+                     PATH_NAME,
+                     CLEARING_DOCUMENT_PATH
              ))
         ) {
             for (Artifact artifact : artifacts) {
@@ -261,6 +263,15 @@ public class CSVReader {
             } else {
                 artifact.getMainCoordinate().ifPresent(coordinate ->
                         LOGGER.debug("The given source file {} for artifact {} does not exist.", path, coordinate));
+            }
+        }
+        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, CLEARING_DOCUMENT_PATH)) {
+            Path clearingDoc = baseDir.resolve(record.get(CLEARING_DOCUMENT_PATH));
+            if (Files.exists(clearingDoc)) {
+                artifact.addFact(new ArtifactClearingDocument(clearingDoc));
+            } else {
+                LOGGER.debug("Ignoring non existent clearing document {} for artifact {}.", clearingDoc,
+                        artifact.getMainCoordinate().map(Coordinate::getName).orElse("undefined"));
             }
         }
     }
