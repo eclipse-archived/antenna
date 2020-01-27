@@ -14,10 +14,10 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseOperator;
+import org.eclipse.sw360.antenna.model.license.LicenseStatement;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +29,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -155,8 +157,7 @@ public class ArtifactTest {
         License license2 = new License();
         license2.setName("license2");
         license2.setLongName("licenseNumber2");
-        observedLicenses.setLeftStatement(license2);
-        observedLicenses.setRightStatement(declaredLicenses);
+        observedLicenses.setLicenses(Stream.of(license2, declaredLicenses).collect(Collectors.toList()));
         observedLicenses.setOp(LicenseOperator.AND);
         artifact.addFact(new ObservedLicenseInformation(observedLicenses));
         List<License> licenses = new ArrayList<>();

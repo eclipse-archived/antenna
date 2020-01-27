@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.policy.workflow.processors;
 
-import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.policy.engine.model.LicenseData;
 
 import java.util.Optional;

@@ -11,7 +11,8 @@
 
 package org.eclipse.sw360.antenna.model.artifact.facts;
 
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
+
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 
 public class ObservedLicenseInformation extends ArtifactLicenseInformation {
     public ObservedLicenseInformation(LicenseInformation payload) {

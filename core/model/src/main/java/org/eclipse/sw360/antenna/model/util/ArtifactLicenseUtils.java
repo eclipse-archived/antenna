@@ -16,11 +16,13 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformati
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.ObservedLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.OverriddenLicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
+import org.eclipse.sw360.antenna.model.license.LicenseOperator;
+import org.eclipse.sw360.antenna.model.license.LicenseStatement;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ArtifactLicenseUtils {
 
@@ -64,8 +66,7 @@ public class ArtifactLicenseUtils {
                 return observed.get();
             } else {
                 final LicenseStatement effective = new LicenseStatement();
-                effective.setLeftStatement(declared.get());
-                effective.setRightStatement(observed.get());
+                effective.setLicenses(Stream.of(declared.get(), observed.get()).collect(Collectors.toList()));
                 effective.setOp(LicenseOperator.AND);
                 return effective;
             }

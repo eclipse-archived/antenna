@@ -15,6 +15,7 @@ package org.eclipse.sw360.antenna.model;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.FromXmlArtifactBuilder;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.*;
 
 import java.util.*;
@@ -22,6 +23,8 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.eclipse.sw360.antenna.model.license.FromXmlLicenseInformationBuilder.ILicenseInformationBuilder;
 
 /**
  * Contains values of the configuration file.
@@ -102,7 +105,8 @@ public class Configuration {
     private Map<ArtifactSelector, LicenseInformation> createFinalLicenses(final List<SetFinalLicense> setFinalLicenses) {
         final Map<ArtifactSelector, LicenseInformation> finalLicenses = new HashMap<>();
         for(SetFinalLicense entry: setFinalLicenses) {
-            finalLicenses.put(entry.getArtifactSelector().build(), entry.getLicenseInfo().getValue());
+            finalLicenses.put(entry.getArtifactSelector().build(),
+                    ((ILicenseInformationBuilder) entry.getLicenseInfo().getValue()).build());
         }
 
 

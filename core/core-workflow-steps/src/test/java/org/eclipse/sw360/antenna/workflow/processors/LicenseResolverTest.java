@@ -14,11 +14,11 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
+import org.eclipse.sw360.antenna.model.license.LicenseOperator;
+import org.eclipse.sw360.antenna.model.license.LicenseStatement;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
 import org.junit.Before;
@@ -63,10 +63,8 @@ public class LicenseResolverTest extends AntennaTestWithMockedContext {
         license2.setName("license2");
 
         Map<ArtifactSelector, LicenseInformation> configuredLicenses = new HashMap<>();
-        configuredLicense = new LicenseStatement();
-        configuredLicense.setLeftStatement(license1);
-        configuredLicense.setRightStatement(license2);
-        configuredLicense.setOp(LicenseOperator.AND);
+        configuredLicense = new LicenseStatement(Stream.of(license1, license2)
+                .collect(Collectors.toList()), LicenseOperator.AND);
         configuredLicenses.put(selector, configuredLicense);
         licenseResolver = new LicenseResolver();
 

@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.workflow.generators;
 
 import org.apache.commons.text.StringEscapeUtils;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.license.License;
 
 public class HTMLReportUtils {
     private HTMLReportUtils() {

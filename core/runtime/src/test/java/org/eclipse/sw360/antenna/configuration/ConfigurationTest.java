@@ -18,6 +18,10 @@ import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
+import org.eclipse.sw360.antenna.model.license.LicenseOperator;
+import org.eclipse.sw360.antenna.model.license.LicenseStatement;
 import org.eclipse.sw360.antenna.model.xml.generated.*;
 import org.eclipse.sw360.antenna.xml.XMLResolverJaxB;
 import org.junit.Before;
@@ -56,7 +60,7 @@ public class ConfigurationTest {
 
         ArtifactIdentifier identifier = new ArtifactFilename("overrideName.jar");
         assertThat(configuration.getFinalLicenses().keySet().stream().anyMatch(k -> k.matches(identifier))).isTrue();
-        List<License> list = configuration.getFinalLicenses().entrySet().stream()
+        List<LicenseInformation> list = configuration.getFinalLicenses().entrySet().stream()
                 .filter(e -> e.getKey().matches(identifier))
                 .map(Map.Entry::getValue)
                 .map(LicenseInformation::getLicenses)
@@ -108,7 +112,7 @@ public class ConfigurationTest {
         assertThat(declaredLicenseInformation
                 .getLicenses()
                 .get(0)
-                .getName()
+                .evaluate()
         ).isEqualTo("testLicense");
         assertThat(declaredLicenseInformation
                 .evaluate())
@@ -123,8 +127,7 @@ public class ConfigurationTest {
     @Test
     public void addArtifactTest() throws Exception {
         Artifact artifact = configuration.getAddArtifact().get(0);
-
-        assertThat(artifact.askForGet(DeclaredLicenseInformation.class).get().getLicenses().get(0).getName())
+        assertThat(artifact.askForGet(DeclaredLicenseInformation.class).get().getLicenses().get(0).evaluate())
                 .isEqualTo("Apache");
         assertThat(artifact.askFor(ArtifactFilename.class).get().getFilenames())
                 .contains("addArtifact.jar");

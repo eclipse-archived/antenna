@@ -21,7 +21,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.CopyrightStatement;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
 import org.junit.jupiter.api.Test;
 
