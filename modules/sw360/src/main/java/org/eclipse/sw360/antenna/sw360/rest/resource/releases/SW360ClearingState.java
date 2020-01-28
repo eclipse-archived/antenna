@@ -10,5 +10,12 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resource.releases;
 
+/**
+ * This enumeration class mimics the clearing states available in SW360.
+ */
 public enum SW360ClearingState {
+    NEW_CLEARING,
+    SENT_TO_CLEARING_TOOL,
+    REPORT_AVAILABLE,
+    APPROVED;
 }

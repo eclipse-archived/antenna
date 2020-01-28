@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.sw360.rest.resource.releases;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
@@ -42,6 +43,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     private String createdOn;
     private String cpeId;
     private String downloadurl;
+    private SW360ClearingState sw360ClearingState;
     private final Map<String, String> externalIds = new HashMap<>();
     @JsonSerialize
     private final Map<String, String> additionalData = new HashMap<>();
@@ -244,6 +246,15 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     public SW360Release setClearingState(String clearingState) {
         additionalData.put(CLEARINGSTATE_KEY, clearingState);
         return this;
+    }
+
+    @JsonProperty("clearingState")
+    public SW360ClearingState getSw360ClearingState() {
+        return sw360ClearingState;
+    }
+
+    public void setSw360ClearingState(SW360ClearingState sw360ClearingState) {
+        this.sw360ClearingState = sw360ClearingState;
     }
 
     @JsonIgnore

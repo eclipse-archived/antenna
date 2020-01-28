@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.sw360.rest.resources.releases;
 
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ClearingState;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resources.SW360ResourcesTestUtils;
 import org.junit.Test;
@@ -38,6 +39,8 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
         ArrayList<SW360SparseAttachment> sparseAttachmentList = new ArrayList<>();
         sparseAttachmentList.add(new SW360SparseAttachment().setFilename("").setAttachmentType(SW360AttachmentType.SOURCE));
         release.get_Embedded().setAttachments(sparseAttachmentList);
+        release.setSw360ClearingState(SW360ClearingState.NEW_CLEARING);
+        release.setClearingState("INITIAL");
         return release;
     }
 
