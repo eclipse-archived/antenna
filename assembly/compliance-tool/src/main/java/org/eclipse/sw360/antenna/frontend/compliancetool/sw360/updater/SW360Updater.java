@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingDocument;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
@@ -46,10 +47,15 @@ public class SW360Updater {
     private void uploadReleaseWithClearingDocumentFromArtifact(Artifact artifact, HttpHeaders headers) {
         SW360Release release = updater.artifactToReleaseInSW360(artifact);
         SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnectionConfiguration().getSW360ReleaseClientAdapter();
-        artifact.askFor(ArtifactClearingDocument.class)
-                .map(ArtifactClearingDocument::get)
-                .map(acd -> Collections.singletonMap(acd, SW360AttachmentType.CLEARING_REPORT))
-                .ifPresent(attachmentPathMap -> releaseClientAdapter
-                        .uploadAttachments(release, attachmentPathMap, headers));
+
+        if (release.getClearingState() != null &&
+                !release.getClearingState().isEmpty() &&
+                ArtifactClearingState.ClearingState.valueOf(release.getClearingState()) != ArtifactClearingState.ClearingState.INITAL) {
+            artifact.askFor(ArtifactClearingDocument.class)
+                    .map(ArtifactClearingDocument::get)
+                    .map(acd -> Collections.singletonMap(acd, SW360AttachmentType.CLEARING_REPORT))
+                    .ifPresent(attachmentPathMap -> releaseClientAdapter
+                            .uploadAttachments(release, attachmentPathMap, headers));
+        }
     }
 }
