@@ -55,6 +55,7 @@ public class SW360TestUtils {
 
         sw360Release.setName(name);
         sw360Release.setVersion(RELEASE_VERSION1);
+        sw360Release.setCreatedOn("yyyy-mm-dd");
 
         sw360Release.setDownloadurl(RELEASE_DOWNLOAD_URL);
         sw360Release.setClearingState(RELEASE_CLEARING_STATE);
