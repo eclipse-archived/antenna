@@ -18,31 +18,76 @@ import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ClearingState;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.springframework.http.HttpHeaders;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-
+@RunWith(Parameterized.class)
 public class SW360ExporterTest {
+    private final String clearingState;
+    private final SW360ClearingState sw360ClearingState;
+    private final int expectedNumOfReleases;
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {"INITAL", SW360ClearingState.NEW_CLEARING, 1},
+                {"INITAL", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
+                {"INITAL", SW360ClearingState.REPORT_AVAILABLE, 1},
+                {"INITAL", SW360ClearingState.APPROVED, 1},
+                {"INITAL", null, 1},
+                {"EXTERNAL_SOURCE", SW360ClearingState.NEW_CLEARING, 1},
+                {"EXTERNAL_SOURCE", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
+                {"EXTERNAL_SOURCE", SW360ClearingState.REPORT_AVAILABLE, 0},
+                {"EXTERNAL_SOURCE", SW360ClearingState.APPROVED, 0},
+                {"EXTERNAL_SOURCE", null, 1},
+                {"AUTO_EXTRACT", SW360ClearingState.NEW_CLEARING, 1},
+                {"AUTO_EXTRACT", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
+                {"AUTO_EXTRACT", SW360ClearingState.REPORT_AVAILABLE, 0},
+                {"AUTO_EXTRACT", SW360ClearingState.APPROVED, 0},
+                {"AUTO_EXTRACT", null, 1},
+                {"PROJECT_APPROVED", SW360ClearingState.NEW_CLEARING, 1},
+                {"PROJECT_APPROVED", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
+                {"PROJECT_APPROVED", SW360ClearingState.REPORT_AVAILABLE, 0},
+                {"PROJECT_APPROVED", SW360ClearingState.APPROVED, 0},
+                {"PROJECT_APPROVED", null, 1},
+                {"OSM_APPROVED", SW360ClearingState.NEW_CLEARING, 1},
+                {"OSM_APPROVED", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
+                {"OSM_APPROVED", SW360ClearingState.REPORT_AVAILABLE, 0},
+                {"OSM_APPROVED", SW360ClearingState.APPROVED, 0},
+                {"OSM_APPROVED", null, 1},
+                {null, SW360ClearingState.NEW_CLEARING, 1},
+                {null, SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
+                {null, SW360ClearingState.REPORT_AVAILABLE, 1},
+                {null, SW360ClearingState.APPROVED, 1},
+                {null, null, 1}
+        });
+    }
+
+    public SW360ExporterTest(String clearingState, SW360ClearingState sw360ClearingState, int expectedNumOfReleases) {
+        this.clearingState = clearingState;
+        this.sw360ClearingState = sw360ClearingState;
+        this.expectedNumOfReleases = expectedNumOfReleases;
+    }
+
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
     private File csvFile;
@@ -73,6 +118,8 @@ public class SW360ExporterTest {
         when(componentClientAdapterMock.getComponentById(any(), eq(headers)))
                 .thenReturn(Optional.of(component));
         release = SW360TestUtils.mkSW360Release("testRelease");
+        release.setClearingState(clearingState);
+        release.setSw360ClearingState(sw360ClearingState);
 
         when(releaseClientAdapterMock.getReleaseById(any(), eq(headers)))
                 .thenReturn(Optional.of(release));
@@ -108,7 +155,7 @@ public class SW360ExporterTest {
 
         assertThat(csvFile).exists();
         CSVParser csvParser = SW360TestUtils.getCsvParser(csvFile);
-        assertThat(csvParser.getRecords().size()).isEqualTo(1);
-        verify(releaseClientAdapterMock, atLeast(1)).downloadAttachment(eq(release), any(),any() , eq(headers));
+        assertThat(csvParser.getRecords().size()).isEqualTo(expectedNumOfReleases);
+        verify(releaseClientAdapterMock, atLeast(expectedNumOfReleases)).downloadAttachment(eq(release), any(),any() , eq(headers));
     }
 }

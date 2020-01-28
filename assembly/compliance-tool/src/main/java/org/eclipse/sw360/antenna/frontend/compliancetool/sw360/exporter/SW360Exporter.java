@@ -21,6 +21,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ClearingState;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
@@ -109,9 +110,12 @@ public class SW360Exporter {
     }
 
     private boolean isApproved(SW360Release sw360Release) {
-        return sw360Release.getClearingState() == null ||
-                Optional.of(sw360Release.getClearingState())
-                        .map(clearingState -> clearingState.equals(ArtifactClearingState.ClearingState.OSM_APPROVED.toString()))
+        return Optional.ofNullable(sw360Release.getClearingState())
+                        .map(clearingState -> ArtifactClearingState.ClearingState.valueOf(clearingState) != ArtifactClearingState.ClearingState.INITAL)
+                        .orElse(false) &&
+                Optional.ofNullable(sw360Release.getSw360ClearingState())
+                        .map(sw360ClearingState -> sw360ClearingState.equals(SW360ClearingState.APPROVED) ||
+                                sw360ClearingState.equals(SW360ClearingState.REPORT_AVAILABLE))
                         .orElse(false);
     }
 
