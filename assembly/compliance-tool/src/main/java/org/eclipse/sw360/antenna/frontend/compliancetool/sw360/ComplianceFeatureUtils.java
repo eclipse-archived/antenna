@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
-import org.eclipse.sw360.antenna.csvreader.CSVReader;
+import org.eclipse.sw360.antenna.csvreader.CSVArtifactMapper;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 import java.io.File;
@@ -76,7 +76,7 @@ public class ComplianceFeatureUtils {
         }
         Charset encoding = Charset.forName(properties.get("encoding"));
 
-        return new CSVReader(csvFile.toPath(), encoding, delimiter, csvFile.getParentFile().toPath()).createArtifactsList();
+        return new CSVArtifactMapper(csvFile.toPath(), encoding, delimiter, csvFile.getParentFile().toPath()).createArtifactsList();
     }
 
     /**

@@ -39,7 +39,7 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CSVReaderTest {
+public class CSVArtifactMapperTest {
     private static final String ARTIFACT_DOWNLOAD_URL = "https://organisation-test.org/";
     private static final String ARTIFACT_CLEARING_STATE = "PROJECT_APPROVED";
     private static final String ARTIFACT_TAG_URL = "https://gitTool.com/project/repository";
@@ -83,9 +83,9 @@ public class CSVReaderTest {
     public void testRoundTripWriteRead() {
         List<Artifact> artifacts = new ArrayList<>();
         artifacts.add(mkArtifact("test", false).addFact(new ArtifactMatchingMetadata(MatchState.EXACT)));
-        CSVReader csvReader = new CSVReader(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
-        csvReader.writeArtifactsToCsvFile(artifacts);
-        Collection<Artifact> csvReaderArtifacts = csvReader.createArtifactsList();
+        CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
+        csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
+        Collection<Artifact> csvReaderArtifacts = csvArtifactMapper.createArtifactsList();
         assertThat(csvReaderArtifacts).isEqualTo(artifacts);
     }
 
@@ -96,8 +96,8 @@ public class CSVReaderTest {
         artifacts.add(mkArtifact("test1", false)
                 .addCoordinate(new Coordinate("pkg:maven/test/test1@1.2.3"))
                 .addCoordinate(new Coordinate("pkg:p2/test/test1@1.2.3")));
-        CSVReader csvReader = new CSVReader(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
-        csvReader.writeArtifactsToCsvFile(artifacts);
+        CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
+        csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
 
         assertThat(csvFile.exists()).isTrue();
 
@@ -113,12 +113,12 @@ public class CSVReaderTest {
                                 Paths.get(this.getClass().getClassLoader().getResource("CsvAnalyzerTest/test_source.txt").toURI())));
         List<Artifact> artifacts = Collections.singletonList(artifact);
 
-        CSVReader csvReader = new CSVReader(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
-        csvReader.writeArtifactsToCsvFile(artifacts);
+        CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
+        csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
 
         assertThat(csvFile.exists()).isTrue();
 
-        List<Artifact> artifactsList = (List<Artifact>) csvReader.createArtifactsList();
+        List<Artifact> artifactsList = (List<Artifact>) csvArtifactMapper.createArtifactsList();
         assertThat(artifactsList).hasSize(1);
         assertThat(artifactsList.get(0).askFor(ArtifactSourceFile.class)).isPresent();
     }
@@ -130,12 +130,12 @@ public class CSVReaderTest {
                         .addFact(new ArtifactSourceFile(Paths.get("non-existent-source-file.tgz")));
         List<Artifact> artifacts = Collections.singletonList(artifact);
 
-        CSVReader csvReader = new CSVReader(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
-        csvReader.writeArtifactsToCsvFile(artifacts);
+        CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
+        csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
 
         assertThat(csvFile.exists()).isTrue();
 
-        List<Artifact> artifactsList = (List<Artifact>) csvReader.createArtifactsList();
+        List<Artifact> artifactsList = (List<Artifact>) csvArtifactMapper.createArtifactsList();
         assertThat(artifactsList).hasSize(1);
         assertThat(artifactsList.get(0).askFor(ArtifactSourceFile.class)).isNotPresent();
     }
@@ -144,8 +144,8 @@ public class CSVReaderTest {
     public void writeSingleReleaseListToCSVFileTest() throws IOException {
         List<Artifact> oneArtifact = Collections.singletonList(mkArtifact("test:test", true)
                 .addFact(new ArtifactCPE("cpeId")));
-        CSVReader csvReader = new CSVReader(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
-        csvReader.writeArtifactsToCsvFile(oneArtifact);
+        CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
+        csvArtifactMapper.writeArtifactsToCsvFile(oneArtifact);
 
         assertThat(csvFile.exists()).isTrue();
 
@@ -163,8 +163,8 @@ public class CSVReaderTest {
     @Test
     public void writeEmptyReleaseListToCSVFileTest() throws IOException {
         List<Artifact> emptyArtifacts = new ArrayList<>();
-        CSVReader csvReader = new CSVReader(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
-        csvReader.writeArtifactsToCsvFile(emptyArtifacts);
+        CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
+        csvArtifactMapper.writeArtifactsToCsvFile(emptyArtifacts);
 
         assertThat(csvFile.exists()).isTrue();
 

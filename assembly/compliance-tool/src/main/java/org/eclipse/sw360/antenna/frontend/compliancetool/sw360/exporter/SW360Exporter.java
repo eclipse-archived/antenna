@@ -11,7 +11,7 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter;
 
-import org.eclipse.sw360.antenna.csvreader.CSVReader;
+import org.eclipse.sw360.antenna.csvreader.CSVArtifactMapper;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
@@ -61,12 +61,12 @@ public class SW360Exporter {
                 .resolve(configuration.getCsvFileName())
                 .toFile();
 
-        CSVReader csvReader = new CSVReader(csvFile.toPath(),
+        CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(),
                 Charset.forName(configuration.getProperties().get("encoding")),
                 configuration.getProperties().get("delimiter").charAt(0),
                 Paths.get(configuration.getProperties().get("basedir")));
 
-        csvReader.writeArtifactsToCsvFile(artifacts);
+        csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
     }
 
     private Artifact releaseAsArtifact(SW360Release release, HttpHeaders headers) {

@@ -36,8 +36,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CSVReader {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CSVReader.class);
+public class CSVArtifactMapper {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CSVArtifactMapper.class);
 
     private static final String NAME = "Artifact Id";
     private static final String GROUP = "Group Id";
@@ -63,7 +63,7 @@ public class CSVReader {
     private Path baseDir;
 
 
-    public CSVReader(Path csvFile, Charset encoding, char delimiter, Path baseDir) {
+    public CSVArtifactMapper(Path csvFile, Charset encoding, char delimiter, Path baseDir) {
         this.csvFile = csvFile;
         this.encoding = encoding;
         this.delimiter = delimiter;
@@ -422,7 +422,7 @@ public class CSVReader {
     private static String getFilepathAsString(Artifact artifact) {
         return artifact.askFor(ArtifactSourceFile.class)
                 .map(ArtifactFactWithPayload::get)
-                .map(pth -> CSVReader.getPathAsStringIfExists(pth, artifact))
+                .map(pth -> getPathAsStringIfExists(pth, artifact))
                 .orElse("");
     }
 
