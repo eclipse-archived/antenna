@@ -73,13 +73,13 @@ public class SW360UpdaterTest {
                 {"EXTERNAL_SOURCE", true, true},
                 {"AUTO_EXTRACT", true, true},
                 {"PROJECT_APPROVED", true, true},
-                {"INITAL", true, false},
+                {"INITIAL", true, false},
                 {"", true, false},
                 {"OSM_APPROVED", false, true},
                 {"EXTERNAL_SOURCE", false, true},
                 {"AUTO_EXTRACT", false, true},
                 {"PROJECT_APPROVED", false, true},
-                {"INITAL", false, false},
+                {"INITIAL", false, false},
                 {"", false, false}
 
         });

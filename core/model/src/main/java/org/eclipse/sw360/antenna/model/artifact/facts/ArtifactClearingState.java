@@ -31,7 +31,7 @@ public class ArtifactClearingState extends ArtifactFactWithPayload<ArtifactClear
     }
 
     public enum ClearingState {
-        INITAL,
+        INITIAL,
         EXTERNAL_SOURCE,
         AUTO_EXTRACT,
         PROJECT_APPROVED,

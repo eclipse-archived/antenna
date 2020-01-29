@@ -111,7 +111,7 @@ public class SW360Exporter {
 
     private boolean isApproved(SW360Release sw360Release) {
         return Optional.ofNullable(sw360Release.getClearingState())
-                        .map(clearingState -> ArtifactClearingState.ClearingState.valueOf(clearingState) != ArtifactClearingState.ClearingState.INITAL)
+                        .map(clearingState -> ArtifactClearingState.ClearingState.valueOf(clearingState) != ArtifactClearingState.ClearingState.INITIAL)
                         .orElse(false) &&
                 Optional.ofNullable(sw360Release.getSw360ClearingState())
                         .map(sw360ClearingState -> sw360ClearingState.equals(SW360ClearingState.APPROVED) ||

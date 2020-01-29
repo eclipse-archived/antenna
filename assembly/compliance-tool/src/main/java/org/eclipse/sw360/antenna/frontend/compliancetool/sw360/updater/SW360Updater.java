@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils.getArtifactsFromCsvFile;
 
@@ -58,7 +57,7 @@ public class SW360Updater {
 
         if (release.getClearingState() != null &&
                 !release.getClearingState().isEmpty() &&
-                ArtifactClearingState.ClearingState.valueOf(release.getClearingState()) != ArtifactClearingState.ClearingState.INITAL) {
+                ArtifactClearingState.ClearingState.valueOf(release.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
             Map<Path, SW360AttachmentType> attachmentPathMap =
                     Collections.singletonMap(getOrGenerateClearingDocument(release, artifact),
                             SW360AttachmentType.CLEARING_REPORT);

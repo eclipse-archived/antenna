@@ -49,11 +49,11 @@ public class SW360ExporterTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {"INITAL", SW360ClearingState.NEW_CLEARING, 1},
-                {"INITAL", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
-                {"INITAL", SW360ClearingState.REPORT_AVAILABLE, 1},
-                {"INITAL", SW360ClearingState.APPROVED, 1},
-                {"INITAL", null, 1},
+                {"INITIAL", SW360ClearingState.NEW_CLEARING, 1},
+                {"INITIAL", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
+                {"INITIAL", SW360ClearingState.REPORT_AVAILABLE, 1},
+                {"INITIAL", SW360ClearingState.APPROVED, 1},
+                {"INITIAL", null, 1},
                 {"EXTERNAL_SOURCE", SW360ClearingState.NEW_CLEARING, 1},
                 {"EXTERNAL_SOURCE", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
                 {"EXTERNAL_SOURCE", SW360ClearingState.REPORT_AVAILABLE, 0},
