@@ -129,6 +129,12 @@
             <artifactId>frontend-stubs-testing</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.gradle</groupId>
+                    <artifactId>gradle-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- ################################ compliance dependency ########################### -->
         <dependency>
