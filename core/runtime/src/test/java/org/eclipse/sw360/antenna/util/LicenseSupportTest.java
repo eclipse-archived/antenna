@@ -11,7 +11,6 @@
 
 package org.eclipse.sw360.antenna.util;
 
-import org.assertj.core.api.Assertions;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
@@ -20,7 +19,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -92,5 +90,25 @@ public class LicenseSupportTest {
         final LicenseInformation licenseInformation1 = LicenseSupport.fromSPDXExpression(licenseInformation.evaluate());
         assertThat(licenseInformation)
                 .isEqualTo(licenseInformation1);
+    }
+
+    @Test
+    public void testParseSpdxExpression() {
+        final LicenseInformation licenseInformation = LicenseSupport.parseSpdxExpression("BSD AND APACHE-2.0");
+        assertThat(licenseInformation.getLicenses().size())
+                .isEqualTo(2);
+        LicenseStatement licenseStatement = (LicenseStatement) licenseInformation;
+        assertThat(licenseStatement.getOp())
+                .isEqualTo(LicenseOperator.AND);
+    }
+
+    @Test
+    public void testParseSpdxExpressionWithNonValidExpression() {
+        final String license = "APACHE-2.0 PLUS BSD";
+        final LicenseInformation licenseInformation = LicenseSupport.parseSpdxExpression(license);
+        assertThat(licenseInformation.getLicenses().size())
+                .isEqualTo(1);
+        assertThat(licenseInformation.getLicenses().get(0).getName())
+                .isEqualTo(license);
     }
 }

@@ -30,6 +30,7 @@ import org.springframework.http.HttpHeaders;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
@@ -38,14 +39,14 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 public class SW360ExporterTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
     private File csvFile;
+    private SW360Release release;
 
     @Mock
     SW360ComponentClientAdapter componentClientAdapterMock = mock(SW360ComponentClientAdapter.class);
@@ -65,16 +66,19 @@ public class SW360ExporterTest {
     @Before
     public void setUp() throws IOException {
         SW360SparseComponent sparseComponent = SW360TestUtils.mkSW360SparseComponent("testComponent");
-        when(componentClientAdapterMock.getComponents(any()))
+        when(componentClientAdapterMock.getComponents(headers))
                 .thenReturn(Collections.singletonList(sparseComponent));
 
         SW360Component component = SW360TestUtils.mkSW360Component("testComponent");
-        when(componentClientAdapterMock.getComponentById(any(), any()))
+        when(componentClientAdapterMock.getComponentById(any(), eq(headers)))
                 .thenReturn(Optional.of(component));
-        SW360Release release = SW360TestUtils.mkSW360Release("testRelease");
+        release = SW360TestUtils.mkSW360Release("testRelease");
 
-        when(releaseClientAdapterMock.getReleaseById(any(), any()))
+        when(releaseClientAdapterMock.getReleaseById(any(), eq(headers)))
                 .thenReturn(Optional.of(release));
+        Path path = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("test-source.txt")).getPath());
+        when(releaseClientAdapterMock.downloadAttachment(eq(release), any(), any(), eq(headers)))
+                .thenReturn(Optional.ofNullable(path));
 
         when(connectionConfigurationMock.getHttpHeaders())
                 .thenReturn(headers);
@@ -105,5 +109,6 @@ public class SW360ExporterTest {
         assertThat(csvFile).exists();
         CSVParser csvParser = SW360TestUtils.getCsvParser(csvFile);
         assertThat(csvParser.getRecords().size()).isEqualTo(1);
+        verify(releaseClientAdapterMock, atLeast(1)).downloadAttachment(eq(release), any(),any() , eq(headers));
     }
 }

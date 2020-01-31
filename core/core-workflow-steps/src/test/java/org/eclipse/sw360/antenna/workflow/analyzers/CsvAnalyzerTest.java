@@ -102,6 +102,37 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
          assertThat(foundArtifact.askFor(CopyrightStatement.class).get()).isEqualTo(new CopyrightStatement("Copyright 2005-2016 The Apache Software Foundation"));
      }
 
+     @Test
+     public void testThatSourcesIsMappedCorrectly() throws URISyntaxException {
+        configureAnalyzer("dependencyWithSource.csv", ",");
+
+        Set<Artifact> artifacts = analyzer.yield().getArtifacts();
+
+        Artifact foundArtifact = artifacts.stream()
+                .findFirst()
+                .get();
+
+         Optional<ArtifactSourceFile> artifactSourceFile = foundArtifact.askFor(ArtifactSourceFile.class);
+
+         assertThat(artifactSourceFile.isPresent()).isTrue();
+         assertThat(artifactSourceFile.get().get().toFile()).exists();
+         assertThat(artifactSourceFile.get().get().toAbsolutePath().toString()).
+                 isEqualTo(this.getClass().getClassLoader().getResource("CsvAnalyzerTest/test_source.txt").getPath());
+     }
+
+     @Test
+     public void testThatMissingSourcesDontGetMapped() throws URISyntaxException {
+        configureAnalyzer("dependencyWithMissingSource.csv", ",");
+
+         Set<Artifact> artifacts = analyzer.yield().getArtifacts();
+
+         Artifact foundArtifact = artifacts.stream()
+                 .findFirst()
+                 .get();
+
+         assertThat(foundArtifact.askFor(ArtifactSourceFile.class)).isNotPresent();
+     }
+
     @Test
     public void testCopyrightsIsParsedCorrectly() throws URISyntaxException {
         configureAnalyzer("dependencyWithMultipleCopyrights.csv", ",");
@@ -220,7 +251,5 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
                 new ArtifactChangeStatus(ArtifactChangeStatus.ChangeStatus.AS_IS));
 
         assertThat(foundArtifact.askFor(ArtifactCPE.class).get()).isEqualTo(new ArtifactCPE("cpe:2.3:a:apache:commons-csv:1.4"));
-
-        assertThat(foundArtifact.askFor(ArtifactPathnames.class).get().get().get(0)).endsWith("commons-csv.jar");
     }
 }

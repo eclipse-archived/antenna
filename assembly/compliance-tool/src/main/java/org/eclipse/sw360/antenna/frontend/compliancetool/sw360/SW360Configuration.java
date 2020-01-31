@@ -28,10 +28,14 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
     private final String csvFileName;
     private final SW360ConnectionConfiguration connectionConfiguration;
     private final Path targetDir;
+    private final Path sourcesPath;
+    private final Path baseDir;
 
     public SW360Configuration(File propertiesFile) {
         properties = mapPropertiesFile(propertiesFile);
-        targetDir = Paths.get(properties.get("targetDir"));
+        baseDir = Paths.get(properties.get("basedir"));
+        targetDir = baseDir.resolve(properties.get("targetDir"));
+        sourcesPath = baseDir.resolve(properties.get("sourcesDirectory"));
         connectionConfiguration = makeConnectionConfiguration();
         csvFileName = properties.get("csvFilePath");
     }
@@ -53,6 +57,13 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
                 properties.get("proxyHost"), Integer.parseInt(properties.get("proxyPort")));
     }
 
+    public Path getBaseDir() {
+        return this.baseDir;
+    }
+
+    public Path getSourcesPath() {
+        return this.sourcesPath;
+    }
     public Path getTargetDir() {
         return targetDir;
     }

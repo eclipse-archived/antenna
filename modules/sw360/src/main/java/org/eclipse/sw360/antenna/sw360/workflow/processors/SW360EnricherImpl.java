@@ -65,7 +65,7 @@ public class SW360EnricherImpl {
     }
 
     private void mapReleaseToArtifact(SW360Release sw360Release, Artifact artifact) {
-        SW360ReleaseAdapterUtils.convertToArtifact(sw360Release, artifact);
+        SW360ReleaseAdapterUtils.convertToArtifactWithoutSourceFile(sw360Release, artifact);
         updateLicenses(artifact, sw360Release);
 
         if (downloadAttachments) {

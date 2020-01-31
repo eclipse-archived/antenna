@@ -15,11 +15,14 @@ import org.apache.commons.csv.CSVParser;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentEmbedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 
 import java.io.File;
@@ -65,7 +68,16 @@ public class SW360TestUtils {
         sw360Release.setChangeStatus(RELEASE_CHANGESTATUS);
         sw360Release.setCopyrights(RELEASE_COPYRIGHT);
 
+        sw360Release.set_Embedded(mkReleaseEmbedded());
+
         return sw360Release;
+    }
+
+    private static SW360ReleaseEmbedded mkReleaseEmbedded() {
+        SW360ReleaseEmbedded sw360ReleaseEmbedded = new SW360ReleaseEmbedded();
+        sw360ReleaseEmbedded.setAttachments
+                (Collections.singletonList(new SW360SparseAttachment().setAttachmentType(SW360AttachmentType.SOURCE)));
+        return sw360ReleaseEmbedded;
     }
 
     public static SW360SparseRelease mkSW3SparseRelease(String name) {

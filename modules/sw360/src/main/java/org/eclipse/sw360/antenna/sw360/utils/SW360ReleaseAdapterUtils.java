@@ -11,11 +11,9 @@
  */
 package org.eclipse.sw360.antenna.sw360.utils;
 
-import com.here.ort.spdx.SpdxException;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
@@ -29,7 +27,7 @@ import java.util.stream.Collectors;
 public class SW360ReleaseAdapterUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360ReleaseAdapterUtils.class);
 
-    public static Artifact convertToArtifact(SW360Release release, Artifact artifact) {
+    public static Artifact convertToArtifactWithoutSourceFile(SW360Release release, Artifact artifact) {
         artifact.setProprietary(release.isProprietary());
         Optional.ofNullable(release.getCoordinates())
                 .map(Map::values)
@@ -75,12 +73,11 @@ public class SW360ReleaseAdapterUtils {
             hashes.forEach(hash ->
                     artifact.addFact(new ArtifactFilename("", hash)));
         }
-        // TODO missing way to get attachments into facts without downloading which isn't appropriate in utils class
         return artifact;
     }
 
-    private static void addLicenseFact(Optional<String> licenseRawData, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator, boolean isAlreadyPresent) {
-        licenseRawData.map(SW360ReleaseAdapterUtils::parseSpdxExpression)
+    static void addLicenseFact(Optional<String> licenseRawData, Artifact artifact, Function<LicenseInformation, ArtifactLicenseInformation> licenseCreator, boolean isAlreadyPresent) {
+        licenseRawData.map(LicenseSupport::parseSpdxExpression)
                 .map(licenseCreator)
                 .ifPresent(expression -> addFactAndLogWarning(artifact, isAlreadyPresent, expression));
     }
@@ -90,16 +87,6 @@ public class SW360ReleaseAdapterUtils {
             LOGGER.debug("License information of type {} found in SW360. Overwriting existing information in artifact.", expression.getClass().getSimpleName());
         }
         artifact.addFact(expression);
-    }
-
-    private static LicenseInformation parseSpdxExpression(String expression) {
-        try {
-            return LicenseSupport.fromSPDXExpression(expression);
-        } catch (SpdxException e) {
-            License unparsableExpression = new License();
-            unparsableExpression.setName(expression);
-            return unparsableExpression;
-        }
     }
 
     public static SW360Release convertToReleaseWithoutAttachments(Artifact artifact) {
