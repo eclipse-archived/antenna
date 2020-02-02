@@ -11,9 +11,6 @@
 
 package org.eclipse.sw360.antenna.api;
 
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
-
 import java.nio.charset.Charset;
 
 /**
@@ -51,7 +48,7 @@ public interface ILicenseManagementKnowledgeBase {
      * @param id
      * @return Returns the Classification for the id.
      */
-    LicenseClassification getClassificationById(String id);
+    String getClassificationById(String id);
 
-    LicenseThreatGroup getThreatGroupForId(String id);
+    String getThreatGroupForId(String id);
 }
