@@ -12,7 +12,7 @@
 <feature
         id="antenna-p2-resolver-feature"
         label="%featureName"
-        version="1.0.0.qualifier"
+        version="1.0.0.RC8-2"
         provider-name="%providerName"
         plugin="some_plugin"
         os="linux,win32,macosx"
