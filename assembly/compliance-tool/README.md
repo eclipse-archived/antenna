@@ -44,4 +44,13 @@ It has the ability to update release information of already existing releases.
   The created csv file from the exporter can be enriched with data and then used for the updater.
 - The csv functionality and mapping is done with the [CSV Analyzer](https://eclipse.github.io/antenna/1.0.0-RC6/analyzers/csv-analyzer-step.html). 
   The column names and their meanings can be checked there. 
+
+### Environment Properties
+It is possible to give credentials via environment properties. 
+If you want one of the properties in your properties file to be resolved to an environment variable, 
+add the `$` prefix to it and wrap it in curly braces `{}`, additionally to the variable name being written in upper case letters:
+    
+    ```
+    key=${ENV_VARIABLE}
+    ```
   
