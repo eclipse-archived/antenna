@@ -21,12 +21,36 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 public class ComplianceFeatureUtils {
+    /**
+     * Prefix to indicate a property value as environment variable reference.
+     * Properties starting with this prefix are looked up in the environment.
+     */
+    private static final String VARIABLE_PREFIX = "${";
+    private static final String VARIABLE_SUFFIX = "}";
+
     private ComplianceFeatureUtils() {
         throw new IllegalStateException("Utility class");
+    }
+
+    /**
+     * Converts a {@code Properties} object to a String-based map applying the
+     * given mapping function to the property values.
+     *
+     * @param properties  the source properties
+     * @param valueMapper the mapping function for the property values
+     * @return the resulting map
+     */
+    public static Map<String, String> propertiesToMap(Properties properties, UnaryOperator<String> valueMapper) {
+        return properties.entrySet().stream()
+                .collect(Collectors.toMap(
+                        p -> p.getKey().toString(),
+                        p -> valueMapper.apply(p.getValue().toString())));
     }
 
     public static Map<String, String> mapPropertiesFile(File propertiesFile) {
@@ -38,10 +62,7 @@ public class ComplianceFeatureUtils {
             Properties prop = new Properties();
             prop.load(input);
 
-            return prop.entrySet().stream()
-                    .collect(Collectors.toMap(
-                            p -> p.getKey().toString(),
-                            p -> p.getValue().toString()));
+            return propertiesToMap(prop, ComplianceFeatureUtils::mapEnvironmentVariable);
         } catch (IOException e) {
             throw new ConfigurationException("IO exception when reading properties file: " + e.getMessage());
         }
@@ -56,5 +77,27 @@ public class ComplianceFeatureUtils {
         Charset encoding = Charset.forName(properties.get("encoding"));
 
         return new CSVReader(csvFile.toPath(), encoding, delimiter, csvFile.getParentFile().toPath()).createArtifactsList();
+    }
+
+    /**
+     * Processes the value of a property and performs an environment lookup if
+     * necessary. This function checks whether the given property value starts
+     * with a specific prefix. If this is the case, the name (without the
+     * prefix) is looked up in the current environment. If it can be resolved,
+     * the corresponding environment variable value is returned. Otherwise, the
+     * value is returned as is.
+     *
+     * @param value the value read from the properties file
+     * @return the processed value
+     */
+    public static String mapEnvironmentVariable(String value) {
+        if (value.startsWith(VARIABLE_PREFIX) &&
+                value.endsWith(VARIABLE_SUFFIX) &&
+                value.toUpperCase().equals(value)) {
+            return Optional.ofNullable(System.getenv(value.substring(2, value.length() - 1)))
+                    .orElse(value);
+        }
+
+        return value;
     }
 }
