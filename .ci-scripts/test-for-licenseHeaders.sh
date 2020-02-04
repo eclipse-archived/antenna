@@ -59,7 +59,7 @@ getFiles() {
     fi |
         grep -Ev '^./.git' |
         grep -Ev 'META-INF/services' |
-        grep -Ev '\.(csv|rdf|ent|dtd|png|gitignore|gitattributes|md|bat|jar|json|couch|view|MF|xz|index|pdf|odt)' |
+        grep -Ev '\.(csv|rdf|ent|dtd|png|gitignore|gitattributes|md|bat|jar|json|couch|view|MF|xz|index|pdf|odt|MockMaker)' |
         grep -Ev '(gradlew|build.gradle|settings.gradle|gradle.properties|gradle/wrapper)' |
         grep -Ev '(LICENSE|NOTICE|README)' |
         grep -v 'antenna-testing/antenna-system-test/src/test/resources/analyzer'
