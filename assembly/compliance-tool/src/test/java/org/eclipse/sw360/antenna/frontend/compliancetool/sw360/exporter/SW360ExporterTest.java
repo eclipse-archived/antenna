@@ -28,8 +28,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.io.File;
 import java.io.IOException;
@@ -106,8 +108,7 @@ public class SW360ExporterTest {
     @Mock
     SW360ConnectionConfiguration connectionConfigurationMock = mock(SW360ConnectionConfiguration.class);
 
-    @Mock
-    HttpHeaders headers = mock(HttpHeaders.class);
+    HttpHeaders headers = new HttpHeaders();
 
     @Before
     public void setUp() throws IOException {
@@ -166,10 +167,12 @@ public class SW360ExporterTest {
         List<CSVRecord> records = csvParser.getRecords();
 
         assertThat(records.size()).isEqualTo(expectedNumOfReleases);
-        verify(releaseClientAdapterMock, atLeast(expectedNumOfReleases)).downloadAttachment(any(), any(),any() , eq(headers));
+        ArgumentCaptor<HttpHeaders> captor = ArgumentCaptor.forClass(HttpHeaders.class);
+        verify(releaseClientAdapterMock, atLeast(expectedNumOfReleases)).downloadAttachment(any(), any(),any() , captor.capture());
 
         if (expectedNumOfReleases == 2) {
             assertThat(records.get(1).get("Copyrights")).isEqualTo(release.getCopyrights());
+            assertThat(captor.getValue().getAccept()).containsExactly(MediaType.APPLICATION_OCTET_STREAM);
         }
     }
 }

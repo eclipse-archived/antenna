@@ -40,8 +40,8 @@ public class SW360ConfigurationTest {
         String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).getPath();
         File propertiesFile = new File(propertiesFilePath);
         SW360Configuration configuration = new SW360Configuration(propertiesFile);
-        assertThat(configuration.getTargetDir()).isEqualTo(Paths.get("build/compliancetool/"));
-        assertThat(configuration.getCsvFileName()).isEqualTo("<example-path>");
+        assertThat(configuration.getTargetDir()).isEqualTo(Paths.get("./"));
+        assertThat(configuration.getCsvFileName()).isEqualTo("sample.csv");
         assertThat(configuration.getConnectionConfiguration().getSW360ReleaseClientAdapter()).isNotNull();
         assertThat(configuration.getConnectionConfiguration().getSW360ComponentClientAdapter()).isNotNull();
     }

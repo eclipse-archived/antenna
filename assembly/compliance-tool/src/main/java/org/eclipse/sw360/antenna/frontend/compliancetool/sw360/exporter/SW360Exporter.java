@@ -24,9 +24,11 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseCompo
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ClearingState;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -46,6 +48,8 @@ public class SW360Exporter {
     public void execute() {
         connectionConfiguration = configuration.getConnectionConfiguration();
         HttpHeaders headers = connectionConfiguration.getHttpHeaders();
+        HttpHeaders downloadHeader = RestUtils.deepCopyHeaders(headers);
+        downloadHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
 
         Collection<SW360SparseComponent> components = connectionConfiguration.getSW360ComponentClientAdapter().getComponents(headers);
 
@@ -54,7 +58,7 @@ public class SW360Exporter {
         Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases, headers);
 
         List<Artifact> artifacts = sw360ReleasesNotApproved.stream()
-                .map(release -> releaseAsArtifact(release, headers))
+                .map(release -> releaseAsArtifact(release, downloadHeader))
                 .collect(Collectors.toList());
 
         File csvFile = configuration.getTargetDir()
