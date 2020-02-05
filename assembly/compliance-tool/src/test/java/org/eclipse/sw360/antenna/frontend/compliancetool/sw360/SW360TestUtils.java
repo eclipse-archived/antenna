@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class SW360TestUtils {
@@ -97,7 +98,7 @@ public class SW360TestUtils {
         component.setName(name);
         component.setComponentType(COMPONENT_TYPE);
         SW360ComponentEmbedded componentEmbedded = new SW360ComponentEmbedded();
-        componentEmbedded.setReleases(Collections.singletonList(mkSW3SparseRelease(name)));
+        componentEmbedded.setReleases(Arrays.asList(mkSW3SparseRelease(name), mkSW3SparseRelease(name)));
         component.set_Embedded(componentEmbedded);
         return component;
     }

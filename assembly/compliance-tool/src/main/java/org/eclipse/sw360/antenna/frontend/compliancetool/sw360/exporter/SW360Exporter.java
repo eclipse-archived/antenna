@@ -105,7 +105,7 @@ public class SW360Exporter {
                 .map(id -> connectionConfiguration.getSW360ReleaseClientAdapter().getReleaseById(id, headers))
                 .map(Optional::get)
                 .filter(sw360Release -> !isApproved(sw360Release))
-                .sorted(Comparator.comparing(rel -> new Date(rel.getCreatedOn())))
+                .sorted(Comparator.comparing(SW360Release::getCreatedOn).reversed())
                 .collect(Collectors.toList());
     }
 

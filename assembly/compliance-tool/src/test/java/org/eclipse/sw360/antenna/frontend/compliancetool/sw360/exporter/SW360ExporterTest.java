@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter;
 
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
@@ -49,36 +50,36 @@ public class SW360ExporterTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {"INITIAL", SW360ClearingState.NEW_CLEARING, 1},
-                {"INITIAL", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
-                {"INITIAL", SW360ClearingState.REPORT_AVAILABLE, 1},
-                {"INITIAL", SW360ClearingState.APPROVED, 1},
-                {"INITIAL", null, 1},
-                {"EXTERNAL_SOURCE", SW360ClearingState.NEW_CLEARING, 1},
-                {"EXTERNAL_SOURCE", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
+                {"INITIAL", SW360ClearingState.NEW_CLEARING, 2},
+                {"INITIAL", SW360ClearingState.SENT_TO_CLEARING_TOOL, 2},
+                {"INITIAL", SW360ClearingState.REPORT_AVAILABLE, 2},
+                {"INITIAL", SW360ClearingState.APPROVED, 2},
+                {"INITIAL", null, 2},
+                {"EXTERNAL_SOURCE", SW360ClearingState.NEW_CLEARING, 2},
+                {"EXTERNAL_SOURCE", SW360ClearingState.SENT_TO_CLEARING_TOOL, 2},
                 {"EXTERNAL_SOURCE", SW360ClearingState.REPORT_AVAILABLE, 0},
                 {"EXTERNAL_SOURCE", SW360ClearingState.APPROVED, 0},
-                {"EXTERNAL_SOURCE", null, 1},
-                {"AUTO_EXTRACT", SW360ClearingState.NEW_CLEARING, 1},
-                {"AUTO_EXTRACT", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
+                {"EXTERNAL_SOURCE", null, 2},
+                {"AUTO_EXTRACT", SW360ClearingState.NEW_CLEARING, 2},
+                {"AUTO_EXTRACT", SW360ClearingState.SENT_TO_CLEARING_TOOL, 2},
                 {"AUTO_EXTRACT", SW360ClearingState.REPORT_AVAILABLE, 0},
                 {"AUTO_EXTRACT", SW360ClearingState.APPROVED, 0},
-                {"AUTO_EXTRACT", null, 1},
-                {"PROJECT_APPROVED", SW360ClearingState.NEW_CLEARING, 1},
-                {"PROJECT_APPROVED", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
+                {"AUTO_EXTRACT", null, 2},
+                {"PROJECT_APPROVED", SW360ClearingState.NEW_CLEARING, 2},
+                {"PROJECT_APPROVED", SW360ClearingState.SENT_TO_CLEARING_TOOL, 2},
                 {"PROJECT_APPROVED", SW360ClearingState.REPORT_AVAILABLE, 0},
                 {"PROJECT_APPROVED", SW360ClearingState.APPROVED, 0},
-                {"PROJECT_APPROVED", null, 1},
-                {"OSM_APPROVED", SW360ClearingState.NEW_CLEARING, 1},
-                {"OSM_APPROVED", SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
+                {"PROJECT_APPROVED", null, 2},
+                {"OSM_APPROVED", SW360ClearingState.NEW_CLEARING, 2},
+                {"OSM_APPROVED", SW360ClearingState.SENT_TO_CLEARING_TOOL, 2},
                 {"OSM_APPROVED", SW360ClearingState.REPORT_AVAILABLE, 0},
                 {"OSM_APPROVED", SW360ClearingState.APPROVED, 0},
-                {"OSM_APPROVED", null, 1},
-                {null, SW360ClearingState.NEW_CLEARING, 1},
-                {null, SW360ClearingState.SENT_TO_CLEARING_TOOL, 1},
-                {null, SW360ClearingState.REPORT_AVAILABLE, 1},
-                {null, SW360ClearingState.APPROVED, 1},
-                {null, null, 1}
+                {"OSM_APPROVED", null, 2},
+                {null, SW360ClearingState.NEW_CLEARING, 2},
+                {null, SW360ClearingState.SENT_TO_CLEARING_TOOL, 2},
+                {null, SW360ClearingState.REPORT_AVAILABLE, 2},
+                {null, SW360ClearingState.APPROVED, 2},
+                {null, null, 2}
         });
     }
 
@@ -121,10 +122,16 @@ public class SW360ExporterTest {
         release.setClearingState(clearingState);
         release.setSw360ClearingState(sw360ClearingState);
 
+        SW360Release release2 = SW360TestUtils.mkSW360Release("testRelease2");
+        release2.setClearingState(clearingState);
+        release2.setSw360ClearingState(sw360ClearingState);
+        release2.setCopyrights("Higher Date");
+        release2.setCreatedOn("zzzz-mm-dd");
+
         when(releaseClientAdapterMock.getReleaseById(any(), eq(headers)))
-                .thenReturn(Optional.of(release));
+                .thenReturn(Optional.of(release), Optional.of(release2));
         Path path = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("test-source.txt")).getPath());
-        when(releaseClientAdapterMock.downloadAttachment(eq(release), any(), any(), eq(headers)))
+        when(releaseClientAdapterMock.downloadAttachment(any(), any(), any(), eq(headers)))
                 .thenReturn(Optional.ofNullable(path));
 
         when(connectionConfigurationMock.getHttpHeaders())
@@ -155,7 +162,14 @@ public class SW360ExporterTest {
 
         assertThat(csvFile).exists();
         CSVParser csvParser = SW360TestUtils.getCsvParser(csvFile);
-        assertThat(csvParser.getRecords().size()).isEqualTo(expectedNumOfReleases);
-        verify(releaseClientAdapterMock, atLeast(expectedNumOfReleases)).downloadAttachment(eq(release), any(),any() , eq(headers));
+
+        List<CSVRecord> records = csvParser.getRecords();
+
+        assertThat(records.size()).isEqualTo(expectedNumOfReleases);
+        verify(releaseClientAdapterMock, atLeast(expectedNumOfReleases)).downloadAttachment(any(), any(),any() , eq(headers));
+
+        if (expectedNumOfReleases == 2) {
+            assertThat(records.get(1).get("Copyrights")).isEqualTo(release.getCopyrights());
+        }
     }
 }
