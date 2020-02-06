@@ -13,8 +13,6 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +20,6 @@ import java.nio.file.Path;
 
 class ClearingReportGenerator {
     private static final String CLEARING_DOC_SUFFIX = "_clearing.json";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClearingReportGenerator.class);
 
     Path createClearingDocument(SW360Release release, Path targetDir) {
         Path clearingDocument = targetDir.resolve(release.getReleaseId() + CLEARING_DOC_SUFFIX);
@@ -31,7 +28,6 @@ class ClearingReportGenerator {
             mapper.writeValue(Files.newBufferedWriter(clearingDocument), release);
             return clearingDocument;
         } catch (IOException e) {
-            LOGGER.error("Could not write clearing document", e);
             throw new ExecutionException("Could not create clearing document " + clearingDocument.toString(), e);
         }
     }

@@ -19,10 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
@@ -92,8 +89,7 @@ public class ComplianceFeatureUtils {
      */
     public static String mapEnvironmentVariable(String value) {
         if (value.startsWith(VARIABLE_PREFIX) &&
-                value.endsWith(VARIABLE_SUFFIX) &&
-                value.toUpperCase().equals(value)) {
+                value.endsWith(VARIABLE_SUFFIX)) {
             return Optional.ofNullable(System.getenv(value.substring(2, value.length() - 1)))
                     .orElse(value);
         }

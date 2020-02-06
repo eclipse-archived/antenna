@@ -34,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class CSVArtifactMapper {
@@ -56,6 +57,23 @@ public class CSVArtifactMapper {
     private static final String CPE = "CPE";
     private static final String PATH_NAME = "File Name";
     private static final String CLEARING_DOCUMENT_PATH = "Clearing Document";
+    private static final String[] COLUMN_NAMES = {NAME,
+            GROUP,
+            VERSION,
+            COORDINATE_TYPE,
+            EFFECTIVE_LICENSE,
+            DECLARED_LICENSE,
+            OBSERVED_LICENSE,
+            COPYRIGHTS,
+            HASH,
+            SOURCE_URL,
+            RELEASE_ARTIFACT_URL,
+            SWH_ID,
+            CLEARING_STATE,
+            CLEARING_DOCUMENT_PATH,
+            CHANGES_STATUS,
+            CPE,
+            PATH_NAME};
 
     private Path csvFile;
     private Charset encoding;
@@ -72,25 +90,7 @@ public class CSVArtifactMapper {
 
     public Path writeArtifactsToCsvFile(Collection<Artifact> artifacts) {
         try (BufferedWriter writer = Files.newBufferedWriter(csvFile);
-             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(
-                     NAME,
-                     GROUP,
-                     VERSION,
-                     COORDINATE_TYPE,
-                     EFFECTIVE_LICENSE,
-                     DECLARED_LICENSE,
-                     OBSERVED_LICENSE,
-                     COPYRIGHTS,
-                     HASH,
-                     SOURCE_URL,
-                     RELEASE_ARTIFACT_URL,
-                     SWH_ID,
-                     CLEARING_STATE,
-                     CLEARING_DOCUMENT_PATH,
-                     CHANGES_STATUS,
-                     CPE,
-                     PATH_NAME
-             ))
+             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(COLUMN_NAMES))
         ) {
             for (Artifact artifact : artifacts) {
                 csvPrinter.printRecords(makeCsvRecordsFromArtifact(artifact));
@@ -211,70 +211,79 @@ public class CSVArtifactMapper {
     }
 
     private void addOptionalArtifactFacts(CSVRecord record, Artifact artifact) {
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, EFFECTIVE_LICENSE)) {
-            License license = new License();
-            license.setName(record.get(EFFECTIVE_LICENSE));
-            artifact.addFact(new OverriddenLicenseInformation(license));
-        }
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, DECLARED_LICENSE)) {
-            License license = new License();
-            license.setName(record.get(DECLARED_LICENSE));
-            artifact.addFact(new DeclaredLicenseInformation(license));
-        }
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, OBSERVED_LICENSE)) {
-            License license = new License();
-            license.setName(record.get(OBSERVED_LICENSE));
-            artifact.addFact(new ObservedLicenseInformation(license));
-        }
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, COPYRIGHTS)) {
-            artifact.addFact(new CopyrightStatement(record.get(COPYRIGHTS)));
-        }
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, HASH)) {
-            artifact.addFact(new ArtifactFilename(null, record.get(HASH)));
-        }
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, SOURCE_URL)) {
-            artifact.addFact(new ArtifactSourceUrl(record.get(SOURCE_URL)));
-        }
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, RELEASE_ARTIFACT_URL)) {
-            artifact.addFact(new ArtifactReleaseTagURL(record.get(RELEASE_ARTIFACT_URL)));
-        }
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, SWH_ID)) {
-            try {
-                artifact.addFact(new ArtifactSoftwareHeritageID.Builder(record.get(SWH_ID)).build());
-            } catch (IllegalArgumentException e) {
-                LOGGER.warn(e.getMessage());
-            }
-        }
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, CLEARING_STATE)) {
-            artifact.addFact(new ArtifactClearingState(
-                    ArtifactClearingState.ClearingState.valueOf(record.get(CLEARING_STATE))));
-        }
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, CHANGES_STATUS)) {
-            artifact.addFact(new ArtifactChangeStatus(
-                    ArtifactChangeStatus.ChangeStatus.valueOf(record.get(CHANGES_STATUS))));
-        }
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, CPE)) {
-            artifact.addFact(new ArtifactCPE(record.get(CPE)));
-        }
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, PATH_NAME)) {
-            String pathName = record.get(PATH_NAME);
-            Path path = getPathFromPathname(pathName);
-            if (Files.exists(path)) {
-                artifact.addFact(new ArtifactSourceFile(path));
-            } else {
-                artifact.getMainCoordinate().ifPresent(coordinate ->
-                        LOGGER.debug("The given source file {} for artifact {} does not exist.", path, coordinate));
-            }
-        }
-        if (checkIfRecordIsMappedAndNotEmptyForParameter(record, CLEARING_DOCUMENT_PATH)) {
-            Path clearingDoc = baseDir.resolve(record.get(CLEARING_DOCUMENT_PATH));
-            if (Files.exists(clearingDoc)) {
-                artifact.addFact(new ArtifactClearingDocument(clearingDoc));
-            } else {
-                LOGGER.debug("Ignoring non existent clearing document {} for artifact {}.", clearingDoc,
-                        artifact.getMainCoordinate().map(Coordinate::getName).orElse("undefined"));
-            }
-        }
+        Arrays.stream(COLUMN_NAMES)
+                .filter(column -> checkIfRecordIsMappedAndNotEmptyForColumn(record, column))
+                .forEach(column -> {
+                    switch (column) {
+                        case EFFECTIVE_LICENSE:
+                            addLicenseFact(record, artifact, EFFECTIVE_LICENSE, OverriddenLicenseInformation::new);
+                            break;
+                        case DECLARED_LICENSE:
+                            addLicenseFact(record, artifact, DECLARED_LICENSE, DeclaredLicenseInformation::new);
+                            break;
+                        case OBSERVED_LICENSE:
+                            addLicenseFact(record, artifact, OBSERVED_LICENSE, ObservedLicenseInformation::new);
+                            break;
+                        case COPYRIGHTS:
+                            artifact.addFact(new CopyrightStatement(record.get(COPYRIGHTS)));
+                            break;
+                        case HASH:
+                            artifact.addFact(new ArtifactFilename(null, record.get(HASH)));
+                            break;
+                        case SOURCE_URL:
+                            artifact.addFact(new ArtifactSourceUrl(record.get(SOURCE_URL)));
+                            break;
+                        case RELEASE_ARTIFACT_URL:
+                            artifact.addFact(new ArtifactReleaseTagURL(record.get(RELEASE_ARTIFACT_URL)));
+                            break;
+                        case SWH_ID:
+                            try {
+                                artifact.addFact(new ArtifactSoftwareHeritageID.Builder(record.get(SWH_ID)).build());
+                            } catch (IllegalArgumentException e) {
+                                LOGGER.warn(e.getMessage());
+                            }
+                            break;
+                        case CLEARING_STATE:
+                            artifact.addFact(new ArtifactClearingState(
+                                    ArtifactClearingState.ClearingState.valueOf(record.get(CLEARING_STATE))));
+                            break;
+                        case CHANGES_STATUS:
+                            artifact.addFact(new ArtifactChangeStatus(
+                                    ArtifactChangeStatus.ChangeStatus.valueOf(record.get(CHANGES_STATUS))));
+                            break;
+                        case CPE:
+                            artifact.addFact(new ArtifactCPE(record.get(CPE)));
+                            break;
+                        case PATH_NAME:
+                            String pathName = record.get(PATH_NAME);
+                            Path path = getPathFromPathname(pathName);
+                            if (Files.exists(path)) {
+                                artifact.addFact(new ArtifactSourceFile(path));
+                            } else {
+                                artifact.getMainCoordinate().ifPresent(coordinate ->
+                                        LOGGER.debug("The given source file {} for artifact {} does not exist.", path, coordinate));
+                            }
+                            break;
+                        case CLEARING_DOCUMENT_PATH:
+                            Path clearingDoc = baseDir.resolve(record.get(CLEARING_DOCUMENT_PATH));
+                            if (Files.exists(clearingDoc)) {
+                                artifact.addFact(new ArtifactClearingDocument(clearingDoc));
+                            } else {
+                                artifact.getMainCoordinate().ifPresent(coordinate ->
+                                        LOGGER.debug("Ignoring non existent clearing document {} for artifact {}.", clearingDoc, coordinate));
+                            }
+                            break;
+                        default: // default case not needed
+                            break;
+                    }
+                });
+    }
+
+    private static void addLicenseFact(CSVRecord record, Artifact artifact, String licenseType,
+                                       Function<License, ArtifactLicenseInformation> licenseFactCreator) {
+        License license = new License();
+        license.setName(record.get(licenseType));
+        artifact.addFact(licenseFactCreator.apply(license));
     }
 
     private Path getPathFromPathname(String pathName) {
@@ -283,8 +292,8 @@ public class CSVArtifactMapper {
                 : baseDir.resolve(Paths.get(pathName)).toAbsolutePath();
     }
 
-    private boolean checkIfRecordIsMappedAndNotEmptyForParameter(CSVRecord record, String parameter) {
-        return record.isMapped(parameter) && !record.get(parameter).isEmpty();
+    private static boolean checkIfRecordIsMappedAndNotEmptyForColumn(CSVRecord record, String column) {
+        return record.isMapped(column) && !record.get(column).isEmpty();
     }
 
     private Coordinate createCoordinates(CSVRecord record) {

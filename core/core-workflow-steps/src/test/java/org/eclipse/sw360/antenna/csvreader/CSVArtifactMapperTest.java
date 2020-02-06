@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.csvreader;
 
-import com.here.ort.spdx.SpdxException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
