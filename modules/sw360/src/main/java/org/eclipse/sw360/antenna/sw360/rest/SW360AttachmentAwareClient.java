@@ -74,7 +74,7 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
     private T uploadAndAttachAttachment(T itemToModify, Path fileToAttach, HttpEntity<MultiValueMap<String, Object>> requestEntity) {
         final String self = itemToModify.get_Links().getSelf().getHref();
         try {
-            ResponseEntity<T> response = restTemplate.postForEntity(self + ATTACHMENTS_ENDPOINT, requestEntity, getHandledClassType());
+            ResponseEntity<T> response = getRestTemplate().postForEntity(self + ATTACHMENTS_ENDPOINT, requestEntity, getHandledClassType());
 
             checkRestStatus(response);
             Validate.validState(response.getBody() != null);
@@ -100,7 +100,7 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
         String url = itemHref + "/attachments/" + attachmentId;
         try {
             HttpEntity<String> httpEntity = new HttpEntity<>(header);
-            ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, byte[].class);
+            ResponseEntity<byte[]> response = getRestTemplate().exchange(url, HttpMethod.GET, httpEntity, byte[].class);
             checkRestStatus(response);
             Validate.validState(response.getBody() != null);
 

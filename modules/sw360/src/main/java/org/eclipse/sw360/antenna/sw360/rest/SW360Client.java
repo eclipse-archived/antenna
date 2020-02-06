@@ -18,17 +18,26 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.Collections;
 
 public abstract class SW360Client {
     private final boolean proxyUse;
-    protected RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+
+    /**
+     * Creates a new instance of {@code SW360Client} and initializes it with
+     * the {@code RestTemplate} to be used for all HTTP requests.
+     *
+     * @param restTemplate the {@code RestTemplate}
+     */
+    protected SW360Client(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+        proxyUse = false;
+    }
 
     public abstract String getEndpoint();
 
@@ -46,7 +55,7 @@ public abstract class SW360Client {
     }
 
     protected <T> ResponseEntity<T> doRestCall(String url, HttpMethod method, HttpEntity<?> httpEntity, Class<T> responseType) {
-        return this.restTemplate.
+        return this.getRestTemplate().
                 exchange(url,
                         method,
                         httpEntity,
@@ -54,7 +63,7 @@ public abstract class SW360Client {
     }
 
     protected <T> ResponseEntity<T> doRestCall(String url, HttpMethod method, HttpEntity<?> httpEntity, ParameterizedTypeReference<T> responseType) {
-        return this.restTemplate.
+        return this.getRestTemplate().
                 exchange(url,
                         method,
                         httpEntity,
@@ -62,7 +71,7 @@ public abstract class SW360Client {
     }
 
     protected <T> ResponseEntity<T> doRestGET(String url, HttpHeaders header, ParameterizedTypeReference<T> responseType) {
-        HttpEntity<String> httpEntity = RestUtils.getHttpEntity(Collections.emptyMap(), header);
+        HttpEntity<String> httpEntity = RestUtils.getHttpEntity(null, header);
         return doRestCall(url, HttpMethod.GET, httpEntity, responseType);
     }
 
@@ -71,14 +80,17 @@ public abstract class SW360Client {
     }
 
     protected <T> ResponseEntity<T> doRestPATCH(String url, HttpEntity<?> httpEntity, ParameterizedTypeReference<T> responseType) {
-        if(proxyUse) {
-            throw new UnsupportedOperationException("The patch functionality used when updating releases does not support proxy use");
-        }
-        RestTemplate restTemplate = new RestTemplate();
+        return doRestCall(url, HttpMethod.PATCH, httpEntity, responseType);
+    }
 
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-        restTemplate.setRequestFactory(requestFactory);
-
-        return restTemplate.exchange(url, HttpMethod.PATCH, httpEntity, responseType);
+    /**
+     * Returns the {@code RestTemplate} used by this client to interact with
+     * the server. The template has been initialized from the connection
+     * configuration and thus can be used for all requests.
+     *
+     * @return the {@code RestTemplate}
+     */
+    protected RestTemplate getRestTemplate() {
+        return restTemplate;
     }
 }
