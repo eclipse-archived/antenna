@@ -33,8 +33,6 @@ ${docNameCap} is a tool to automate your open source license compliance processe
  
  ```antenna-model``` contains a xsd file that describes more or less the domain model of the application. However, it is not that clear. Some of the classes are solely used in the ${docNameCap} config others are also in the code. Needs to be cleaned up.
 
- ```antenna-p2``` contains the p2 product which is used to extract information from p2 repositories
- 
  ```antenna-sw360``` is a connector to connect to an sw360 instance to fetch data from there and write the current state of the project to this instance.
  
  ```antenna-testing``` is a pom file that configures the antenna-maven-plugin so that it runs ${docNameCap} on the ${docNameCap} project itself. This needs to be replaced with a proper example project.
@@ -121,8 +119,3 @@ Common to all three components is the way how they should be instantiated.
 There needs to be a default constructor and a configure method.
 Since the components are instantiated via reflection the default constructor is used. Followed by a call to the configure method with a Map<String, String> containing the configuration.
 See how to configure ${docNameCap} to see how the configuration is passed.
-
-#[[##]]# How to develop rules
-${docNameCap} can be used to test artifacts against certain rules.
-You can create your own rule set and add it as an additional workstep to your workflow configuration ([Rule Engine](./processors/rule-engine.html)).
-Here is a guide that explains how to develop the rules: [Rule Development](rule-development.html).

@@ -44,12 +44,6 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>drools-checker</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>spdx-license-knowledge-base</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
