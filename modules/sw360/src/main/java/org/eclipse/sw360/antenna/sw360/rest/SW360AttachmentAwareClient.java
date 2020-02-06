@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -18,7 +19,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
-import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -27,6 +27,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,8 +41,8 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360AttachmentAwareClient.class);
     private static final String ATTACHMENTS_ENDPOINT = "/attachments";
 
-    public SW360AttachmentAwareClient(ProxySettings proxySettings) {
-        super(proxySettings);
+    protected SW360AttachmentAwareClient(RestTemplate template) {
+        super(template);
     }
 
     public abstract Class<T> getHandledClassType();

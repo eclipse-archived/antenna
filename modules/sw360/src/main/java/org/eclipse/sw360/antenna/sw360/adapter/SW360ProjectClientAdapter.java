@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2017-2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -21,8 +22,8 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ProjectAdapterUtils;
-import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,8 +34,8 @@ import java.util.stream.Collectors;
 public class SW360ProjectClientAdapter {
     private final SW360ProjectClient projectClient;
 
-    public SW360ProjectClientAdapter(String restUrl, ProxySettings proxySettings) {
-        this.projectClient = new SW360ProjectClient(restUrl, proxySettings);
+    public SW360ProjectClientAdapter(String restUrl, RestTemplate template) {
+        this.projectClient = new SW360ProjectClient(restUrl, template);
     }
 
     public Optional<String> getProjectIdByNameAndVersion(IProject project, HttpHeaders header) {

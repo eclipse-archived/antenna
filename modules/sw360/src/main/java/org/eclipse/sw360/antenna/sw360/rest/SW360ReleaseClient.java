@@ -1,6 +1,7 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
  * Copyright (c) Verifa Oy 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -16,7 +17,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
-import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -26,21 +26,27 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.*;
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.checkRestStatus;
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSaveOrThrow;
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSw360SparseReleases;
 
 public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360ReleaseClient.class);
     private static final String RELEASES_ENDPOINT_APPENDIX = "/releases";
     private final String restUrl;
 
-    public SW360ReleaseClient(String restUrl, ProxySettings proxySettings) {
-        super(proxySettings);
+    public SW360ReleaseClient(String restUrl, RestTemplate template) {
+        super(template);
         this.restUrl = restUrl;
     }
 

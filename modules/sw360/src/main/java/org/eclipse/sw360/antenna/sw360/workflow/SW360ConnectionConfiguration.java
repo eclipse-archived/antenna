@@ -34,7 +34,6 @@ public class SW360ConnectionConfiguration {
     private final String clientId;
     private final String clientPassword;
 
-    private final ProxySettings proxySettings;
     private final SW360AuthenticationClient authenticationClient;
 
     public SW360ConnectionConfiguration(Getter<String> getConfigValue, Getter<Boolean> getBooleanConfigValue, String proxyHost, int proxyPort) {
@@ -47,42 +46,48 @@ public class SW360ConnectionConfiguration {
         clientPassword = getConfigValue.apply(SW360ConnectionConfiguration.CLIENT_PASSWORD_KEY);
 
         // Proxy configuration
+        //TODO use proxy setting for template creation
         boolean proxyUse = getBooleanConfigValue.apply(SW360ConnectionConfiguration.PROXY_USE);
-        proxySettings = new ProxySettings(proxyUse, proxyHost, proxyPort);
+        ProxySettings proxySettings = new ProxySettings(proxyUse, proxyHost, proxyPort);
+        System.out.println(proxySettings);
 
         this.authenticationClient = getSW360AuthenticationClient();
     }
 
-    public SW360ConnectionConfiguration(String restServerUrl, String authServerUrl, String user, String password, String clientId, String clientPassword, String proxyHost, int proxyPort, boolean proxyUse) {
+    public SW360ConnectionConfiguration(String restServerUrl, String authServerUrl, String user, String password, String clientId, String clientPassword) {
         this.restServerUrl = restServerUrl;
         this.authServerUrl = authServerUrl;
         this.user = user;
         this.password = password;
         this.clientId = clientId;
         this.clientPassword = clientPassword;
-        proxySettings = new ProxySettings(proxyUse, proxyHost, proxyPort);
 
         this.authenticationClient = getSW360AuthenticationClient();
     }
 
     public SW360AuthenticationClient getSW360AuthenticationClient() {
-        return new SW360AuthenticationClient(authServerUrl, proxySettings);
+        //TODO pass in shared REST template
+        return new SW360AuthenticationClient(authServerUrl, null);
     }
 
     public SW360ComponentClientAdapter getSW360ComponentClientAdapter() {
-        return new SW360ComponentClientAdapter(restServerUrl, proxySettings);
+        //TODO pass in shared REST template
+        return new SW360ComponentClientAdapter(restServerUrl, null);
     }
 
     public SW360ReleaseClientAdapter getSW360ReleaseClientAdapter() {
-        return new SW360ReleaseClientAdapter(restServerUrl, proxySettings);
+        //TODO pass in shared REST template
+        return new SW360ReleaseClientAdapter(restServerUrl, null);
     }
 
     public SW360LicenseClientAdapter getSW360LicenseClientAdapter() {
-        return new SW360LicenseClientAdapter(restServerUrl, proxySettings);
+        //TODO pass in shared REST template
+        return new SW360LicenseClientAdapter(restServerUrl, null);
     }
 
     public SW360ProjectClientAdapter getSW360ProjectClientAdapter() {
-        return new SW360ProjectClientAdapter(restServerUrl, proxySettings);
+        //TODO pass in shared REST template
+        return new SW360ProjectClientAdapter(restServerUrl, null);
     }
 
     public HttpHeaders getHttpHeaders() {

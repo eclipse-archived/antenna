@@ -1,6 +1,7 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2017-2019.
  * Copyright (c) Verifa Oy 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -15,10 +16,14 @@ package org.eclipse.sw360.antenna.sw360.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
-import org.eclipse.sw360.antenna.util.ProxySettings;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -39,8 +44,8 @@ public class SW360AuthenticationClient extends SW360Client {
 
     private final String authServerUrl;
 
-    public SW360AuthenticationClient(String authServerUrl, ProxySettings proxySettings) {
-        super(proxySettings);
+    public SW360AuthenticationClient(String authServerUrl, RestTemplate template) {
+        super(template);
         this.authServerUrl = authServerUrl;
     }
 
