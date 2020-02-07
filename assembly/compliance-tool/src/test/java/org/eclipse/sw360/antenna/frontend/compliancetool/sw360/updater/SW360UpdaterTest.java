@@ -10,46 +10,168 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
+import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
-import org.junit.Before;
+import org.jetbrains.annotations.NotNull;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mock;
+import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.springframework.http.HttpHeaders;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@RunWith(Parameterized.class)
 public class SW360UpdaterTest {
-    @Mock
-    public SW360Configuration configurationMock = mock(SW360Configuration.class);
+    private static final String CLEARING_DOC = "clearing.doc";
 
-    @Mock
-    SW360UpdaterImpl updater = mock(SW360UpdaterImpl.class);
+    private static final HttpHeaders HEADERS = mock(HttpHeaders.class);
 
-    @Before
-    public void setUp() {
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
+    private SW360Configuration configurationMock = mock(SW360Configuration.class);
+    private SW360ReleaseClientAdapter releaseClientAdapter = mock(SW360ReleaseClientAdapter.class);
+
+    private final String clearingState;
+    private final boolean clearingDocAvailable;
+    private final boolean expectUpload;
+
+    public SW360UpdaterTest(String clearingState, boolean clearingDocAvailable, boolean expectUpload) {
+        this.clearingState = clearingState;
+        this.clearingDocAvailable = clearingDocAvailable;
+        this.expectUpload = expectUpload;
+    }
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+                {"OSM_APPROVED", true, true},
+                {"EXTERNAL_SOURCE", true, true},
+                {"AUTO_EXTRACT", true, true},
+                {"PROJECT_APPROVED", true, true},
+                {"INITIAL", true, false},
+                {"", true, false},
+                {"OSM_APPROVED", false, true},
+                {"EXTERNAL_SOURCE", false, true},
+                {"AUTO_EXTRACT", false, true},
+                {"PROJECT_APPROVED", false, true},
+                {"INITIAL", false, false},
+                {"", false, false}
+
+        });
+    }
+
+    private void initConnectionConfiguration() {
+        SW360ConnectionConfiguration connectionConfiguration = mock(SW360ConnectionConfiguration.class);
+
+        when(connectionConfiguration.getSW360ReleaseClientAdapter())
+                .thenReturn(releaseClientAdapter);
+        when(connectionConfiguration.getHttpHeaders())
+                .thenReturn(HEADERS);
+        when(configurationMock.getConnectionConfiguration())
+                .thenReturn(connectionConfiguration);
+    }
+
+    private void initBasicConfiguration() throws IOException {
         String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).getPath();
         Map<String, String> propertiesMap = ComplianceFeatureUtils.mapPropertiesFile(new File(propertiesFilePath));
+
+        Path csvFile = writeCsvFile();
+        propertiesMap.put("csvFilePath", csvFile.toString());
+
         when(configurationMock.getProperties()).
                 thenReturn(propertiesMap);
-        when(updater.artifactToReleaseInSW360(any()))
-                .thenReturn(new SW360Release());
+        when(configurationMock.getBaseDir())
+                .thenReturn(Paths.get(propertiesMap.get("csvFilePath")).getParent());
+        when(configurationMock.getTargetDir())
+                .thenReturn(getTargetDir());
+    }
+
+    @NotNull
+    private Path getTargetDir() {
+        return folder.getRoot().toPath();
     }
 
     @Test
-    public void testExecute() {
+    public void testExecute() throws IOException {
+        initBasicConfiguration();
+
+        initConnectionConfiguration();
+
+        SW360UpdaterImpl updater = mock(SW360UpdaterImpl.class);
+        when(updater.artifactToReleaseInSW360(any()))
+                .thenReturn(new SW360Release());
+        SW360Release release = mock(SW360Release.class);
+        when(release.getClearingState()).thenReturn(clearingState);
+        when(updater.artifactToReleaseInSW360(any()))
+                .thenReturn(release);
+
+        ClearingReportGenerator generator = mock(ClearingReportGenerator.class);
+        when(generator.createClearingDocument(any(), any()))
+                .thenReturn(getTargetDir().resolve(CLEARING_DOC));
+
         SW360Updater sw360Updater = new SW360Updater();
         sw360Updater.setUpdater(updater);
         sw360Updater.setConfiguration(configurationMock);
+        sw360Updater.setClearingReportGenerator(generator);
 
         sw360Updater.execute();
 
-        verify(updater, atLeast(1)).artifactToReleaseInSW360(any());
+        Map<Path, SW360AttachmentType> testAttachmentMap = createExpectedAttachmentMap();
+
+        if (expectUpload && !clearingDocAvailable) {
+            verify(generator).createClearingDocument(release, getTargetDir());
+        }
+        verify(updater).artifactToReleaseInSW360(any());
+        verify(releaseClientAdapter, times(expectUpload ? 1 : 0)).uploadAttachments(any(), eq(testAttachmentMap), eq(HEADERS));
+    }
+
+    private Map<Path, SW360AttachmentType> createExpectedAttachmentMap() {
+        if (clearingDocAvailable) {
+            return Collections
+                    .singletonMap(configurationMock.getBaseDir().resolve(CLEARING_DOC), SW360AttachmentType.CLEARING_REPORT);
+        } else if (expectUpload) {
+            return Collections
+                    .singletonMap(getTargetDir().resolve(CLEARING_DOC), SW360AttachmentType.CLEARING_REPORT);
+        }
+
+        return Collections.emptyMap();
+    }
+
+    private Path writeCsvFile() throws IOException {
+        final File tempCsvFile = folder.newFile("test.csv");
+        String clearingDocPath = "";
+        if (clearingDocAvailable) {
+            File clearingDoc = folder.newFile(CLEARING_DOC);
+            clearingDocPath = clearingDoc.getPath();
+        }
+        String csvContent = String.format("Artifact Id,Group Id,Version,Coordinate Type,Clearing State,Clearing Document%s" +
+                "test,test,x.x.x,mvn,%s,%s%s", System.lineSeparator(), clearingState, clearingDocPath, System.lineSeparator());
+        FileUtils.writeStringToFile(tempCsvFile, csvContent, StandardCharsets.UTF_8);
+        return tempCsvFile.toPath();
     }
 }

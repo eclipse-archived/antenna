@@ -12,15 +12,25 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingDocument;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
+import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
+import org.springframework.http.HttpHeaders;
 
+import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils.getArtifactsFromCsvFile;
 
 public class SW360Updater {
     private SW360UpdaterImpl updater;
     private SW360Configuration configuration;
+    private ClearingReportGenerator generator;
 
     public void setUpdater(SW360UpdaterImpl updater) {
         this.updater = updater;
@@ -30,9 +40,33 @@ public class SW360Updater {
         this.configuration = configuration;
     }
 
+    public void setClearingReportGenerator(ClearingReportGenerator generator) {
+        this.generator = generator;
+    }
+
     public void execute() {
         Collection<Artifact> artifacts = getArtifactsFromCsvFile(configuration.getProperties());
+        HttpHeaders headers = configuration.getConnectionConfiguration().getHttpHeaders();
 
-        artifacts.forEach(updater::artifactToReleaseInSW360);
+        artifacts.forEach(artifact -> uploadReleaseWithClearingDocumentFromArtifact(artifact, headers));
+    }
+
+    private void uploadReleaseWithClearingDocumentFromArtifact(Artifact artifact, HttpHeaders headers) {
+        SW360Release release = updater.artifactToReleaseInSW360(artifact);
+        SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnectionConfiguration().getSW360ReleaseClientAdapter();
+
+        if (release.getClearingState() != null &&
+                !release.getClearingState().isEmpty() &&
+                ArtifactClearingState.ClearingState.valueOf(release.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
+            Map<Path, SW360AttachmentType> attachmentPathMap =
+                    Collections.singletonMap(getOrGenerateClearingDocument(release, artifact),
+                            SW360AttachmentType.CLEARING_REPORT);
+            releaseClientAdapter.uploadAttachments(release, attachmentPathMap, headers);
+        }
+    }
+
+    private Path getOrGenerateClearingDocument(SW360Release release, Artifact artifact) {
+        return artifact.askFor(ArtifactClearingDocument.class).map(ArtifactClearingDocument::get)
+                .orElse(generator.createClearingDocument(release, configuration.getTargetDir()));
     }
 }

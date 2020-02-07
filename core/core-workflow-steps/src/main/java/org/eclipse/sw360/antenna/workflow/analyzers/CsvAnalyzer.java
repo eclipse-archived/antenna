@@ -14,7 +14,7 @@ package org.eclipse.sw360.antenna.workflow.analyzers;
 
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer;
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult;
-import org.eclipse.sw360.antenna.csvreader.CSVReader;
+import org.eclipse.sw360.antenna.csvreader.CSVArtifactMapper;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 
 import java.util.Collection;
@@ -31,7 +31,7 @@ public class CsvAnalyzer extends ManualAnalyzer {
 
     @Override
     public WorkflowStepResult yield() {
-        Collection<Artifact> artifacts = new CSVReader(
+        Collection<Artifact> artifacts = new CSVArtifactMapper(
                 componentInfoFile.toPath(),
                 context.getToolConfiguration().getEncoding(),
                 rowDelimiter,

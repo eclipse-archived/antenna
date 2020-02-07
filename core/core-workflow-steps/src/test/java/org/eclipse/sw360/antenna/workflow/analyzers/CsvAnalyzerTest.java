@@ -134,6 +134,22 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
      }
 
     @Test
+    public void testExistenceOfClearingDocumentIsChecked() throws URISyntaxException {
+        configureAnalyzer("dependencies.csv", ",");
+
+        Set<Artifact> artifacts = analyzer.yield().getArtifacts();
+
+        Artifact foundArtifact = artifacts.stream()
+                .filter(artifact -> "commons-cli".equals(artifact.getCoordinateForType(PackageURL.StandardTypes.MAVEN)
+                        .map(Coordinate::getName)
+                        .orElse("")))
+                .findFirst()
+                .get();
+
+        assertThat(foundArtifact.askFor(ArtifactClearingDocument.class)).isNotPresent();
+    }
+
+    @Test
     public void testCopyrightsIsParsedCorrectly() throws URISyntaxException {
         configureAnalyzer("dependencyWithMultipleCopyrights.csv", ",");
         Set<Artifact> artifacts = analyzer.yield().getArtifacts();
@@ -251,5 +267,7 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
                 new ArtifactChangeStatus(ArtifactChangeStatus.ChangeStatus.AS_IS));
 
         assertThat(foundArtifact.askFor(ArtifactCPE.class).get()).isEqualTo(new ArtifactCPE("cpe:2.3:a:apache:commons-csv:1.4"));
+
+        assertThat(foundArtifact.askFor(ArtifactClearingDocument.class).get().get().getFileName().toString()).isEqualTo("clearing.json");
     }
 }

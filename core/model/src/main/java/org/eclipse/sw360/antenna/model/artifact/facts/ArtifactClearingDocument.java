@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -8,33 +8,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.eclipse.sw360.antenna.model.artifact.facts;
 
 import org.eclipse.sw360.antenna.model.artifact.ArtifactFact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactFactWithPayload;
 
-public class ArtifactClearingState extends ArtifactFactWithPayload<ArtifactClearingState.ClearingState>{
+import java.nio.file.Path;
 
-    public ArtifactClearingState(ClearingState clearingState) {
-        super(clearingState);
+public class ArtifactClearingDocument extends ArtifactFactWithPayload<Path> {
+    public ArtifactClearingDocument(Path payload) {
+        super(payload);
     }
 
     @Override
     public String getFactContentName() {
-        return "Clearing State";
+        return "Clearing document";
     }
 
     @Override
     public Class<? extends ArtifactFact> getKey() {
-        return ArtifactClearingState.class;
-    }
-
-    public enum ClearingState {
-        INITIAL,
-        EXTERNAL_SOURCE,
-        AUTO_EXTRACT,
-        PROJECT_APPROVED,
-        OSM_APPROVED
+        return ArtifactClearingDocument.class;
     }
 }

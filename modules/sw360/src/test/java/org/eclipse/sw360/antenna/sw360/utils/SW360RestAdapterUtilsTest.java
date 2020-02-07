@@ -33,7 +33,7 @@ public class SW360RestAdapterUtilsTest {
         SW360Release releaseFromArtifact = SW360ReleaseAdapterUtils.convertToReleaseWithoutAttachments(artifact);
         Artifact artifactFromRelease = SW360ReleaseAdapterUtils.convertToArtifactWithoutSourceFile(releaseFromArtifact, new Artifact("SW360"));
 
-        assertThat(artifactFromRelease.askForAll(ArtifactFact.class)).isEqualTo(artifact.askForAll(ArtifactFact.class));
+        assertThat(artifactFromRelease.askForAll(ArtifactFact.class)).containsAll(artifact.askForAll(ArtifactFact.class));
         assertThat(artifactFromRelease).isEqualTo(artifact);
     }
 }

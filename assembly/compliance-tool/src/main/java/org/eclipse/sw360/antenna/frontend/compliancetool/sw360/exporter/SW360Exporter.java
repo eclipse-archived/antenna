@@ -11,7 +11,7 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter;
 
-import org.eclipse.sw360.antenna.csvreader.CSVReader;
+import org.eclipse.sw360.antenna.csvreader.CSVArtifactMapper;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
@@ -21,11 +21,14 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ClearingState;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -45,6 +48,8 @@ public class SW360Exporter {
     public void execute() {
         connectionConfiguration = configuration.getConnectionConfiguration();
         HttpHeaders headers = connectionConfiguration.getHttpHeaders();
+        HttpHeaders downloadHeader = RestUtils.deepCopyHeaders(headers);
+        downloadHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
 
         Collection<SW360SparseComponent> components = connectionConfiguration.getSW360ComponentClientAdapter().getComponents(headers);
 
@@ -53,19 +58,19 @@ public class SW360Exporter {
         Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases, headers);
 
         List<Artifact> artifacts = sw360ReleasesNotApproved.stream()
-                .map(release -> releaseAsArtifact(release, headers))
+                .map(release -> releaseAsArtifact(release, downloadHeader))
                 .collect(Collectors.toList());
 
         File csvFile = configuration.getTargetDir()
                 .resolve(configuration.getCsvFileName())
                 .toFile();
 
-        CSVReader csvReader = new CSVReader(csvFile.toPath(),
+        CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(),
                 Charset.forName(configuration.getProperties().get("encoding")),
                 configuration.getProperties().get("delimiter").charAt(0),
                 Paths.get(configuration.getProperties().get("basedir")));
 
-        csvReader.writeArtifactsToCsvFile(artifacts);
+        csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
     }
 
     private Artifact releaseAsArtifact(SW360Release release, HttpHeaders headers) {
@@ -104,14 +109,17 @@ public class SW360Exporter {
                 .map(id -> connectionConfiguration.getSW360ReleaseClientAdapter().getReleaseById(id, headers))
                 .map(Optional::get)
                 .filter(sw360Release -> !isApproved(sw360Release))
-                .sorted(Comparator.comparing(rel -> new Date(rel.getCreatedOn())))
+                .sorted(Comparator.comparing(SW360Release::getCreatedOn).reversed())
                 .collect(Collectors.toList());
     }
 
     private boolean isApproved(SW360Release sw360Release) {
-        return sw360Release.getClearingState() == null ||
-                Optional.of(sw360Release.getClearingState())
-                        .map(clearingState -> clearingState.equals(ArtifactClearingState.ClearingState.OSM_APPROVED.toString()))
+        return Optional.ofNullable(sw360Release.getClearingState())
+                        .map(clearingState -> ArtifactClearingState.ClearingState.valueOf(clearingState) != ArtifactClearingState.ClearingState.INITIAL)
+                        .orElse(false) &&
+                Optional.ofNullable(sw360Release.getSw360ClearingState())
+                        .map(sw360ClearingState -> sw360ClearingState.equals(SW360ClearingState.APPROVED) ||
+                                sw360ClearingState.equals(SW360ClearingState.REPORT_AVAILABLE))
                         .orElse(false);
     }
 
