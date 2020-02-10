@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -35,19 +36,6 @@ public class SW360ConnectionConfiguration {
     private final String password;
     private final String clientId;
     private final String clientPassword;
-
-    public SW360ConnectionConfiguration(Getter<String> getConfigValue, Getter<Boolean> getBooleanConfigValue, String proxyHost, int proxyPort) {
-        // SW360 Connection configuration
-        this.authenticationClient = null;
-        this.componentClientAdapter = null;
-        this.releaseClientAdapter = null;
-        this.licenseClientAdapter = null;
-        this.projectClientAdapter = null;
-        user = null;
-        password = null;
-        clientId = null;
-        clientPassword = null;
-    }
 
     public SW360ConnectionConfiguration(SW360AuthenticationClient authenticationClient,
                                         SW360ComponentClientAdapter componentClientAdapter,
@@ -91,8 +79,4 @@ public class SW360ConnectionConfiguration {
         return authenticationClient.getHeadersWithBearerToken(authenticationClient.getOAuth2AccessToken(user, password, clientId, clientPassword));
     }
 
-    @FunctionalInterface
-    public interface Getter<T> {
-        T apply(String s);
-    }
 }
