@@ -15,7 +15,6 @@ import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.rest.SW360AuthenticationClient;
-import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.HttpHeaders;
 
 public class SW360ConnectionConfiguration {
@@ -27,67 +26,65 @@ public class SW360ConnectionConfiguration {
     public static final String CLIENT_PASSWORD_KEY = "client.password";
     public static final String PROXY_USE = "proxy.use";
 
-    private final String restServerUrl;
-    private final String authServerUrl;
+    private final SW360AuthenticationClient authenticationClient;
+    private final SW360ComponentClientAdapter componentClientAdapter;
+    private final SW360ReleaseClientAdapter releaseClientAdapter;
+    private final SW360LicenseClientAdapter licenseClientAdapter;
+    private final SW360ProjectClientAdapter projectClientAdapter;
     private final String user;
     private final String password;
     private final String clientId;
     private final String clientPassword;
 
-    private final SW360AuthenticationClient authenticationClient;
-
     public SW360ConnectionConfiguration(Getter<String> getConfigValue, Getter<Boolean> getBooleanConfigValue, String proxyHost, int proxyPort) {
         // SW360 Connection configuration
-        restServerUrl = getConfigValue.apply(SW360ConnectionConfiguration.REST_SERVER_URL_KEY);
-        authServerUrl = getConfigValue.apply(SW360ConnectionConfiguration.AUTH_SERVER_URL_KEY);
-        user = getConfigValue.apply(SW360ConnectionConfiguration.USERNAME_KEY);
-        password = getConfigValue.apply(SW360ConnectionConfiguration.PASSWORD_KEY);
-        clientId = getConfigValue.apply(SW360ConnectionConfiguration.CLIENT_USER_KEY);
-        clientPassword = getConfigValue.apply(SW360ConnectionConfiguration.CLIENT_PASSWORD_KEY);
-
-        // Proxy configuration
-        //TODO use proxy setting for template creation
-        boolean proxyUse = getBooleanConfigValue.apply(SW360ConnectionConfiguration.PROXY_USE);
-        ProxySettings proxySettings = new ProxySettings(proxyUse, proxyHost, proxyPort);
-        System.out.println(proxySettings);
-
-        this.authenticationClient = getSW360AuthenticationClient();
+        this.authenticationClient = null;
+        this.componentClientAdapter = null;
+        this.releaseClientAdapter = null;
+        this.licenseClientAdapter = null;
+        this.projectClientAdapter = null;
+        user = null;
+        password = null;
+        clientId = null;
+        clientPassword = null;
     }
 
-    public SW360ConnectionConfiguration(String restServerUrl, String authServerUrl, String user, String password, String clientId, String clientPassword) {
-        this.restServerUrl = restServerUrl;
-        this.authServerUrl = authServerUrl;
+    public SW360ConnectionConfiguration(SW360AuthenticationClient authenticationClient,
+                                        SW360ComponentClientAdapter componentClientAdapter,
+                                        SW360ReleaseClientAdapter releaseClientAdapter,
+                                        SW360LicenseClientAdapter licenseClientAdapter,
+                                        SW360ProjectClientAdapter projectClientAdapter,
+                                        String user, String password,
+                                        String clientId, String clientPassword) {
+        this.authenticationClient = authenticationClient;
+        this.componentClientAdapter = componentClientAdapter;
+        this.releaseClientAdapter = releaseClientAdapter;
+        this.licenseClientAdapter = licenseClientAdapter;
+        this.projectClientAdapter = projectClientAdapter;
         this.user = user;
         this.password = password;
         this.clientId = clientId;
         this.clientPassword = clientPassword;
-
-        this.authenticationClient = getSW360AuthenticationClient();
     }
 
     public SW360AuthenticationClient getSW360AuthenticationClient() {
-        //TODO pass in shared REST template
-        return new SW360AuthenticationClient(authServerUrl, null);
+        return authenticationClient;
     }
 
     public SW360ComponentClientAdapter getSW360ComponentClientAdapter() {
-        //TODO pass in shared REST template
-        return new SW360ComponentClientAdapter(restServerUrl, null);
+        return componentClientAdapter;
     }
 
     public SW360ReleaseClientAdapter getSW360ReleaseClientAdapter() {
-        //TODO pass in shared REST template
-        return new SW360ReleaseClientAdapter(restServerUrl, null);
+        return releaseClientAdapter;
     }
 
     public SW360LicenseClientAdapter getSW360LicenseClientAdapter() {
-        //TODO pass in shared REST template
-        return new SW360LicenseClientAdapter(restServerUrl, null);
+        return licenseClientAdapter;
     }
 
     public SW360ProjectClientAdapter getSW360ProjectClientAdapter() {
-        //TODO pass in shared REST template
-        return new SW360ProjectClientAdapter(restServerUrl, null);
+        return projectClientAdapter;
     }
 
     public HttpHeaders getHttpHeaders() {
