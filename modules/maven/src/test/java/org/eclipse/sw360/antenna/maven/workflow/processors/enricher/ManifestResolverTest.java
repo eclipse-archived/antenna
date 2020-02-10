@@ -8,15 +8,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.p2.workflow.processors.enricher;
+package org.eclipse.sw360.antenna.maven.workflow.processors.enricher;
 
 import org.assertj.core.api.Assertions;
 import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.eclipse.sw360.antenna.testing.util.JarCreator;
@@ -28,7 +26,6 @@ import org.mockito.Mock;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,9 +43,9 @@ public class ManifestResolverTest extends AntennaTestWithMockedContext {
     public void setUp() throws Exception {
         this.jarCreator = new JarCreator();
         resolver = new ManifestResolver();
-        resolver.setAntennaContext(antennaContextMock);
         when(antennaContextMock.getProject()).thenReturn(iProject);
         when(antennaContextMock.getProject().getBasedir()).thenReturn(temporaryFolder.newFolder("project-basedir"));
+        resolver.setAntennaContext(antennaContextMock);
     }
 
     @After
@@ -60,8 +57,7 @@ public class ManifestResolverTest extends AntennaTestWithMockedContext {
     private List<Artifact> makeArtifacts(Path path) {
         List<Artifact> artifacts = new ArrayList<>();
         Artifact artifact = new Artifact();
-        artifact.addFact(new ArtifactPathnames(Collections.singletonList(path.toString())));
-        artifact.addFact(new ArtifactFilename(path.getFileName().toString()));
+        artifact.addFact(new ArtifactFile(path));
         artifacts.add(artifact);
         return artifacts;
     }
@@ -96,51 +92,5 @@ public class ManifestResolverTest extends AntennaTestWithMockedContext {
 
         Assertions.assertThat(artifacts.get(0).getCoordinateForType(Coordinate.Types.P2).isPresent())
                 .isFalse();
-    }
-
-    @Test
-    public void testJarInJar() throws IOException {
-        Path jarInJarInJar = jarCreator.createJarInJar()
-                .resolve(JarCreator.jarWithManifestName);
-        List<Artifact> artifacts = makeArtifacts(jarInJarInJar);
-
-        resolver.process(artifacts);
-
-        final Optional<Path> artifactFile = artifacts.get(0).askForGet(ArtifactFile.class);
-
-        Assertions.assertThat(artifactFile.isPresent()).isTrue();
-        Assertions.assertThat(artifactFile.get().toFile().getName()).isEqualTo(JarCreator.jarWithManifestName);
-        assertManifestMetadata(artifacts.get(0));
-    }
-
-    @Test
-    public void testJarInJarInNestedFolders() throws IOException {
-        Path jarInJarInJar = jarCreator.createJarInJarInNestedFolders()
-                .resolve(JarCreator.jarInFoldersName);
-        List<Artifact> artifacts = makeArtifacts(jarInJarInJar);
-
-        resolver.process(artifacts);
-
-        final Optional<Path> artifactFile = artifacts.get(0).askForGet(ArtifactFile.class);
-
-        Assertions.assertThat(artifactFile.isPresent()).isTrue();
-        Assertions.assertThat(artifactFile.get().toFile().getName()).isEqualTo(JarCreator.jarWithManifestName);
-        assertManifestMetadata(artifacts.get(0));
-    }
-
-    @Test
-    public void testJarInJarInJar() throws IOException {
-        Path jarInJarInJar = jarCreator.createJarInJarInJar()
-                .resolve(JarCreator.jarInJarName)
-                .resolve(JarCreator.jarWithManifestName);
-        List<Artifact> artifacts = makeArtifacts(jarInJarInJar);
-
-        resolver.process(artifacts);
-
-        final Optional<Path> artifactFile = artifacts.get(0).askForGet(ArtifactFile.class);
-
-        Assertions.assertThat(artifactFile.isPresent()).isTrue();
-        Assertions.assertThat(artifactFile.get().toFile().getName()).isEqualTo(JarCreator.jarWithManifestName);
-        assertManifestMetadata(artifacts.get(0));
     }
 }

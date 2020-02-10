@@ -50,12 +50,6 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>p2-enricher</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>simple-validators-module</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>

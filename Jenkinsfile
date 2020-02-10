@@ -19,39 +19,11 @@ pipeline {
 
     parameters {
         booleanParam(
-            name: 'BUILD_WITH_ANTENNA_P2',
-            defaultValue: true,
-            description: '')
-        booleanParam(
             name: 'RUN_TESTS',
             defaultValue: true,
             description: '')
     }
     stages {
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // handle the p2 dependency part (the stuff below ./antena-p2)
-        // this either gets created (if flag is true) or removed
-        stage('build deps for p2') {
-            when {
-                environment name: 'BUILD_WITH_ANTENNA_P2', value: 'true'
-            }
-            steps {
-                withMaven() {
-                    sh "./modules/p2/prepareDependenciesForP2.sh"
-                }
-            }
-        }
-        stage('cleanup deps for p2') {
-            when {
-                environment name: 'BUILD_WITH_ANTENNA_P2', value: 'false'
-            }
-            steps {
-                withMaven() {
-                    sh "./modules/p2/cleanupDependenciesForP2.sh"
-                }
-            }
-        }
-
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // build antenna
         stage('build') {

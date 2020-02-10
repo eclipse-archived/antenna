@@ -24,7 +24,6 @@ before_install:
   - chmod +x /tmp/install-jdk.sh
 install:
   - set -e
-  - ./modules/p2/prepareDependenciesForP2.sh
   - mvn install -DskipTests=true -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
 

@@ -5,11 +5,9 @@ specific attributes of the artifacts. Aside from a processor enriching artifact 
 
 ### Enrichers
 * [Maven Artifact resolver](./artifact-resolver.html)
-* [Child Jar resolver](./child-jar-resolver.html)
 * [License Knowledgebase resolver](./license-knowledgebase-resolver.html)
 * [License resolver](./license-resolver.html)
 * [Manifest resolver](manifest-resolver.html)
-* [P2 Resolver](./p2-resolver.html)
 * [SW360 Enricher](./sw360-enricher.html)
 
 ### Validators
@@ -18,7 +16,6 @@ specific attributes of the artifacts. Aside from a processor enriching artifact 
 * [License Validator](./license-validator.html)
 * [Match State Validator](./match-state-validator.html)
 * [Security Issue Validator](./security-issue-validator.html)
-* [Rule Engine](./rule-engine.html)
 
 > **Note**:  
 > Processors that check for compliance (e.g. the rule engine or any validator) might fail due to data errors (e.g. a rule violation).

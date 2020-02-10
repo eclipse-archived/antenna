@@ -68,18 +68,15 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     }
 
     @Override
-    public List<String> getExpectedFilesToAttach() {
-        return Collections.emptyList();
-    }
-
-    @Override
     public List<String> getExpectedToolConfigurationConfigFiles() {
-        return Stream.of("src" + File.separator + "antennaconf.xml").collect(Collectors.toList());
+        List<String> fileList = super.getExpectedToolConfigurationConfigFiles();
+        fileList.add("src" + File.separator + "antennaconf.xml");
+        return fileList;
     }
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationAnalyzers() {
-        List<WorkflowStep> analyzers = BasicConfiguration.getAnalyzers();
+        List<WorkflowStep> analyzers = super.getExpectedToolConfigurationAnalyzers();
         analyzers.add(mkWorkflowStep("JSON Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.JsonAnalyzer",
                 "base.dir", projectRoot.toString(),
                 "file.path", "src/reportData.json"));
@@ -97,7 +94,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
-        final List<WorkflowStep> processors = BasicConfiguration.getProcessors()
+        final List<WorkflowStep> processors = super.getExpectedToolConfigurationProcessors()
                 .stream()
                 .map(s -> {
                     if (!"Source Validator".equals(s.getName())) {
@@ -118,14 +115,6 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
                 })
                 .collect(Collectors.toList());
 
-        Map<String, String> droolsConfig = Stream.of(new String[][] {
-                { "base.dir", projectRoot.toString() },
-                { "folder.paths", "./src/example-policies" },
-                { "failOn", "WARN" }})
-                .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
-
-        WorkflowStep checker1 = mkWorkflowStep("Drools Policy Engine", "org.eclipse.sw360.antenna.drools.workflow.processors.AntennaDroolsChecker", droolsConfig);
-        processors.add(checker1);
         WorkflowStep enricher = mkWorkflowStep("SW360 Enricher", "org.eclipse.sw360.antenna.sw360.workflow.processors.SW360Enricher",
                 Stream.of(new String[][] {
                         { "rest.server.url", "http://localhost:8080/resource/api" },
@@ -148,7 +137,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
 
     @Override
     public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
-        List<WorkflowStep> result = BasicConfiguration.getGenerators();
+        List<WorkflowStep> result = super.getExpectedToolConfigurationGenerators();
         WorkflowStep generator = mkWorkflowStep("SW360 Updater", "org.eclipse.sw360.antenna.sw360.workflow.generators.SW360Updater",
                 Stream.of(new String[][] {
                         { "rest.server.url", "http://localhost:8080/resource/api" },
@@ -177,31 +166,6 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
         return Collections.singletonList(mkWorkflowStep(
                 "Add attribution document to jar", "org.eclipse.sw360.antenna.workflow.outputHandlers.FileToArchiveWriter",
                 "instructions", "attribution-doc:" + projectRoot.toString() + File.separator + "target/" + getExpectedProjectArtifactId() + "-" +getExpectedProjectVersion() + ".jar:/legalnotice/AttributionDoc.html"));
-    }
-
-    @Override
-    public int getExpectedProxyPort() {
-        return 0;
-    }
-
-    @Override
-    public String getExpectedProxyHost() {
-        return null;
-    }
-
-    @Override
-    public boolean getExpectedToolConfigurationMavenInstalled() {
-        return false;
-    }
-
-    @Override
-    public boolean getExpectedToolConfigurationAttachAll() {
-        return true;
-    }
-
-    @Override
-    public boolean getExpectedToolConfigurationSkip() {
-        return false;
     }
 
     @Override
@@ -243,22 +207,9 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     }
 
     @Override
-    public boolean getExpectedConfigurationFailOnIncompleteSources() {
-        return true;
-    }
-
-    @Override
-    public boolean getExpectedConfigurationFailOnMissingSources() {
-        return false;
-    }
-
-    @Override
     public List<String> getExpectedToolConfigurationConfigFilesEndings() {
-        return Collections.singletonList(File.separator + "src" + File.separator + "antennaconf.xml");
-    }
-
-    @Override
-    public boolean requiresMaven() {
-        return false;
+        List<String> endingsList = super.getExpectedToolConfigurationConfigFilesEndings();
+        endingsList.add(File.separator + "src" + File.separator + "antennaconf.xml");
+        return endingsList;
     }
 }
