@@ -39,9 +39,10 @@ public class SW360ReleaseClientAdapter {
     private final SW360ReleaseClient releaseClient;
     private final SW360ComponentClientAdapter sw360ComponentClientAdapter;
 
-    public SW360ReleaseClientAdapter(String restUrl, RestTemplate template) {
+    public SW360ReleaseClientAdapter(String restUrl, RestTemplate template,
+                                     SW360ComponentClientAdapter componentClientAdapter) {
         this.releaseClient = new SW360ReleaseClient(restUrl, template);
-        sw360ComponentClientAdapter = new SW360ComponentClientAdapter(restUrl, template);
+        sw360ComponentClientAdapter = componentClientAdapter;
     }
 
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, HttpHeaders header, boolean uploadSources, boolean updateReleases) {

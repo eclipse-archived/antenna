@@ -84,7 +84,7 @@ public class SW360ConnectionConfigurationFactory {
 
         SW360AuthenticationClient authClient = createAuthenticationClient(restTemplate, authUrl);
         SW360ComponentClientAdapter componentAdapter = createComponentAdapter(restTemplate, restUrl);
-        SW360ReleaseClientAdapter releaseAdapter = createReleaseAdapter(restTemplate, restUrl);
+        SW360ReleaseClientAdapter releaseAdapter = createReleaseAdapter(restTemplate, restUrl, componentAdapter);
         SW360LicenseClientAdapter licenseAdapter = createLicenseAdapter(restTemplate, restUrl);
         SW360ProjectClientAdapter projectAdapter = createProjectAdapter(restTemplate, restUrl);
 
@@ -127,12 +127,14 @@ public class SW360ConnectionConfigurationFactory {
     /**
      * Creates the {@code SW360ReleaseClientAdapter} for the configuration.
      *
-     * @param restTemplate the rest template
-     * @param restUrl      the URL to the REST API endpoint
+     * @param restTemplate           the rest template
+     * @param restUrl                the URL to the REST API endpoint
+     * @param componentClientAdapter the {@code SW360ComponentClientAdapter}
      * @return the {@code SW360ReleaseClientAdapter}
      */
-    SW360ReleaseClientAdapter createReleaseAdapter(RestTemplate restTemplate, String restUrl) {
-        return new SW360ReleaseClientAdapter(restUrl, restTemplate);
+    SW360ReleaseClientAdapter createReleaseAdapter(RestTemplate restTemplate, String restUrl,
+                                                   SW360ComponentClientAdapter componentClientAdapter) {
+        return new SW360ReleaseClientAdapter(restUrl, restTemplate, componentClientAdapter);
     }
 
     /**
