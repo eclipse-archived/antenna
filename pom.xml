@@ -39,7 +39,7 @@
         <log4j2.version>2.13.0</log4j2.version>
         <spring.version>5.1.2.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ort.rev>3f85d301f7</ort.rev>
+        <ort.rev>1fcf42d1d9</ort.rev>
     </properties>
 
     <scm>
