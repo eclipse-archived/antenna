@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -14,8 +15,8 @@ import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.sw360.rest.SW360LicenseClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
-import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +24,8 @@ import java.util.Optional;
 public class SW360LicenseClientAdapter {
     private final SW360LicenseClient licenseClient;
 
-    public SW360LicenseClientAdapter(String restUrl, ProxySettings proxySettings) {
-        this.licenseClient = new SW360LicenseClient(restUrl, proxySettings);
+    public SW360LicenseClientAdapter(String restUrl, RestTemplate template) {
+        this.licenseClient = new SW360LicenseClient(restUrl, template);
     }
 
     public boolean isLicenseOfArtifactAvailable(License license, HttpHeaders header) {

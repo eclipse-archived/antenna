@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -22,10 +23,10 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ComponentAdapterUtils;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
-import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.client.RestTemplate;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -38,9 +39,10 @@ public class SW360ReleaseClientAdapter {
     private final SW360ReleaseClient releaseClient;
     private final SW360ComponentClientAdapter sw360ComponentClientAdapter;
 
-    public SW360ReleaseClientAdapter(String restUrl, ProxySettings proxySettings) {
-        this.releaseClient = new SW360ReleaseClient(restUrl, proxySettings);
-        sw360ComponentClientAdapter = new SW360ComponentClientAdapter(restUrl, proxySettings);
+    public SW360ReleaseClientAdapter(String restUrl, RestTemplate template,
+                                     SW360ComponentClientAdapter componentClientAdapter) {
+        this.releaseClient = new SW360ReleaseClient(restUrl, template);
+        sw360ComponentClientAdapter = componentClientAdapter;
     }
 
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, HttpHeaders header, boolean uploadSources, boolean updateReleases) {

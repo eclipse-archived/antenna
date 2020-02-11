@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2017-2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -28,7 +29,7 @@ public class RestUtils {
 
     public static HttpEntity<String> getHttpEntity(Map<String, Object> resourceMap, HttpHeaders authBearerHeader) {
         try {
-            String jsonBody = objectMapper.writeValueAsString(resourceMap);
+            String jsonBody = (resourceMap != null) ? objectMapper.writeValueAsString(resourceMap) : null;
             return new HttpEntity<>(jsonBody, authBearerHeader);
         } catch (JsonProcessingException e) {
             throw new ExecutionException("Error when attempting to serialise the request body.", e);

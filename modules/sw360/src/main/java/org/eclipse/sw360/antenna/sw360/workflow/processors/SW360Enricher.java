@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -16,6 +17,7 @@ import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
+import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,9 +56,11 @@ public class SW360Enricher extends AbstractProcessor {
                     .toAbsolutePath();
         }
 
-        SW360ConnectionConfiguration sw360ConnectionConfiguration = new SW360ConnectionConfiguration(key -> getConfigValue(key, configMap),
-                key -> getBooleanConfigValue(key, configMap),
-                sw360ProxyHost, sw360ProxyPort);
+        SW360ConnectionConfigurationFactory configurationFactory = new SW360ConnectionConfigurationFactory();
+        SW360ConnectionConfiguration sw360ConnectionConfiguration =
+                configurationFactory.createConfiguration(key -> getConfigValue(key, configMap),
+                        key -> getBooleanConfigValue(key, configMap),
+                        sw360ProxyHost, sw360ProxyPort);
 
         connector = new SW360MetaDataReceiver(sw360ConnectionConfiguration);
     }

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -15,7 +16,6 @@ import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.rest.SW360AuthenticationClient;
-import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.springframework.http.HttpHeaders;
 
 public class SW360ConnectionConfiguration {
@@ -27,70 +27,56 @@ public class SW360ConnectionConfiguration {
     public static final String CLIENT_PASSWORD_KEY = "client.password";
     public static final String PROXY_USE = "proxy.use";
 
-    private final String restServerUrl;
-    private final String authServerUrl;
+    private final SW360AuthenticationClient authenticationClient;
+    private final SW360ComponentClientAdapter componentClientAdapter;
+    private final SW360ReleaseClientAdapter releaseClientAdapter;
+    private final SW360LicenseClientAdapter licenseClientAdapter;
+    private final SW360ProjectClientAdapter projectClientAdapter;
     private final String user;
     private final String password;
     private final String clientId;
     private final String clientPassword;
 
-    private final ProxySettings proxySettings;
-    private final SW360AuthenticationClient authenticationClient;
-
-    public SW360ConnectionConfiguration(Getter<String> getConfigValue, Getter<Boolean> getBooleanConfigValue, String proxyHost, int proxyPort) {
-        // SW360 Connection configuration
-        restServerUrl = getConfigValue.apply(SW360ConnectionConfiguration.REST_SERVER_URL_KEY);
-        authServerUrl = getConfigValue.apply(SW360ConnectionConfiguration.AUTH_SERVER_URL_KEY);
-        user = getConfigValue.apply(SW360ConnectionConfiguration.USERNAME_KEY);
-        password = getConfigValue.apply(SW360ConnectionConfiguration.PASSWORD_KEY);
-        clientId = getConfigValue.apply(SW360ConnectionConfiguration.CLIENT_USER_KEY);
-        clientPassword = getConfigValue.apply(SW360ConnectionConfiguration.CLIENT_PASSWORD_KEY);
-
-        // Proxy configuration
-        boolean proxyUse = getBooleanConfigValue.apply(SW360ConnectionConfiguration.PROXY_USE);
-        proxySettings = new ProxySettings(proxyUse, proxyHost, proxyPort);
-
-        this.authenticationClient = getSW360AuthenticationClient();
-    }
-
-    public SW360ConnectionConfiguration(String restServerUrl, String authServerUrl, String user, String password, String clientId, String clientPassword, String proxyHost, int proxyPort, boolean proxyUse) {
-        this.restServerUrl = restServerUrl;
-        this.authServerUrl = authServerUrl;
+    public SW360ConnectionConfiguration(SW360AuthenticationClient authenticationClient,
+                                        SW360ComponentClientAdapter componentClientAdapter,
+                                        SW360ReleaseClientAdapter releaseClientAdapter,
+                                        SW360LicenseClientAdapter licenseClientAdapter,
+                                        SW360ProjectClientAdapter projectClientAdapter,
+                                        String user, String password,
+                                        String clientId, String clientPassword) {
+        this.authenticationClient = authenticationClient;
+        this.componentClientAdapter = componentClientAdapter;
+        this.releaseClientAdapter = releaseClientAdapter;
+        this.licenseClientAdapter = licenseClientAdapter;
+        this.projectClientAdapter = projectClientAdapter;
         this.user = user;
         this.password = password;
         this.clientId = clientId;
         this.clientPassword = clientPassword;
-        proxySettings = new ProxySettings(proxyUse, proxyHost, proxyPort);
-
-        this.authenticationClient = getSW360AuthenticationClient();
     }
 
     public SW360AuthenticationClient getSW360AuthenticationClient() {
-        return new SW360AuthenticationClient(authServerUrl, proxySettings);
+        return authenticationClient;
     }
 
     public SW360ComponentClientAdapter getSW360ComponentClientAdapter() {
-        return new SW360ComponentClientAdapter(restServerUrl, proxySettings);
+        return componentClientAdapter;
     }
 
     public SW360ReleaseClientAdapter getSW360ReleaseClientAdapter() {
-        return new SW360ReleaseClientAdapter(restServerUrl, proxySettings);
+        return releaseClientAdapter;
     }
 
     public SW360LicenseClientAdapter getSW360LicenseClientAdapter() {
-        return new SW360LicenseClientAdapter(restServerUrl, proxySettings);
+        return licenseClientAdapter;
     }
 
     public SW360ProjectClientAdapter getSW360ProjectClientAdapter() {
-        return new SW360ProjectClientAdapter(restServerUrl, proxySettings);
+        return projectClientAdapter;
     }
 
     public HttpHeaders getHttpHeaders() {
         return authenticationClient.getHeadersWithBearerToken(authenticationClient.getOAuth2AccessToken(user, password, clientId, clientPassword));
     }
 
-    @FunctionalInterface
-    public interface Getter<T> {
-        T apply(String s);
-    }
 }

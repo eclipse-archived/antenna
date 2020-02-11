@@ -1,6 +1,7 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2017-2018.
  * Copyright (c) Verifa Oy 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -19,29 +20,34 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
-import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.*;
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.checkRestStatus;
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSaveOrThrow;
+import static org.eclipse.sw360.antenna.sw360.rest.SW360ClientUtils.getSw360SparseReleases;
 
 public class SW360ProjectClient extends SW360Client {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360ProjectClient.class);
     private static final String PROJECTS_ENDPOINT = "/projects";
     private final String restUrl;
 
-    public SW360ProjectClient(String restUrl, ProxySettings proxySettings) {
-        super(proxySettings);
+    public SW360ProjectClient(String restUrl, RestTemplate template) {
+        super(template);
         this.restUrl = restUrl;
     }
 

@@ -1,6 +1,7 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
  * Copyright (c) Verifa Oy 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -16,7 +17,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
-import org.eclipse.sw360.antenna.util.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -26,6 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +40,8 @@ public class SW360LicenseClient extends SW360Client {
     private static final String LICENSES_ENDPOINT = "/licenses";
     private final String restUrl;
 
-    public SW360LicenseClient(String restUrl, ProxySettings proxySettings) {
-        super(proxySettings);
+    public SW360LicenseClient(String restUrl, RestTemplate template) {
+        super(template);
         this.restUrl = restUrl;
     }
 

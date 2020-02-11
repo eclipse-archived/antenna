@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 
 import org.eclipse.sw360.antenna.api.workflow.ConfigurableWorkflowItem;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
+import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -51,7 +52,8 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
                 {"download.attachments", getConfigValue("sw360downloadSources", properties, "false")},
                 {"proxy.use", getConfigValue("proxyUse", properties)}})
                 .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
-        return new SW360ConnectionConfiguration(
+        SW360ConnectionConfigurationFactory configurationFactory = new SW360ConnectionConfigurationFactory();
+        return configurationFactory.createConfiguration(
                 key -> getConfigValue(key, configMap),
                 key -> getBooleanConfigValue(key, configMap),
                 properties.get("proxyHost"), Integer.parseInt(properties.get("proxyPort")));

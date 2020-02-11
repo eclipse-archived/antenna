@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,7 +11,11 @@
  */
 package org.eclipse.sw360.antenna.util;
 
+import java.util.Objects;
+
 public class ProxySettings {
+    private static final ProxySettings EMPTY_SETTINGS = new ProxySettings(false, null, -1);
+
     private final boolean proxyUse;
     private final String proxyHost;
     private final int proxyPort;
@@ -21,8 +26,14 @@ public class ProxySettings {
         this.proxyPort = proxyPort;
     }
 
+    /**
+     * Returns an instance of {@code ProxySettings} that indicates that no
+     * proxy is to be used.
+     *
+     * @return an instance with an empty proxy configuration
+     */
     public static ProxySettings empty() {
-        return new ProxySettings(false, null, -1);
+        return EMPTY_SETTINGS;
     }
 
     public boolean isProxyUse() {
@@ -37,5 +48,32 @@ public class ProxySettings {
         return proxyPort;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
+        ProxySettings settings = (ProxySettings) o;
+        return proxyUse == settings.proxyUse &&
+                getProxyPort() == settings.getProxyPort() &&
+                Objects.equals(getProxyHost(), settings.getProxyHost());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(proxyUse, getProxyHost(), getProxyPort());
+    }
+
+    @Override
+    public String toString() {
+        return "ProxySettings{" +
+                "proxyUse=" + proxyUse +
+                ", proxyHost='" + proxyHost + '\'' +
+                ", proxyPort=" + proxyPort +
+                '}';
+    }
 }
