@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -62,6 +63,8 @@ public class DependencyTest {
             dependency("org.gradle", "gradle-base-services-groovy"),
             dependency("org.gradle", "gradle-logging"),
             dependency("org.codehaus.groovy", "groovy"),
+            dependency("org.apache.logging.log4j", "log4j-api"),
+            dependency("org.apache.logging.log4j", "log4j-core"),
             dependency("org.apache.logging.log4j", "log4j-jcl"),
             dependency("org.apache.logging.log4j", "log4j-slf4j-impl")
     );

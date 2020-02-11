@@ -10,6 +10,8 @@
  */
 package org.eclipse.sw360.antenna.frontend.cli;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIFrontend;
 
 import java.io.File;
@@ -28,13 +30,18 @@ public final class AntennaCLIFrontend extends AbstractAntennaCLIFrontend {
     }
 
     public static void main(String[] args) {
-        if (args.length != 1) {
+        AntennaCLIOptions options = AntennaCLIOptions.parse(args);
+        if (options.isShowHelp()) {
             printUsage();
             System.exit(1);
         }
 
+        if (options.isDebugLog()) {
+            enableDebugLogging();
+        }
+
         try {
-            Path pomFilePath = Paths.get(args[0]).toAbsolutePath();
+            Path pomFilePath = Paths.get(options.getConfigFilePath()).toAbsolutePath();
 
             if (!pomFilePath.toFile().exists()) {
                 throw new IllegalArgumentException("Cannot find " + pomFilePath.toString());
@@ -49,8 +56,12 @@ public final class AntennaCLIFrontend extends AbstractAntennaCLIFrontend {
         }
     }
 
+    private static void enableDebugLogging() {
+        Configurator.setRootLevel(Level.DEBUG);
+        Configurator.setLevel("org.eclipse.sw360.antenna", Level.DEBUG);
+    }
 
     private static void printUsage() {
-        System.out.println("Usage: java -jar antenna.jar <pomFilePath>");
+        System.out.println(AntennaCLIOptions.helpMessage());
     }
 }
