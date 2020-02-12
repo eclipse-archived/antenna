@@ -26,7 +26,12 @@
 
     <artifactId>sw360-module</artifactId>
     <name>antenna-sw360-module</name>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>sw360-client</module>
+        <module>workflow</module>
+    </modules>
 
     <profiles>
         <profile>
@@ -126,79 +131,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>runtime</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.hateoas</groupId>
-            <artifactId>spring-hateoas</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <!-- ################################ testing dependencies ################################ -->
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>model-testing</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency> <!-- necessary for mocking -->
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.cliftonlabs</groupId>
-            <artifactId>json-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- ################################ compliance dependency ########################### -->
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-license-provider</artifactId>
-            <version>1</version>
-            <classifier>licenseinfo</classifier>
-            <type>zip</type>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
 </project>
