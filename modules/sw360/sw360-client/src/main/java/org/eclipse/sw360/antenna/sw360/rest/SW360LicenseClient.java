@@ -15,17 +15,13 @@ package org.eclipse.sw360.antenna.sw360.rest;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
-import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -80,26 +76,6 @@ public class SW360LicenseClient extends SW360Client {
             LOGGER.debug("Request to get license {} failed with {}",
                     name, e.getMessage());
             return Optional.empty();
-        }
-    }
-
-    public SW360License createLicense(SW360License sw360License, HttpHeaders header) {
-        try {
-            HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360License, header);
-            ResponseEntity<Resource<SW360License>> response = doRestPOST(getEndpoint(), httpEntity,
-                new ParameterizedTypeReference<Resource<SW360License>>() {});
-
-            checkRestStatus(response);
-            return getSaveOrThrow(response.getBody(), Resource::getContent);
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            LOGGER.error("Request to create license {} failed with {}",
-                    sw360License.getFullName(), e.getStatusCode());
-            LOGGER.debug("Error: ", e);
-            return sw360License;
-        } catch (SW360ClientException e) {
-            LOGGER.error("Request to create license {} failed with {}",
-                    sw360License.getFullName(), e.getMessage());
-            return sw360License;
         }
     }
 }

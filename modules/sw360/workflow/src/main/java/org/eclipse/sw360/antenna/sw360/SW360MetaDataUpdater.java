@@ -97,8 +97,4 @@ public class SW360MetaDataUpdater {
         HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
         return releaseClientAdapter.uploadAttachments(sw360Release, attachments, header);
     }
-    /*
-    public Optional<String> getProjectIdByNameAndVersion(IProject project, HttpHeaders header) {
-        return getProjectIdByNameAndVersion(project.getProjectId(), project.getVersion(), header);
-    } */
 }

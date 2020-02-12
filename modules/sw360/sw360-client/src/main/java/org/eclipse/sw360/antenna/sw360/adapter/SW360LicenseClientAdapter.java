@@ -35,10 +35,6 @@ public class SW360LicenseClientAdapter {
                 .anyMatch(n -> n.equals(license));
     }
 
-    public SW360License addLicense(SW360License sw360License, HttpHeaders header) {
-        return licenseClient.createLicense(sw360License, header);
-    }
-
     public Optional<SW360License> getSW360LicenseByAntennaLicense(String license, HttpHeaders header) {
         return licenseClient.getLicenseByName(license, header);
     }
