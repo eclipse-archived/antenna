@@ -23,6 +23,14 @@
     <artifactId>runtime</artifactId>
     <name>antenna-runtime</name>
 
+    <repositories>
+        <!-- For ORT -->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <build>
         <testResources>
             <testResource>
