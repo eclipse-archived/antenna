@@ -96,7 +96,7 @@ public class OrtResultAnalyzerTest {
                 .map(artifact -> artifact.askFor(ArtifactVcsInfo.class))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .anyMatch(o -> "https://github.com/babel/babel/tree/master/packages/babel-generator"
+                .anyMatch(o -> "https://github.com/babel/babel.git"
                         .equals(o.getVcsInfo().getUrl())))
                 .isTrue();
 
