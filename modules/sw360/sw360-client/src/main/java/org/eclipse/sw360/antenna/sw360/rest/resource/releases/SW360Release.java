@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
@@ -23,7 +24,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW360ReleaseEmbedded> {
 
@@ -153,13 +153,25 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     @JsonIgnore
     public Map<String, String> getCoordinates() {
         return externalIds.entrySet().stream()
-                .filter(e -> Types.all.contains(e.getKey()))
+                .filter(e -> e.getValue().startsWith("pkg:"))
+                .filter(e -> isValidPkgUrl(e.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public SW360Release setCoordinates(Map<String, String> coordinates) {
-        externalIds.putAll(coordinates);
+        coordinates.entrySet().stream()
+                .filter(entry -> isValidPkgUrl(entry.getValue()))
+                .forEach(entry -> externalIds.put(entry.getKey(), entry.getValue()));
         return this;
+    }
+
+    private static boolean isValidPkgUrl (String purl) {
+        try {
+            new PackageURL(purl);
+            return true;
+        } catch (MalformedPackageURLException e) {
+            return false;
+        }
     }
 
     @JsonIgnore
@@ -363,16 +375,5 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), name, version, cpeId, downloadurl, externalIds, additionalData);
-    }
-
-    static class Types extends PackageURL.StandardTypes {
-        static final String P2 = "p2";
-
-        static final Set<String> all = Stream.of(
-                // Standard Types:
-                BITBUCKET, COMPOSER, DEBIAN, DOCKER, GEM, GENERIC, GITHUB, GOLANG, MAVEN, NPM, NUGET, PYPI, RPM,
-                // Custom Types:
-                P2)
-                .collect(Collectors.toSet());
     }
 }
