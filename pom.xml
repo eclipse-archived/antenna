@@ -34,6 +34,7 @@
         <maven.version>3.3.9</maven.version>
         <maven.shared.version>3.0.1</maven.shared.version>
         <mockito.version>2.23.0</mockito.version>
+        <wiremock.version>2.26.0</wiremock.version>
         <slf4j.version>1.7.26</slf4j.version>
         <log4j2.version>2.13.0</log4j2.version>
         <spring.version>5.1.2.RELEASE</spring.version>
@@ -343,6 +344,12 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.github.tomakehurst</groupId>
+                <artifactId>wiremock-jre8</artifactId>
+                <version>${wiremock.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

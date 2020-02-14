@@ -123,7 +123,7 @@
                             <includes>
                                 <include>**/integrationtesting/**/*.java</include>
                             </includes>
-                            <groups>org.eclipse.sw360.antenna.sw360.integrationtesting.IntegrationTest</groups>
+                            <!--<groups>org.eclipse.sw360.antenna.sw360.integrationtesting.IntegrationTest</groups>-->
                             <skipTests>${skip.integration.tests}</skipTests>
                         </configuration>
                     </execution>
