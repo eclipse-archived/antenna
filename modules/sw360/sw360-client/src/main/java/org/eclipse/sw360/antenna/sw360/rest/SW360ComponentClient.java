@@ -20,8 +20,6 @@ import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.eclipse.sw360.antenna.sw360.utils.SW360ClientUtils.*;
+import static org.eclipse.sw360.antenna.sw360.utils.SW360ClientUtils.checkRestStatus;
+import static org.eclipse.sw360.antenna.sw360.utils.SW360ClientUtils.getSw360SparseComponents;
 
 public class SW360ComponentClient extends SW360Client {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360ComponentClient.class);
@@ -53,11 +52,11 @@ public class SW360ComponentClient extends SW360Client {
 
     public Optional<SW360Component> getComponent(String componentId, HttpHeaders header) {
         try {
-            ResponseEntity<Resource<SW360Component>> response = doRestGET(getEndpoint() + "/" + componentId, header,
-                    new ParameterizedTypeReference<Resource<SW360Component>>() {});
+            ResponseEntity<SW360Component> response = doRestGET(getEndpoint() + "/" + componentId, header,
+                    SW360Component.class);
 
             checkRestStatus(response);
-            return Optional.of(getSaveOrThrow(response.getBody(), Resource::getContent));
+            return Optional.ofNullable(response.getBody());
         } catch (SW360ClientException e) {
             LOGGER.error("Request to get component {} failed with {}",
                     componentId, e.getMessage());
@@ -67,9 +66,8 @@ public class SW360ComponentClient extends SW360Client {
 
     public List<SW360SparseComponent> getComponents(HttpHeaders header) {
         try {
-            ResponseEntity<Resource<SW360ComponentList>> response = doRestGET(getEndpoint(), header,
-                    new ParameterizedTypeReference<Resource<SW360ComponentList>>() {
-                    });
+            ResponseEntity<SW360ComponentList> response = doRestGET(getEndpoint(), header,
+                SW360ComponentList.class);
 
             checkRestStatus(response);
             return getSw360SparseComponents(response);
@@ -85,8 +83,8 @@ public class SW360ComponentClient extends SW360Client {
                     .fromUriString(getEndpoint())
                     .queryParam(SW360Attributes.COMPONENT_SEARCH_BY_NAME, name);
 
-            ResponseEntity<Resource<SW360ComponentList>> response = doRestGET(builder.build(false).toUriString(), header,
-                    new ParameterizedTypeReference<Resource<SW360ComponentList>>() {});
+            ResponseEntity<SW360ComponentList> response = doRestGET(builder.build(false).toUriString(), header,
+                    SW360ComponentList.class);
 
             return getSw360SparseComponents(response);
         } catch (SW360ClientException e) {
@@ -99,11 +97,11 @@ public class SW360ComponentClient extends SW360Client {
         try {
             HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Component, header);
 
-            ResponseEntity<Resource<SW360Component>> response = doRestPOST(getEndpoint(), httpEntity,
-                    new ParameterizedTypeReference<Resource<SW360Component>>() {});
+            ResponseEntity<SW360Component> response = doRestPOST(getEndpoint(), httpEntity,
+                    SW360Component.class);
 
             checkRestStatus(response);
-            return getSaveOrThrow(response.getBody(), Resource::getContent);
+            return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.error("Request to create component {} failed with {}",
                     sw360Component.getName(), e.getStatusCode());
