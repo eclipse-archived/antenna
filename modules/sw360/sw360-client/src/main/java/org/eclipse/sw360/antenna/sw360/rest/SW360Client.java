@@ -73,6 +73,10 @@ public abstract class SW360Client {
         return doRestCall(url, HttpMethod.PATCH, httpEntity, responseType);
     }
 
+    protected <T> ResponseEntity<T> doRestPATCH(String url, HttpEntity<?> httpEntity, Class<T> responseType) {
+        return doRestCall(url, HttpMethod.PATCH, httpEntity, responseType);
+    }
+
     /**
      * Returns the {@code RestTemplate} used by this client to interact with
      * the server. The template has been initialized from the connection

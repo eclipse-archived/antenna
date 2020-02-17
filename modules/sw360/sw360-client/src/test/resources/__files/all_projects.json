@@ -1,0 +1,63 @@
+{
+  "_embedded": {
+    "sw360:projects": [
+      {
+        "name": "Central-Waivers_UNKNOWN-License",
+        "version": "1.0.0",
+        "securityResponsibles": [],
+        "projectType": "PRODUCT",
+        "visibility": "BUISNESSUNIT_AND_MODERATORS",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/projects/dc3ac8ed4e7e7cde576006c0b63ae6d8"
+          }
+        }
+      },
+      {
+        "name": "Central-Waivers_No-Sources",
+        "version": "1.0.0",
+        "securityResponsibles": [],
+        "projectType": "CUSTOMER",
+        "visibility": "BUISNESSUNIT_AND_MODERATORS",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/projects/dc3ac8ed4e7e7cde576006c0b63d4328"
+          }
+        }
+      },
+      {
+        "name": "SheriffToolTest",
+        "version": "1.0.0",
+        "securityResponsibles": [],
+        "projectType": "PRODUCT",
+        "visibility": "BUISNESSUNIT_AND_MODERATORS",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/projects/dc3ac8ed4e7e7cde576006c0b63f0223"
+          }
+        }
+      },
+      {
+        "name": "Central-Waivers_No-Source-License",
+        "version": "1.0.0",
+        "securityResponsibles": [],
+        "projectType": "PRODUCT",
+        "visibility": "BUISNESSUNIT_AND_MODERATORS",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/projects/dc3ac8ed4e7e7cde576006c0b63de2c3"
+          }
+        }
+      }
+    ]
+  },
+  "_links": {
+    "curies": [
+      {
+        "href": "https://sw360-backend-production.osm-si.com/resource/docs/{rel}.html",
+        "name": "sw360",
+        "templated": true
+      }
+    ]
+  }
+}

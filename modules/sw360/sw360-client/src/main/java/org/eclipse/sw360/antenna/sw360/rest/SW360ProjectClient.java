@@ -22,8 +22,6 @@ import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -37,7 +35,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.eclipse.sw360.antenna.sw360.utils.SW360ClientUtils.*;
+import static org.eclipse.sw360.antenna.sw360.utils.SW360ClientUtils.checkRestStatus;
+import static org.eclipse.sw360.antenna.sw360.utils.SW360ClientUtils.getSw360Projects;
+import static org.eclipse.sw360.antenna.sw360.utils.SW360ClientUtils.getSw360SparseReleases;
 
 public class SW360ProjectClient extends SW360Client {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360ProjectClient.class);
@@ -60,17 +60,11 @@ public class SW360ProjectClient extends SW360Client {
                     .fromUriString(getEndpoint())
                     .queryParam(SW360Attributes.PROJECT_SEARCH_BY_NAME, name);
 
-            ResponseEntity<Resource<SW360ProjectList>> response = doRestGET(builder.build(false).toUriString(), header,
-                    new ParameterizedTypeReference<Resource<SW360ProjectList>>() {});
+            ResponseEntity<SW360ProjectList> response = doRestGET(builder.build(false).toUriString(), header,
+                    SW360ProjectList.class);
 
             checkRestStatus(response);
-            SW360ProjectList resource = getSaveOrThrow(response.getBody(), Resource::getContent);
-            if (resource.get_Embedded() != null &&
-                    resource.get_Embedded().getProjects() != null) {
-                return resource.get_Embedded().getProjects();
-            } else {
-                return new ArrayList<>();
-            }
+            return getSw360Projects(response);
         } catch (SW360ClientException e) {
             LOGGER.debug("Request to search for projects with the name {} failed with {}",
                     name, e.getMessage());
@@ -82,11 +76,10 @@ public class SW360ProjectClient extends SW360Client {
         try {
             HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Project, header);
 
-            ResponseEntity<Resource<SW360Project>> response = doRestPOST(getEndpoint(), httpEntity,
-                    new ParameterizedTypeReference<Resource<SW360Project>>() {});
+            ResponseEntity<SW360Project> response = doRestPOST(getEndpoint(), httpEntity, SW360Project.class);
 
             checkRestStatus(response);
-            return getSaveOrThrow(response.getBody(), Resource::getContent);
+            return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.debug("Request to create project {} failed with {}",
                     sw360Project.getName(), e.getStatusCode());
@@ -121,8 +114,8 @@ public class SW360ProjectClient extends SW360Client {
                     .pathSegment(projectId, SW360Attributes.PROJECT_RELEASES)
                     .queryParam(SW360Attributes.PROJECT_RELEASES_TRANSITIVE, transitive);
 
-            ResponseEntity<Resource<SW360ReleaseList>> response = doRestGET(builder.build(false).toUriString(), header,
-                    new ParameterizedTypeReference<Resource<SW360ReleaseList>>() {});
+            ResponseEntity<SW360ReleaseList> response = doRestGET(builder.build(false).toUriString(), header,
+                    SW360ReleaseList.class);
             return getSw360SparseReleases(response);
         } catch (SW360ClientException e) {
             LOGGER.error("Request to get linked releases of project with id=[{}] failed with {}",

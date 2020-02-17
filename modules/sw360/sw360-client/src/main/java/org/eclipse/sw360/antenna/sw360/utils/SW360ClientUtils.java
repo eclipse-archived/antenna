@@ -16,6 +16,10 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
+import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseList;
+import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
+import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
+import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.springframework.hateoas.Resource;
@@ -31,22 +35,33 @@ public class SW360ClientUtils {
         // Utils
     }
 
-    public static List<SW360SparseRelease> getSw360SparseReleases(ResponseEntity<Resource<SW360ReleaseList>> response) {
+    public static List<SW360SparseRelease> getSw360SparseReleases(ResponseEntity<SW360ReleaseList> response) {
         checkRestStatus(response);
-        SW360ReleaseList resource = getSaveOrThrow(response.getBody(), Resource::getContent);
-
-        if (resource.get_Embedded() != null &&
-                resource.get_Embedded().getReleases() != null) {
-            return resource.get_Embedded().getReleases();
-        } else {
-            return new ArrayList<>();
-        }
+        return Optional.ofNullable(response.getBody())
+                .map(SW360HalResource::get_Embedded)
+                .flatMap(it -> Optional.ofNullable(it.getReleases()))
+                .orElseGet(ArrayList::new);
     }
 
     public static List<SW360SparseComponent> getSw360SparseComponents(ResponseEntity<SW360ComponentList> response) {
         return Optional.ofNullable(response.getBody())
                 .map(SW360HalResource::get_Embedded)
                 .flatMap(it -> Optional.ofNullable(it.getComponents()))
+                .orElseGet(ArrayList::new);
+    }
+
+    public static List<SW360Project> getSw360Projects(ResponseEntity<SW360ProjectList> response) {
+        return Optional.ofNullable(response.getBody())
+                .map(SW360HalResource::get_Embedded)
+                .flatMap(it -> Optional.ofNullable(it.getProjects()))
+                .orElseGet(ArrayList::new);
+    }
+
+    public static List<SW360SparseLicense> getSw360SparseLicenses(ResponseEntity<SW360LicenseList> response) {
+        return Optional.ofNullable(response.getBody())
+                .map(SW360HalResource::get_Embedded)
+                .flatMap(it -> Optional.ofNullable(it.getLicenses())
+                        .map(ArrayList::new))
                 .orElseGet(ArrayList::new);
     }
 

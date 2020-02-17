@@ -19,8 +19,6 @@ import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +34,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.eclipse.sw360.antenna.sw360.utils.SW360ClientUtils.*;
+import static org.eclipse.sw360.antenna.sw360.utils.SW360ClientUtils.checkRestStatus;
+import static org.eclipse.sw360.antenna.sw360.utils.SW360ClientUtils.getSw360SparseReleases;
 
 public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360ReleaseClient.class);
@@ -60,11 +59,11 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
 
     public Optional<SW360Release> getRelease(String releaseId, HttpHeaders header) {
         try {
-            ResponseEntity<Resource<SW360Release>> response = doRestGET(getEndpoint() + "/" + releaseId, header,
-                    new ParameterizedTypeReference<Resource<SW360Release>>() {});
+            ResponseEntity<SW360Release> response = doRestGET(getEndpoint() + "/" + releaseId, header,
+                    SW360Release.class);
 
             checkRestStatus(response);
-            return Optional.of(getSaveOrThrow(response.getBody(), Resource::getContent));
+            return Optional.ofNullable(response.getBody());
         } catch (SW360ClientException e) {
             LOGGER.debug(e.getMessage());
             return Optional.empty();
@@ -78,8 +77,7 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
         try {
             String url = getExternalIdUrl(externalIds);
 
-            ResponseEntity<Resource<SW360ReleaseList>> response = doRestGET(url, header,
-                    new ParameterizedTypeReference<Resource<SW360ReleaseList>>() {});
+            ResponseEntity<SW360ReleaseList> response = doRestGET(url, header, SW360ReleaseList.class);
 
             return getSw360SparseReleases(response);
         } catch (HttpClientErrorException e) {
@@ -108,11 +106,10 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
         try {
             HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
 
-            ResponseEntity<Resource<SW360Release>> response = doRestPOST(getEndpoint(), httpEntity,
-                    new ParameterizedTypeReference<Resource<SW360Release>>() {});
+            ResponseEntity<SW360Release> response = doRestPOST(getEndpoint(), httpEntity, SW360Release.class);
 
             checkRestStatus(response);
-            return getSaveOrThrow(response.getBody(), Resource::getContent);
+            return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.error("Request to create release {} failed with {}", sw360Release.getName(), e.getStatusCode());
             LOGGER.debug("Error: ", e);
@@ -127,11 +124,11 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
         try {
             HttpEntity<String> httpEntity = RestUtils.convertSW360ResourceToHttpEntity(sw360Release, header);
 
-            ResponseEntity<Resource<SW360Release>> response = doRestPATCH(getEndpoint() + "/" + sw360Release.getReleaseId(), httpEntity,
-                    new ParameterizedTypeReference<Resource<SW360Release>>() {});
+            ResponseEntity<SW360Release> response = doRestPATCH(getEndpoint() + "/" + sw360Release.getReleaseId(),
+                    httpEntity, SW360Release.class);
 
             checkRestStatus(response);
-            return getSaveOrThrow(response.getBody(), Resource::getContent);
+            return response.getBody();
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.error("Request to update release {} failed with {}", sw360Release.getName(), e.getStatusCode());
             LOGGER.debug("Error: ", e);
