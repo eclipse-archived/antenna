@@ -10,10 +10,6 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.apache.http.HttpStatus;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
@@ -21,30 +17,24 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentEm
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
-public class SW360ComponentClientIT {
+public class SW360ComponentClientIT extends AbstractMockServerTest {
     /**
      * An array with the names of test components contained in the test file.
      */
@@ -52,64 +42,11 @@ public class SW360ComponentClientIT {
             "jackson-annotations", "jakarta.validation-api", "jsoup"
     };
 
-    /**
-     * The mapper for JSON serialization.
-     */
-    private static ObjectMapper objectMapper;
-
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(options().dynamicPort());
-
     private SW360ComponentClient componentClient;
-
-    @BeforeClass
-    public static void setUpOnce() {
-        objectMapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
 
     @Before
     public void setUp() {
-        componentClient = new SW360ComponentClient(wireMockRule.baseUrl(), new RestTemplate());
-    }
-
-    /**
-     * Convenience method to generate an initialized response builder for a
-     * JSON response with the given status code.
-     *
-     * @param status the status code
-     * @return the initialized {@code ResponseDefinitionBuilder}
-     */
-    private static ResponseDefinitionBuilder aJsonResponse(int status) {
-        return aResponse().withStatus(status)
-                .withHeader("Content-Type", "application/json");
-    }
-
-    /**
-     * Returns a URL to the test file with the given name. The file is
-     * looked up in the files directory of the Wiremock server.
-     *
-     * @param name the name of the desired test file
-     * @return the URL to the test file specified
-     */
-    private static URL resolveTestFileURL(String name) {
-        URL url = SW360ComponentClientIT.class.getResource("/__files/" + name);
-        assertThat(url).isNotNull();
-        return url;
-    }
-
-    /**
-     * Parses a JSON file specified by the given URL and returns its
-     * de-serialized content.
-     *
-     * @param url  the URL pointing to the file
-     * @param type the class representing the content type
-     * @param <T>  the content type
-     * @return the de-serialized content representation
-     * @throws IOException if an error occurs
-     */
-    private static <T> T readTestJsonFile(URL url, Class<T> type) throws IOException {
-        return objectMapper.readValue(url, type);
+        componentClient = new SW360ComponentClient(wireMockRule.baseUrl(), createRestTemplate());
     }
 
     /**
@@ -122,9 +59,7 @@ public class SW360ComponentClientIT {
         List<String> componentNames = components.stream().map(SW360SparseComponent::getName)
                 .collect(Collectors.toList());
         assertThat(componentNames).containsExactlyInAnyOrder(TEST_COMPONENTS);
-        boolean hasLinks = components.stream()
-                .allMatch(comp -> comp.get_Links().getSelf() != null);
-        assertThat(hasLinks).isTrue();
+        assertHasLinks(components);
     }
 
     @Test
@@ -175,17 +110,12 @@ public class SW360ComponentClientIT {
                 .willReturn(aJsonResponse(HttpStatus.SC_OK)
                         .withBodyFile("component.json")));
 
-        Optional<SW360Component> optComponent = componentClient.getComponent(componentId, new HttpHeaders());
-        if (!optComponent.isPresent()) {
-            fail("No component returned!");
-        } else {
-            SW360Component component = optComponent.get();
-            assertThat(component.getName()).isEqualTo("jackson-annotations");
-            SW360ComponentEmbedded embedded = component.get_Embedded();
-            assertThat(embedded.getCreatedBy().getEmail()).isEqualTo("osi9be@bosch.com");
-            List<SW360SparseRelease> releases = embedded.getReleases();
-            assertThat(releases).hasSize(10);
-        }
+        SW360Component component = assertPresent(componentClient.getComponent(componentId, new HttpHeaders()));
+        assertThat(component.getName()).isEqualTo("jackson-annotations");
+        SW360ComponentEmbedded embedded = component.get_Embedded();
+        assertThat(embedded.getCreatedBy().getEmail()).isEqualTo("osi9be@bosch.com");
+        List<SW360SparseRelease> releases = embedded.getReleases();
+        assertThat(releases).hasSize(10);
     }
 
     @Test(expected = HttpClientErrorException.class)
