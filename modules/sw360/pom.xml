@@ -30,7 +30,7 @@
 
     <modules>
         <module>sw360-client</module>
-        <module>workflow</module>
+        <module>sw360-workflow</module>
     </modules>
 
     <profiles>

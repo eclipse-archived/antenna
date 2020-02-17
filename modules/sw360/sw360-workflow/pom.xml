@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>workflow</artifactId>
+    <artifactId>sw360-workflow</artifactId>
 
     <dependencies>
         <dependency>

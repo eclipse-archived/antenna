@@ -56,7 +56,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>sw360-module</artifactId>
+            <artifactId>sw360-workflow</artifactId>
             <version>${project.version}</version>
             <scope>runtime</scope>
         </dependency>
