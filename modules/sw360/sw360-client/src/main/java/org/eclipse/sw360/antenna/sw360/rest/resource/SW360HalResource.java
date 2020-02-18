@@ -16,11 +16,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.hateoas.Identifiable;
 
 import java.util.Objects;
 
-public abstract class SW360HalResource<L extends LinkObjects, E extends Embedded> implements Identifiable<Self> {
+public abstract class SW360HalResource<L extends LinkObjects, E extends Embedded> {
     private L _links = createEmptyLinks();
     private E _embedded = createEmptyEmbedded();
 

@@ -12,8 +12,6 @@
 package org.eclipse.sw360.antenna.sw360.utils;
 
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentList;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseList;
@@ -22,7 +20,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
-import org.springframework.hateoas.Resource;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
@@ -65,31 +62,10 @@ public class SW360ClientUtils {
                 .orElseGet(ArrayList::new);
     }
 
-    public static List<SW360SparseAttachment> getSw360SparseAttachments(ResponseEntity<Resource<SW360AttachmentList>> response) {
-        checkRestStatus(response);
-        SW360AttachmentList resource = getSaveOrThrow(response.getBody(), Resource::getContent);
-
-        if (resource.get_Embedded() != null &&
-                resource.get_Embedded().getAttachments() != null) {
-            return resource.get_Embedded().getAttachments();
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
-    public static void checkRestStatus(ResponseEntity response) {
+    public static void checkRestStatus(ResponseEntity<?> response) {
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new SW360ClientException(response.getStatusCode().toString());
         }
     }
 
-    public interface Getter <T, I> {
-        I get(T item);
-    }
-
-    public static <T, I> I getSaveOrThrow(T item, Getter<T, I> getter) {
-        return Optional.ofNullable(item)
-                .map(getter::get)
-                .orElseThrow(IllegalStateException::new);
-    }
 }
