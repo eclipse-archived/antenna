@@ -171,10 +171,6 @@
             <artifactId>spdx-utils</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.hateoas</groupId>
-            <artifactId>spring-hateoas</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.github.package-url</groupId>
             <artifactId>packageurl-java</artifactId>
         </dependency>
