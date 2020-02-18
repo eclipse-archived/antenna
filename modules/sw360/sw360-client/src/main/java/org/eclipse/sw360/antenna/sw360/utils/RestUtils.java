@@ -26,6 +26,8 @@ import java.util.Map;
 public class RestUtils {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
+    private RestUtils() {}
+
     public static HttpEntity<String> getHttpEntity(Map<String, Object> resourceMap, HttpHeaders authBearerHeader) {
         try {
             String jsonBody = (resourceMap != null) ? objectMapper.writeValueAsString(resourceMap) : null;

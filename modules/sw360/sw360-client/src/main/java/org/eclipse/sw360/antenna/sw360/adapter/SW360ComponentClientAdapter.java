@@ -62,7 +62,7 @@ public class SW360ComponentClientAdapter {
 
         for (String componentId : componentIds) {
             getComponentById(componentId, header)
-                    .map(completeComponents::add);
+                    .ifPresent(completeComponents::add);
         }
 
         return completeComponents.stream()

@@ -15,6 +15,9 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectType;
 
 public class SW360ProjectAdapterUtils {
+
+    private SW360ProjectAdapterUtils() {}
+
     public static void setDescription(SW360Project project, String mvnDescription) {
         if (mvnDescription != null &&
                 !mvnDescription.isEmpty()) {
@@ -48,9 +51,6 @@ public class SW360ProjectAdapterUtils {
         if(project.getName() == null || project.getName().isEmpty()) {
             return false;
         }
-        if(project.getVersion() == null || project.getVersion().isEmpty()) {
-            return false;
-        }
-        return true;
+        return project.getVersion() != null && !project.getVersion().isEmpty();
     }
 }

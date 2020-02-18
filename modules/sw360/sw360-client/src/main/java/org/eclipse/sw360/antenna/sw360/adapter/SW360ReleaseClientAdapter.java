@@ -124,7 +124,7 @@ public class SW360ReleaseClientAdapter {
 
     public Optional<SW360SparseRelease> getReleaseByExternalIds(Map<String,String> externalIds, HttpHeaders headers) {
         final List<SW360SparseRelease> releasesByExternalIds = releaseClient.getReleasesByExternalIds(externalIds, headers);
-        if (releasesByExternalIds.size() == 0) {
+        if (releasesByExternalIds.isEmpty()) {
             return Optional.empty();
         } else if (releasesByExternalIds.size() == 1) {
             return Optional.of(releasesByExternalIds.get(0));

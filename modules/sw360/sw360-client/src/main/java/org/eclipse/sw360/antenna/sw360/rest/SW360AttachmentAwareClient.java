@@ -53,7 +53,7 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
 
     public T uploadAndAttachAttachment(T itemToModify, Path fileToAttach, SW360AttachmentType kindToAttach, HttpHeaders header) {
         if (!Files.exists(fileToAttach)) {
-            LOGGER.warn("The file=[" + fileToAttach + "], which should be attached to release, does not exist");
+            LOGGER.warn("The file=[{}], which should be attached to release, does not exist", fileToAttach);
             return itemToModify;
         }
 

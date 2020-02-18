@@ -14,6 +14,9 @@ package org.eclipse.sw360.antenna.sw360.utils;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 
 public class SW360ReleaseAdapterUtils {
+
+    private SW360ReleaseAdapterUtils() {}
+
     public static boolean isValidRelease(SW360Release release) {
         if (release.getName() == null || release.getName().isEmpty()) {
             return false;

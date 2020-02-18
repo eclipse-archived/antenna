@@ -81,11 +81,11 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
 
             return getSw360SparseReleases(response);
         } catch (HttpClientErrorException e) {
-            LOGGER.debug("Request to get releases with externalId {} failed with {}", externalIds.toString(), e.getStatusCode());
+            LOGGER.debug("Request to get releases with externalId {} failed with {}", externalIds, e.getStatusCode());
             LOGGER.debug("Error: ", e);
             return Collections.emptyList();
         } catch (SW360ClientException e) {
-            LOGGER.debug("Request to get releases with externalId {} failed with {}", externalIds.toString(), e.getMessage());
+            LOGGER.debug("Request to get releases with externalId {} failed with {}", externalIds, e.getMessage());
             return Collections.emptyList();
         }
     }

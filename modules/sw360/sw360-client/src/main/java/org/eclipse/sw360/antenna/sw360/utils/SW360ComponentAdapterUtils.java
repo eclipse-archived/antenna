@@ -15,6 +15,9 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentTy
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 
 public class SW360ComponentAdapterUtils {
+
+    private SW360ComponentAdapterUtils() {}
+
     public static void setComponentType(SW360Component component, boolean isProprietary) {
         if (isProprietary) {
             component.setComponentType(SW360ComponentType.INTERNAL);
