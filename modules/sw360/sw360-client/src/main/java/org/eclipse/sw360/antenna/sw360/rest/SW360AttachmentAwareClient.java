@@ -98,8 +98,9 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
             ResponseEntity<byte[]> response = getRestTemplate().exchange(url, HttpMethod.GET, httpEntity, byte[].class);
             checkRestStatus(response);
 
-            if (response.getBody() != null) {
-                return Optional.of(Files.write(downloadPath.resolve(attachment.getFilename()), response.getBody()));
+            byte[] body = response.getBody();
+            if (body != null) {
+                return Optional.of(Files.write(downloadPath.resolve(attachment.getFilename()), body));
             } else {
                 LOGGER.warn("Request to get attachment {} from {} returned no content", attachmentId, itemHref);
             }
