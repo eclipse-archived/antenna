@@ -99,9 +99,7 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
             checkRestStatus(response);
             Validate.validState(response.getBody() != null);
 
-            Optional<byte[]> body = Optional.of(response.getBody());
-
-            return Optional.of(Files.write(downloadPath.resolve(attachment.getFilename()), body.get()));
+            return Optional.of(Files.write(downloadPath.resolve(attachment.getFilename()), response.getBody()));
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.warn("Request to get attachment {} from {} failed with {}", attachmentId, itemHref, e.getStatusCode());
             LOGGER.debug("Error: ", e);
