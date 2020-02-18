@@ -44,7 +44,7 @@ public class SW360ReleaseClientAdapter {
         sw360ComponentClientAdapter = componentClientAdapter;
     }
 
-    public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, HttpHeaders header, boolean uploadSources, boolean updateReleases) {
+    public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, HttpHeaders header, boolean updateReleases) {
         // NOTE: this code does now always merge with the SW360Release used for querying
         return getRelease(sw360ReleaseFromArtifact, header)
                 .map(sw360ReleaseFromArtifact::mergeWith)
@@ -55,13 +55,13 @@ public class SW360ReleaseClientAdapter {
                         return sw360Release;
                     }
                 })
-                .orElseGet(() -> createRelease(sw360ReleaseFromArtifact, uploadSources, header));
+                .orElseGet(() -> createRelease(sw360ReleaseFromArtifact, header));
     }
 
     /*
      * Create a release in SW360
      */
-    public SW360Release createRelease(SW360Release releaseFromArtifact, boolean uploadSource, HttpHeaders header) {
+    public SW360Release createRelease(SW360Release releaseFromArtifact, HttpHeaders header) {
         if (! SW360ReleaseAdapterUtils.isValidRelease(releaseFromArtifact)) {
             throw new SW360ClientException("Can not write invalid release for " + releaseFromArtifact.getName() + "-" + releaseFromArtifact.getVersion());
         }

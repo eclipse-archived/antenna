@@ -70,7 +70,7 @@ public class SW360MetaDataUpdater {
 
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact) {
         HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
-        return releaseClientAdapter.getOrCreateRelease(sw360ReleaseFromArtifact, header, uploadSources, updateReleases);
+        return releaseClientAdapter.getOrCreateRelease(sw360ReleaseFromArtifact, header, updateReleases);
     }
 
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) {
