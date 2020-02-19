@@ -189,6 +189,15 @@
                                     <outputDirectory>${copied.site.files.path}/antenna-gradle-plugin</outputDirectory>
                                     <includes>**/*.md,**/*.md.vm</includes>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.sw360.antenna</groupId>
+                                    <artifactId>compliance-tool</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${copied.site.files.path}/compliance-tool</outputDirectory>
+                                    <includes>**/*.md.vm</includes>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>

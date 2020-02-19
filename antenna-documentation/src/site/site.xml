@@ -31,6 +31,7 @@
                 <item name="Maven" href="antenna-maven-plugin/index.html"/>
             </item>
             <item name="Troubleshooting" href="troubleshooting.html"/>
+            <item name="Compliance Tool" href="compliance-tool/index.html"/>
         </menu>
         <menu name="Development" inherit="top">
             <item name="How to configure Antenna" href="how-to-configure.html">

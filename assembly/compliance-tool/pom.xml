@@ -59,6 +59,14 @@
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/site/markdown</directory>
+                <includes>
+                    <include>**/*.md.vm</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 
     <dependencies>
