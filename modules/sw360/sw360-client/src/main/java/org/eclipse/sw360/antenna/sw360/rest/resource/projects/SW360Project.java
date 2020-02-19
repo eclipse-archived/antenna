@@ -32,8 +32,6 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
     private SW360Visibility visibility;
     private Map<String, SW360ProjectReleaseRelationship> releaseIdToUsage;
 
-    public SW360Project() {}
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getName() {
         return this.name;

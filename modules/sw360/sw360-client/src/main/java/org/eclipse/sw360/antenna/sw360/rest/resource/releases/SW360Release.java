@@ -131,7 +131,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     }
 
     public SW360Release setMainLicenseIds(Set<String> mainLicenseIds) {
-        if (mainLicenseIds.size() > 0) {
+        if (!mainLicenseIds.isEmpty()) {
             List<SW360SparseLicense> licenses = mainLicenseIds.stream()
                     .map(licenseId -> new SW360SparseLicense()
                             .setShortName(licenseId))

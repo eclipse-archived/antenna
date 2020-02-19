@@ -14,11 +14,8 @@ package org.eclipse.sw360.antenna.sw360.rest.resource.projects;
 import java.util.Objects;
 
 public class SW360ProjectReleaseRelationship {
-    public SW360ReleaseRelationship releaseRelation;
-    public SW360MainlineState mainlineState;
-
-    public SW360ProjectReleaseRelationship() {
-    }
+    private SW360ReleaseRelationship releaseRelation;
+    private SW360MainlineState mainlineState;
 
     public SW360ProjectReleaseRelationship(SW360ReleaseRelationship releaseRelation, SW360MainlineState mainlineState) {
         this.releaseRelation = releaseRelation;

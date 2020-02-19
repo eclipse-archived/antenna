@@ -20,8 +20,6 @@ public class SW360License extends SW360SimpleHalResource {
     private String shortName;
     private String fullName;
 
-    public SW360License() { }
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getText() {
         return this.text;
