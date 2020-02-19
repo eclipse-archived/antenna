@@ -83,7 +83,7 @@ public class SW360EnricherImpl {
 
     private void mapSourceAttachmentOnArtifact(SW360Release sw360Release, SW360SparseAttachment attachment, Artifact artifact) {
         Optional<Path> attachmentPath = connector.downloadAttachment(sw360Release, attachment, downloadPath);
-        attachmentPath.map( path -> artifact.addFact(new ArtifactSourceFile(path)));
+        attachmentPath.ifPresent(path -> artifact.addFact(new ArtifactSourceFile(path)));
     }
 
     private void updateLicenses(Artifact artifact, SW360Release release) {
@@ -129,7 +129,7 @@ public class SW360EnricherImpl {
             return updatedLicense.get();
         }
 
-        LOGGER.warn("Could not get details for license " + sparseLicense.getFullName());
+        LOGGER.warn("Could not get details for license {}", sparseLicense.getFullName());
         return license;
     }
 

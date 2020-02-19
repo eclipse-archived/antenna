@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ArtifactToComponentUtils {
+
+    private ArtifactToComponentUtils() {}
+
     public static String createComponentName(Artifact artifact) {
         return artifact.askFor(ArtifactCoordinates.class)
                 .map(ArtifactCoordinates::getMainCoordinate)

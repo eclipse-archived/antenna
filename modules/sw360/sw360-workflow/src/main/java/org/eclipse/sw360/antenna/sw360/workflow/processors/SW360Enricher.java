@@ -12,7 +12,6 @@
 
 package org.eclipse.sw360.antenna.sw360.workflow.processors;
 
-import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
@@ -29,8 +28,6 @@ public class SW360Enricher extends AbstractProcessor {
     private static final String DOWNLOAD_ATTACHMENTS_DIR="download.directory";
     private boolean downloadAttachments;
     private Path downloadPath;
-
-    private IProcessingReporter reporter;
 
     private SW360MetaDataReceiver connector;
 

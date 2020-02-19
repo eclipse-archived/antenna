@@ -21,6 +21,8 @@ import java.util.Optional;
 
 public class ArtifactToAttachmentUtils {
 
+    private ArtifactToAttachmentUtils() {}
+
     public static Map<Path, SW360AttachmentType> getAttachmentsFromArtifact(Artifact artifact) {
         return getSourceFile(artifact)
                 .map(sourceFile ->

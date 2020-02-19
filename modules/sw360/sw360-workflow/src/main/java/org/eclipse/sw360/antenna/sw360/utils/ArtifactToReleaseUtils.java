@@ -25,6 +25,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ArtifactToReleaseUtils {
+
+    private ArtifactToReleaseUtils() {}
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ArtifactToReleaseUtils.class);
 
     public static Artifact convertToArtifactWithoutSourceFile(SW360Release release, Artifact artifact) {

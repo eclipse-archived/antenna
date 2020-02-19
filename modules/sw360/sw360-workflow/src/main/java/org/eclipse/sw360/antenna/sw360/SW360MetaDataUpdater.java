@@ -61,10 +61,10 @@ public class SW360MetaDataUpdater {
 
     private boolean isLicenseInSW360(License license, HttpHeaders header) {
         if (licenseClientAdapter.isLicenseOfArtifactAvailable(license.getName(), header)) {
-            LOGGER.debug("License [" + license.getName() + "] found in SW360.");
+            LOGGER.debug("License [{}] found in SW360.", license.getName());
             return true;
         }
-        LOGGER.debug("License [" + license.getName() + "] unknown in SW360.");
+        LOGGER.debug("License [{}] unknown in SW360.", license.getName());
         return false;
     }
 
@@ -81,7 +81,7 @@ public class SW360MetaDataUpdater {
         String id;
         if (projectId.isPresent()) {
             // TODO: Needs endpoint on sw360 to update project on sw360
-            LOGGER.debug("Could not update project " + projectId.get() + ", because the endpoint is not available.");
+            LOGGER.debug("Could not update project {}, because the endpoint is not available.", projectId.get());
             id = projectId.get();
         } else {
             id = projectClientAdapter.addProject(projectName, projectVersion, header);
