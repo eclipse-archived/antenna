@@ -10,13 +10,11 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resource.components;
 
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
+import org.eclipse.sw360.antenna.sw360.rest.SW360SimpleHalResource;
 
 import java.util.Objects;
 
-public class SW360SparseComponent extends SW360HalResource<LinkObjects, Embedded> {
+public class SW360SparseComponent extends SW360SimpleHalResource {
     private String name;
     private SW360ComponentType componentType;
 
@@ -36,16 +34,6 @@ public class SW360SparseComponent extends SW360HalResource<LinkObjects, Embedded
     public SW360SparseComponent setComponentType(SW360ComponentType componentType) {
         this.componentType = componentType;
         return this;
-    }
-
-    @Override
-    public LinkObjects createEmptyLinks() {
-        return new LinkObjects();
-    }
-
-    @Override
-    public Embedded createEmptyEmbedded() {
-        return new EmptyEmbedded();
     }
 
     @Override

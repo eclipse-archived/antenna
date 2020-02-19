@@ -11,15 +11,13 @@
 package org.eclipse.sw360.antenna.sw360.rest.resource.attachments;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
+import org.eclipse.sw360.antenna.sw360.rest.SW360SimpleHalResource;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
 
 import java.nio.file.Path;
 import java.util.Optional;
 
-public class SW360Attachment extends SW360HalResource<LinkObjects, Embedded> {
+public class SW360Attachment extends SW360SimpleHalResource {
     private String filename;
     private SW360AttachmentType attachmentType;
     private SW360AttachmentCheckStatus checkStatus;
@@ -68,17 +66,6 @@ public class SW360Attachment extends SW360HalResource<LinkObjects, Embedded> {
     public SW360Attachment setCheckStatus(SW360AttachmentCheckStatus checkStatus) {
         this.checkStatus = checkStatus;
         return this;
-    }
-
-
-    @Override
-    public LinkObjects createEmptyLinks() {
-        return new LinkObjects();
-    }
-
-    @Override
-    public Embedded createEmptyEmbedded() {
-        return new EmptyEmbedded();
     }
 
     @Override

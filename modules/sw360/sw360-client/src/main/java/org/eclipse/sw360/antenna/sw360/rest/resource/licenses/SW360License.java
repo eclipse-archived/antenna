@@ -11,13 +11,11 @@
 package org.eclipse.sw360.antenna.sw360.rest.resource.licenses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
+import org.eclipse.sw360.antenna.sw360.rest.SW360SimpleHalResource;
 
 import java.util.Objects;
 
-public class SW360License extends SW360HalResource<LinkObjects, Embedded> {
+public class SW360License extends SW360SimpleHalResource {
     private String text;
     private String shortName;
     private String fullName;
@@ -52,16 +50,6 @@ public class SW360License extends SW360HalResource<LinkObjects, Embedded> {
     public SW360License setFullName(String fullName) {
         this.fullName = fullName;
         return this;
-    }
-
-    @Override
-    public LinkObjects createEmptyLinks() {
-        return new LinkObjects();
-    }
-
-    @Override
-    public Embedded createEmptyEmbedded() {
-        return new EmptyEmbedded();
     }
 
     @Override

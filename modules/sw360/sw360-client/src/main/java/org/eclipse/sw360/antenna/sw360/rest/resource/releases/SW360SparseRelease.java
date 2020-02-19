@@ -11,16 +11,15 @@
 package org.eclipse.sw360.antenna.sw360.rest.resource.releases;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
+import org.eclipse.sw360.antenna.sw360.rest.SW360SimpleHalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-public class SW360SparseRelease extends SW360HalResource<LinkObjects, Embedded> {
+public class SW360SparseRelease extends SW360SimpleHalResource {
     private String componentId;
     private String name;
     private String version;
@@ -78,16 +77,6 @@ public class SW360SparseRelease extends SW360HalResource<LinkObjects, Embedded> 
     public SW360SparseRelease setMainLicenseIds(Set<String> mainLicenseIds) {
         this.mainLicenseIds = mainLicenseIds;
         return this;
-    }
-
-    @Override
-    public LinkObjects createEmptyLinks() {
-        return new LinkObjects();
-    }
-
-    @Override
-    public Embedded createEmptyEmbedded() {
-        return new EmptyEmbedded();
     }
 
     @Override

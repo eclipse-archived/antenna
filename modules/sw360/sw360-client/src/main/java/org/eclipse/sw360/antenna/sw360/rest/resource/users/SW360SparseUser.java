@@ -11,13 +11,11 @@
 
 package org.eclipse.sw360.antenna.sw360.rest.resource.users;
 
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
+import org.eclipse.sw360.antenna.sw360.rest.SW360SimpleHalResource;
 
 import java.util.Objects;
 
-public class SW360SparseUser extends SW360HalResource<LinkObjects, Embedded> {
+public class SW360SparseUser extends SW360SimpleHalResource {
     private String email;
 
     public String getEmail() {
@@ -27,16 +25,6 @@ public class SW360SparseUser extends SW360HalResource<LinkObjects, Embedded> {
     public SW360SparseUser setEmail(String email) {
         this.email = email;
         return this;
-    }
-
-    @Override
-    public LinkObjects createEmptyLinks() {
-        return new LinkObjects();
-    }
-
-    @Override
-    public Embedded createEmptyEmbedded() {
-        return new SW360HalResource.EmptyEmbedded();
     }
 
     @Override

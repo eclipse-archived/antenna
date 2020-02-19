@@ -11,11 +11,13 @@
 package org.eclipse.sw360.antenna.sw360.rest.resource.licenses;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.eclipse.sw360.antenna.sw360.rest.resource.*;
+import org.eclipse.sw360.antenna.sw360.rest.SW360SimpleHalResource;
+import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
+import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 
 import java.util.Objects;
 
-public class SW360SparseLicense extends SW360HalResource<LinkObjects, Embedded> {
+public class SW360SparseLicense extends SW360SimpleHalResource {
     private String fullName;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -36,16 +38,6 @@ public class SW360SparseLicense extends SW360HalResource<LinkObjects, Embedded> 
     public SW360SparseLicense setShortName(String shortName) {
         get_Links().setSelf(new Self(shortName));
         return this;
-    }
-
-    @Override
-    public LinkObjects createEmptyLinks() {
-        return new LinkObjects();
-    }
-
-    @Override
-    public Embedded createEmptyEmbedded() {
-        return new EmptyEmbedded();
     }
 
     @Override
