@@ -14,7 +14,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.LegacySupport;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
-import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 
 import java.io.File;
 import java.net.URL;

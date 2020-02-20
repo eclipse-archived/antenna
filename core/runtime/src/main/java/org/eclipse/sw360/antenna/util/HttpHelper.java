@@ -18,6 +18,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

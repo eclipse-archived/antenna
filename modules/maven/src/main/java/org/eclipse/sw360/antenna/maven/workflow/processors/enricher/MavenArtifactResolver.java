@@ -19,7 +19,7 @@ import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
-import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 
 import java.net.MalformedURLException;
 import java.net.URL;

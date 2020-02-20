@@ -23,7 +23,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
-import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

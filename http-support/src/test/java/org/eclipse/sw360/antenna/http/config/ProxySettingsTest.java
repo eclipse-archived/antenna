@@ -8,8 +8,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.util;
+package org.eclipse.sw360.antenna.http.config;
 
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -9,10 +9,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.util;
+package org.eclipse.sw360.antenna.http.config;
 
 import java.util.Objects;
 
+/**
+ * <p>
+ * A class defining proxy settings for HTTP clients.
+ * </p>
+ * <p>
+ * This class allows configuring a proxy to be used for HTTP connections. The
+ * proxy's host address and port number can be configured. It is also possible
+ * to indicate that no proxy should be used.
+ * </p>
+ */
 public class ProxySettings {
     private static final ProxySettings EMPTY_SETTINGS = new ProxySettings(false, null, -1);
 
@@ -36,14 +46,32 @@ public class ProxySettings {
         return EMPTY_SETTINGS;
     }
 
+    /**
+     * Returns a flag whether a proxy should be used.
+     *
+     * @return <strong>true</strong> if the proxy server defined by this object
+     * should be used; <strong>false</strong> for a direct internet connection
+     */
     public boolean isProxyUse() {
-        return proxyUse && proxyHost != null && ! proxyHost.isEmpty();
+        return proxyUse && proxyHost != null && !proxyHost.isEmpty();
     }
 
+    /**
+     * Returns the proxy host. This method only returns a defined value if
+     * {@link #isProxyUse()} returns <strong>true</strong>.
+     *
+     * @return the proxy host address
+     */
     public String getProxyHost() {
         return proxyHost;
     }
 
+    /**
+     * Returns the proxy port. This method only returns a defined value if
+     * {@link #isProxyUse()} returns <strong>true</strong>.
+     *
+     * @return the proxy port
+     */
     public int getProxyPort() {
         return proxyPort;
     }
