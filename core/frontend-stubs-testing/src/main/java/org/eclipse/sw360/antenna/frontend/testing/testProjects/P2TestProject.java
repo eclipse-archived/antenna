@@ -13,7 +13,6 @@ package org.eclipse.sw360.antenna.frontend.testing.testProjects;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -24,7 +23,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.eclipse.sw360.antenna.frontend.testing.testProjects.TestProjectUtils.mkWorkflowStep;
 import static org.junit.Assert.assertTrue;
 
 public class P2TestProject extends AbstractTestProjectWithExpectations implements ExecutableTestProject {
@@ -68,72 +66,17 @@ public class P2TestProject extends AbstractTestProjectWithExpectations implement
     }
 
     @Override
-    public List<String> getExpectedFilesToAttach() {
-        return Collections.emptyList();
-    }
-
-    @Override
     public List<String> getExpectedToolConfigurationConfigFiles() {
-        return Stream.of("src/antennaconf.xml").collect(Collectors.toList());
-    }
-
-    @Override
-    public List<WorkflowStep> getExpectedToolConfigurationAnalyzers() {
-        return BasicConfiguration.getAnalyzers();
-    }
-
-    @Override
-    public List<WorkflowStep> getExpectedToolConfigurationGenerators() {
-        return BasicConfiguration.getGenerators();
-    }
-
-    @Override
-    public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
-        final List<WorkflowStep> processors = BasicConfiguration.getProcessors();
-        WorkflowStep enricher1 = mkWorkflowStep("P2 Resolver", "org.eclipse.sw360.antenna.p2resolver.workflow.processors.enricher.P2Resolver",
-                "repositories", this.projectRoot.toString() + "/additional_p2_resources");
-        processors.add(enricher1);
-        return processors;
-    }
-
-    @Override
-    public List<WorkflowStep> getExpectedToolConfigurationOutputHandlers() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public int getExpectedProxyPort() {
-        return 0;
-    }
-
-    @Override
-    public String getExpectedProxyHost() {
-        return null;
-    }
-
-    @Override
-    public boolean getExpectedToolConfigurationMavenInstalled() {
-        return false;
-    }
-
-    @Override
-    public boolean getExpectedToolConfigurationAttachAll() {
-        return true;
-    }
-
-    @Override
-    public boolean getExpectedToolConfigurationSkip() {
-        return false;
+        List<String> fileList = super.getExpectedToolConfigurationConfigFiles();
+        fileList.add("src" + File.separator + "antennaconf.xml");
+        return fileList;
     }
 
     @Override
     public List<String> getExpectedToolConfigurationConfigFilesEndings() {
-        return Collections.singletonList(File.separator + "src" + File.separator + "antennaconf.xml");
-    }
-
-    @Override
-    public boolean requiresMaven() {
-        return false;
+        List<String> endingsList = super.getExpectedToolConfigurationConfigFilesEndings();
+        endingsList.add(File.separator + "src" + File.separator + "antennaconf.xml");
+        return endingsList;
     }
 
     @Override

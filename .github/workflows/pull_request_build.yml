@@ -37,9 +37,6 @@ jobs:
       with:
         java-version: 1.8
 
-    - name: Build P2
-      run: bash ./modules/p2/prepareDependenciesForP2.sh
-
     - name: Build with Maven
       run: mvn -B clean install -Pcoverage -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 

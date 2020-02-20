@@ -52,10 +52,6 @@ spec:
             choices: ['build', 'build_and_push'],
             description: '',
             name: 'REQUESTED_ACTION')
-        booleanParam(
-            name: 'BUILD_WITH_ANTENNA_P2',
-            defaultValue: false,
-            description: '')
         choice(
             choices: ['eclipse-jarsigner:sign', ''],
             description: '',
@@ -83,34 +79,6 @@ spec:
 
                 sh 'rm -rf localRepository'
                 sh 'mkdir -p localRepository'
-            }
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // handle the p2 dependency part (the stuff below ./antena-p2)
-        // this either gets created (if flag is true) or removed
-        stage('build deps for p2') {
-            when {
-                environment name: 'BUILD_WITH_ANTENNA_P2', value: 'true'
-            }
-            steps {
-                sh 'rm -rf repository'
-                sh 'mkdir -p repository'
-                container('maven') {
-                    sh "./modules/p2/prepareDependenciesForP2.sh"
-                }
-            }
-        }
-        stage('cleanup deps for p2') {
-            when {
-                environment name: 'BUILD_WITH_ANTENNA_P2', value: 'false'
-            }
-            steps {
-                sh 'rm -rf repository'
-                sh 'mkdir -p repository'
-                container('maven') {
-                    sh "./modules/p2/cleanupDependenciesForP2.sh"
-                }
             }
         }
 

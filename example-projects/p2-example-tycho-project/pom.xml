@@ -163,22 +163,7 @@
                                 </configuration>
                             </step>
                         </analyzers>
-                        <processors>
-                            <step>
-                                <name>P2 Resolver</name>
-                                <classHint>org.eclipse.sw360.antenna.p2resolver.workflow.processors.enricher.P2Resolver</classHint>
-                                <configuration>
-                                    <entry>
-                                        <entryKey>repositories</entryKey>
-                                        <entryValue>
-                                            ${user.dir}/dependency_project/
-                                        </entryValue>
-                                    </entry>
-                                </configuration>
-                            </step>
-                        </processors>
                     </workflow>
-
                     <copyrightHoldersName>Antenna Company</copyrightHoldersName>
                     <copyrightNotice>All rights reserved</copyrightNotice>
                 </configuration>

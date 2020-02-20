@@ -9,8 +9,7 @@ their licenses
 * a sources.zip containing all sources of the dependencies
 * a processing report.
 
-Additionally, ${docNameCap} has a [rule engine](./processors/rule-engine.html) to evaluate artifact rules
-and ${docNameCap} provides information and warnings about [security issues](./processors/security-issue-validator.html).
+Additionally, ${docNameCap} provides information and warnings about [security issues](./processors/security-issue-validator.html).
 
 ![Process of ${docNameCap}](../images/antenna-process.png)
 

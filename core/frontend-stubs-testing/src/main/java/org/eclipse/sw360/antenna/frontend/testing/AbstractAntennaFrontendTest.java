@@ -61,31 +61,13 @@ public abstract class AbstractAntennaFrontendTest {
     private boolean runExecutionTest;
 
     @Parameterized.Parameters(name = "{index}: Test data = {1}")
-    public static Collection<Object[]> data() throws IOException {
-        // The current working directory is expected to be "<antenna root directory>/assembly/cli".
-        String relativePathToP2Product = "../../modules/p2/p2-product/repository_manager";
-        File absolutePathToP2Product = new File(relativePathToP2Product).getCanonicalFile();
-
-        if (!absolutePathToP2Product.isDirectory()) {
-            throw new IllegalStateException("AbstractAntennaFrontendTest cannot find the '" + absolutePathToP2Product +
-                    "' directory. Please ensure to run tests from the Antenna root directory.");
-        }
-
-        if (new File(absolutePathToP2Product, "target/products").isDirectory()) {
-            return Arrays.asList(new Object[][]{
-                    {(Supplier<AbstractTestProjectWithExpectations>) MinimalTestProject::new, "minimal configuration"},
-                    {(Supplier<AbstractTestProjectWithExpectations>) BasicTestProject::new, "basic configuration"},
-                    {(Supplier<AbstractTestProjectWithExpectations>) ExampleTestProject::new, "example configuration"},
-                    {(Supplier<AbstractTestProjectWithExpectations>) MavenTestProject::new, "maven configuration"},
-                    {(Supplier<AbstractTestProjectWithExpectations>) P2TestProject::new, "p2 configuration"},
-            });
-        }
-
+    public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
                 {(Supplier<AbstractTestProjectWithExpectations>) MinimalTestProject::new, "minimal configuration"},
                 {(Supplier<AbstractTestProjectWithExpectations>) BasicTestProject::new, "basic configuration"},
                 {(Supplier<AbstractTestProjectWithExpectations>) ExampleTestProject::new, "example configuration"},
                 {(Supplier<AbstractTestProjectWithExpectations>) MavenTestProject::new, "maven configuration"},
+                {(Supplier<AbstractTestProjectWithExpectations>) P2TestProject::new, "p2 configuration"}
         });
     }
 

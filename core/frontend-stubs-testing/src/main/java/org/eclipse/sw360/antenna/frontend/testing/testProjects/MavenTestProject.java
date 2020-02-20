@@ -52,15 +52,9 @@ public class MavenTestProject extends ExampleTestProject {
     }
 
     @Override
-    public List<WorkflowStep> getExpectedToolConfigurationProcessors() {
-        return super.getExpectedToolConfigurationProcessors().stream()
-                .filter(wfs -> !"Drools Policy Engine".equals(wfs.getName()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<WorkflowStep> getExpectedToolConfigurationAnalyzers() {
-        List<WorkflowStep> analyzers = BasicConfiguration.getAnalyzers();
+        List<WorkflowStep> analyzers = new ArrayList<>();
+        analyzers.add(mkWorkflowStep("Analyzing of Antenna configuration", "org.eclipse.sw360.antenna.workflow.analyzers.ConfigurationAnalyzer"));
         analyzers.add(mkWorkflowStep("JSON Analyzer", "org.eclipse.sw360.antenna.workflow.analyzers.JsonAnalyzer",
                 "base.dir", this.projectRoot.toString(),
                 "file.path", "src/reportData.json"));

@@ -26,12 +26,8 @@
             <classHint>org.eclipse.sw360.antenna.maven.workflow.processors.enricher.MavenArtifactResolver</classHint>
         </step>
         <step>
-            <name>Child Jar Resolver</name>
-            <classHint>org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ChildJarResolver</classHint>
-        </step>
-        <step>
             <name>Manifest Resolver</name>
-            <classHint>org.eclipse.sw360.antenna.p2.workflow.processors.enricher.ManifestResolver</classHint>
+            <classHint>org.eclipse.sw360.antenna.maven.workflow.processors.enricher.ManifestResolver</classHint>
             <deactivated>true</deactivated>
         </step>
         <step>
