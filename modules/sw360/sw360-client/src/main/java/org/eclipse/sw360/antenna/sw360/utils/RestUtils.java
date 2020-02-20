@@ -14,13 +14,10 @@ package org.eclipse.sw360.antenna.sw360.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class RestUtils {
@@ -43,17 +40,6 @@ public class RestUtils {
         } catch (JsonProcessingException e) {
             throw new SW360ClientException("Error when attempting to serialise the request body.", e);
         }
-    }
-
-    public static HttpEntity<String> convertSW360ResourceToHttpEntity(SW360License sw360License, HttpHeaders header) {
-        String shortName = sw360License.getShortName() == null ? "" : sw360License.getShortName();
-        String fullName = sw360License.getFullName() == null ? shortName : sw360License.getFullName();
-
-        Map<String, Object> license = new HashMap<>();
-        license.put(SW360Attributes.LICENSE_FULL_NAME, fullName);
-        license.put(SW360Attributes.LICENSE_SHORT_NAME, shortName);
-        license.put(SW360Attributes.LICENSE_TEXT, sw360License.getText());
-        return getHttpEntity(license, header);
     }
 
     public static HttpHeaders deepCopyHeaders(HttpHeaders header) {
