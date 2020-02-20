@@ -14,7 +14,11 @@ import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
-import org.eclipse.sw360.antenna.sw360.rest.*;
+import org.eclipse.sw360.antenna.sw360.rest.SW360AuthenticationClient;
+import org.eclipse.sw360.antenna.sw360.rest.SW360ComponentClient;
+import org.eclipse.sw360.antenna.sw360.rest.SW360LicenseClient;
+import org.eclipse.sw360.antenna.sw360.rest.SW360ProjectClient;
+import org.eclipse.sw360.antenna.sw360.rest.SW360RestTemplateFactory;
 import org.eclipse.sw360.antenna.sw360.utils.ProxySettings;
 import org.springframework.web.client.RestTemplate;
 

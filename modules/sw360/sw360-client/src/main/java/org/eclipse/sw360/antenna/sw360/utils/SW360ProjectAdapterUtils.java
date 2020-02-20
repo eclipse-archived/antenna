@@ -57,4 +57,10 @@ public class SW360ProjectAdapterUtils {
         boolean isProjectVersionEqual = sw360Project.getVersion().equalsIgnoreCase(projectVersion);
         return isAppIdEqual && isProjectVersionEqual;
     }
+
+    public static boolean hasEqualCoordinates(SW360Project sw360Project, String projectName, String projectVersion) {
+        boolean isAppIdEqual = sw360Project.getName().equalsIgnoreCase(projectName);
+        boolean isProjectVersionEqual = sw360Project.getVersion().equalsIgnoreCase(projectVersion);
+        return isAppIdEqual && isProjectVersionEqual;
+    }
 }
