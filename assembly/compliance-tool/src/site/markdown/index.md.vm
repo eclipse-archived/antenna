@@ -3,7 +3,16 @@
 This is a frontend of ${docNameCap} that can be used as a compliance manager tool.
 This is especially targeted to create clean and approved metadata in a SW360 instance.
 
-This tool can be used for a round trip in order to enrich and clear metadata in a SW360 instance. 
+This tool can be used for a round trip in order to enrich and clear metadata in a SW360 instance.
+The round trip would look like this:
+
+* Data about incomplete/non-cleared releases is exported from SW360 to a csv file ([SW360 Exporter](#SW360Exporter))
+* The csv file is then edited manually 
+    * Information is corrected or added to the releases
+    * When information is sufficient the clearing state of a release can be set to one of the approval states. 
+* Based on the edits in the csv file, SW360 is updated and clearing states are set. ([SW360 Updater](#SW360Updater))
+
+The csv file used adheres to the ${docNameCap} [SW360 data model](../sw360-data-model.html). 
 
 #[[##]]# Configuring
 
@@ -25,7 +34,7 @@ or `updater` for the [SW360 Updater](#SW360Updater).
 The SW360 Exporter requests all components from a given SW360 instance
 and filters the releases of the components to check if they have a state
 that shows them as "cleared" or "approved".
-It then creates a list with the data of those releases and writes them
+It then creates a list with the data of non-cleared releases and writes them
 sorted by creation date (from latest to oldest) in a csv file.
 
 The csv file follows the csv format accepted by the CSV Analyzer of ${docNameCap}
@@ -37,7 +46,7 @@ The csv file follows the csv format accepted by the CSV Analyzer of ${docNameCap
 - `csvFilePath`: Path and name where the csv file should be saved
 - `proxyHost`: If a proxy is in use, supply the host name
 - `proxyPort`: If a proxy is in use, supply the port
-- `proxyUse`: If a proxy is in use, this should be set to false
+- `proxyUse`: If a proxy is in use, this should be set to true
 - `sw360restServerUrl`: Link to the rest server url of your SW360 instance
 - `sw360authServerUrl`: Link to the authentication server url of your SW360 instance
 - `sw360user`: SW360 Username
@@ -61,7 +70,7 @@ It has the ability to update release information of already existing releases.
 - `encoding`: Encoding of the csv file, normally `UTF-8` 
 - `proxyHost`: If a proxy is in use, supply the host name
 - `proxyPort`: If a proxy is in use, supply the port
-- `proxyUse`: If a proxy is in use, this should be set to false
+- `proxyUse`: If a proxy is in use, this should be set to true
 - `sw360restServerUrl`: Link to the rest server url of your SW360 instance
 - `sw360authServerUrl`: Link to the authentication server url of your SW360 instance
 - `sw360user`: SW360 Username
