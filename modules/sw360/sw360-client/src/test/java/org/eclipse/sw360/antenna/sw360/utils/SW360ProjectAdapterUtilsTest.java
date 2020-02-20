@@ -58,4 +58,37 @@ public class SW360ProjectAdapterUtilsTest {
 
         assertThat(validComponent).isFalse();
     }
+
+    @Test
+    public void testHasEqualCoordinatesTrue() {
+        SW360Project project = new SW360Project()
+                .setName(PROJECT_NAME)
+                .setVersion(PROJECT_VERSION);
+
+        boolean hasEqualCoordinates = SW360ProjectAdapterUtils.hasEqualCoordinates(project, PROJECT_NAME, PROJECT_VERSION);
+
+        assertThat(hasEqualCoordinates).isTrue();
+    }
+
+    @Test
+    public void testHasEqualCoordinatesFalseByVersion() {
+        SW360Project project = new SW360Project()
+                .setName(PROJECT_NAME)
+                .setVersion(PROJECT_VERSION);
+
+        boolean hasEqualCoordinates = SW360ProjectAdapterUtils.hasEqualCoordinates(project, PROJECT_NAME, PROJECT_VERSION + "-no");
+
+        assertThat(hasEqualCoordinates).isFalse();
+    }
+
+    @Test
+    public void testHasEqualCoordinatesFalseByName() {
+        SW360Project project = new SW360Project()
+                .setName(PROJECT_NAME)
+                .setVersion(PROJECT_VERSION);
+
+        boolean hasEqualCoordinates = SW360ProjectAdapterUtils.hasEqualCoordinates(project, PROJECT_NAME + "-no", PROJECT_VERSION);
+
+        assertThat(hasEqualCoordinates).isFalse();
+    }
 }

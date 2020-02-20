@@ -22,7 +22,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease
 import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ProjectAdapterUtils;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,17 +30,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SW360ProjectClientAdapter {
-    private final SW360ProjectClient projectClient;
+    private SW360ProjectClient projectClient;
 
-    public SW360ProjectClientAdapter(String restUrl, RestTemplate template) {
-        this.projectClient = new SW360ProjectClient(restUrl, template);
+    public SW360ProjectClientAdapter setProjectClient(SW360ProjectClient projectClient) {
+        if (this.projectClient == null) {
+            this.projectClient = projectClient;
+        }
+        return this;
     }
 
     public Optional<String> getProjectIdByNameAndVersion(String projectName, String projectVersion, HttpHeaders header) {
         List<SW360Project> projects = projectClient.searchByName(projectName, header);
 
         return projects.stream()
-                .filter(pr -> hasEqualCoordinates(pr, projectName, projectVersion))
+                .filter(pr -> SW360ProjectAdapterUtils.hasEqualCoordinates(pr, projectName, projectVersion))
                 .findAny()
                 .map(SW360Project::get_Links)
                 .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink);
@@ -58,12 +60,6 @@ public class SW360ProjectClientAdapter {
         SW360Project responseProject = projectClient.createProject(sw360Project, header);
 
         return SW360HalResourceUtility.getLastIndexOfSelfLink(responseProject.get_Links()).orElse("");
-    }
-
-    public boolean hasEqualCoordinates(SW360Project sw360Project, String projectName, String projectVersion) {
-        boolean isAppIdEqual = sw360Project.getName().equalsIgnoreCase(projectName);
-        boolean isProjectVersionEqual = sw360Project.getVersion().equalsIgnoreCase(projectVersion);
-        return isAppIdEqual && isProjectVersionEqual;
     }
 
     public void addSW360ReleasesToSW360Project(String id, Collection<SW360Release> releases, HttpHeaders header) {

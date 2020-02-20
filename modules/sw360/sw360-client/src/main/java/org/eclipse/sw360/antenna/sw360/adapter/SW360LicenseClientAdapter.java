@@ -21,10 +21,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class SW360LicenseClientAdapter {
-    private final SW360LicenseClient licenseClient;
+    private SW360LicenseClient licenseClient;
 
-    public SW360LicenseClientAdapter(String restUrl, RestTemplate template) {
-        this.licenseClient = new SW360LicenseClient(restUrl, template);
+    public SW360LicenseClientAdapter setLicenseClient(SW360LicenseClient licenseClient) {
+        if (this.licenseClient == null) {
+            this.licenseClient = licenseClient;
+        }
+        return this;
     }
 
     public boolean isLicenseOfArtifactAvailable(String license, HttpHeaders header) {

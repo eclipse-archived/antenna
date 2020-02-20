@@ -35,13 +35,24 @@ import java.util.Optional;
 public class SW360ReleaseClientAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360ReleaseClientAdapter.class);
 
-    private final SW360ReleaseClient releaseClient;
+    private SW360ReleaseClient releaseClient;
     private final SW360ComponentClientAdapter sw360ComponentClientAdapter;
 
     public SW360ReleaseClientAdapter(String restUrl, RestTemplate template,
                                      SW360ComponentClientAdapter componentClientAdapter) {
         this.releaseClient = new SW360ReleaseClient(restUrl, template);
         sw360ComponentClientAdapter = componentClientAdapter;
+    }
+
+    public SW360ReleaseClientAdapter(SW360ComponentClientAdapter componentClientAdapter) {
+        sw360ComponentClientAdapter = componentClientAdapter;
+    }
+
+    public SW360ReleaseClientAdapter setReleaseClient(SW360ReleaseClient releaseClient) {
+        if(this.releaseClient == null) {
+            this.releaseClient = releaseClient;
+        }
+        return this;
     }
 
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, HttpHeaders header, boolean updateReleases) {
@@ -143,14 +154,14 @@ public class SW360ReleaseClientAdapter {
                         .findFirst());
     }
 
-    public Optional<SW360Release> getReleaseByArtifact(SW360Component component, String releaseVersionOfArtifact, HttpHeaders header) {
+    public Optional<SW360Release> getReleaseByVersion(SW360Component component, String releaseVersion, HttpHeaders header) {
         if (component != null &&
                 component.get_Embedded() != null &&
                 component.get_Embedded().getReleases() != null) {
 
             List<SW360SparseRelease> releases = component.get_Embedded().getReleases();
             Optional<String> releaseId = releases.stream()
-                    .filter(release -> release.getVersion().equals(releaseVersionOfArtifact))
+                    .filter(release -> release.getVersion().equals(releaseVersion))
                     .findFirst()
                     .flatMap(release -> SW360HalResourceUtility.getLastIndexOfSelfLink(release.get_Links()));
             if (releaseId.isPresent()) {

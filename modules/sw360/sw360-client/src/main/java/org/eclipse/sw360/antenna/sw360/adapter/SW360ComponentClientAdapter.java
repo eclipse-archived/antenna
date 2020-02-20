@@ -18,7 +18,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseCompo
 import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ComponentAdapterUtils;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +25,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SW360ComponentClientAdapter {
-    private final SW360ComponentClient componentClient;
+    private SW360ComponentClient componentClient;
 
-    public SW360ComponentClientAdapter(String restUrl, RestTemplate template) {
-        this.componentClient = new SW360ComponentClient(restUrl, template);
+    public SW360ComponentClientAdapter setComponentClient(SW360ComponentClient componentClient) {
+        if(this.componentClient == null) {
+            this.componentClient = componentClient;
+        }
+        return this;
     }
 
     public Optional<SW360Component> getOrCreateComponent(SW360Component componentFromRelease, HttpHeaders header) {

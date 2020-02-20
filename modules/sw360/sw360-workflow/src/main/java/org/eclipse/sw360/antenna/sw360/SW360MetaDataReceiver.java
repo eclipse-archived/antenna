@@ -56,7 +56,7 @@ public class SW360MetaDataReceiver {
         if (component.isPresent()) {
 
             String releaseVersionOfArtifact = ArtifactToReleaseUtils.createSW360ReleaseVersion(artifact);
-            return releaseClientAdapter.getReleaseByArtifact(component.get(), releaseVersionOfArtifact, headers);
+            return releaseClientAdapter.getReleaseByVersion(component.get(), releaseVersionOfArtifact, headers);
         }
         return Optional.empty();
     }
