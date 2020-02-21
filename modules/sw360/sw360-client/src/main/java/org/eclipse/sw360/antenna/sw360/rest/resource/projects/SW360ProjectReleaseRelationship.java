@@ -17,6 +17,8 @@ public class SW360ProjectReleaseRelationship {
     private SW360ReleaseRelationship releaseRelation;
     private SW360MainlineState mainlineState;
 
+    public  SW360ProjectReleaseRelationship() {}
+
     public SW360ProjectReleaseRelationship(SW360ReleaseRelationship releaseRelation, SW360MainlineState mainlineState) {
         this.releaseRelation = releaseRelation;
         this.mainlineState = mainlineState;
