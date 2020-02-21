@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
-public class HttpClientImpl implements HttpClient {
+class HttpClientImpl implements HttpClient {
     private static final Logger LOG = LoggerFactory.getLogger(HttpClientImpl.class);
 
     /**
@@ -39,19 +39,25 @@ public class HttpClientImpl implements HttpClient {
      */
     private final ObjectMapper mapper;
 
-    public HttpClientImpl() {
-        client = new OkHttpClient();
-        mapper = new ObjectMapper();
+    /**
+     * Creates a new instance of {@code HttpClientImpl} with the dependencies
+     * passed in.
+     * @param client the underlying HTTP client
+     * @param mapper the JSON object mapper
+     */
+    public HttpClientImpl(OkHttpClient client, ObjectMapper mapper) {
+        this.client = client;
+        this.mapper = mapper;
     }
 
     @Override
     public <T> CompletableFuture<T> execute(RequestProducer producer, ResponseProcessor<T> processor) {
-        RequestBuilderImpl builder = new RequestBuilderImpl(mapper);
+        RequestBuilderImpl builder = new RequestBuilderImpl(getMapper());
         producer.produceRequest(builder);
         CompletableFuture<T> resultFuture = new CompletableFuture<>();
         Request request = builder.build();
         LOG.debug("HTTP request {} {}", request.method(), request.url());
-        client.newCall(request).enqueue(createCallback(processor, resultFuture));
+        getClient().newCall(request).enqueue(createCallback(processor, resultFuture));
         return resultFuture;
     }
 
@@ -91,5 +97,21 @@ public class HttpClientImpl implements HttpClient {
                 }
             }
         };
+    }
+
+    /**
+     * Returns a reference to the underlying {@code OkHttpClient}.
+     * @return the underlying client
+     */
+    OkHttpClient getClient() {
+        return client;
+    }
+
+    /**
+     * Returns a reference to the JSON mapper used by this client.
+     * @return the JSON mapper
+     */
+    ObjectMapper getMapper() {
+        return mapper;
     }
 }

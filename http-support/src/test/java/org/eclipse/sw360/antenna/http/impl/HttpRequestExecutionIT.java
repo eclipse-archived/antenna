@@ -15,8 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.sw360.antenna.http.api.HttpClient;
 import org.eclipse.sw360.antenna.http.api.RequestBuilder;
 import org.eclipse.sw360.antenna.http.api.Response;
+import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -96,7 +98,7 @@ public class HttpRequestExecutionIT {
     /**
      * The client to be tested.
      */
-    private HttpClientImpl httpClient;
+    private HttpClient httpClient;
 
     @BeforeClass
     public static void setUpOnce() {
@@ -105,7 +107,7 @@ public class HttpRequestExecutionIT {
 
     @Before
     public void setUp() {
-        httpClient = new HttpClientImpl();
+        httpClient = new HttpClientFactoryImpl().newHttpClient(HttpClientConfig.basicConfig());
     }
 
     /**
