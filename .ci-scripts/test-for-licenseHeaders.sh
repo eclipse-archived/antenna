@@ -29,8 +29,7 @@ testFile() {
     local file="$1"
 
     if [[ ! -f "$file" ]]; then
-        echo "FAIL: the file=[$file] could not be found"
-        failure=true
+        echo "INFO: the file=[$file] has been deleted"
         return
     fi
 
