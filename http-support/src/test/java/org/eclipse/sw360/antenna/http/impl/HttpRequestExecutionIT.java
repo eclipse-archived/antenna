@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.http.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
@@ -19,6 +20,7 @@ import org.eclipse.sw360.antenna.http.api.HttpClient;
 import org.eclipse.sw360.antenna.http.api.RequestBuilder;
 import org.eclipse.sw360.antenna.http.api.Response;
 import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
+import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -50,6 +52,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.eclipse.sw360.antenna.http.utils.HttpUtils.checkResponse;
+import static org.eclipse.sw360.antenna.http.utils.HttpUtils.hasStatus;
+import static org.eclipse.sw360.antenna.http.utils.HttpUtils.jsonResult;
+import static org.eclipse.sw360.antenna.http.utils.HttpUtils.waitFor;
 
 /**
  * A generic integration test class for the functionality provided by the HTTP
@@ -237,8 +244,9 @@ public class HttpRequestExecutionIT {
 
         CompletableFuture<String> futResponse =
                 httpClient.execute(builder -> builder.method(RequestBuilder.Method.POST)
-                        .uri(endpointUri())
-                        .bodyString(CONTENT, "text/plain"), HttpRequestExecutionIT::responseToString);
+                                .uri(endpointUri())
+                                .bodyString(CONTENT, "text/plain"),
+                        checkResponse(HttpRequestExecutionIT::responseToString, hasStatus(201)));
         String response = futResponse.join();
         assertThat(response)
                 .contains(statusString(201), successString(true), bodyString(""));
@@ -256,7 +264,7 @@ public class HttpRequestExecutionIT {
                 httpClient.execute(builder -> builder.method(RequestBuilder.Method.PATCH)
                                 .uri(endpointUri())
                                 .bodyFile(file, "application/octet-stream"),
-                        HttpRequestExecutionIT::responseToString);
+                        checkResponse(HttpRequestExecutionIT::responseToString));
         String response = futResponse.join();
         assertThat(response)
                 .contains(statusString(202), successString(true), bodyString(""));
@@ -344,5 +352,53 @@ public class HttpRequestExecutionIT {
         System.out.println(allServeEvents);
         assertThat(response)
                 .contains(statusString(202), successString(true));
+    }
+
+    @Test
+    public void testGetWithFailedResponseStatus() {
+        wireMockRule.stubFor(get(ENDPOINT)
+                .willReturn(aResponse().withStatus(202)));
+
+        try {
+            waitFor(httpClient.execute(HttpUtils.get(endpointUri()),
+                    checkResponse(response -> new Object(), hasStatus(200))));
+            fail("No exception was thrown.");
+        } catch (IOException e) {
+            assertThat(e.getMessage()).contains("202");
+        }
+    }
+
+    @Test
+    public void testJsonResponse() throws IOException {
+        JsonBean bean = new JsonBean();
+        bean.setTitle("JSON serialization test");
+        bean.setComment("Tests whether the JSON payload of a response can be mapped to an object.");
+        bean.setRating(42);
+        String json = mapper.writeValueAsString(bean);
+        wireMockRule.stubFor(get(urlPathEqualTo(ENDPOINT))
+                .willReturn(aResponse()
+                        .withBody(json)));
+
+        JsonBean responseBean = waitFor(httpClient.execute(HttpUtils.get(endpointUri()),
+                jsonResult(mapper, JsonBean.class)));
+        assertThat(responseBean).isEqualTo(bean);
+    }
+
+    @Test
+    public void testJsonResponseWithTypeReference() throws IOException {
+        List<Map<String, Object>> fruits = Arrays.asList(createFruit("cherry", "red"),
+                createFruit("cantaloupe", "green"),
+                createFruit("peach", "yellow"),
+                createFruit("orange", "orange"));
+        String json = mapper.writeValueAsString(fruits);
+        TypeReference<List<Map<String, Object>>> ref = new TypeReference<List<Map<String, Object>>>() {
+        };
+        wireMockRule.stubFor(get(urlPathEqualTo(ENDPOINT))
+                .willReturn(aResponse().withStatus(200)
+                        .withBody(json)));
+
+        List<Map<String, Object>> fruits2 = waitFor(httpClient.execute(HttpUtils.get(endpointUri()),
+                checkResponse(jsonResult(mapper, ref))));
+        assertThat(fruits2).isEqualTo(fruits);
     }
 }
