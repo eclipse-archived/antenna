@@ -45,8 +45,6 @@ import static org.mockito.internal.verification.VerificationModeFactory.atLeast;
 public class MavenArtifactResolverImplTest extends AntennaTestWithMockedContext {
     @Mock
     private IArtifactRequester requester = mock(IArtifactRequester.class);
-    @Mock
-    private ProxySettings proxySettings = mock(ProxySettings.class);
 
     private IProject project;
     private MavenArtifactResolverImpl mavenArtifactResolverImpl;
@@ -70,7 +68,7 @@ public class MavenArtifactResolverImplTest extends AntennaTestWithMockedContext 
         when(toolConfigMock.getAntennaTargetDirectory()).thenReturn(targetDir);
         when(toolConfigMock.getDependenciesDirectory()).thenReturn(targetDir.resolve("dependencies"));
 
-        mavenArtifactResolverImpl = new MavenArtifactResolverImpl(proxySettings,
+        mavenArtifactResolverImpl = new MavenArtifactResolverImpl(ProxySettings.noProxy(),
                 antennaContextMock.getGeneric(RepositorySystem.class),
                 antennaContextMock.getGeneric(MavenProject.class),
                 antennaContextMock.getGeneric(LegacySupport.class),

@@ -51,9 +51,7 @@ public class HttpHelperTest {
 
     @Before
     public void setUp() throws Exception {
-        ProxySettings proxySettings = new ProxySettings(false, null, 0);
-
-        httpHelper = new HttpHelper(proxySettings);
+        httpHelper = new HttpHelper(ProxySettings.noProxy());
         setVariableValueInObject(httpHelper, "httpClient", httpClientMock);
     }
 

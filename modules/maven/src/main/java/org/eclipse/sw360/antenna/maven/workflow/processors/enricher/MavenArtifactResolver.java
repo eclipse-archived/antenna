@@ -44,7 +44,7 @@ public class MavenArtifactResolver extends AbstractProcessor {
     @Override
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
         ToolConfiguration toolConfig = context.getToolConfiguration();
-        ProxySettings proxySettings = new ProxySettings(
+        ProxySettings proxySettings = ProxySettings.fromConfig(
                 toolConfig.useProxy(), toolConfig.getProxyHost(), toolConfig.getProxyPort());
         return new MavenArtifactResolverImpl(
                 proxySettings,

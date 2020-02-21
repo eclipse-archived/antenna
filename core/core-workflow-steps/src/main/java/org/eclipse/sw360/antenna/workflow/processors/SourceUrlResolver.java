@@ -64,7 +64,8 @@ public class SourceUrlResolver extends AbstractProcessor {
     public void configure(Map<String,String> configMap) {
         super.configure(configMap);
         ToolConfiguration toolConfig = context.getToolConfiguration();
-        ProxySettings proxySettings = new ProxySettings(toolConfig.useProxy(), toolConfig.getProxyHost(), toolConfig.getProxyPort());
+        ProxySettings proxySettings =
+                ProxySettings.fromConfig(toolConfig.useProxy(), toolConfig.getProxyHost(), toolConfig.getProxyPort());
         httpHelper = new HttpHelper(proxySettings);
         dependencyTargetDirectory = toolConfig.getDependenciesDirectory();
     }

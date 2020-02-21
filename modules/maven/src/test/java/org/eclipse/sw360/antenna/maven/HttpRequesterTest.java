@@ -54,7 +54,7 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
         this.baseBefore();
         mavenCoordinate = new Coordinate(Coordinate.Types.MAVEN, "groupId", "artifactId", "version");
 
-        ProxySettings proxySettings = new ProxySettings(false, null, 0);
+        ProxySettings proxySettings = ProxySettings.noProxy();
 
         hr = new HttpRequester(proxySettings, new URL("http://test.repo"));
         setVariableValueInObject(hr, "httpHelper", httpHelperMock);

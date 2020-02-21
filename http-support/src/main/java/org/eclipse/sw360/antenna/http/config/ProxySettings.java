@@ -23,15 +23,29 @@ import java.util.Objects;
  * to indicate that no proxy should be used.
  * </p>
  */
-public class ProxySettings {
-    private static final ProxySettings EMPTY_SETTINGS = new ProxySettings(false, null, -1);
+public final class ProxySettings {
+    /**
+     * Constant representing an undefined proxy host. If this value is set for
+     * the host, this is interpreted as if no proxy is to be used.
+     */
+    public static final String UNDEFINED_HOST = "";
 
-    private final boolean proxyUse;
+    /** Constant representing an undefined port. */
+    public static final int UNDEFINED_PORT = -1;
+
+    private static final ProxySettings EMPTY_SETTINGS = new ProxySettings(UNDEFINED_HOST, UNDEFINED_PORT);
+
     private final String proxyHost;
     private final int proxyPort;
 
-    public ProxySettings(boolean proxyUse, String proxyHost, int proxyPort) {
-        this.proxyUse = proxyUse;
+    /**
+     * Creates a new instance of {@code ProxySettings} with the proxy
+     * parameters specified.
+     *
+     * @param proxyHost the proxy host
+     * @param proxyPort the proxy port
+     */
+    private ProxySettings(String proxyHost, int proxyPort) {
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
     }
@@ -42,8 +56,36 @@ public class ProxySettings {
      *
      * @return an instance with an empty proxy configuration
      */
-    public static ProxySettings empty() {
+    public static ProxySettings noProxy() {
         return EMPTY_SETTINGS;
+    }
+
+    /**
+     * Creates a new instance of {@code ProxySettings} that uses the specified
+     * settings for the proxy.
+     *
+     * @param host the host address of the proxy
+     * @param port the port of the proxy
+     * @return the new {@code ProxySettings} instance
+     */
+    public static ProxySettings useProxy(String host, int port) {
+        return new ProxySettings(host, port);
+    }
+
+    /**
+     * Creates a new instance of {@code ProxySettings} that is initialized from
+     * configuration settings. In the configuration, it can be stated
+     * explicitly whether a proxy is to be used or not. So it is possible that
+     * valid settings for the proxy host and port are provided, but the
+     * resulting settings should nevertheless refer to an undefined proxy.
+     *
+     * @param useProxy flag whether a proxy should be used
+     * @param host     the proxy host (may be undefined)
+     * @param port     the proxy port (may be undefined)
+     * @return the new {@code ProxySettings} instance
+     */
+    public static ProxySettings fromConfig(boolean useProxy, String host, int port) {
+        return useProxy ? useProxy(host, port) : noProxy();
     }
 
     /**
@@ -53,7 +95,7 @@ public class ProxySettings {
      * should be used; <strong>false</strong> for a direct internet connection
      */
     public boolean isProxyUse() {
-        return proxyUse && proxyHost != null && !proxyHost.isEmpty();
+        return proxyPort != UNDEFINED_PORT && proxyHost != null && !proxyHost.equals(UNDEFINED_HOST);
     }
 
     /**
@@ -86,20 +128,18 @@ public class ProxySettings {
         }
 
         ProxySettings settings = (ProxySettings) o;
-        return proxyUse == settings.proxyUse &&
-                getProxyPort() == settings.getProxyPort() &&
+        return  getProxyPort() == settings.getProxyPort() &&
                 Objects.equals(getProxyHost(), settings.getProxyHost());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(proxyUse, getProxyHost(), getProxyPort());
+        return Objects.hash(getProxyHost(), getProxyPort());
     }
 
     @Override
     public String toString() {
         return "ProxySettings{" +
-                "proxyUse=" + proxyUse +
                 ", proxyHost='" + proxyHost + '\'' +
                 ", proxyPort=" + proxyPort +
                 '}';
