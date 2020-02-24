@@ -17,11 +17,14 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
-import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -82,9 +85,6 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
             LOGGER.warn("Request to attach {} to {} failed with {}", fileToAttach, self, e.getStatusCode());
             LOGGER.debug("Error: ", e);
             return itemToModify;
-        } catch (SW360ClientException e) {
-            LOGGER.warn("Request to attach {} to {} failed with {}", fileToAttach, self, e.getMessage());
-            return itemToModify;
         }
     }
 
@@ -106,9 +106,6 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?,?>
             }
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.warn("Request to get attachment {} from {} failed with {}", attachmentId, itemHref, e.getStatusCode());
-            LOGGER.debug("Error: ", e);
-        } catch (SW360ClientException e) {
-            LOGGER.warn("Request to get attachment {} from {} failed with {}", attachmentId, itemHref, e.getMessage());
             LOGGER.debug("Error: ", e);
         } catch (IOException e) {
             LOGGER.warn("Request to write downloaded attachment {} to {} failed with {}", attachment.getFilename(), downloadPath, e.getMessage());

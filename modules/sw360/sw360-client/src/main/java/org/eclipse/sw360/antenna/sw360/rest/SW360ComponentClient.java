@@ -17,7 +17,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
-import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -57,7 +56,7 @@ public class SW360ComponentClient extends SW360Client {
 
             checkRestStatus(response);
             return Optional.ofNullable(response.getBody());
-        } catch (SW360ClientException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.error("Request to get component {} failed with {}",
                     componentId, e.getMessage());
             return Optional.empty();
@@ -71,7 +70,7 @@ public class SW360ComponentClient extends SW360Client {
 
             checkRestStatus(response);
             return getSw360SparseComponents(response);
-        } catch (SW360ClientException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.error("Request to get components failed with {}", e.getMessage());
             return new ArrayList<>();
         }
@@ -87,7 +86,7 @@ public class SW360ComponentClient extends SW360Client {
                     SW360ComponentList.class);
 
             return getSw360SparseComponents(response);
-        } catch (SW360ClientException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.debug("Request to get sparse components failed with {}", e.getMessage());
             return new ArrayList<>();
         }
@@ -106,10 +105,6 @@ public class SW360ComponentClient extends SW360Client {
             LOGGER.error("Request to create component {} failed with {}",
                     sw360Component.getName(), e.getStatusCode());
             LOGGER.debug("Error: ", e);
-            return sw360Component;
-        } catch (SW360ClientException e) {
-            LOGGER.error("Request to create component {} failed with {}",
-                    sw360Component.getName(), e.getMessage());
             return sw360Component;
         }
     }

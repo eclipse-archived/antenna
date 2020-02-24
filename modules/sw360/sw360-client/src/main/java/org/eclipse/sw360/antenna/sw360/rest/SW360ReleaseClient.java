@@ -84,9 +84,6 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
             LOGGER.debug("Request to get releases with externalId {} failed with {}", externalIds, e.getStatusCode());
             LOGGER.debug("Error: ", e);
             return Collections.emptyList();
-        } catch (SW360ClientException e) {
-            LOGGER.debug("Request to get releases with externalId {} failed with {}", externalIds, e.getMessage());
-            return Collections.emptyList();
         }
     }
 
@@ -114,9 +111,6 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
             LOGGER.error("Request to create release {} failed with {}", sw360Release.getName(), e.getStatusCode());
             LOGGER.debug("Error: ", e);
             return sw360Release;
-        } catch (SW360ClientException e) {
-            LOGGER.error("Request to create release {} failed with {}", sw360Release.getName(), e.getMessage());
-            return sw360Release;
         }
     }
 
@@ -132,9 +126,6 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.error("Request to update release {} failed with {}", sw360Release.getName(), e.getStatusCode());
             LOGGER.debug("Error: ", e);
-            return sw360Release;
-        } catch (SW360ClientException e) {
-            LOGGER.error("Request to update release {} failed with {}", sw360Release.getName(), e.getMessage());
             return sw360Release;
         }
     }

@@ -29,11 +29,41 @@ public class SW360ReleaseAdapterUtilsTest {
     }
 
     @Test
-    public void isValidReleaseWithInvalidRelease() {
+    public void isValidReleaseNoName() {
         SW360Release release = new SW360Release();
+        release.setVersion("1.1");
 
         boolean validRelease = SW360ReleaseAdapterUtils.isValidRelease(release);
 
+        assertThat(validRelease).isFalse();
+    }
+
+    @Test
+    public void testIsValidReleaseEmptyName() {
+        SW360Release release = new SW360Release();
+        release.setVersion("1.2");
+        release.setName("");
+
+        boolean validRelease = SW360ReleaseAdapterUtils.isValidRelease(release);
+        assertThat(validRelease).isFalse();
+    }
+
+    @Test
+    public void testIsValidReleaseNoVersion() {
+        SW360Release release = new SW360Release();
+        release.setName("myRelease");
+
+        boolean validRelease = SW360ReleaseAdapterUtils.isValidRelease(release);
+        assertThat(validRelease).isFalse();
+    }
+
+    @Test
+    public void testIsValidReleaseEmptyVersion() {
+        SW360Release release = new SW360Release();
+        release.setName("releaseName");
+        release.setVersion("");
+
+        boolean validRelease = SW360ReleaseAdapterUtils.isValidRelease(release);
         assertThat(validRelease).isFalse();
     }
 }

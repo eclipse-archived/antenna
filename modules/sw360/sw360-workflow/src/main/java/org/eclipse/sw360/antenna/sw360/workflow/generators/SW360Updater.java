@@ -31,6 +31,7 @@ public class SW360Updater extends AbstractGenerator {
     private String projectName;
     private String projectVersion;
     private SW360MetaDataUpdater sw360MetaDataUpdater;
+    private SW360UpdaterImpl updaterImpl;
 
     public SW360Updater() {
         this.workflowStepOrder = 1100;
@@ -62,20 +63,25 @@ public class SW360Updater extends AbstractGenerator {
 
     @Override
     public Map<String, IAttachable> produce(Collection<Artifact> intermediates) {
-        return new SW360UpdaterImpl(sw360MetaDataUpdater,projectName, projectVersion)
-                .produce(intermediates);
+        return updaterImpl == null ?
+                new SW360UpdaterImpl(sw360MetaDataUpdater,projectName, projectVersion)
+                        .produce(intermediates) :
+                updaterImpl.produce(intermediates);
     }
 
     private String retrieveName(Optional<SW360ProjectCoordinates> sw360ProjectCoordinates) {
         return sw360ProjectCoordinates.map(SW360ProjectCoordinates::getName)
-                .orElse(context.getProject()
+                .orElseGet(() -> context.getProject()
                         .getProjectId());
     }
 
     private String retrieveVersion(Optional<SW360ProjectCoordinates> sw360ProjectCoordinates) {
         return sw360ProjectCoordinates.map(SW360ProjectCoordinates::getVersion)
-                .orElse(context.getProject()
+                .orElseGet(() -> context.getProject()
                         .getVersion());
     }
 
+    public void setUpdaterImpl(SW360UpdaterImpl updaterImpl) {
+        this.updaterImpl = updaterImpl;
+    }
 }

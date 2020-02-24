@@ -85,6 +85,34 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
     }
 
     @Test
+    public void testUploadAttachmentNonExistingFile() {
+        Path attachmentPath = temporaryFolder.getRoot().toPath().resolve("nonExistingFile.txt");
+        SW360Release release = new SW360Release();
+
+        SW360Release modifiedRelease =
+                attachmentClient.uploadAndAttachAttachment(release, attachmentPath, SW360AttachmentType.DOCUMENT,
+                        new HttpHeaders());
+        assertThat(modifiedRelease).isEqualTo(release);
+        assertThat(wireMockRule.getAllServeEvents()).hasSize(0);
+    }
+
+    @Test
+    public void testUploadAttachmentError() throws URISyntaxException {
+        String urlPath = "/releases/rel1234567890";
+        String selfUrl = wireMockRule.baseUrl() + urlPath;
+        Path attachmentPath = Paths.get(resolveTestFileURL("license.json").toURI());
+        SW360Release release = new SW360Release();
+        release.get_Links().setSelf(new Self(selfUrl));
+        wireMockRule.stubFor(post(anyUrl())
+                .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
+
+        SW360Release modifiedRelease =
+                attachmentClient.uploadAndAttachAttachment(release, attachmentPath, SW360AttachmentType.DOCUMENT,
+                        new HttpHeaders());
+        assertThat(modifiedRelease).isEqualTo(release);
+    }
+
+    @Test
     public void testDownloadAttachment() throws IOException {
         final String attachmentID = "test-attachment-id";
         final String fileName = "testAttachment.json";
@@ -108,6 +136,20 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
     }
 
     @Test
+    public void testDownloadAttachmentInvalidDownloadPath() {
+        SW360SparseAttachment attachment = new SW360SparseAttachment();
+        attachment.get_Links().setSelf(new Self(wireMockRule.baseUrl() +
+                "/test/attachments/notDownloadedAttachment"));
+        attachment.setFilename("irrelevant.file");
+        Path downloadPath = temporaryFolder.getRoot().toPath().resolve("non").resolve("existing").resolve("path");
+
+        Optional<Path> optPath = attachmentClient.downloadAttachment(wireMockRule.baseUrl(), attachment,
+                downloadPath, new HttpHeaders());
+        assertThat(optPath).isNotPresent();
+        assertThat(wireMockRule.getAllServeEvents()).hasSize(0);
+    }
+
+    @Test
     public void testDownloadAttachmentNotFound() {
         SW360SparseAttachment attachment = new SW360SparseAttachment();
         attachment.get_Links().setSelf(new Self(wireMockRule.baseUrl() + "/test/attachments/unknownAttachment"));
@@ -116,7 +158,20 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
                 .willReturn(aResponse().withStatus(HttpStatus.SC_NOT_FOUND)));
 
         Optional<Path> optPath = attachmentClient.downloadAttachment(wireMockRule.baseUrl(), attachment,
-                temporaryFolder.getRoot().toPath(), new HttpHeaders());
+                temporaryFolder.getRoot().toPath().resolve("downloads"), new HttpHeaders());
+        assertThat(optPath).isNotPresent();
+    }
+
+    @Test
+    public void testDownloadAttachmentNoContent() {
+        SW360SparseAttachment attachment = new SW360SparseAttachment();
+        attachment.get_Links().setSelf(new Self(wireMockRule.baseUrl() + "/test/attachments/empty"));
+        attachment.setFilename("empty.file");
+        wireMockRule.stubFor(get(anyUrl())
+                .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+        Optional<Path> optPath = attachmentClient.downloadAttachment(wireMockRule.baseUrl(), attachment,
+                temporaryFolder.getRoot().toPath().resolve("downloads"), new HttpHeaders());
         assertThat(optPath).isNotPresent();
     }
 }

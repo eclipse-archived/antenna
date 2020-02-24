@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -84,6 +85,15 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
     }
 
     @Test
+    public void testSearchByNameError() {
+        wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
+        .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
+
+        List<SW360Project> projects = projectClient.searchByName("foo", new HttpHeaders());
+        assertThat(projects).hasSize(0);
+    }
+
+    @Test
     public void testCreateProject() throws IOException {
         SW360Project project = readTestJsonFile(resolveTestFileURL("project.json"), SW360Project.class);
         String projectJson = toJson(project);
@@ -107,6 +117,15 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
         projectClient.addReleasesToProject(projectID, releases, new HttpHeaders());
         wireMockRule.verify(postRequestedFor(urlPathEqualTo(urlPath))
                 .withRequestBody(equalTo(toJson(releases))));
+    }
+
+    @Test
+    public void testAddReleasesToProjectError() {
+        wireMockRule.stubFor(post(anyUrl())
+        .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
+
+        projectClient.addReleasesToProject("projectId", Arrays.asList("foo", "bar"),
+                new HttpHeaders());
     }
 
     /**
@@ -136,5 +155,15 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
     @Test
     public void testGetLinkedReleasesTransitive() {
         checkLinkedReleases(true);
+    }
+
+    @Test
+    public void testGetLinkedReleasesError() {
+        wireMockRule.stubFor(get(anyUrl())
+        .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
+
+        List<SW360SparseRelease> releases = projectClient.getLinkedReleases("projectID", false,
+                new HttpHeaders());
+        assertThat(releases).hasSize(0);
     }
 }

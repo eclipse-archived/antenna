@@ -19,8 +19,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.List;
@@ -82,6 +80,15 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
     }
 
     @Test
+    public void testGetComponentsError() {
+        wireMockRule.stubFor(get(urlPathEqualTo("/components"))
+                .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
+
+        List<SW360SparseComponent> components = componentClient.getComponents(new HttpHeaders());
+        assertThat(components).hasSize(0);
+    }
+
+    @Test
     public void testSearchByName() {
         final String componentName = "testComponentSearchPattern";
         wireMockRule.stubFor(get(urlPathEqualTo("/components"))
@@ -104,6 +111,15 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
     }
 
     @Test
+    public void testSearchByNameError() {
+        wireMockRule.stubFor(get(anyUrl())
+                .willReturn(aJsonResponse(HttpStatus.SC_FORBIDDEN)));
+
+        List<SW360SparseComponent> components = componentClient.searchByName("foo", new HttpHeaders());
+        assertThat(components).hasSize(0);
+    }
+
+    @Test
     public void testGetComponent() {
         final String componentId = "testComponentID";
         wireMockRule.stubFor(get(urlPathEqualTo("/components/" + componentId))
@@ -118,12 +134,13 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
         assertThat(releases).hasSize(10);
     }
 
-    @Test(expected = HttpClientErrorException.class)
+    @Test
     public void testGetComponentNotFound() {
         wireMockRule.stubFor(get(anyUrl())
                 .willReturn(aJsonResponse(HttpStatus.SC_NOT_FOUND)));
 
-        componentClient.getComponent("unknownComponent", new HttpHeaders());
+        Optional<SW360Component> optComponent = componentClient.getComponent("unknownComponent", new HttpHeaders());
+        assertThat(optComponent).isNotPresent();
     }
 
     @Test
@@ -141,6 +158,16 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
         wireMockRule.stubFor(post(urlPathEqualTo("/components"))
                 .willReturn(aJsonResponse(HttpStatus.SC_CREATED)
                         .withBodyFile("component.json")));
+
+        SW360Component createdComponent = componentClient.createComponent(component, new HttpHeaders());
+        assertThat(createdComponent).isEqualTo(component);
+    }
+
+    @Test
+    public void testCreateComponentError() throws IOException {
+        SW360Component component = readTestJsonFile(resolveTestFileURL("component.json"), SW360Component.class);
+        wireMockRule.stubFor(post(urlPathEqualTo("/components"))
+                .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
 
         SW360Component createdComponent = componentClient.createComponent(component, new HttpHeaders());
         assertThat(createdComponent).isEqualTo(component);

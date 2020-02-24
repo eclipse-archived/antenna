@@ -20,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +114,15 @@ public class SW360ReleaseClientIT extends AbstractMockServerTest {
     }
 
     @Test
+    public void testGetReleasesByExternalIdsError() {
+        wireMockRule.stubFor(get(urlPathEqualTo("/releases/searchByExternalIds"))
+                .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
+
+        List<SW360SparseRelease> releases = releaseClient.getReleasesByExternalIds(new HashMap<>(), new HttpHeaders());
+        assertThat(releases).hasSize(0);
+    }
+
+    @Test
     public void testCreateRelease() throws IOException {
         SW360Release release = readTestJsonFile(resolveTestFileURL("release.json"), SW360Release.class);
         String releaseJson = toJson(release);
@@ -120,6 +130,17 @@ public class SW360ReleaseClientIT extends AbstractMockServerTest {
                 .withRequestBody(equalToJson(releaseJson))
                 .willReturn(aJsonResponse(HttpStatus.SC_CREATED)
                         .withBody(releaseJson)));
+
+        SW360Release createdRelease = releaseClient.createRelease(release, new HttpHeaders());
+        assertThat(createdRelease).isEqualTo(release);
+    }
+
+    @Test
+    public void testCreateReleaseError() throws IOException {
+        SW360Release release = readTestJsonFile(resolveTestFileURL("release.json"), SW360Release.class);
+        wireMockRule.stubFor(post(urlEqualTo("/releases"))
+                .withRequestBody(equalToJson(toJson(release)))
+                .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
 
         SW360Release createdRelease = releaseClient.createRelease(release, new HttpHeaders());
         assertThat(createdRelease).isEqualTo(release);
@@ -134,7 +155,18 @@ public class SW360ReleaseClientIT extends AbstractMockServerTest {
                 .willReturn(aJsonResponse(HttpStatus.SC_ACCEPTED)
                         .withBody(releaseJson)));
 
-        SW360Release createdRelease = releaseClient.patchRelease(release, new HttpHeaders());
-        assertThat(createdRelease).isEqualTo(release);
+        SW360Release patchedRelease = releaseClient.patchRelease(release, new HttpHeaders());
+        assertThat(patchedRelease).isEqualTo(release);
+    }
+
+    @Test
+    public void testPatchReleaseError() throws IOException {
+        SW360Release release = readTestJsonFile(resolveTestFileURL("release.json"), SW360Release.class);
+        wireMockRule.stubFor(patch(urlEqualTo("/releases/" + release.getReleaseId()))
+                .withRequestBody(equalToJson(toJson(release)))
+                .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
+
+        SW360Release patchedRelease = releaseClient.patchRelease(release, new HttpHeaders());
+        assertThat(patchedRelease).isEqualTo(release);
     }
 }

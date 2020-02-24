@@ -22,6 +22,8 @@ import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
@@ -34,7 +36,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -81,6 +86,34 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         verify(toolConfigMock, atLeast(0)).getProxyPort();
     }
 
+    @Test
+    public void testWithDownloadActivated() throws IOException {
+        ReflectionTestUtils.setField(sw360Enricher, "downloadAttachments", true);
+        final Path downloadPath = temporaryFolder.newFolder("download.directory").toPath();
+        ReflectionTestUtils.setField(sw360Enricher, "downloadPath", downloadPath);
+
+        final String downloadFilename = "downloadedSource.jar";
+        SW360SparseAttachment sparseAttachment = new SW360SparseAttachment()
+                .setAttachmentType(SW360AttachmentType.SOURCE)
+                .setFilename(downloadFilename);
+        SW360ReleaseEmbedded releaseEmbedded = new SW360ReleaseEmbedded();
+        releaseEmbedded.setAttachments(Collections.singletonList(sparseAttachment));
+        SW360Release release0 = new SW360Release();
+        release0.set_Embedded(releaseEmbedded);
+
+        when(connector.findReleaseForArtifact(any())).thenReturn(Optional.empty());
+        when(connector.findReleaseForArtifact(artifacts.get(0))).thenReturn(Optional.of(release0));
+        when(connector.downloadAttachment(release0, sparseAttachment, downloadPath))
+                .thenReturn(Optional.of(Paths.get(downloadFilename)));
+
+        final Collection<Artifact> process = sw360Enricher.process(artifacts);
+
+        final Optional<Artifact> artifact = process.stream().findFirst();
+        assertThat(artifact).isPresent();
+        assertThat(artifact.get().askFor(ArtifactSourceFile.class)).isPresent();
+        assertThat(artifact.get().askForGet(ArtifactSourceFile.class)).hasValue(Paths.get(downloadFilename));
+        verify(connector, never()).getLicenseDetails(any());
+    }
 
     @Test
     public void releaseIsMappedToArtifactCorrectly() {
@@ -137,6 +170,16 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         assertThat(artifact0.askFor(CopyrightStatement.class).isPresent()).isTrue();
         assertThat(artifact0.askForGet(CopyrightStatement.class).get()).isEqualTo(TestUtils.RELEASE_COPYRIGHT);
 
+    }
+
+    @Test
+    public void testWhenNoReleaseIsFoundInFindRelease() {
+        when(connector.findReleaseForArtifact(any())).thenReturn(Optional.empty());
+
+        final Collection<Artifact> process = sw360Enricher.process(artifacts);
+
+        assertThat(process).containsExactlyElementsOf(artifacts);
+        verify(reporterMock, times(1)).add(eq(artifacts.get(0)), any(), any());
     }
 
     @Test

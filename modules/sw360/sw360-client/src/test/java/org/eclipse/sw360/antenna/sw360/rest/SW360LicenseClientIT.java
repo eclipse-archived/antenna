@@ -68,6 +68,15 @@ public class SW360LicenseClientIT extends AbstractMockServerTest {
     }
 
     @Test
+    public void testGetLicensesError() {
+        wireMockRule.stubFor(get(urlPathEqualTo("/licenses"))
+        .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
+
+        List<SW360SparseLicense> licenses = licenseClient.getLicenses(new HttpHeaders());
+        assertThat(licenses).hasSize(0);
+    }
+
+    @Test
     public void testGetLicenseByName() {
         final String licenseName = "tst";
         wireMockRule.stubFor(get(urlPathEqualTo("/licenses/" + licenseName))
@@ -80,12 +89,13 @@ public class SW360LicenseClientIT extends AbstractMockServerTest {
         assertThat(license.getShortName()).isEqualTo("0TST");
     }
 
-    @Test(expected = HttpClientErrorException.class)
+    @Test
     public void testGetLicenseByNameUnknown() {
         wireMockRule.stubFor(get(anyUrl())
                 .willReturn(aResponse().withStatus(HttpStatus.SC_NOT_FOUND)));
 
-        licenseClient.getLicenseByName("unknown", new HttpHeaders());
+        Optional<SW360License> optLicense = licenseClient.getLicenseByName("unknown", new HttpHeaders());
+        assertThat(optLicense).isNotPresent();
     }
 
     @Test

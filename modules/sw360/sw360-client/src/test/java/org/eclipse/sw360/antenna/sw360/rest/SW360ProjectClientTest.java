@@ -151,17 +151,6 @@ public class SW360ProjectClientTest {
         client.searchByName(searchName, new HttpHeaders());
     }
 
-    @Test( expected = HttpClientErrorException.class )
-    public void testSearchProjectsByNameWithBadStatusCode() {
-        String searchName = "test";
-        String requestUrl = SEARCH_BY_NAME_ENDPOINT + searchName;
-        mockedServer.expect(requestTo(requestUrl))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withBadRequest());
-
-        client.searchByName(searchName, new HttpHeaders());
-    }
-
     @Test
     public void testCreateProjectWithSuccess() {
         String newProjectId = "anyNewId";

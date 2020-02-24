@@ -73,7 +73,7 @@ public class SW360MetaDataReceiver {
         return releaseClientAdapter.downloadAttachment(release, attachment, downloadPath, header);
     }
 
-    public Optional<SW360Component> getComponentByArtifact(Artifact artifact, HttpHeaders header) {
+    private Optional<SW360Component> getComponentByArtifact(Artifact artifact, HttpHeaders header) {
         try {
             String componentName = ArtifactToComponentUtils.createComponentName(artifact);
             return componentClientAdapter.getComponentByName(componentName, header);

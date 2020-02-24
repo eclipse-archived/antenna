@@ -19,7 +19,6 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
-import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -65,7 +64,7 @@ public class SW360ProjectClient extends SW360Client {
 
             checkRestStatus(response);
             return getSw360Projects(response);
-        } catch (SW360ClientException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.debug("Request to search for projects with the name {} failed with {}",
                     name, e.getMessage());
             return new ArrayList<>();
@@ -85,10 +84,6 @@ public class SW360ProjectClient extends SW360Client {
                     sw360Project.getName(), e.getStatusCode());
             LOGGER.debug("Error: ", e);
             return sw360Project;
-        } catch (SW360ClientException e) {
-            LOGGER.debug("Request to create project {} failed with {}",
-                    sw360Project.getName(), e.getMessage());
-            return sw360Project;
         }
     }
 
@@ -101,7 +96,7 @@ public class SW360ProjectClient extends SW360Client {
             HttpEntity<List<String>> httpEntity = new HttpEntity<>(releases, header);
             ResponseEntity<String> response = doRestCall(builder.build(false).toUriString(), HttpMethod.POST, httpEntity, String.class);
             checkRestStatus(response);
-        } catch (SW360ClientException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.error("Request to add linked releases to project {} failed with {}",
                     projectId, e.getMessage());
         }
@@ -117,7 +112,7 @@ public class SW360ProjectClient extends SW360Client {
             ResponseEntity<SW360ReleaseList> response = doRestGET(builder.build(false).toUriString(), header,
                     SW360ReleaseList.class);
             return getSw360SparseReleases(response);
-        } catch (SW360ClientException e) {
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
             LOGGER.error("Request to get linked releases of project with id=[{}] failed with {}",
                     projectId, e.getMessage());
             return Collections.emptyList();

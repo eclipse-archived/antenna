@@ -11,129 +11,87 @@
  */
 package org.eclipse.sw360.antenna.sw360.workflow.generators;
 
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
-import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSoftwareHeritageID;
-import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
-import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.utils.ArtifactToReleaseUtils;
-import org.eclipse.sw360.antenna.sw360.utils.TestUtils;
-import org.junit.Rule;
+import org.eclipse.sw360.antenna.api.IAttachable;
+import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
+import org.eclipse.sw360.antenna.model.Configuration;
+import org.eclipse.sw360.antenna.model.SW360ProjectCoordinates;
+import org.eclipse.sw360.antenna.model.xml.generated.FromXmlSW360ProjectCoordinates;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.mockito.Mock;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 public class SW360UpdaterTest {
 
-    @Rule
-    public ExpectedException thrownException = ExpectedException.none();
+    @Mock
+    protected AntennaContext antennaContextMock = mock(AntennaContext.class);
+    @Mock
+    protected ToolConfiguration toolConfigMock = mock(ToolConfiguration.class);
+    @Mock
+    protected Configuration configMock = mock(Configuration.class);
+    private SW360Updater updater;
 
-    @Test
-    public void artifactIsMappedToSw360ReleaseCorrectlyWithOverwritten() {
-        Artifact artifact = TestUtils.mkArtifact("Test1", true);
-        SW360Component sw360Component = new SW360Component();
-        sw360Component.setName("artifactIdtest1");
-        SW360Release release = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
-        release.setComponentId(sw360Component.getComponentId());
-        release.setMainLicenseIds(Collections.EMPTY_SET);
+    @Before
+    public void setUp() {
+        updater = new SW360Updater();
+        when(toolConfigMock.getProxyHost())
+                .thenReturn("localhost");
+        when(toolConfigMock.getProxyPort())
+                .thenReturn(8080);
 
-        assertThat(release.getClearingState()).isEqualTo(TestUtils.RELEASE_CLEARING_STATE);
-        assertThat(release.getChangeStatus()).isEqualTo(TestUtils.RELEASE_CHANGESTATUS);
+        FromXmlSW360ProjectCoordinates coordinates = new FromXmlSW360ProjectCoordinates();
+        final String projectName = "projectName";
+        coordinates.setName(projectName);
+        final String version = "version";
+        coordinates.setVersion(version);
+        when(configMock.getConfiguredSW360Project())
+                .thenReturn(new SW360ProjectCoordinates(coordinates));
 
-        assertThat(release.getDownloadurl()).isEqualTo(TestUtils.RELEASE_DOWNLOAD_URL);
-        assertThat(release.getReleaseTagUrl()).isEqualTo(TestUtils.RELEASE_RELEASE_TAG_URL);
-        assertThat(release.getSoftwareHeritageId()).isEqualTo(TestUtils.RELEASE_SOFTWAREHERITGAE_ID);
-        assertThat(new ArtifactSoftwareHeritageID.Builder(release.getSoftwareHeritageId()).build().toString()).isEqualTo(TestUtils.RELEASE_SOFTWAREHERITGAE_ID);
-
-        assertThat(release.getCoordinates()).hasSize(1);
-        assertThat(release.getCoordinates().containsKey("maven")).isTrue();
-        assertThat(release.getCoordinates().get("maven")).isEqualTo("pkg:maven/org.group.id/artifactIdTest1@" + TestUtils.RELEASE_VERSION1);
-
-        assertThat(release.getHashes()).hasSize(1);
-        assertThat(release.getHashes()).
-                isEqualTo(artifact.askForAll(ArtifactFilename.class)
-                        .stream()
-                        .map(ArtifactFilename::getArtifactFilenameEntries)
-                        .flatMap(Collection::stream)
-                        .map(ArtifactFilename.ArtifactFilenameEntry::getHash)
-                        .collect(Collectors.toSet()));
-
-        assertThat(release.getOverriddenLicense()).isEqualTo(TestUtils.RELEASE_OVERRIDEN_LICENSE);
-        assertThat(release.getDeclaredLicense()).isEqualTo(TestUtils.RELEASE_DECLEARED_LICENSE);
-        assertThat(release.getObservedLicense()).isEqualTo(TestUtils.RELEASE_OBSERVED_LICENSE);
-
-        assertThat(release.getCopyrights()).isEqualTo(TestUtils.RELEASE_COPYRIGHT);
+        when(antennaContextMock.getToolConfiguration())
+                .thenReturn(toolConfigMock);
+        when(antennaContextMock.getConfiguration())
+                .thenReturn(configMock);
     }
 
     @Test
-    public void artifactIsMappedToSw360ReleaseCorrectlyWithoutOverwritten() {
-        Artifact artifact = TestUtils.mkArtifact("Test1", false);
-        SW360Component sw360Component = new SW360Component();
-        sw360Component.setName("artifactIdtest1");
-        SW360Release release = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
+    public void testConfigure() {
+        updater.setAntennaContext(antennaContextMock);
 
-        assertThat(release.getClearingState()).isEqualTo(TestUtils.RELEASE_CLEARING_STATE);
-        assertThat(release.getChangeStatus()).isEqualTo(TestUtils.RELEASE_CHANGESTATUS);
+        Map<String, String> configMap = Stream.of(new String[][]{
+                {"rest.server.url", ""},
+                {"auth.server.url", ""},
+                {"user.id", ""},
+                {"user.password", ""},
+                {"client.id", ""},
+                {"client.password", ""},
+                {"upload_sources", "true"},
+                {"update_releases", "true"},
+                {"proxy.use", ""}})
+                .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
 
-        assertThat(release.getDownloadurl()).isEqualTo(TestUtils.RELEASE_DOWNLOAD_URL);
-        assertThat(release.getReleaseTagUrl()).isEqualTo(TestUtils.RELEASE_RELEASE_TAG_URL);
-        assertThat(release.getSoftwareHeritageId()).isEqualTo(TestUtils.RELEASE_SOFTWAREHERITGAE_ID);
-        new ArtifactSoftwareHeritageID.Builder(release.getSoftwareHeritageId()).build();
+        updater.configure(configMap);
 
-        assertThat(release.getCoordinates()).containsKeys("maven");
-        assertThat(release.getCoordinates()).hasSize(1);
-        assertThat(release.getCoordinates()).containsValue("pkg:maven/org.group.id/artifactIdTest1@" + TestUtils.RELEASE_VERSION1);
-
-        assertThat(release.getHashes()).hasSize(1);
-        assertThat(release.getHashes()).
-                isEqualTo(artifact.askForAll(ArtifactFilename.class)
-                        .stream()
-                        .map(ArtifactFilename::getArtifactFilenameEntries)
-                        .flatMap(Collection::stream)
-                        .map(ArtifactFilename.ArtifactFilenameEntry::getHash)
-                        .collect(Collectors.toSet()));
-
-        assertThat(release.getOverriddenLicense()).isNull();
-        assertThat(release.getObservedLicense()).isEqualTo(TestUtils.RELEASE_OBSERVED_LICENSE);
-        assertThat(release.getDeclaredLicense()).isEqualTo(TestUtils.RELEASE_DECLEARED_LICENSE);
-
-        assertThat(release.getCopyrights()).isEqualTo(TestUtils.RELEASE_COPYRIGHT);
+        verify(configMock,times(1)).getConfiguredSW360Project();
+        verify(toolConfigMock, times(1)).getProxyHost();
+        verify(toolConfigMock, times(1)).getProxyPort();
     }
 
     @Test
-    public void testMainLicenseIsEmptyAndDetectedLicenseNull() {
-        Artifact artifact = new Artifact("SW360");
-        artifact.setProprietary(false);
-        artifact.addCoordinate(new Coordinate(Coordinate.Types.MAVEN, "org.group.id", "artifactIdTest", "1.2.3"));
-        artifact.addFact(new DeclaredLicenseInformation(new LicenseStatement()));
+    public void testProduce() {
+        SW360UpdaterImpl updaterImpl = mock(SW360UpdaterImpl.class);
+        when(updaterImpl.produce(Collections.emptySet()))
+                .thenReturn(Collections.emptyMap());
+        updater.setUpdaterImpl(updaterImpl);
+        final Map<String, IAttachable> releases = updater.produce(Collections.emptySet());
 
-        SW360Component sw360Component = new SW360Component();
-        sw360Component.setName("artifactIdTest");
-        SW360Release release = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
-        release.setComponentId(sw360Component.getComponentId());
-        release.setMainLicenseIds(Collections.EMPTY_SET);
-
-        assertThat(release.getOverriddenLicense()).isNull();
-        assertThat(release.getMainLicenseIds().isEmpty()).isTrue();
-    }
-
-    @Test
-    public void testArtifactWithoutFacts() {
-        Artifact artifact = new Artifact()
-                .setProprietary(false);
-
-        thrownException.expect(ExecutionException.class);
-        thrownException.expectMessage("does not have enough facts to create a component name.");
-
-        ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
+        assertThat(releases).isEmpty();
     }
 }
