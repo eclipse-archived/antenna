@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) Bosch Software Innovations GmbH 2018.
+# Copyright (c) Bosch.IO GmbH 2020.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v2.0
@@ -18,7 +19,5 @@ set -e
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 git checkout $1
-
-modules/p2/prepareDependenciesForP2.sh
 
 mvn clean install -DskipTests -Dqualifier=-$(git describe --tags --abbrev=7 | cut -d"-" -f2-)
