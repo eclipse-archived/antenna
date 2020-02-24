@@ -19,10 +19,8 @@ import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ComponentAdapterUtils;
 import org.springframework.http.HttpHeaders;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class SW360ComponentClientAdapter {
     private SW360ComponentClient componentClient;
@@ -54,23 +52,16 @@ public class SW360ComponentClientAdapter {
     }
 
     public Optional<SW360Component> getComponentByName(String componentName, HttpHeaders header) {
-        List<SW360Component> completeComponents = new ArrayList<>();
         List<SW360SparseComponent> components = componentClient.searchByName(componentName, header);
 
-        List<String> componentIds = components.stream()
+        return components.stream()
                 .filter(c -> c.getName().equals(componentName))
                 .map(c -> SW360HalResourceUtility.getLastIndexOfSelfLink(c.get_Links()).orElse(""))
-                .collect(Collectors.toList());
-
-        for (String componentId : componentIds) {
-            getComponentById(componentId, header)
-                    .ifPresent(completeComponents::add);
-        }
-
-        return completeComponents.stream()
+                .map(id -> getComponentById(id, header))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .filter(c -> c.getName().equals(componentName))
                 .findFirst();
-
     }
 
     public List<SW360SparseComponent> getComponents(HttpHeaders header) {

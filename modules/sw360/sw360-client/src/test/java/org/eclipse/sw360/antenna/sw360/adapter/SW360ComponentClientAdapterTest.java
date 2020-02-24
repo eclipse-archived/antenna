@@ -42,13 +42,50 @@ public class SW360ComponentClientAdapterTest {
     @Before
     public void setUp() {
         componentClientAdapter = new SW360ComponentClientAdapter();
+        componentClientAdapter.setComponentClient(componentClient);
         sparseComponent = new SW360SparseComponent();
         component = new SW360Component();
     }
 
     @Test
-    public void testGetOrCreateComponent() {
-        componentClientAdapter.setComponentClient(componentClient);
+    public void testGetOrCreateComponentByID() {
+        SW360Component componentFromRelease = mock(SW360Component.class);
+        when(componentFromRelease.getComponentId()).thenReturn(COMPONENT_ID);
+        when(componentClient.getComponent(COMPONENT_ID, header)).thenReturn(Optional.of(component));
+
+        Optional<SW360Component> optResult = componentClientAdapter.getOrCreateComponent(componentFromRelease, header);
+        assertThat(optResult).contains(component);
+    }
+
+    @Test
+    public void testGetOrCreateComponentByName() {
+        SW360Component componentFromRelease = mock(SW360Component.class);
+        when(componentFromRelease.getComponentId()).thenReturn(null);
+        when(componentFromRelease.getName()).thenReturn(COMPONENT_NAME);
+        LinkObjects linkObjects = makeLinkObjects();
+        sparseComponent.setName(COMPONENT_NAME)
+                .set_Links(linkObjects);
+        component.setName(COMPONENT_NAME);
+
+        when(componentClient.getComponent(COMPONENT_ID, header))
+                .thenReturn(Optional.of(component));
+        when(componentClient.searchByName(COMPONENT_NAME, header))
+                .thenReturn(Collections.singletonList(sparseComponent));
+
+        Optional<SW360Component> optResult = componentClientAdapter.getOrCreateComponent(componentFromRelease, header);
+        assertThat(optResult).contains(component);
+    }
+
+    @Test
+    public void testGetOrCreateComponentCreateNew() {
+        SW360Component componentFromRelease = mock(SW360Component.class);
+        when(componentFromRelease.getComponentId()).thenReturn(null);
+        when(componentFromRelease.getName()).thenReturn(COMPONENT_NAME);
+        when(componentClient.searchByName(COMPONENT_NAME, header)).thenReturn(Collections.emptyList());
+        when(componentClient.createComponent(componentFromRelease, header)).thenReturn(component);
+
+        Optional<SW360Component> optResult = componentClientAdapter.getOrCreateComponent(componentFromRelease, header);
+        assertThat(optResult).contains(component);
     }
 
     @Test
@@ -56,7 +93,6 @@ public class SW360ComponentClientAdapterTest {
         component.setName(COMPONENT_NAME);
         when(componentClient.createComponent(component, header))
                 .thenReturn(component);
-        componentClientAdapter.setComponentClient(componentClient);
 
         SW360Component createdComponent = componentClientAdapter.createComponent(this.component, header);
 
@@ -68,7 +104,6 @@ public class SW360ComponentClientAdapterTest {
     public void testCreateComponentNull() {
         when(componentClient.createComponent(component, header))
                 .thenReturn(component);
-        componentClientAdapter.setComponentClient(componentClient);
 
         componentClientAdapter.createComponent(this.component, header);
     }
@@ -77,7 +112,6 @@ public class SW360ComponentClientAdapterTest {
     public void testGetComponentById() {
         when(componentClient.getComponent(COMPONENT_ID, header))
                 .thenReturn(Optional.of(component));
-        componentClientAdapter.setComponentClient(componentClient);
 
         Optional<SW360Component> componentById = componentClientAdapter.getComponentById(COMPONENT_ID, header);
 
@@ -98,7 +132,6 @@ public class SW360ComponentClientAdapterTest {
                 .thenReturn(Optional.of(component));
         when(componentClient.searchByName(COMPONENT_NAME, header))
                 .thenReturn(Collections.singletonList(sparseComponent));
-        componentClientAdapter.setComponentClient(componentClient);
 
         Optional<SW360Component> componentByName = componentClientAdapter.getComponentByName(COMPONENT_NAME, header);
 
@@ -112,7 +145,6 @@ public class SW360ComponentClientAdapterTest {
     public void testGetComponents() {
         when(componentClient.getComponents(header))
                 .thenReturn(Collections.singletonList(sparseComponent));
-        componentClientAdapter.setComponentClient(componentClient);
 
         List<SW360SparseComponent> components = componentClientAdapter.getComponents(header);
 
