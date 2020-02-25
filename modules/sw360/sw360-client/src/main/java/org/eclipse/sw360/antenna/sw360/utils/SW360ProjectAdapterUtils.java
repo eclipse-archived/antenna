@@ -11,6 +11,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Visibility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectType;
@@ -20,8 +21,7 @@ public class SW360ProjectAdapterUtils {
     private SW360ProjectAdapterUtils() {}
 
     public static void setDescription(SW360Project project, String mvnDescription) {
-        if (mvnDescription != null &&
-                !mvnDescription.isEmpty()) {
+        if (StringUtils.isNotEmpty(mvnDescription)) {
             project.setDescription(mvnDescription);
         }
     }
@@ -49,10 +49,7 @@ public class SW360ProjectAdapterUtils {
     }
 
     public static boolean isValidProject(SW360Project project) {
-        if(project.getName() == null || project.getName().isEmpty()) {
-            return false;
-        }
-        return project.getVersion() != null && !project.getVersion().isEmpty();
+        return StringUtils.isNotEmpty(project.getName()) && StringUtils.isNotEmpty(project.getVersion());
     }
 
     public static boolean hasEqualCoordinates(SW360Project sw360Project, String projectName, String projectVersion) {
