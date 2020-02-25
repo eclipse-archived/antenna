@@ -44,7 +44,6 @@
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>maven-module</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>
@@ -177,7 +176,6 @@
         <dependency>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs-annotations</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
