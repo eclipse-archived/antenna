@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.sw360.antenna.api.Attachable;
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
@@ -110,12 +109,10 @@ public class AttributionDocumentGenerator extends AbstractGenerator {
 
    private File createWorkDir(Path antennaDir) {
       File workDir = new File(antennaDir.toFile(), WORKING_DIR_NAME);
-      try {
-         FileUtils.forceMkdir(workDir);
-         return workDir;
-      } catch (IOException e) {
-         throw new ConfigurationException("Unable to create working directory in path " + workDir, e);
+      if (!workDir.mkdirs()) {
+         throw new ConfigurationException("Unable to create working directory in path " + workDir);
       }
+      return workDir;
    }
 
    @Override
