@@ -13,39 +13,25 @@ package org.eclipse.sw360.antenna.sw360.rest.deserializer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentListEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentListEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseListEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectListEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseListEmbedded;
 
-import java.io.IOException;
-
+/**
+ * <p>
+ * Implementation of a custom JSON deserializer for the hierarchy of
+ * {@code Embedded} classes.
+ * </p>
+ * <p>
+ * Normally, the Jackson deserializer has sufficient information to derive the
+ * class of an object to be de-serialized from the context, i.e. the object
+ * that embeds another one. Only in the special case that no concrete value is
+ * available, is this implementation invoked. Therefore, this implementation
+ * always returns <strong>null</strong>; this will cause a dummy embedded
+ * object to be used.
+ * </p>
+ */
 public class SW360ResourceDeserializer extends JsonDeserializer<Embedded> {
     @Override
-    public Embedded deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        ObjectMapper mapper = (ObjectMapper) p.getCodec();
-        ObjectNode root = mapper.readTree(p);
-        if (root.has("sw360:projects")) {
-            return mapper.readValue(root.toString(), SW360ProjectListEmbedded.class);
-        } else if (root.has("sw360:components")) {
-            return mapper.readValue(root.toString(), SW360ComponentListEmbedded.class);
-        } else if (root.has("sw360:releases") && root.has("createdBy")) {
-            return mapper.readValue(root.toString(), SW360ComponentEmbedded.class);
-        } else if (root.has("sw360:releases")) {
-            return mapper.readValue(root.toString(), SW360ReleaseListEmbedded.class);
-        } else if (root.has("sw360:licenses")) {
-            return mapper.readValue(root.toString(), SW360LicenseListEmbedded.class);
-        } else if (root.has("sw360:attachments")) {
-            return mapper.readValue(root.toString(), SW360AttachmentListEmbedded.class);
-        } else if (root.has("createdBy")) {
-            return mapper.readValue(root.toString(), SW360ProjectEmbedded.class);
-        }
+    public Embedded deserialize(JsonParser p, DeserializationContext ctxt) {
         return null;
     }
 }

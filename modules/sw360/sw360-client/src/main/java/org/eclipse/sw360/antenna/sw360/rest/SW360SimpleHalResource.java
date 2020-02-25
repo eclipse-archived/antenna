@@ -22,6 +22,6 @@ public class SW360SimpleHalResource extends SW360HalResource<LinkObjects, Embedd
 
     @Override
     public Embedded createEmptyEmbedded() {
-        return new EmptyEmbedded();
+        return EmptyEmbedded.INSTANCE;
     }
 }

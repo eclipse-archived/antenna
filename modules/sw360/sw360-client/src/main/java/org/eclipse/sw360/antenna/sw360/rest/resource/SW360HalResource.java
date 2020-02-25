@@ -82,16 +82,18 @@ public abstract class SW360HalResource<L extends LinkObjects, E extends Embedded
         return Objects.hash(_links, _embedded);
     }
 
-    public static class EmptyEmbedded implements Embedded {
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            return !(o == null || getClass() != o.getClass());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.getClass().getCanonicalName());
-        }
+    /**
+     * <p>
+     * A representation of an undefined {@code Embedded}.
+     * </p>
+     * <p>
+     * The constant defined in this enum can be used to represent an
+     * {@code Embedded} object when no real value is available. Note:
+     * Defining this as an enum makes sure that only a single instance ever
+     * exists.
+     * </p>
+     */
+    public enum EmptyEmbedded implements Embedded {
+        INSTANCE
     }
 }
