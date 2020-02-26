@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,8 +11,6 @@
  */
 
 package org.eclipse.sw360.antenna.util;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -58,13 +57,19 @@ public class ZipExtractor {
         return newFile;
     }
 
-    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     private static void createFile(ZipEntry zipEntry, File newFile) throws IOException {
         if (zipEntry.isDirectory()) {
-            newFile.mkdirs();
+            if (!newFile.isDirectory() && !newFile.mkdirs()) {
+                throw new IOException("Failed to create directory '" + newFile + "'.");
+            }
         } else {
-            newFile.getParentFile().mkdirs();
-            newFile.createNewFile();
+            File parentDir = newFile.getParentFile();
+            if (!parentDir.isDirectory() && !parentDir.mkdirs()) {
+                throw new IOException("Failed to create directory '" + parentDir + "'.");
+            }
+            if (!newFile.isFile() && !newFile.createNewFile()) {
+                throw new IOException("Failed to create file '" + newFile + "'.");
+            }
         }
     }
 }
