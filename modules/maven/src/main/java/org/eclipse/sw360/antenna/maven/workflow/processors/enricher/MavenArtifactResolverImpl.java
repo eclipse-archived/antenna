@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,11 +11,11 @@
  */
 package org.eclipse.sw360.antenna.maven.workflow.processors.enricher;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.maven.plugin.LegacySupport;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.maven.ArtifactRequesterFactory;
 import org.eclipse.sw360.antenna.maven.ClassifierInformation;
 import org.eclipse.sw360.antenna.maven.IArtifactRequester;
@@ -29,7 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
@@ -77,9 +80,13 @@ public class MavenArtifactResolverImpl {
     }
 
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
-        LOGGER.info("Resolve maven artifacts, be patient... this could take a long time");
-        resolveArtifacts(artifacts);
-        LOGGER.debug("Resolve maven artifacts... done");
+        LOGGER.info("Resolving Maven artifacts, please be patient...");
+        try {
+            resolveArtifacts(artifacts);
+            LOGGER.info("Resolving Maven artifacts succeeded.");
+        } catch (IOException e) {
+            throw new ExecutionException("Resolving Maven artifacts failed.", e);
+        }
         return artifacts;
     }
 
@@ -88,12 +95,10 @@ public class MavenArtifactResolverImpl {
      *
      * @param artifacts to be resolved
      */
-    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
-    private void resolveArtifacts(Collection<Artifact> artifacts) {
+    private void resolveArtifacts(Collection<Artifact> artifacts) throws IOException {
         // Check directory exists
-        File dir = dependencyTargetDirectory.toFile();
-        if (!dir.exists()) {
-            dir.mkdirs();
+        if (!Files.isDirectory(dependencyTargetDirectory)) {
+            Files.createDirectories(dependencyTargetDirectory);
         }
 
         IArtifactRequester artifactRequester = getArtifactRequester();
