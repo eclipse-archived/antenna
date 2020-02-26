@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,8 +11,9 @@
  */
 package org.eclipse.sw360.antenna.util;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
+
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -100,11 +102,10 @@ public class AntennaUtils {
         return cleanedUp;
     }
 
-    @SuppressFBWarnings("DMI_HARDCODED_ABSOLUTE_FILENAME")
     private static class TillJarGroupingIterator implements Iterator<Path> {
         private Iterator<Path> pathIterator;
         private Path currentRoot;
-        private final Path root = Paths.get("/");
+        private final Path root = Paths.get(File.separator);
 
         TillJarGroupingIterator(Path path) {
             pathIterator = path.toAbsolutePath().iterator();
