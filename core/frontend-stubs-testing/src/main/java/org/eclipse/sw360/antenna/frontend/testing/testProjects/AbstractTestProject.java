@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,7 +11,6 @@
  */
 package org.eclipse.sw360.antenna.frontend.testing.testProjects;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.model.util.Utils;
 
@@ -62,31 +62,25 @@ public abstract class AbstractTestProject {
         copyFilesToTemporaryRoot(projectResourcesRoot, getOutOfProjectFilesToCopy());
     }
 
-    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     private void copyFilesToTemporaryRoot(String projectResourcesRoot, List<String> filesToCopy) throws IOException {
         for (String fileToCopy : filesToCopy) {
             try (InputStream resource = AbstractTestProject.class.getResourceAsStream(
                     Paths.get(projectResourcesRoot, fileToCopy).normalize().toString())) {
                 if (resource != null) {
                     Path destination = projectRoot.resolve(fileToCopy).normalize();
-                    Utils.getParent(destination)
-                            .orElseThrow(IllegalArgumentException::new)
-                            .toFile().mkdirs();
+                    Files.createDirectories(Utils.getParent(destination).orElseThrow(IllegalArgumentException::new));
                     Files.copy(resource, destination);
                 }
             }
         }
     }
 
-    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     private void copyFilesToProjectRoot(String projectResourcesRoot, List<String> filesToCopy) throws IOException {
         for (String fileToCopy : filesToCopy) {
             try (InputStream resource = AbstractTestProject.class.getResourceAsStream(projectResourcesRoot + "/" + fileToCopy)) {
                 if (resource != null) {
                     Path destination = projectRoot.resolve(fileToCopy);
-                    Utils.getParent(destination)
-                            .orElseThrow(IllegalArgumentException::new)
-                            .toFile().mkdirs();
+                    Files.createDirectories(Utils.getParent(destination).orElseThrow(IllegalArgumentException::new));
                     Files.copy(resource, destination);
                 }
             }
