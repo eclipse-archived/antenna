@@ -24,8 +24,8 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseCompo
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ClearingState;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.utils.ArtifactToReleaseUtils;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
-import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -74,7 +74,7 @@ public class SW360Exporter {
     }
 
     private Artifact releaseAsArtifact(SW360Release release, HttpHeaders headers) {
-        Artifact artifact = SW360ReleaseAdapterUtils.convertToArtifactWithoutSourceFile(release, new Artifact("SW360"));
+        Artifact artifact = ArtifactToReleaseUtils.convertToArtifactWithoutSourceFile(release, new Artifact("SW360"));
         Set<SW360SparseAttachment> sparseAttachments = getSparseAttachmentsSource(release);
         sparseAttachments.forEach(sparseAttachment -> {
             Optional<Path> path = connectionConfiguration.getSW360ReleaseClientAdapter().downloadAttachment(release, sparseAttachment, configuration.getSourcesPath(), headers);

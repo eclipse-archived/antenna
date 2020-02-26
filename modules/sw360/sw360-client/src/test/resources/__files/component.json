@@ -1,0 +1,113 @@
+{
+  "name": "jackson-annotations",
+  "createdOn": "2019-11-13",
+  "languages": [],
+  "operatingSystems": [],
+  "_links": {
+    "self": {
+      "href": "https://sw360-backend-production.osm-si.com/resource/api/components/dc3ac8ed4e7e7cde576006c0b62c8c34"
+    }
+  },
+  "_embedded": {
+    "createdBy": {
+      "email": "osi9be@bosch.com",
+      "_links": {
+        "self": {
+          "href": "https://sw360-backend-production.osm-si.com/resource/api/users/9556cdbc9c3baeb3b4d32721250008ed"
+        }
+      }
+    },
+    "sw360:releases": [
+      {
+        "name": "jackson-annotations",
+        "version": "2.8.7",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/releases/dc3ac8ed4e7e7cde576006c0b635cfd5"
+          }
+        }
+      },
+      {
+        "name": "jackson-annotations",
+        "version": "2.9.0",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/releases/dc3ac8ed4e7e7cde576006c0b633a896"
+          }
+        }
+      },
+      {
+        "name": "jackson-annotations",
+        "version": "2.9.9",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/releases/dc3ac8ed4e7e7cde576006c0b636a4e3"
+          }
+        }
+      },
+      {
+        "name": "jackson-annotations",
+        "version": "2.8.8",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/releases/dc3ac8ed4e7e7cde576006c0b6371a78"
+          }
+        }
+      },
+      {
+        "name": "jackson-annotations",
+        "version": "2.9.1",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/releases/dc3ac8ed4e7e7cde576006c0b6347919"
+          }
+        }
+      },
+      {
+        "name": "jackson-annotations",
+        "version": "2.8.11",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/releases/dc3ac8ed4e7e7cde576006c0b6390468"
+          }
+        }
+      },
+      {
+        "name": "jackson-annotations",
+        "version": "2.10.0",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/releases/dc3ac8ed4e7e7cde576006c0b6316fe9"
+          }
+        }
+      },
+      {
+        "name": "jackson-annotations",
+        "version": "2.8.6",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/releases/dc3ac8ed4e7e7cde576006c0b6368dc8"
+          }
+        }
+      },
+      {
+        "name": "jackson-annotations",
+        "version": "2.8.5",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/releases/dc3ac8ed4e7e7cde576006c0b63845ff"
+          }
+        }
+      },
+      {
+        "name": "jackson-annotations",
+        "version": "2.8.9",
+        "_links": {
+          "self": {
+            "href": "https://sw360-backend-production.osm-si.com/resource/api/releases/dc3ac8ed4e7e7cde576006c0b62daebf"
+          }
+        }
+      }
+    ]
+  }
+}

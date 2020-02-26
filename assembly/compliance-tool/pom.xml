@@ -72,7 +72,12 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>sw360-module</artifactId>
+            <artifactId>sw360-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.sw360.antenna</groupId>
+            <artifactId>sw360-workflow</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
