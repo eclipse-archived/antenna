@@ -125,13 +125,6 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
     public Map<String, SW360ProjectReleaseRelationship> getReleaseIdToUsage() {
         if (this.releaseIdToUsage == null) {
             this.releaseIdToUsage = new HashMap<>();
-            // TODO: Uncomment after adding feature with linked releases in projects
-            //if ((this.get_Embedded() != null) && (this.get_Embedded().getContainedReleases() != null)) {
-            //this.releaseIdToUsage = this.get_Embedded().getContainedReleases()
-            //			.stream()
-            //			.collect(Collectors.toMap(r -> r.getReleaseId(),
-            //					r -> new SW360ProjectReleaseRelationship(SW360ReleaseRelationship.CONTAINED, SW360MainlineState.MAINLINE)));
-            //}
         }
         return this.releaseIdToUsage;
     }

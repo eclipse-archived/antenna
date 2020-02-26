@@ -59,7 +59,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     }
 
     public SW360Release setReleaseId(String releaseId) {
-        get_Links().setSelf(new Self(releaseId)); // TODO
+        get_Links().setSelf(new Self(releaseId));
         return this;
     }
 
@@ -72,7 +72,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     }
 
     public SW360Release setComponentId(String componentId) {
-        get_Links().setSelfComponent(new Self(componentId)); // TODO
+        get_Links().setSelfComponent(new Self(componentId));
         return this;
     }
 
