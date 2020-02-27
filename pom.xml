@@ -23,7 +23,7 @@
     <properties>
         <!-- >This is the main version applied throughout the project. Change this to increase all versions<-->
         <revision>1.0.0</revision>
-        <!-- >The qualifier can be set to any value and will set the corresponding qualifier in all projects except antenna-p2<-->
+        <!-- >The qualifier can be set to any value and will set the corresponding qualifier in all projects<-->
         <qualifier>-SNAPSHOT</qualifier>
         <gradle.version>4.1</gradle.version>
         <jackson.version>2.10.0</jackson.version>
@@ -692,11 +692,6 @@
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
                         <version>0.8.4</version>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/*p2.app.*</exclude>
-                            </excludes>
-                        </configuration>
                         <executions>
                             <execution>
                                 <id>prepare-agent</id>

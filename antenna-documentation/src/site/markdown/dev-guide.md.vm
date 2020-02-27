@@ -52,27 +52,11 @@ If your machine is located behind a proxy keep in mind to configure your proxy s
 
 #[[##]]# How to build
 
-If you don't want to build the p2 parts of antenna, just use
+Just use
 ```
 mvn clean install
 ```
 on the command line.
-
-If you do want to build the p2 parts and ship them with antenna, use
-```
-cd antenna-p2/dependencies
-mvn clean package
-cd ..
-mvn clean package
-cd ..
-mvn clean install
-```
-
-This
-
-- downloads the dependencies for p2 (in `antenna-p2/dependencies`)
-- builds the p2 products (in `antenna-p2`)
-- builds ${docNameCap} activating the profile for building p2
 
 To run the application you can have a look into the example project, which shows in its pom xml how to properly configure the antenna-maven-frontend.
 

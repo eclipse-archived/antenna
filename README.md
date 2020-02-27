@@ -25,12 +25,6 @@ The Antenna project consists of a core and multiple modules in `./modules`, whic
 
 Some of these folders contain their own `README.md`, like e.g. `./modules/sw360/README.md` which contain module specific information.
 
-#### Optional Modules
-Most of the modules are activated and used by default, but the p2-resolver in `./modules/p2/p2-resolver/`, which resolves OSGi sources via P2 repositories, is excluded from the build (since it complicates the build and is unnecessary in most cases).
-To enable it, one can call the corresponding prepare script `./modules/p2/prepareDependenciesForP2.sh` (without Bash support one has to follow the steps in the script by hand).
-To remove the P2 dependencies again you can use the script `./modules/p2/cleanupDependenciesForP2.sh`.
-
-
 ### Install and build Antenna
 
 Please note that some dependencies of SW360antenna are only available for Java 8. So you need to use Java 8 to build the project.
