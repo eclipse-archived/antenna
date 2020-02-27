@@ -15,6 +15,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.eclipse.sw360.antenna.http.api.HttpClient;
+import org.eclipse.sw360.antenna.http.api.HttpClientFactory;
+import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
+import org.eclipse.sw360.antenna.http.impl.HttpClientFactoryImpl;
+import org.eclipse.sw360.antenna.sw360.client.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -25,6 +30,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
@@ -39,6 +46,31 @@ import static org.assertj.core.api.Assertions.fail;
  * of test files.
  */
 public class AbstractMockServerTest {
+    /**
+     * Test user name for the SW360 client configuration.
+     */
+    protected static final String USER = "scott";
+
+    /**
+     * Test password for the SW360 client configuration.
+     */
+    protected static final String PASSWORD = "tiger";
+
+    /**
+     * Test client ID for the SW360 client configuration.
+     */
+    protected static final String CLIENT_ID = "testClient";
+
+    /**
+     * Test client password for the SW360 client configuration.
+     */
+    protected static final String CLIENT_PASSWORD = "testClientPass";
+
+    /**
+     * The endpoint for querying access tokens.
+     */
+    protected static final String TOKEN_ENDPOINT = "/token";
+
     /**
      * The mapper for JSON serialization.
      */
@@ -141,5 +173,54 @@ public class AbstractMockServerTest {
         boolean hasLinks = data.stream()
                 .allMatch(comp -> comp.get_Links().getSelf() != null);
         assertThat(hasLinks).isTrue();
+    }
+
+    /**
+     * Expects that the given future has failed and returns the causing
+     * exception.
+     *
+     * @param future the future to check
+     * @return the exception that caused the future to fail
+     */
+    protected static Throwable extractException(CompletableFuture<?> future) {
+        try {
+            Object result = future.join();
+            throw new AssertionError("Future did not fail, but returned " + result);
+        } catch (CompletionException e) {
+            return e.getCause();
+        }
+    }
+
+    /**
+     * Expects that the given future has failed with an exception of the given
+     * type and returns this exception.
+     *
+     * @param future  the future to check
+     * @param exClass the expected exception class
+     * @param <E>     the type of the exception
+     * @return the exception that caused the future to fail
+     */
+    protected static <E extends Throwable> E extractException(CompletableFuture<?> future,
+                                                              Class<? extends E> exClass) {
+        Throwable exception = extractException(future);
+        assertThat(exClass.isInstance(exception)).isTrue();
+        return exClass.cast(exception);
+    }
+
+    /**
+     * Creates a configuration for the client library with test properties.
+     * This configuration also contains a fully configured HTTP client and an
+     * object mapper.
+     *
+     * @return the SW360 client configuration
+     */
+    protected SW360ClientConfig createClientConfig() {
+        HttpClientFactory clientFactory = new HttpClientFactoryImpl();
+        HttpClientConfig httpClientConfig = HttpClientConfig.basicConfig()
+                .withObjectMapper(objectMapper);
+        HttpClient httpClient = clientFactory.newHttpClient(httpClientConfig);
+
+        return SW360ClientConfig.createConfig(wireMockRule.baseUrl(), wireMockRule.url(TOKEN_ENDPOINT),
+                USER, PASSWORD, CLIENT_ID, CLIENT_PASSWORD, httpClient, objectMapper);
     }
 }
