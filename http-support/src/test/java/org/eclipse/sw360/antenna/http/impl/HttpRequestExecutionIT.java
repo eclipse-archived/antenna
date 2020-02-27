@@ -53,6 +53,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.eclipse.sw360.antenna.http.utils.HttpConstants.CHARSET_UTF8;
+import static org.eclipse.sw360.antenna.http.utils.HttpConstants.CONTENT_OCTET_STREAM;
+import static org.eclipse.sw360.antenna.http.utils.HttpConstants.CONTENT_JSON;
+import static org.eclipse.sw360.antenna.http.utils.HttpConstants.CONTENT_JSON_UTF8;
+import static org.eclipse.sw360.antenna.http.utils.HttpConstants.CONTENT_TEXT_PLAIN;
+import static org.eclipse.sw360.antenna.http.utils.HttpConstants.HEADER_CONTENT_TYPE;
+import static org.eclipse.sw360.antenna.http.utils.HttpConstants.STATUS_ACCEPTED;
+import static org.eclipse.sw360.antenna.http.utils.HttpConstants.STATUS_CREATED;
+import static org.eclipse.sw360.antenna.http.utils.HttpConstants.STATUS_ERR_BAD_REQUEST;
+import static org.eclipse.sw360.antenna.http.utils.HttpConstants.STATUS_OK;
 import static org.eclipse.sw360.antenna.http.utils.HttpUtils.checkResponse;
 import static org.eclipse.sw360.antenna.http.utils.HttpUtils.hasStatus;
 import static org.eclipse.sw360.antenna.http.utils.HttpUtils.jsonResult;
@@ -223,7 +233,7 @@ public class HttpRequestExecutionIT {
     @Test
     public void testGetRequest() {
         wireMockRule.stubFor(get(urlPathEqualTo(ENDPOINT))
-                .willReturn(aResponse().withStatus(200)
+                .willReturn(aResponse().withStatus(STATUS_OK)
                         .withHeader(HEADER_NAME, HEADER_VALUE)
                         .withBody(CONTENT)));
 
@@ -231,7 +241,7 @@ public class HttpRequestExecutionIT {
                 httpClient.execute(builder -> builder.uri(endpointUri()), HttpRequestExecutionIT::responseToString);
         String response = futResponse.join();
         assertThat(response)
-                .contains(statusString(200), successString(true), headerString(HEADER_NAME, HEADER_VALUE),
+                .contains(statusString(STATUS_OK), successString(true), headerString(HEADER_NAME, HEADER_VALUE),
                         bodyString(CONTENT));
     }
 
@@ -239,17 +249,17 @@ public class HttpRequestExecutionIT {
     public void testPostRequestNoResponseBody() {
         wireMockRule.stubFor(post(urlPathEqualTo(ENDPOINT))
                 .withRequestBody(equalTo(CONTENT))
-                .withHeader("Content-Type", equalTo("text/plain; charset=UTF-8"))
-                .willReturn(aResponse().withStatus(201)));
+                .withHeader(HEADER_CONTENT_TYPE, equalTo(CONTENT_TEXT_PLAIN + CHARSET_UTF8))
+                .willReturn(aResponse().withStatus(STATUS_CREATED)));
 
         CompletableFuture<String> futResponse =
                 httpClient.execute(builder -> builder.method(RequestBuilder.Method.POST)
                                 .uri(endpointUri())
-                                .bodyString(CONTENT, "text/plain"),
+                                .bodyString(CONTENT, CONTENT_TEXT_PLAIN),
                         checkResponse(HttpRequestExecutionIT::responseToString, hasStatus(201)));
         String response = futResponse.join();
         assertThat(response)
-                .contains(statusString(201), successString(true), bodyString(""));
+                .contains(statusString(STATUS_CREATED), successString(true), bodyString(""));
     }
 
     @Test
@@ -257,17 +267,17 @@ public class HttpRequestExecutionIT {
         Path file = writeTestFile();
         wireMockRule.stubFor(patch(urlPathEqualTo(ENDPOINT))
                 .withRequestBody(equalTo(CONTENT))
-                .withHeader("Content-Type", equalTo("application/octet-stream"))
-                .willReturn(aResponse().withStatus(202)));
+                .withHeader(HEADER_CONTENT_TYPE, equalTo(CONTENT_OCTET_STREAM))
+                .willReturn(aResponse().withStatus(STATUS_ACCEPTED)));
 
         CompletableFuture<String> futResponse =
                 httpClient.execute(builder -> builder.method(RequestBuilder.Method.PATCH)
                                 .uri(endpointUri())
-                                .bodyFile(file, "application/octet-stream"),
+                                .bodyFile(file, CONTENT_OCTET_STREAM),
                         checkResponse(HttpRequestExecutionIT::responseToString));
         String response = futResponse.join();
         assertThat(response)
-                .contains(statusString(202), successString(true), bodyString(""));
+                .contains(statusString(STATUS_ACCEPTED), successString(true), bodyString(""));
     }
 
     /**
@@ -294,9 +304,9 @@ public class HttpRequestExecutionIT {
         String json = mapper.writeValueAsString(payload);
         wireMockRule.stubFor(put(urlPathEqualTo(ENDPOINT))
                 .withHeader(HEADER_NAME, equalTo(HEADER_VALUE))
-                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
+                .withHeader(HEADER_CONTENT_TYPE, equalTo(CONTENT_JSON_UTF8))
                 .withRequestBody(equalToJson(json))
-                .willReturn(aResponse().withStatus(400)
+                .willReturn(aResponse().withStatus(STATUS_ERR_BAD_REQUEST)
                         .withBody(CONTENT)));
 
         CompletableFuture<String> futResponse = httpClient.execute(builder ->
@@ -307,7 +317,7 @@ public class HttpRequestExecutionIT {
                 HttpRequestExecutionIT::responseToString);
         String response = futResponse.join();
         assertThat(response)
-                .contains(statusString(400), successString(false), bodyString(CONTENT));
+                .contains(statusString(STATUS_ERR_BAD_REQUEST), successString(false), bodyString(CONTENT));
     }
 
     @Test
@@ -321,7 +331,7 @@ public class HttpRequestExecutionIT {
                 .withMultipartRequestBody(
                         aMultipart()
                                 .withName("json")
-                                .withHeader("Content-Type", containing("application/json"))
+                                .withHeader(HEADER_CONTENT_TYPE, containing(CONTENT_JSON))
                                 .withBody(equalToJson(json))
                 ).withMultipartRequestBody(
                         aMultipart()
@@ -331,10 +341,10 @@ public class HttpRequestExecutionIT {
                         aMultipart()
                                 .withName("file")
                                 .withHeader("Content-Disposition", containing(testFilePath.getFileName().toString()))
-                                .withHeader("Content-Type", equalTo("application/octet-stream"))
+                                .withHeader(HEADER_CONTENT_TYPE, equalTo(CONTENT_OCTET_STREAM))
                                 .withBody(equalTo(CONTENT))
                 )
-                .willReturn(aResponse().withStatus(202)));
+                .willReturn(aResponse().withStatus(STATUS_ACCEPTED)));
 
         CompletableFuture<String> futResponse = httpClient.execute(builder ->
                         builder.uri(endpointUri())
@@ -342,29 +352,29 @@ public class HttpRequestExecutionIT {
                                 .bodyPart("json", partBuilder ->
                                         partBuilder.bodyJson(jsonObj))
                                 .bodyPart("plain", partBuilder ->
-                                        partBuilder.bodyString(CONTENT, "text/plain"))
+                                        partBuilder.bodyString(CONTENT, CONTENT_TEXT_PLAIN))
                                 .bodyPart("file", partBuilder ->
-                                        partBuilder.bodyFile(testFilePath, "application/octet-stream"))
-                                .bodyFile(testFilePath, "application/octet-stream"),
+                                        partBuilder.bodyFile(testFilePath, CONTENT_OCTET_STREAM))
+                                .bodyFile(testFilePath, CONTENT_OCTET_STREAM),
                 HttpRequestExecutionIT::responseToString);
         String response = futResponse.join();
         List<ServeEvent> allServeEvents = wireMockRule.getAllServeEvents();
         System.out.println(allServeEvents);
         assertThat(response)
-                .contains(statusString(202), successString(true));
+                .contains(statusString(STATUS_ACCEPTED), successString(true));
     }
 
     @Test
     public void testGetWithFailedResponseStatus() {
         wireMockRule.stubFor(get(ENDPOINT)
-                .willReturn(aResponse().withStatus(202)));
+                .willReturn(aResponse().withStatus(STATUS_ACCEPTED)));
 
         try {
             waitFor(httpClient.execute(HttpUtils.get(endpointUri()),
-                    checkResponse(response -> new Object(), hasStatus(200))));
+                    checkResponse(response -> new Object(), hasStatus(STATUS_OK))));
             fail("No exception was thrown.");
         } catch (IOException e) {
-            assertThat(e.getMessage()).contains("202");
+            assertThat(e.getMessage()).contains(String.valueOf(STATUS_ACCEPTED));
         }
     }
 
@@ -376,7 +386,7 @@ public class HttpRequestExecutionIT {
         bean.setRating(42);
         String json = mapper.writeValueAsString(bean);
         wireMockRule.stubFor(get(urlPathEqualTo(ENDPOINT))
-                .willReturn(aResponse()
+                .willReturn(aResponse().withStatus(STATUS_OK)
                         .withBody(json)));
 
         JsonBean responseBean = waitFor(httpClient.execute(HttpUtils.get(endpointUri()),
@@ -394,7 +404,7 @@ public class HttpRequestExecutionIT {
         TypeReference<List<Map<String, Object>>> ref = new TypeReference<List<Map<String, Object>>>() {
         };
         wireMockRule.stubFor(get(urlPathEqualTo(ENDPOINT))
-                .willReturn(aResponse().withStatus(200)
+                .willReturn(aResponse().withStatus(STATUS_OK)
                         .withBody(json)));
 
         List<Map<String, Object>> fruits2 = waitFor(httpClient.execute(HttpUtils.get(endpointUri()),
