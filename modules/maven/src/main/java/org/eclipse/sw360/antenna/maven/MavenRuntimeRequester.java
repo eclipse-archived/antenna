@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -46,13 +47,13 @@ public class MavenRuntimeRequester extends IArtifactRequester {
         super();
         if (sourcesRepositoryUrl.isPresent()) {
             List<ArtifactRepository> repositories = new ArrayList<>();
-            ArtifactRepository droolsRepo = new MavenArtifactRepository(
+            ArtifactRepository userRepo = new MavenArtifactRepository(
                     "userRepo",
                     sourcesRepositoryUrl.get().toString(),
                     new DefaultRepositoryLayout(),
                     new ArtifactRepositoryPolicy(),
                     new ArtifactRepositoryPolicy());
-            repositories.add(droolsRepo);
+            repositories.add(userRepo);
             repositories.addAll(remoteRepositories);
             this.remoteRepositories = repositories;
         } else {

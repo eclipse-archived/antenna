@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -41,7 +42,6 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     @Override
     public List<String> getOutOfProjectFilesToCopy() {
         return Stream.of(
-                "./src/example-policies/rules/DummyRule.drl",
                 "./src/example-policies/policies.properties",
                 "./src/example-policies/policies.xml")
                 .collect(Collectors.toList());
