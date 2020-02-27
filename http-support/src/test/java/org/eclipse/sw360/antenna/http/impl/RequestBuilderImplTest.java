@@ -13,7 +13,11 @@ package org.eclipse.sw360.antenna.http.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.http.api.HttpExecutionException;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -25,19 +29,41 @@ import static org.mockito.Mockito.when;
  * special corner cases which are not covered by the integration test class.
  */
 public class RequestBuilderImplTest {
+    /**
+     * Mock for the JSON mapper.
+     */
+    private ObjectMapper mapper;
+
+    /**
+     * The builder to be tested.
+     */
+    private RequestBuilderImpl requestBuilder;
+
+    @Before
+    public void setUp() {
+        mapper = mock(ObjectMapper.class);
+        requestBuilder = new RequestBuilderImpl(mapper);
+    }
+
     @Test
     public void testHandlingOfJsonProcessingException() throws JsonProcessingException {
-        ObjectMapper mapper = mock(ObjectMapper.class);
         Object data = new Object();
         JsonProcessingException exception = mock(JsonProcessingException.class);
         when(mapper.writeValueAsString(data)).thenThrow(exception);
-        RequestBuilderImpl builder = new RequestBuilderImpl(mapper);
 
         try {
-            builder.bodyJson(data);
+            requestBuilder.bodyJson(data);
             fail("No exception thrown!");
         } catch (HttpExecutionException hex) {
             assertThat(hex.getCause()).isEqualTo(exception);
         }
+    }
+
+    @Test
+    public void testBodyFileNoFileName() {
+        Path folderPath = Paths.get("/");
+
+        requestBuilder.bodyFile(folderPath, "text/plain");
+        assertThat(requestBuilder.getFileName()).isNull();
     }
 }

@@ -107,7 +107,8 @@ class RequestBuilderImpl implements RequestBuilder {
     @Override
     public RequestBuilder bodyFile(Path path, String mediaType) {
         body = RequestBody.create(path.toFile(), MediaType.parse(mediaType));
-        fileName = path.getFileName().toString();
+        Path fileNamePath = path.getFileName();
+        fileName = (fileNamePath != null) ? fileNamePath.toString() : null;
         return this;
     }
 

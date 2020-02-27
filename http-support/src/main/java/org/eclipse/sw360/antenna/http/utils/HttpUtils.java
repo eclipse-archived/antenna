@@ -38,7 +38,7 @@ public final class HttpUtils {
      *
      * @see Response#isSuccess()
      */
-    public static Predicate<Response> SUCCESS_STATUS = Response::isSuccess;
+    public static final Predicate<Response> SUCCESS_STATUS = Response::isSuccess;
 
     /**
      * Private constructor to prevent the creation of instances.
