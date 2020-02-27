@@ -12,11 +12,10 @@
 package org.eclipse.sw360.antenna.sw360.workflow.generators;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
+import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.model.Configuration;
-import org.eclipse.sw360.antenna.model.SW360ProjectCoordinates;
-import org.eclipse.sw360.antenna.model.xml.generated.FromXmlSW360ProjectCoordinates;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -47,13 +46,15 @@ public class SW360UpdaterTest {
         when(toolConfigMock.getProxyPort())
                 .thenReturn(8080);
 
-        FromXmlSW360ProjectCoordinates coordinates = new FromXmlSW360ProjectCoordinates();
         final String projectName = "projectName";
-        coordinates.setName(projectName);
         final String version = "version";
-        coordinates.setVersion(version);
-        when(configMock.getConfiguredSW360Project())
-                .thenReturn(new SW360ProjectCoordinates(coordinates));
+        IProject project = mock(IProject.class);
+        when(project.getProjectId())
+                .thenReturn(projectName);
+        when(project.getVersion())
+                .thenReturn(version);
+        when(antennaContextMock.getProject())
+                .thenReturn(project);
 
         when(antennaContextMock.getToolConfiguration())
                 .thenReturn(toolConfigMock);
@@ -79,7 +80,6 @@ public class SW360UpdaterTest {
 
         updater.configure(configMap);
 
-        verify(configMock,times(1)).getConfiguredSW360Project();
         verify(toolConfigMock, times(1)).getProxyHost();
         verify(toolConfigMock, times(1)).getProxyPort();
     }

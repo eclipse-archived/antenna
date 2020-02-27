@@ -38,7 +38,6 @@ public class Configuration {
     private Map<ArtifactSelector, LicenseInformation> finalLicenses = new HashMap<>();
     private boolean failOnIncompleteSources = false;
     private boolean failOnMissingSources = false;
-    private SW360ProjectCoordinates project;
 
     public final static BinaryOperator<Map<ArtifactSelector,GregorianCalendar>> suppressedSecurityIssuesConflictResolver =
             (suppressMap1,suppressMap2) -> Stream.concat(
@@ -78,7 +77,6 @@ public class Configuration {
                     .collect(Collectors.toList()));
             setSecurityIssuesByList(antennaConfig.getSecurityIssues().getSecurityIssue());
             setSecurityIssueSuppressesByList(antennaConfig.getSecurityIssues().getSuppress());
-            this.project = new SW360ProjectCoordinates(antennaConfig.getSW360ProjectCoordinates());
         }
     }
 
@@ -244,13 +242,5 @@ public class Configuration {
 
         this.suppressedSecurityIssues = suppresses.stream()
                 .collect(Collectors.toMap(keyMapper, valueMapper, suppressedSecurityIssuesConflictResolver));
-    }
-
-    public SW360ProjectCoordinates getConfiguredSW360Project() {
-        return project;
-    }
-
-    public void setConfiguredSW360Project(SW360ProjectCoordinates project) {
-        this.project = project;
     }
 }

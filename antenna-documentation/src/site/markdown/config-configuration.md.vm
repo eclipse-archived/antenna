@@ -349,15 +349,3 @@ Then you add all artifacts of the security issue reference you want to suppress.
   </suppress>
 </securityIssues>
 ```
-
-**SW360ProjectCoordinates**
-
-In the `SW360ProjectCoordinates` section you can provide a name and version for your SW360 Project.
-This is only necessary should you use the [SW360 Enricher](processors/sw360-enricher.html) or [SW360 Update Generator](generators/sw360-update-generator-step.html).
-
-```xml
-<SW360ProjectCoordinates>
-    <name>Example Name</name>
-    <version>1.0.0-VERSION</version>
-</SW360ProjectCoordinates>
-```
