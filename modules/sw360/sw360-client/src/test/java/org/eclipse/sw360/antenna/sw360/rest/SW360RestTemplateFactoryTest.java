@@ -19,7 +19,7 @@ import org.apache.http.conn.routing.HttpRoutePlanner;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
-import org.eclipse.sw360.antenna.sw360.utils.ProxySettings;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -57,7 +57,7 @@ public class SW360RestTemplateFactoryTest {
 
     @Test
     public void testCreateHttpClientIfNoProxyIsUsed() {
-        ProxySettings settings = new ProxySettings(false, null, 0);
+        ProxySettings settings = ProxySettings.noProxy();
         HttpClientBuilder builder = mock(HttpClientBuilder.class);
         CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         when(builder.build()).thenReturn(httpClient);
@@ -70,7 +70,7 @@ public class SW360RestTemplateFactoryTest {
 
     @Test
     public void testCreateHttpClientWithProxyConfiguration() throws HttpException {
-        ProxySettings settings = new ProxySettings(true, "my.company.proxy", 3128);
+        ProxySettings settings = ProxySettings.useProxy("my.company.proxy", 3128);
         HttpClientBuilder builder = mock(HttpClientBuilder.class);
         CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
         when(builder.build()).thenReturn(httpClient);
@@ -90,7 +90,7 @@ public class SW360RestTemplateFactoryTest {
 
     @Test
     public void testCreateRequestFactory() {
-        ProxySettings settings = new ProxySettings(true, "proxy.net", 8080);
+        ProxySettings settings = ProxySettings.useProxy("proxy.net", 8080);
         CloseableHttpClient client = mock(CloseableHttpClient.class);
         SW360RestTemplateFactory factory = new SW360RestTemplateFactory() {
             @Override
@@ -109,7 +109,7 @@ public class SW360RestTemplateFactoryTest {
 
     @Test
     public void testCreateRestTemplate() {
-        ProxySettings settings = new ProxySettings(true, "foo.bar", 1234);
+        ProxySettings settings = ProxySettings.useProxy("foo.bar", 1234);
         ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
         SW360RestTemplateFactory factory = new SW360RestTemplateFactory() {
             @Override

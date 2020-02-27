@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.workflow;
 
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
@@ -19,7 +20,6 @@ import org.eclipse.sw360.antenna.sw360.rest.SW360ComponentClient;
 import org.eclipse.sw360.antenna.sw360.rest.SW360LicenseClient;
 import org.eclipse.sw360.antenna.sw360.rest.SW360ProjectClient;
 import org.eclipse.sw360.antenna.sw360.rest.SW360RestTemplateFactory;
-import org.eclipse.sw360.antenna.sw360.utils.ProxySettings;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -175,8 +175,8 @@ public class SW360ConnectionConfigurationFactory {
      */
     private static ProxySettings createProxySettings(Getter<Boolean> getBooleanConfigValue,
                                                      String proxyHost, int proxyPort) {
-        return new ProxySettings(getBooleanConfigValue.apply(SW360ConnectionConfiguration.PROXY_USE),
-                proxyHost, proxyPort);
+        Boolean useProxy = getBooleanConfigValue.apply(SW360ConnectionConfiguration.PROXY_USE);
+        return ProxySettings.fromConfig(useProxy, proxyHost, proxyPort);
     }
 
     @FunctionalInterface

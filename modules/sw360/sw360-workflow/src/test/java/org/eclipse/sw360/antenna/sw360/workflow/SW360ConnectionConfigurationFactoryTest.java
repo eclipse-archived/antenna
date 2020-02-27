@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.sw360.workflow;
 
 import org.assertj.core.api.Assertions;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
@@ -18,7 +19,6 @@ import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.rest.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.rest.SW360Client;
 import org.eclipse.sw360.antenna.sw360.rest.SW360RestTemplateFactory;
-import org.eclipse.sw360.antenna.sw360.utils.ProxySettings;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
@@ -121,7 +121,7 @@ public class SW360ConnectionConfigurationFactoryTest {
      * @return the test configuration
      */
     private SW360ConnectionConfiguration createConfiguration(boolean useProxy) {
-        ProxySettings settings = new ProxySettings(useProxy, PROXY_HOST, PROXY_PORT);
+        ProxySettings settings = useProxy ? ProxySettings.useProxy(PROXY_HOST, PROXY_PORT) : ProxySettings.noProxy();
         SW360RestTemplateFactory restFactory = mock(SW360RestTemplateFactory.class);
         when(restFactory.createRestTemplate(settings)).thenReturn(template);
 
