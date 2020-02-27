@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,7 +11,6 @@
  */
 package org.eclipse.sw360.antenna.workflow.stubs;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
@@ -64,7 +64,6 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
         failOn = getSeverityFromConfig(FAIL_ON_KEY, configMap, IEvaluationResult.Severity.FAIL);
     }
 
-    @SuppressFBWarnings("SF_SWITCH_FALLTHROUGH")
     public void execute(IPolicyEvaluation evaluation) {
         IProcessingReporter reporter = context.getProcessingReporter();
 
@@ -81,10 +80,15 @@ public abstract class AbstractComplianceChecker extends AbstractProcessor {
          * and FAIL If the user specified <entry key="failOn" value="WARN"/> the build will
          * only fail on FAIL (this is the default)
          */
-        switch (failOn.value()) {
-            case "INFO": evaluationResults.addAll(infoResults);
-            case "WARN": evaluationResults.addAll(warnResults);
-            case "FAIL": evaluationResults.addAll(failResults);
+        if (failOn == IEvaluationResult.Severity.INFO) {
+            evaluationResults.addAll(infoResults);
+            evaluationResults.addAll(warnResults);
+            evaluationResults.addAll(failResults);
+        } else if (failOn == IEvaluationResult.Severity.WARN) {
+            evaluationResults.addAll(warnResults);
+            evaluationResults.addAll(failResults);
+        } else if (failOn == IEvaluationResult.Severity.FAIL) {
+            evaluationResults.addAll(failResults);
         }
     }
 
