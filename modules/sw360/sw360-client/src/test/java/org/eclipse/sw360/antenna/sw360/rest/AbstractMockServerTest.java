@@ -13,13 +13,18 @@ package org.eclipse.sw360.antenna.sw360.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.eclipse.sw360.antenna.http.api.HttpClient;
 import org.eclipse.sw360.antenna.http.api.HttpClientFactory;
 import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
 import org.eclipse.sw360.antenna.http.impl.HttpClientFactoryImpl;
+import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.SW360ClientConfig;
+import org.eclipse.sw360.antenna.sw360.client.auth.AccessToken;
+import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
+import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -34,9 +39,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * A base class for integration tests that make use of a mock server.
@@ -70,6 +79,11 @@ public class AbstractMockServerTest {
      * The endpoint for querying access tokens.
      */
     protected static final String TOKEN_ENDPOINT = "/token";
+
+    /**
+     * A valid access token that can be used by tests.
+     */
+    protected static final AccessToken ACCESS_TOKEN = new AccessToken("a_valid_token");
 
     /**
      * The mapper for JSON serialization.
@@ -107,6 +121,57 @@ public class AbstractMockServerTest {
     protected static ResponseDefinitionBuilder aJsonResponse(int status) {
         return aResponse().withStatus(status)
                 .withHeader("Content-Type", "application/json");
+    }
+
+    /**
+     * Returns a WireMock mapping builder that checks for the presence of the
+     * Authorization header with the given access token.
+     *
+     * @param builder  the builder to be decorated
+     * @param expToken the expected access token
+     * @return the builder checking for the token
+     */
+    protected static MappingBuilder authorized(MappingBuilder builder, String expToken) {
+        return builder.withHeader(HttpConstants.HEADER_AUTHORIZATION,
+                equalTo(HttpConstants.AUTH_BEARER + expToken));
+    }
+
+    /**
+     * Returns a WireMock mapping builder that checks for the presence of the
+     * Authorization header with the default access token.
+     *
+     * @param builder the builder to be decorated
+     * @return the builder checking for the token
+     */
+    protected static MappingBuilder authorized(MappingBuilder builder) {
+        return authorized(builder, ACCESS_TOKEN.getToken());
+    }
+
+    /**
+     * Returns a mock token provider. The object returned is actually a spy,
+     * which allows configuring the tokens to be retrieved while having other
+     * functionality available.
+     *
+     * @return a mock access token provider
+     */
+    protected static AccessTokenProvider createMockTokenProvider() {
+        return spy(new AccessTokenProvider(mock(SW360AuthenticationClient.class)));
+    }
+
+    /**
+     * Prepares the given mock token provider to return specific result futures
+     * for subsequent invocations. The mock provider is expected to have been
+     * created using {@link #createMockTokenProvider()}.
+     *
+     * @param provider         the mock token provider
+     * @param tokenFuture      the first result to be returned
+     * @param moreTokenFutures an arbitrary number of further results
+     */
+    @SafeVarargs
+    protected static void prepareAccessTokens(AccessTokenProvider provider,
+                                              CompletableFuture<AccessToken> tokenFuture,
+                                              CompletableFuture<AccessToken>... moreTokenFutures) {
+        doReturn(tokenFuture, (Object[]) moreTokenFutures).when(provider).obtainAccessToken();
     }
 
     /**

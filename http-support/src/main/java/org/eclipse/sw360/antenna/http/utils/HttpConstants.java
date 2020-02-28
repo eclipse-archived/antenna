@@ -48,6 +48,12 @@ public final class HttpConstants {
     public static final int STATUS_ERR_BAD_REQUEST = 400;
 
     /**
+     * Constant for the HTTP status code 401 UNAUTHORIZED indicating missing or
+     * invalid access credentials.
+     */
+    public static final int STATUS_ERR_UNAUTHORIZED = 401;
+
+    /**
      * Constant for the HTTP status code 500 INTERNAL SERVER ERROR indicating a
      * general problem on server side.
      */
