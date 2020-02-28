@@ -48,13 +48,10 @@ public class SW360UpdaterTest {
 
         final String projectName = "projectName";
         final String version = "version";
-        IProject project = mock(IProject.class);
-        when(project.getProjectId())
+        when(toolConfigMock.getProductFullName())
                 .thenReturn(projectName);
-        when(project.getVersion())
+        when(toolConfigMock.getVersion())
                 .thenReturn(version);
-        when(antennaContextMock.getProject())
-                .thenReturn(project);
 
         when(antennaContextMock.getToolConfiguration())
                 .thenReturn(toolConfigMock);

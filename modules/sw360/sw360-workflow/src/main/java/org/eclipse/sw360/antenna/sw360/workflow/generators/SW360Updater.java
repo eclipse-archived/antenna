@@ -37,8 +37,8 @@ public class SW360Updater extends AbstractGenerator {
 
     @Override
     public void configure(Map<String, String> configMap) {
-        projectName = context.getProject().getProjectId();
-        projectVersion = context.getProject().getVersion();
+        projectName = getProjectName();
+        projectVersion = getProjectVersion();
 
         // Proxy configuration
         final String sw360ProxyHost = context.getToolConfiguration().getProxyHost();
@@ -55,6 +55,18 @@ public class SW360Updater extends AbstractGenerator {
         Boolean uploadSources = getBooleanConfigValue(UPLOAD_SOURCES, configMap);
 
         sw360MetaDataUpdater = new SW360MetaDataUpdater(sw360ConnectionConfiguration, updateReleases, uploadSources);
+    }
+
+    private String getProjectVersion() {
+        return context.getToolConfiguration().getVersion() != null ?
+                context.getToolConfiguration().getVersion() :
+                context.getProject().getVersion();
+    }
+
+    private String getProjectName() {
+        return (context.getToolConfiguration().getProductFullName() != null) ?
+                context.getToolConfiguration().getProductFullName() :
+                context.getProject().getProjectId();
     }
 
     @Override
