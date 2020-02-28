@@ -27,10 +27,12 @@ The default bundle key is `basic-pdf-template`. If you have your custom bundle p
 your implementation.
 * `attribution.doc.name`: *(optional)* Specifies the filename of your attribution document. If not specified, the 
 attribution document is placed at `${project.build.directory}/antenna/attribution-document.pdf`.
-* `attribution.doc.productName`: Specifies the name of the product, for which the attribution document is generated.
-It will be appear in the title page of the document. 
-* `attribution.doc.productVersion`: Specifies the version of the product, for which the attribution document is generated.
-It will be appear in the title page of the document, below the product name. 
+* `attribution.doc.productName`: *(optional)* Specifies the name of the product, for which the attribution document is generated.
+It will be appear in the title page of the document. Alternatively, if no value is set here, the full name provided in the  
+[Tool Configuration](../tool-configuration.html) will be used. 
+* `attribution.doc.productVersion`: *(optional)* Specifies the version of the product, for which the attribution document is generated.
+It will be appear in the title page of the document, below the product name. Alternatively, if no value is set here, the version provided 
+in the [Tool Configuration](../tool-configuration.html) will be used.  
 * `attribution.doc.copyrightHolder`: Specifies the Copyright Holder of the product, which will be appear in the footer
 of the attribution document. 
 
