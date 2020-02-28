@@ -23,6 +23,8 @@ import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import static org.eclipse.sw360.antenna.http.utils.HttpConstants.URL_PATH_SEPARATOR;
+
 /**
  * <p>
  * A base class for all classes that interact with SW360 REST endpoints.
@@ -40,11 +42,6 @@ import java.util.concurrent.CompletableFuture;
  * </p>
  */
 public abstract class SW360Client {
-    /**
-     * The separator character between URL path segments.
-     */
-    private static final String PATH_SEPARATOR = "/";
-
     /**
      * The configuration for this client.
      */
@@ -135,7 +132,7 @@ public abstract class SW360Client {
      * @return a string with the resulting URL
      */
     protected String resourceUrl(String... paths) {
-        return getClientConfig().getRestURL() + PATH_SEPARATOR + String.join(PATH_SEPARATOR, paths);
+        return getClientConfig().getRestURL() + URL_PATH_SEPARATOR + String.join(URL_PATH_SEPARATOR, paths);
     }
 
     /**

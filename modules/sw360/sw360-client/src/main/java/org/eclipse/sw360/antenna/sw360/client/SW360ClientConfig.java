@@ -11,8 +11,10 @@
 package org.eclipse.sw360.antenna.sw360.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.eclipse.sw360.antenna.http.api.HttpClient;
+import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 
 import java.util.Objects;
 
@@ -112,8 +114,8 @@ public final class SW360ClientConfig {
                                                  String password, String clientId, String clientPassword,
                                                  HttpClient httpClient, ObjectMapper mapper) {
         return new SW360ClientConfig(
-                Validate.notEmpty(restURL, "Undefined REST URL"),
-                Validate.notEmpty(authURL, "Undefined authentication URL"),
+                stripTrailingSeparator(Validate.notEmpty(restURL, "Undefined REST URL")),
+                stripTrailingSeparator(Validate.notEmpty(authURL, "Undefined authentication URL")),
                 Validate.notEmpty(user, "Undefined user"),
                 Validate.notEmpty(password, "Undefined password"),
                 Validate.notEmpty(clientId, "Undefined client ID"),
@@ -227,5 +229,17 @@ public final class SW360ClientConfig {
     public int hashCode() {
         return Objects.hash(getRestURL(), getAuthURL(), getUser(), getPassword(), getClientId(), getClientPassword(),
                 getHttpClient(), getObjectMapper());
+    }
+
+    /**
+     * Removes trailing separator characters from a URL string if necessary.
+     * This causes URLs to be stored in a normalized form, which simplifies
+     * further processing.
+     *
+     * @param url the URL to be processed
+     * @return the URL with trailing separators removed
+     */
+    private static String stripTrailingSeparator(String url) {
+        return StringUtils.stripEnd(url, HttpConstants.URL_PATH_SEPARATOR);
     }
 }

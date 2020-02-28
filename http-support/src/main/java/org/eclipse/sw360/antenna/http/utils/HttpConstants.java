@@ -111,4 +111,9 @@ public final class HttpConstants {
      * Constant for the content type for URL-encoded forms.
      */
     public static final String CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
+
+    /**
+     * Constant for the character used as separator between URL path segments.
+     */
+    public static final String URL_PATH_SEPARATOR = "/";
 }

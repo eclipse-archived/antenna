@@ -131,6 +131,16 @@ public class SW360ClientConfigTest {
     }
 
     @Test
+    public void testTrailingSlashesFromURLsAreRemoved() {
+        SW360ClientConfig config =
+                SW360ClientConfig.createConfig(REST_URL + "/", AUTH_URL + "/", USER, PASSWORD,
+                        CLIENT_ID, CLIENT_PASS, httpClient, mapper);
+
+        assertThat(config.getRestURL()).isEqualTo(REST_URL);
+        assertThat(config.getAuthURL()).isEqualTo(AUTH_URL);
+    }
+
+    @Test
     public void testEquals() {
         EqualsVerifier.forClass(SW360ClientConfig.class)
                 .withPrefabValues(ObjectMapper.class, new ObjectMapper(), new ObjectMapper())
