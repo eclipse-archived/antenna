@@ -112,7 +112,7 @@ public class HttpUtilsTest {
     }
 
     @Test
-    public void testCheckResponseFailed() {
+    public void testCheckResponseFailed() throws IOException {
         final int status = 500;
         Response response = mock(Response.class);
         ResponseProcessor<Object> processor = createProcessorMock();
@@ -123,8 +123,31 @@ public class HttpUtilsTest {
         try {
             checkProcessor.process(response);
             fail("No exception thrown!");
-        } catch (IOException e) {
+        } catch (FailedRequestException e) {
             assertThat(e.getMessage()).contains(String.valueOf(status));
+            assertThat(e.getStatusCode()).isEqualTo(status);
+            assertThat(e.getTag()).isNull();
+            verifyZeroInteractions(processor);
+        }
+    }
+
+    @Test
+    public void testCheckResponseFailedWithTag() throws IOException {
+        final int status = 400;
+        final String tag = "MyTestRequest";
+        Response response = mock(Response.class);
+        ResponseProcessor<Object> processor = createProcessorMock();
+        when(response.isSuccess()).thenReturn(Boolean.FALSE);
+        when(response.statusCode()).thenReturn(status);
+
+        ResponseProcessor<Object> checkProcessor = HttpUtils.checkResponse(processor, tag);
+        try {
+            checkProcessor.process(response);
+            fail("No exception thrown!");
+        } catch (FailedRequestException e) {
+            assertThat(e.getMessage()).contains(String.valueOf(status), tag);
+            assertThat(e.getStatusCode()).isEqualTo(status);
+            assertThat(e.getTag()).isEqualTo(tag);
             verifyZeroInteractions(processor);
         }
     }

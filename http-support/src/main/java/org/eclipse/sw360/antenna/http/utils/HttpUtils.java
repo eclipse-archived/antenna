@@ -17,7 +17,6 @@ import org.eclipse.sw360.antenna.http.api.Response;
 import org.eclipse.sw360.antenna.http.api.ResponseProcessor;
 
 import java.io.IOException;
-import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
@@ -73,12 +72,36 @@ public final class HttpUtils {
 
     /**
      * Returns a {@code ResponseProcessor} that checks whether a request was
-     * successful based on a given predicate. The resulting processor invokes
-     * the given predicate on the response received from the server. If the
-     * predicate yields <strong>false</strong>, an {@code IOException} is
-     * thrown indicating a failed request. Otherwise, the original
-     * {@code ResponseProcessor} is invoked, which can now safely generate its
-     * result.
+     * successful based on a given predicate and allows tagging the request.
+     * The resulting processor invokes the given predicate on the response
+     * received from the server. If the predicate yields
+     * <strong>false</strong>, a {@link FailedRequestException} is thrown
+     * that is initialized with the tag and the response status code.
+     * Otherwise, the original {@code ResponseProcessor} is invoked, which can
+     * now safely generate its result.
+     *
+     * @param processor        the {@code ResponseProcessor} to wrap
+     * @param successPredicate a predicate to determine whether the response is
+     *                         successful
+     * @param tag              a tag to identify the request
+     * @param <T>              the result type of the {@code ResponseProcessor}
+     * @return the {@code ResponseProcessor} checking the response
+     */
+    public static <T> ResponseProcessor<T> checkResponse(ResponseProcessor<T> processor,
+                                                         Predicate<Response> successPredicate,
+                                                         String tag) {
+        return response -> {
+            if (!successPredicate.test(response)) {
+                throw new FailedRequestException(tag, response.statusCode());
+            }
+            return processor.process(response);
+        };
+    }
+
+    /**
+     * Returns a {@code ResponseProcessor} that checks whether a request was
+     * successful based on a given predicate. This variant does not add a tag
+     * to the request.
      *
      * @param processor        the {@code ResponseProcessor} to wrap
      * @param successPredicate a predicate to determine whether the response is
@@ -88,23 +111,34 @@ public final class HttpUtils {
      */
     public static <T> ResponseProcessor<T> checkResponse(ResponseProcessor<T> processor,
                                                          Predicate<Response> successPredicate) {
-        return response -> {
-            if (!successPredicate.test(response)) {
-                String msg = String.format(Locale.ROOT,
-                        "Response with status %d failed success check.", response.statusCode());
-                throw new IOException(msg);
-            }
-            return processor.process(response);
-        };
+        return checkResponse(processor, successPredicate, null);
     }
 
-    /***
+    /**
+     * Returns a {@code ResponseProcessor} that checks the HTTP status code to
+     * determine whether a request was successful and allows tagging the
+     * request. This method is equivalent to the overloaded
+     * {@code checkResponse()} method using {@link #SUCCESS_STATUS} as
+     * predicate.
+     *
+     * @param processor the {@code ResponseProcessor} to wrap
+     * @param tag       a tag to identify the request
+     * @param <T>       the result type of the {@code ResponseProcessor}
+     * @return the {@code ResponseProcessor} checking the response
+     */
+    public static <T> ResponseProcessor<T> checkResponse(ResponseProcessor<T> processor, String tag) {
+        return checkResponse(processor, SUCCESS_STATUS, tag);
+    }
+
+    /**
      * Returns a {@code ResponseProcessor} that checks the HTTP status code to
      * determine whether a request was successful. This method is equivalent to
      * the overloaded {@code checkResponse()} method using
-     * {@link #SUCCESS_STATUS} as predicate.
+     * {@link #SUCCESS_STATUS} as predicate. This variant does not add a tag
+     * to the request.
+     *
      * @param processor the {@code ResponseProcessor} to wrap
-     * @param <T> the result type of the {@code ResponseProcessor}
+     * @param <T>       the result type of the {@code ResponseProcessor}
      * @return the {@code ResponseProcessor} checking the response
      */
     public static <T> ResponseProcessor<T> checkResponse(ResponseProcessor<T> processor) {

@@ -20,6 +20,7 @@ import org.eclipse.sw360.antenna.http.api.HttpClient;
 import org.eclipse.sw360.antenna.http.api.RequestBuilder;
 import org.eclipse.sw360.antenna.http.api.Response;
 import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
+import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -54,9 +55,9 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.eclipse.sw360.antenna.http.utils.HttpConstants.CHARSET_UTF8;
-import static org.eclipse.sw360.antenna.http.utils.HttpConstants.CONTENT_OCTET_STREAM;
 import static org.eclipse.sw360.antenna.http.utils.HttpConstants.CONTENT_JSON;
 import static org.eclipse.sw360.antenna.http.utils.HttpConstants.CONTENT_JSON_UTF8;
+import static org.eclipse.sw360.antenna.http.utils.HttpConstants.CONTENT_OCTET_STREAM;
 import static org.eclipse.sw360.antenna.http.utils.HttpConstants.CONTENT_TEXT_PLAIN;
 import static org.eclipse.sw360.antenna.http.utils.HttpConstants.HEADER_CONTENT_TYPE;
 import static org.eclipse.sw360.antenna.http.utils.HttpConstants.STATUS_ACCEPTED;
@@ -365,7 +366,7 @@ public class HttpRequestExecutionIT {
     }
 
     @Test
-    public void testGetWithFailedResponseStatus() {
+    public void testGetWithFailedResponseStatus() throws IOException {
         wireMockRule.stubFor(get(ENDPOINT)
                 .willReturn(aResponse().withStatus(STATUS_ACCEPTED)));
 
@@ -373,8 +374,26 @@ public class HttpRequestExecutionIT {
             waitFor(httpClient.execute(HttpUtils.get(endpointUri()),
                     checkResponse(response -> new Object(), hasStatus(STATUS_OK))));
             fail("No exception was thrown.");
-        } catch (IOException e) {
+        } catch (FailedRequestException e) {
             assertThat(e.getMessage()).contains(String.valueOf(STATUS_ACCEPTED));
+            assertThat(e.getStatusCode()).isEqualTo(STATUS_ACCEPTED);
+        }
+    }
+
+    @Test
+    public void testGetWithFailedResponseStatusAndTag() throws IOException {
+        final String tag = "fetchData";
+        wireMockRule.stubFor(get(ENDPOINT)
+                .willReturn(aResponse().withStatus(STATUS_CREATED)));
+
+        try {
+            waitFor(httpClient.execute(HttpUtils.get(endpointUri()),
+                    checkResponse(response -> new Object(), hasStatus(STATUS_OK), tag)));
+            fail("No exception was thrown.");
+        } catch (FailedRequestException e) {
+            assertThat(e.getMessage()).contains(" '" + tag + "' ");
+            assertThat(e.getStatusCode()).isEqualTo(STATUS_CREATED);
+            assertThat(e.getTag()).isEqualTo(tag);
         }
     }
 
