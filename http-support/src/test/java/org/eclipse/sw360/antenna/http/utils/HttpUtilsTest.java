@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -150,5 +151,30 @@ public class HttpUtilsTest {
             assertThat(e.getTag()).isEqualTo(tag);
             verifyZeroInteractions(processor);
         }
+    }
+
+    @Test
+    public void testUnwrapCompletionExceptionNull() {
+        assertThat(HttpUtils.unwrapCompletionException(null)).isNull();
+    }
+
+    @Test
+    public void testUnwrapCompletionExceptionNotWrapped() {
+        Throwable exception = new IllegalStateException("test");
+
+        assertThat(HttpUtils.unwrapCompletionException(exception)).isEqualTo(exception);
+    }
+
+    @Test
+    public void testUnwrapCompletionExceptionWrapped() {
+        Throwable exception = new IllegalStateException("testWrapped");
+        Throwable wrap = new CompletionException(new CompletionException(exception));
+
+        assertThat(HttpUtils.unwrapCompletionException(wrap)).isEqualTo(exception);
+    }
+
+    @Test
+    public void testUnwrapCompletionExceptionEmptyWrap() {
+        assertThat(HttpUtils.unwrapCompletionException(new CompletionException(null))).isNull();
     }
 }

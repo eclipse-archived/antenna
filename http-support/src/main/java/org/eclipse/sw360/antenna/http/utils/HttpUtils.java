@@ -18,6 +18,7 @@ import org.eclipse.sw360.antenna.http.api.ResponseProcessor;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
@@ -68,6 +69,30 @@ public final class HttpUtils {
         } catch (ExecutionException e) {
             throw wrapInIOException(e.getCause());
         }
+    }
+
+    /**
+     * Returns the first exception in a chain that is not a
+     * {@code CompletionException}. When dealing with {@code CompletableFuture}
+     * objects that have been completed with an exception (for instance by
+     * processing futures via methods like {@code whenComplete()} or
+     * {@code handle()}), the representation of these exceptions is not always
+     * consistent. They are sometimes wrapped in a {@code CompletionException}
+     * and sometimes not. This method can be used to obtain the actual cause of
+     * a failure by removing all enclosing {@code CompletionException}
+     * instances.
+     *
+     * @param ex the exception to be unwrapped
+     * @return the unwrapped exception or <strong>null</strong> if none can be
+     * found
+     */
+    public static Throwable unwrapCompletionException(Throwable ex) {
+        Throwable cause = ex;
+        while (cause instanceof CompletionException) {
+            cause = cause.getCause();
+        }
+
+        return cause;
     }
 
     /**
