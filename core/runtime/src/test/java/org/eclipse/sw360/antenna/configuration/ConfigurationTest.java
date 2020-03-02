@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2013,2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -65,9 +66,6 @@ public class ConfigurationTest {
         assertThat(configuration.isFailOnMissingSources()).isTrue();
         assertThat(configuration.isFailOnIncompleteSources()).isFalse();
         assertThat(configuration.getValidForIncompleteSources().size()).isEqualTo(2);
-        assertThat(configuration.getConfiguredSW360Project().getName()).isEqualTo("anyProjectName");
-        assertThat(configuration.getConfiguredSW360Project().getVersion()).isEqualTo("anyProjectVersion");
-
     }
 
     @Test

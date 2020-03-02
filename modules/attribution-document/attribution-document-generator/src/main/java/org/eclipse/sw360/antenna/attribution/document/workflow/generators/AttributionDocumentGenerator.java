@@ -1,5 +1,6 @@
 /**
  * Copyright (c) Robert Bosch Manufacturing Solutions GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -97,8 +98,8 @@ public class AttributionDocumentGenerator extends AbstractGenerator {
 
    @Override
    public void configure(Map<String, String> configMap) {
-      final String confProductName = getConfigValue(CONFIG_PRODUCT_NAME, configMap);
-      final String confProductVersion = getConfigValue(CONFIG_PRODUCT_VERSION, configMap);
+      final String confProductName = getConfigValue(CONFIG_PRODUCT_NAME, configMap, context.getToolConfiguration().getProductFullName());
+      final String confProductVersion = getConfigValue(CONFIG_PRODUCT_VERSION, configMap, context.getToolConfiguration().getVersion());
       final String confCopyrightHolder = getConfigValue(CONFIG_COPYRIGHT_HOLDER, configMap);
 
       docName = getConfigValue(CONFIG_DOC_NAME, configMap, DEFAULT_ATTRIBUTION_DOC_NAME);

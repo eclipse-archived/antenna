@@ -43,5 +43,12 @@ Add the following step into the `<generators>` section of your workflow.xml
 * `update_releases`: Update already existing releases 
 * `update_sources`: Upload sources corresponding to releases to SW360
 
+#### Name of your Project
+As mentioned above all information created or updated will be with your current project metadata. 
+The name and the version of your current project is the same as the full name and the version 
+given in the [Tool Configuration](../tool-configuration.html). If you do not provide any information
+for those variable in the [Tool Configuration](../tool-configuration.html), the default project values of 
+the antenna configuration file will be used. 
+
 #### Data Model
 You can find a description of the data model mapping in the [SW360 data model](../sw360-data-model.html) section.

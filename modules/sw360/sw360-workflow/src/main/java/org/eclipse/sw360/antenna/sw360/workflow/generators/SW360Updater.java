@@ -14,7 +14,6 @@ package org.eclipse.sw360.antenna.sw360.workflow.generators;
 
 import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
-import org.eclipse.sw360.antenna.model.SW360ProjectCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
@@ -22,7 +21,6 @@ import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFact
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 public class SW360Updater extends AbstractGenerator {
     private static final String UPDATE_RELEASES = "update_releases";
@@ -39,10 +37,8 @@ public class SW360Updater extends AbstractGenerator {
 
     @Override
     public void configure(Map<String, String> configMap) {
-        Optional<SW360ProjectCoordinates> configuredSW360Project = Optional.ofNullable(context.getConfiguration().getConfiguredSW360Project());
-
-        projectName = retrieveName(configuredSW360Project);
-        projectVersion = retrieveVersion(configuredSW360Project);
+        projectName = getProjectName();
+        projectVersion = getProjectVersion();
 
         // Proxy configuration
         final String sw360ProxyHost = context.getToolConfiguration().getProxyHost();
@@ -61,24 +57,24 @@ public class SW360Updater extends AbstractGenerator {
         sw360MetaDataUpdater = new SW360MetaDataUpdater(sw360ConnectionConfiguration, updateReleases, uploadSources);
     }
 
+    private String getProjectVersion() {
+        return context.getToolConfiguration().getVersion() != null ?
+                context.getToolConfiguration().getVersion() :
+                context.getProject().getVersion();
+    }
+
+    private String getProjectName() {
+        return (context.getToolConfiguration().getProductFullName() != null) ?
+                context.getToolConfiguration().getProductFullName() :
+                context.getProject().getProjectId();
+    }
+
     @Override
     public Map<String, IAttachable> produce(Collection<Artifact> intermediates) {
         return updaterImpl == null ?
                 new SW360UpdaterImpl(sw360MetaDataUpdater,projectName, projectVersion)
                         .produce(intermediates) :
                 updaterImpl.produce(intermediates);
-    }
-
-    private String retrieveName(Optional<SW360ProjectCoordinates> sw360ProjectCoordinates) {
-        return sw360ProjectCoordinates.map(SW360ProjectCoordinates::getName)
-                .orElseGet(() -> context.getProject()
-                        .getProjectId());
-    }
-
-    private String retrieveVersion(Optional<SW360ProjectCoordinates> sw360ProjectCoordinates) {
-        return sw360ProjectCoordinates.map(SW360ProjectCoordinates::getVersion)
-                .orElseGet(() -> context.getProject()
-                        .getVersion());
     }
 
     public void setUpdaterImpl(SW360UpdaterImpl updaterImpl) {
