@@ -142,7 +142,7 @@ public class MavenArtifactResolverImpl {
         }
 
         if (!artifact.getSourceFile().isPresent() && !artifact.getFile().isPresent()) {
-            processingReporter.add(artifact, MessageType.MISSING_SOURCES, "Maven Artifact Coordinates present but non resolvable sources (maybe sources are available using P2).");
+            processingReporter.add(artifact, MessageType.MISSING_SOURCES, "Maven Artifact Coordinates present but non resolvable sources.");
         }
     }
 

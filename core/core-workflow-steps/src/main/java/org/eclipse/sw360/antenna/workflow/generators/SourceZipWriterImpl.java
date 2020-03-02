@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -111,8 +112,7 @@ public class SourceZipWriterImpl {
     }
 
     /**
-     * Adds the content of the source zip with the specified sourceTypes. If an
-     * mvn source exists it will be added, otherwise, p2 source will be added
+     * Adds the content of the source zip with the specified sourceTypes.
      *
      * @param artifact Artifact of which the content shall be added.
      * @param zipOut   ZipOutputStream for the ZipFile.

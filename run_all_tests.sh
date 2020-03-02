@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) Bosch Software Innovations GmbH 2019.
+# Copyright (c) Bosch.IO GmbH 2020.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v2.0
@@ -30,18 +31,6 @@ if [[ "$1" == "--custom-repository" ]]; then
     export M2_REPOSITORY="/tmp/run_all_tests.repository"
     mkdir -p $M2_REPOSITORY
     export MAVEN_OPTS="-Dmaven.repo.local=$M2_REPOSITORY"
-fi
-
-WITH_P2="false"
-if [[ "$1" == "--p2" ]]; then
-    shift
-    WITH_P2="true"
-    runWithScope "prepare p2 dependencies"  \
-        modules/p2/prepareDependenciesForP2.sh
-elif [[ "$1" == "--no-p2" ]]; then
-    shift
-    runWithScope "cleanup p2 dependencies"  \
-        modules/p2/cleanupDependenciesForP2.sh
 fi
 
 runWithScope "mvn install"  \
