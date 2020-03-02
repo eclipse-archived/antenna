@@ -12,7 +12,7 @@ package org.eclipse.sw360.antenna.sw360.client.auth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
-import org.eclipse.sw360.antenna.sw360.rest.AbstractMockServerTest;
+import org.eclipse.sw360.antenna.sw360.client.rest.AbstractMockServerTest;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -12,7 +12,6 @@ package org.eclipse.sw360.antenna.sw360.client.rest;
 
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
-import org.eclipse.sw360.antenna.sw360.rest.AbstractMockServerTest;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentEmbedded;

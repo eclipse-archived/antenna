@@ -8,9 +8,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.rest;
+package org.eclipse.sw360.antenna.sw360.client.rest;
 
-import org.apache.http.HttpStatus;
+import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
+import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
@@ -21,26 +22,26 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aMultipart;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.binaryEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.sw360.antenna.http.utils.HttpUtils.waitFor;
 
 public class SW360AttachmentClientIT extends AbstractMockServerTest {
     @Rule
@@ -50,7 +51,18 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
 
     @Before
     public void setUp() {
-        attachmentClient = new SW360ReleaseClient(wireMockRule.baseUrl(), createRestTemplate());
+        attachmentClient = new SW360ReleaseClient(createClientConfig(), createMockTokenProvider());
+        prepareAccessTokens(attachmentClient.getTokenProvider(), CompletableFuture.completedFuture(ACCESS_TOKEN));
+    }
+
+    /**
+     * Determines the directory to download attachments as a sub folder of the
+     * temporary folder.
+     *
+     * @return the attachment download directory
+     */
+    private Path getDownloadDir() {
+        return temporaryFolder.getRoot().toPath().resolve("downloads");
     }
 
     @Test
@@ -67,19 +79,19 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
                 .withMultipartRequestBody(
                         aMultipart()
                                 .withName("attachment")
-                                .withHeader("Content-Type", equalTo("application/json"))
+                                .withHeader("Content-Type", containing("application/json"))
                                 .withBody(equalToJson(toJson(attachment)))
                 )
                 .withMultipartRequestBody(
                         aMultipart()
                                 .withName("file")
                                 .withBody(binaryEqualTo(attachmentContent))
-                ).willReturn(aJsonResponse(HttpStatus.SC_OK)
+                ).willReturn(aJsonResponse(HttpConstants.STATUS_OK)
                         .withBody(toJson(release))));
 
         SW360Release modifiedRelease =
-                attachmentClient.uploadAndAttachAttachment(release, attachmentPath, SW360AttachmentType.DOCUMENT,
-                        new HttpHeaders());
+                waitFor(attachmentClient.uploadAndAttachAttachment(release, attachmentPath,
+                        SW360AttachmentType.DOCUMENT));
         assertThat(modifiedRelease).isEqualTo(release);
         wireMockRule.verify(postRequestedFor(urlPathEqualTo(urlPath + "/attachments")));
     }
@@ -89,10 +101,8 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
         Path attachmentPath = temporaryFolder.getRoot().toPath().resolve("nonExistingFile.txt");
         SW360Release release = new SW360Release();
 
-        SW360Release modifiedRelease =
-                attachmentClient.uploadAndAttachAttachment(release, attachmentPath, SW360AttachmentType.DOCUMENT,
-                        new HttpHeaders());
-        assertThat(modifiedRelease).isEqualTo(release);
+        extractException(attachmentClient.uploadAndAttachAttachment(release, attachmentPath,
+                SW360AttachmentType.DOCUMENT), IOException.class);
         assertThat(wireMockRule.getAllServeEvents()).hasSize(0);
     }
 
@@ -104,12 +114,12 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
         SW360Release release = new SW360Release();
         release.get_Links().setSelf(new Self(selfUrl));
         wireMockRule.stubFor(post(anyUrl())
-                .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
+                .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_BAD_REQUEST)));
 
-        SW360Release modifiedRelease =
-                attachmentClient.uploadAndAttachAttachment(release, attachmentPath, SW360AttachmentType.DOCUMENT,
-                        new HttpHeaders());
-        assertThat(modifiedRelease).isEqualTo(release);
+        FailedRequestException exception = expectFailedRequest(
+                attachmentClient.uploadAndAttachAttachment(release, attachmentPath, SW360AttachmentType.DOCUMENT),
+                HttpConstants.STATUS_ERR_BAD_REQUEST);
+        assertThat(exception.getTag()).isEqualTo(SW360AttachmentAwareClient.TAG_UPLOAD_ATTACHMENT);
     }
 
     @Test
@@ -118,21 +128,29 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
         final String fileName = "testAttachment.json";
         final String itemRef = "/testComponent";
         final String testFile = "project.json";
-        Path downloadDir = temporaryFolder.getRoot().toPath().resolve("downloads");
+        Path downloadDir = getDownloadDir();
         SW360SparseAttachment attachment = new SW360SparseAttachment();
         attachment.get_Links().setSelf(new Self(wireMockRule.baseUrl() + "/test/attachments/" + attachmentID));
         attachment.setFilename(fileName);
         wireMockRule.stubFor(get(urlPathEqualTo(itemRef + "/attachments/" + attachmentID))
-                .willReturn(aJsonResponse(HttpStatus.SC_OK)
+                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
                         .withBodyFile(testFile)));
 
-        Path path = assertPresent(attachmentClient.downloadAttachment(wireMockRule.baseUrl() + itemRef,
-                attachment, downloadDir, new HttpHeaders()));
+        Path path = waitFor(attachmentClient.downloadAttachment(wireMockRule.baseUrl() + itemRef,
+                attachment, downloadDir));
         assertThat(path.getFileName().toString()).isEqualTo(fileName);
         assertThat(path.getParent()).isEqualTo(downloadDir);
         SW360Project expData = readTestJsonFile(resolveTestFileURL(testFile), SW360Project.class);
         SW360Project actData = readTestJsonFile(path.toUri().toURL(), SW360Project.class);
         assertThat(actData).isEqualTo(expData);
+    }
+
+    @Test
+    public void testDownloadAttachmentPathAlreadyExisting() throws IOException {
+        Path downloadDir = getDownloadDir();
+        Files.createDirectory(downloadDir);
+
+        testDownloadAttachment();
     }
 
     @Test
@@ -143,9 +161,8 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
         attachment.setFilename("irrelevant.file");
         Path downloadPath = temporaryFolder.getRoot().toPath().resolve("non").resolve("existing").resolve("path");
 
-        Optional<Path> optPath = attachmentClient.downloadAttachment(wireMockRule.baseUrl(), attachment,
-                downloadPath, new HttpHeaders());
-        assertThat(optPath).isNotPresent();
+        extractException(attachmentClient.downloadAttachment(wireMockRule.baseUrl(), attachment,
+                downloadPath), IOException.class);
         assertThat(wireMockRule.getAllServeEvents()).hasSize(0);
     }
 
@@ -155,23 +172,26 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
         attachment.get_Links().setSelf(new Self(wireMockRule.baseUrl() + "/test/attachments/unknownAttachment"));
         attachment.setFilename("nonExisting.file");
         wireMockRule.stubFor(get(anyUrl())
-                .willReturn(aResponse().withStatus(HttpStatus.SC_NOT_FOUND)));
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_ERR_NOT_FOUND)));
 
-        Optional<Path> optPath = attachmentClient.downloadAttachment(wireMockRule.baseUrl(), attachment,
-                temporaryFolder.getRoot().toPath().resolve("downloads"), new HttpHeaders());
-        assertThat(optPath).isNotPresent();
+        FailedRequestException exception =
+                expectFailedRequest(attachmentClient.downloadAttachment(wireMockRule.baseUrl(), attachment,
+                        temporaryFolder.getRoot().toPath().resolve("downloads")),
+                        HttpConstants.STATUS_ERR_NOT_FOUND);
+        assertThat(exception.getTag()).isEqualTo(SW360AttachmentAwareClient.TAG_DOWNLOAD_ATTACHMENT);
     }
 
     @Test
-    public void testDownloadAttachmentNoContent() {
+    public void testDownloadAttachmentNoContent() throws IOException {
         SW360SparseAttachment attachment = new SW360SparseAttachment();
         attachment.get_Links().setSelf(new Self(wireMockRule.baseUrl() + "/test/attachments/empty"));
         attachment.setFilename("empty.file");
         wireMockRule.stubFor(get(anyUrl())
-                .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_OK)));
 
-        Optional<Path> optPath = attachmentClient.downloadAttachment(wireMockRule.baseUrl(), attachment,
-                temporaryFolder.getRoot().toPath().resolve("downloads"), new HttpHeaders());
-        assertThat(optPath).isNotPresent();
+        Path path = waitFor(attachmentClient.downloadAttachment(wireMockRule.baseUrl(), attachment,
+                temporaryFolder.getRoot().toPath().resolve("downloads")));
+        assertThat(Files.size(path)).isEqualTo(0);
+        assertThat(Files.exists(path)).isTrue();
     }
 }
