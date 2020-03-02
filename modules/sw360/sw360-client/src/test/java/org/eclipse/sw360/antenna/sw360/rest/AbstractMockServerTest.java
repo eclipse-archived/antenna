@@ -183,7 +183,7 @@ public class AbstractMockServerTest {
      * @return the URL to the test file specified
      */
     protected static URL resolveTestFileURL(String name) {
-        URL url = SW360ComponentClientIT.class.getResource("/__files/" + name);
+        URL url = AbstractMockServerTest.class.getResource("/__files/" + name);
         assertThat(url).isNotNull();
         return url;
     }

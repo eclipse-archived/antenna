@@ -12,6 +12,9 @@ package org.eclipse.sw360.antenna.sw360.client.utils;
 
 import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
+import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentList;
+import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentListEmbedded;
+import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseListEmbedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
@@ -76,6 +79,17 @@ public class SW360ResourceUtils {
      */
     public static List<SW360SparseRelease> getSw360SparseReleases(SW360ReleaseList response) {
         return extractEmbeddedList(response, SW360ReleaseListEmbedded::getReleases);
+    }
+
+    /**
+     * An extractor function to obtain embedded component data from a server
+     * response.
+     *
+     * @param response the de-serialized server response
+     * @return a list with the sparse components contained in the response
+     */
+    public static List<SW360SparseComponent> getSw360SparseComponents(SW360ComponentList response) {
+        return extractEmbeddedList(response, SW360ComponentListEmbedded::getComponents);
     }
 
     /**
