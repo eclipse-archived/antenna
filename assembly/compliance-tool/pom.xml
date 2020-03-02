@@ -89,7 +89,6 @@
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>core-workflow-steps</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

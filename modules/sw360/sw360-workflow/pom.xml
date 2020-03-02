@@ -35,13 +35,11 @@
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>runtime</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>sw360-client</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
         <!-- Test Dependencies -->
         <dependency>
