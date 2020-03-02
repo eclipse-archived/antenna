@@ -15,6 +15,9 @@ import org.eclipse.sw360.antenna.http.api.ResponseProcessor;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -176,5 +179,50 @@ public class HttpUtilsTest {
     @Test
     public void testUnwrapCompletionExceptionEmptyWrap() {
         assertThat(HttpUtils.unwrapCompletionException(new CompletionException(null))).isNull();
+    }
+
+    @Test
+    public void testUrlEncodeNull() {
+        assertThat(HttpUtils.urlEncode(null)).isNull();
+    }
+
+    @Test
+    public void testUrlEncode() {
+        String source = "This is a (tricky ;-) test";
+        String expResult = "This+is+a+%28tricky+%3B-%29+test";
+
+        assertThat(HttpUtils.urlEncode(source)).isEqualTo(expResult);
+    }
+
+    @Test
+    public void testAddQueryParametersNoParams() {
+        String url = "https://test.antenna.org/test";
+
+        assertThat(HttpUtils.addQueryParameters(url, Collections.emptyMap())).isEqualTo(url);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testAddQueryParametersNullURL() {
+        HttpUtils.addQueryParameters(null, Collections.singletonMap("foo", "bar"));
+    }
+
+    @Test
+    public void testAddQueryParameters() {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("foo", "bar");
+        params.put("test", Boolean.TRUE);
+        params.put("complex param", "this must be encoded");
+        String url = "https://test.antenna.org/query";
+        String expResult = url + "?foo=bar&test=true&complex+param=this+must+be+encoded";
+
+        assertThat(HttpUtils.addQueryParameters(url, params)).isEqualTo(expResult);
+    }
+
+    @Test
+    public void testAddQueryParameter() {
+        String url = "https://test.antenna.org/query";
+        String expResult = url + "?param=the+param";
+
+        assertThat(HttpUtils.addQueryParameter(url, "param", "the param")).isEqualTo(expResult);
     }
 }

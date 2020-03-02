@@ -17,10 +17,16 @@ import org.eclipse.sw360.antenna.http.api.Response;
 import org.eclipse.sw360.antenna.http.api.ResponseProcessor;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -39,6 +45,21 @@ public final class HttpUtils {
      * @see Response#isSuccess()
      */
     public static final Predicate<Response> SUCCESS_STATUS = Response::isSuccess;
+
+    /**
+     * Separator character for multiple URL query parameters.
+     */
+    private static final String PARAMETER_SEPARATOR = "&";
+
+    /**
+     * Separator between a parameter key and its value.
+     */
+    private static final char KEY_VALUE_SEPARATOR = '=';
+
+    /**
+     * The character that separates the query string from the URL.
+     */
+    private static final char QUERY_PREFIX = '?';
 
     /**
      * Private constructor to prevent the creation of instances.
@@ -227,6 +248,61 @@ public final class HttpUtils {
     }
 
     /**
+     * Performs URL encoding on the given string.
+     *
+     * @param src the string to be encoded
+     * @return the encoded string (<strong>null</strong> if the input string
+     * was <strong>null</strong>)
+     */
+    public static String urlEncode(String src) {
+        if (src == null) {
+            return null;
+        }
+
+        try {
+            return URLEncoder.encode(src, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            // this can never happen
+            throw new AssertionError("UTF-8 charset not supported!");
+        }
+    }
+
+    /**
+     * Adds the given query parameters to a URL. Each parameter value is
+     * encoded. The parameters are appended to the URL string using the correct
+     * separator characters.
+     *
+     * @param url    the URL
+     * @param params a map with the query parameters to append
+     * @return the resulting URL string with query parameters
+     * @throws NullPointerException if the URL or the map with parameters is
+     *                              <strong>null</strong>
+     */
+    public static String addQueryParameters(String url, Map<String, ?> params) {
+        if (url == null) {
+            throw new NullPointerException("URL must not be null");
+        }
+        String paramStr = params.entrySet().stream()
+                .map(entry -> encodeQueryParameter(entry.getKey(), entry.getValue()))
+                .collect(Collectors.joining(PARAMETER_SEPARATOR));
+        return paramStr.isEmpty() ? url : url + QUERY_PREFIX + paramStr;
+    }
+
+    /**
+     * Adds a single query parameter to a URL. This is a convenience function
+     * for the case that there is only a single query parameter needed.
+     *
+     * @param url   the URL
+     * @param key   the parameter key
+     * @param value the parameter value
+     * @return the URL with the query parameter added
+     * @throws NullPointerException if the URL is <strong>null</strong>
+     */
+    public static String addQueryParameter(String url, String key, Object value) {
+        return addQueryParameters(url, Collections.singletonMap(key, value));
+    }
+
+    /**
      * Wraps the given exception into an {@code IOException} if necessary. If
      * the exception is already an {@code IOException}, it is returned
      * directly.
@@ -237,5 +313,16 @@ public final class HttpUtils {
     private static IOException wrapInIOException(Throwable e) {
         return e instanceof IOException ? (IOException) e :
                 new IOException(e);
+    }
+
+    /**
+     * Generates the encoded form of a single query parameter.
+     *
+     * @param key   the parameter key
+     * @param value the value
+     * @return the encoded form of this parameter
+     */
+    private static String encodeQueryParameter(String key, Object value) {
+        return urlEncode(key) + KEY_VALUE_SEPARATOR + urlEncode(String.valueOf(value));
     }
 }
