@@ -125,11 +125,21 @@ public class SW360ClientIT extends AbstractMockServerTest {
      * @param projectList the project list returned by a request
      */
     private void thenCorrectResultsShouldHaveBeenRetrieved(SW360ProjectList projectList) {
+        List<SW360Project> projects = projectList.get_Embedded().getProjects();
+        checkTestProjects(projects);
+    }
+
+    /**
+     * Checks whether the given list of projects contains the expected test
+     * data.
+     *
+     * @param projects the list with projects to be checked
+     */
+    private static void checkTestProjects(List<SW360Project> projects) {
         String[] expectedProjects = {
                 "Central-Waivers_UNKNOWN-License", "Central-Waivers_No-Sources", "SheriffToolTest",
                 "Central-Waivers_No-Source-License"
         };
-        List<SW360Project> projects = projectList.get_Embedded().getProjects();
         List<String> actualProjectNames = projects.stream()
                 .map(SW360Project::getName)
                 .collect(Collectors.toList());
