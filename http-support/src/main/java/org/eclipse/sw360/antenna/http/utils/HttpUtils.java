@@ -248,6 +248,21 @@ public final class HttpUtils {
     }
 
     /**
+     * Returns a special {@code ResponseProcessor} that does not do any
+     * processing, but just returns the value <strong>null</strong>. Such a
+     * processor can be useful for requests that do not return a response body,
+     * e.g. POST requests to create or manipulate entities. When combined with
+     * a processor produced by one of the {@code checkResponse()} methods it is
+     * possible to have some error handling, but skip the evaluation of the
+     * response body.
+     *
+     * @return a {@code ResponseProcessor} returning <strong>null</strong>
+     */
+    public static <T> ResponseProcessor<T> nullProcessor() {
+        return response -> null;
+    }
+
+    /**
      * Performs URL encoding on the given string.
      *
      * @param src the string to be encoded

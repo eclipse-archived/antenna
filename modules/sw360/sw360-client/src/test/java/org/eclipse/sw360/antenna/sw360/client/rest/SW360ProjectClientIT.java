@@ -8,20 +8,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.rest;
+package org.eclipse.sw360.antenna.sw360.client.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.http.HttpStatus;
+import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
+import org.eclipse.sw360.antenna.http.utils.HttpConstants;
+import org.eclipse.sw360.antenna.sw360.rest.AbstractMockServerTest;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -33,6 +35,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.sw360.antenna.http.utils.HttpUtils.waitFor;
 
 public class SW360ProjectClientIT extends AbstractMockServerTest {
     /**
@@ -47,7 +50,8 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
 
     @Before
     public void setUp() {
-        projectClient = new SW360ProjectClient(wireMockRule.baseUrl(), createRestTemplate());
+        projectClient = new SW360ProjectClient(createClientConfig(), createMockTokenProvider());
+        prepareAccessTokens(projectClient.getTokenProvider(), CompletableFuture.completedFuture(ACCESS_TOKEN));
     }
 
     /**
@@ -64,33 +68,33 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
     }
 
     @Test
-    public void testSearchByName() {
-        final String projectName = "myImportantProject";
+    public void testSearchByName() throws IOException {
+        final String projectName = "my Important Project";
         wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
                 .withQueryParam("name", equalTo(projectName))
-                .willReturn(aJsonResponse(HttpStatus.SC_OK)
+                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
                         .withBodyFile("all_projects.json")));
 
-        List<SW360Project> projects = projectClient.searchByName(projectName, new HttpHeaders());
+        List<SW360Project> projects = waitFor(projectClient.searchByName(projectName));
         checkTestProjects(projects);
     }
 
     @Test
     public void testSearchByNameNoContent() {
         wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
-                .willReturn(aResponse().withStatus(HttpStatus.SC_NO_CONTENT)));
+                .willReturn(aResponse().withStatus(202)));
 
-        List<SW360Project> projects = projectClient.searchByName("foo", new HttpHeaders());
-        assertThat(projects).hasSize(0);
+        extractException(projectClient.searchByName("foo"), IOException.class);
     }
 
     @Test
     public void testSearchByNameError() {
         wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
-        .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
+                .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
 
-        List<SW360Project> projects = projectClient.searchByName("foo", new HttpHeaders());
-        assertThat(projects).hasSize(0);
+        FailedRequestException exception =
+                expectFailedRequest(projectClient.searchByName("foo"), HttpConstants.STATUS_ERR_BAD_REQUEST);
+        assertThat(exception.getTag()).isEqualTo(SW360ProjectClient.TAG_GET_BY_NAME);
     }
 
     @Test
@@ -99,22 +103,22 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
         String projectJson = toJson(project);
         wireMockRule.stubFor(post(urlPathEqualTo("/projects"))
                 .withRequestBody(equalToJson(projectJson))
-                .willReturn(aJsonResponse(HttpStatus.SC_CREATED)
+                .willReturn(aJsonResponse(HttpConstants.STATUS_CREATED)
                         .withBody(projectJson)));
 
-        SW360Project createdProject = projectClient.createProject(project, new HttpHeaders());
+        SW360Project createdProject = waitFor(projectClient.createProject(project));
         assertThat(createdProject).isEqualTo(project);
     }
 
     @Test
-    public void testAddReleasesToProject() throws JsonProcessingException {
+    public void testAddReleasesToProject() throws IOException {
         final String projectID = "releasedProject";
         List<String> releases = Arrays.asList("release1", "releaseMe", "releaseParty");
         String urlPath = "/projects/" + projectID + "/releases";
         wireMockRule.stubFor(post(urlPathEqualTo(urlPath))
-                .willReturn(aResponse().withStatus(HttpStatus.SC_ACCEPTED)));
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_ACCEPTED)));
 
-        projectClient.addReleasesToProject(projectID, releases, new HttpHeaders());
+        waitFor(projectClient.addReleasesToProject(projectID, releases));
         wireMockRule.verify(postRequestedFor(urlPathEqualTo(urlPath))
                 .withRequestBody(equalTo(toJson(releases))));
     }
@@ -122,10 +126,12 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
     @Test
     public void testAddReleasesToProjectError() {
         wireMockRule.stubFor(post(anyUrl())
-        .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_ERR_BAD_REQUEST)));
 
-        projectClient.addReleasesToProject("projectId", Arrays.asList("foo", "bar"),
-                new HttpHeaders());
+        FailedRequestException exception =
+                expectFailedRequest(projectClient.addReleasesToProject("projectId",
+                        Arrays.asList("foo", "bar")), HttpConstants.STATUS_ERR_BAD_REQUEST);
+        assertThat(exception.getTag()).isEqualTo(SW360ProjectClient.TAG_ADD_RELEASES_TO_PROJECT);
     }
 
     /**
@@ -134,36 +140,37 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
      *
      * @param transitive flag whether transitive releases should be fetched
      */
-    private void checkLinkedReleases(boolean transitive) {
+    private void checkLinkedReleases(boolean transitive) throws IOException {
         final String projectID = "linkedProject";
         String urlPath = "/projects/" + projectID + "/releases";
         wireMockRule.stubFor(get(urlPathEqualTo(urlPath))
                 .withQueryParam("transitive", equalTo(String.valueOf(transitive)))
-                .willReturn(aJsonResponse(HttpStatus.SC_OK)
+                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
                         .withBodyFile("all_releases.json")));
 
-        List<SW360SparseRelease> releases = projectClient.getLinkedReleases(projectID, transitive, new HttpHeaders());
+        List<SW360SparseRelease> releases = waitFor(projectClient.getLinkedReleases(projectID, transitive));
         assertThat(releases).hasSize(6);
         assertHasLinks(releases);
     }
 
     @Test
-    public void testGetLinkedReleases() {
+    public void testGetLinkedReleases() throws IOException {
         checkLinkedReleases(false);
     }
 
     @Test
-    public void testGetLinkedReleasesTransitive() {
+    public void testGetLinkedReleasesTransitive() throws IOException {
         checkLinkedReleases(true);
     }
 
     @Test
     public void testGetLinkedReleasesError() {
         wireMockRule.stubFor(get(anyUrl())
-        .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_ERR_BAD_REQUEST)));
 
-        List<SW360SparseRelease> releases = projectClient.getLinkedReleases("projectID", false,
-                new HttpHeaders());
-        assertThat(releases).hasSize(0);
+        FailedRequestException exception =
+                expectFailedRequest(projectClient.getLinkedReleases("projectID", false),
+                        HttpConstants.STATUS_ERR_BAD_REQUEST);
+        assertThat(exception.getTag()).isEqualTo(SW360ProjectClient.TAG_GET_LINKED_RELEASES);
     }
 }

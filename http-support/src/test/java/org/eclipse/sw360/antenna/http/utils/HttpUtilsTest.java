@@ -225,4 +225,13 @@ public class HttpUtilsTest {
 
         assertThat(HttpUtils.addQueryParameter(url, "param", "the param")).isEqualTo(expResult);
     }
+
+    @Test
+    public void testNullProcessor() throws IOException {
+        Response response = mock(Response.class);
+        ResponseProcessor<Void> processor = HttpUtils.nullProcessor();
+
+        assertThat(processor.process(response)).isNull();
+        verifyZeroInteractions(response);
+    }
 }

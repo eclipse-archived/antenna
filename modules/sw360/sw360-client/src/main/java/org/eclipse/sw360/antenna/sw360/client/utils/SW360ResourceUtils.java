@@ -15,6 +15,12 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseListEmbedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
+import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
+import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectList;
+import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectListEmbedded;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseListEmbedded;
+import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +54,28 @@ public class SW360ResourceUtils {
      */
     public static List<SW360SparseLicense> getSw360SparseLicenses(SW360LicenseList response) {
         return extractEmbeddedList(response, SW360ResourceUtils::extractSparseLicenseList);
+    }
+
+    /**
+     * An extractor function to obtain embedded project data from a server
+     * response.
+     *
+     * @param response the de-serialized server response
+     * @return a list with the projects contained in the response
+     */
+    public static List<SW360Project> getSw360Projects(SW360ProjectList response) {
+        return extractEmbeddedList(response, SW360ProjectListEmbedded::getProjects);
+    }
+
+    /**
+     * An extractor function to obtain embedded release data from a server
+     * response.
+     *
+     * @param response the de-serialized server response
+     * @return a list with the sparse releases contained in the response
+     */
+    public static List<SW360SparseRelease> getSw360SparseReleases(SW360ReleaseList response) {
+        return extractEmbeddedList(response, SW360ReleaseListEmbedded::getReleases);
     }
 
     /**
