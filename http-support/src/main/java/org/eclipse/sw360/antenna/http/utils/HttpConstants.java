@@ -54,6 +54,12 @@ public final class HttpConstants {
     public static final int STATUS_ERR_UNAUTHORIZED = 401;
 
     /**
+     * Constant for the HTTP status code 404 NOT FOUND indicating that the
+     * resource requested does not exist.
+     */
+    public static final int STATUS_ERR_NOT_FOUND = 404;
+
+    /**
      * Constant for the HTTP status code 500 INTERNAL SERVER ERROR indicating a
      * general problem on server side.
      */

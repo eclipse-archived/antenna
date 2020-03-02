@@ -8,18 +8,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.rest;
+package org.eclipse.sw360.antenna.sw360.client.rest;
 
 import org.apache.http.HttpStatus;
+import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
+import org.eclipse.sw360.antenna.http.utils.HttpConstants;
+import org.eclipse.sw360.antenna.sw360.rest.AbstractMockServerTest;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.client.HttpClientErrorException;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -27,6 +29,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.sw360.antenna.http.utils.HttpUtils.waitFor;
 
 public class SW360LicenseClientIT extends AbstractMockServerTest {
     /**
@@ -41,7 +44,8 @@ public class SW360LicenseClientIT extends AbstractMockServerTest {
 
     @Before
     public void setUp() {
-        licenseClient = new SW360LicenseClient(wireMockRule.baseUrl(), createRestTemplate());
+        licenseClient = new SW360LicenseClient(createClientConfig(), createMockTokenProvider());
+        prepareAccessTokens(licenseClient.getTokenProvider(), CompletableFuture.completedFuture(ACCESS_TOKEN));
     }
 
     /**
@@ -58,32 +62,33 @@ public class SW360LicenseClientIT extends AbstractMockServerTest {
     }
 
     @Test
-    public void testGetLicenses() {
+    public void testGetLicenses() throws IOException {
         wireMockRule.stubFor(get(urlPathEqualTo("/licenses"))
-                .willReturn(aJsonResponse(HttpStatus.SC_OK)
+                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
                         .withBodyFile("all_licenses.json")));
 
-        List<SW360SparseLicense> licenses = licenseClient.getLicenses(new HttpHeaders());
+        List<SW360SparseLicense> licenses = waitFor(licenseClient.getLicenses());
         checkLicenses(licenses);
     }
 
     @Test
     public void testGetLicensesError() {
         wireMockRule.stubFor(get(urlPathEqualTo("/licenses"))
-        .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
+                .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_BAD_REQUEST)));
 
-        List<SW360SparseLicense> licenses = licenseClient.getLicenses(new HttpHeaders());
-        assertThat(licenses).hasSize(0);
+        FailedRequestException exception =
+                expectFailedRequest(licenseClient.getLicenses(), HttpConstants.STATUS_ERR_BAD_REQUEST);
+        assertThat(exception.getTag()).isEqualTo(SW360LicenseClient.TAG_GET_LICENSES);
     }
 
     @Test
-    public void testGetLicenseByName() {
+    public void testGetLicenseByName() throws IOException {
         final String licenseName = "tst";
         wireMockRule.stubFor(get(urlPathEqualTo("/licenses/" + licenseName))
                 .willReturn(aJsonResponse(HttpStatus.SC_OK)
                         .withBodyFile("license.json")));
 
-        SW360License license = assertPresent(licenseClient.getLicenseByName(licenseName, new HttpHeaders()));
+        SW360License license = waitFor(licenseClient.getLicenseByName(licenseName));
         assertThat(license.getFullName()).isEqualTo("Test License");
         assertThat(license.getText()).contains("Bosch.IO GmbH");
         assertThat(license.getShortName()).isEqualTo("0TST");
@@ -94,8 +99,9 @@ public class SW360LicenseClientIT extends AbstractMockServerTest {
         wireMockRule.stubFor(get(anyUrl())
                 .willReturn(aResponse().withStatus(HttpStatus.SC_NOT_FOUND)));
 
-        Optional<SW360License> optLicense = licenseClient.getLicenseByName("unknown", new HttpHeaders());
-        assertThat(optLicense).isNotPresent();
+        FailedRequestException exception =
+                expectFailedRequest(licenseClient.getLicenseByName("unknown"), HttpConstants.STATUS_ERR_NOT_FOUND);
+        assertThat(exception.getTag()).isEqualTo(SW360LicenseClient.TAG_GET_LICENSE_BY_NAME);
     }
 
     @Test
@@ -103,7 +109,6 @@ public class SW360LicenseClientIT extends AbstractMockServerTest {
         wireMockRule.stubFor(get(anyUrl())
                 .willReturn(aResponse().withStatus(HttpStatus.SC_NO_CONTENT)));
 
-        Optional<SW360License> optLicense = licenseClient.getLicenseByName("foo", new HttpHeaders());
-        assertThat(optLicense).isNotPresent();
+        extractException(licenseClient.getLicenseByName("foo"), IOException.class);
     }
 }

@@ -19,16 +19,11 @@ import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessToken;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 import static org.eclipse.sw360.antenna.http.utils.HttpConstants.URL_PATH_SEPARATOR;
 
@@ -142,34 +137,6 @@ public abstract class SW360Client {
      */
     protected String resourceUrl(String... paths) {
         return getClientConfig().getRestURL() + URL_PATH_SEPARATOR + String.join(URL_PATH_SEPARATOR, paths);
-    }
-
-    /**
-     * Obtains the embedded data from the given resource and transforms it to
-     * a list of objects of a specific result type. Many requests can yield
-     * results containing embedded elements of a specific type. The data model
-     * uses special classes to represent these embedded elements in a type-safe
-     * way. As embedded elements may not be present in a response received from
-     * the server, the access to them is not null-safe. This function
-     * implements a generic means to obtain a list of embedded elements from a
-     * query result handling potential null references. For this purpose, an
-     * extractor function has to be provided that fetches the elements of
-     * interest from the model class. If data is not present (i.e. a null
-     * reference is encountered), an empty list is returned as fallback.
-     *
-     * @param resource  the resource obtained from the result of a request
-     * @param extractor the function to extract the result elements
-     * @param <E>       the type of the embedded data
-     * @param <T>       the concrete resource class
-     * @param <U>       the type of the result elements
-     * @return a list with the result elements
-     */
-    protected static <E extends Embedded, T extends SW360HalResource<?, E>, U>
-    List<U> extractEmbeddedList(T resource, Function<E, List<U>> extractor) {
-        return Optional.ofNullable(resource.get_Embedded())
-                .flatMap(embedded -> Optional.ofNullable(extractor.apply(embedded))
-                        .map(ArrayList::new))
-                .orElseGet(ArrayList::new);
     }
 
     /**

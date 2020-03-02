@@ -20,6 +20,7 @@ import org.eclipse.sw360.antenna.http.api.HttpClient;
 import org.eclipse.sw360.antenna.http.api.HttpClientFactory;
 import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
 import org.eclipse.sw360.antenna.http.impl.HttpClientFactoryImpl;
+import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessToken;
@@ -270,6 +271,21 @@ public class AbstractMockServerTest {
         Throwable exception = extractException(future);
         assertThat(exClass.isInstance(exception)).isTrue();
         return exClass.cast(exception);
+    }
+
+    /**
+     * Expects that the given future has failed with a
+     * {@code FailedRequestException} exception with the status code specified.
+     * The exception is returned for further inspection.
+     *
+     * @param future     the future to check
+     * @param statusCode the expected status code
+     * @return the exception extracted from the future
+     */
+    protected static FailedRequestException expectFailedRequest(CompletableFuture<?> future, int statusCode) {
+        FailedRequestException exception = extractException(future, FailedRequestException.class);
+        assertThat(exception.getStatusCode()).isEqualTo(statusCode);
+        return exception;
     }
 
     /**
