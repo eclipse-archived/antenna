@@ -10,136 +10,135 @@
   ~ SPDX-License-Identifier: EPL-2.0
   -->
 <config>
-	<!-- Override Artifact values -->
-	<overrides>
-		<override>
-			<artifactSelector>
-					<filename>director-ant.jar</filename>
-			</artifactSelector>
-			<overrideValue>
-				<artifact>
-					<mavenCoordinates>
-						<artifactId>testID</artifactId>
-					</mavenCoordinates>
-				</artifact>
-			</overrideValue>
-		</override>
-		<override>
-			<artifactSelector>
-				<filename>overrideAll.jar</filename>
-			</artifactSelector>
-			<overrideValue>
-				<artifact>
-					<filename>overrideName.jar</filename>
-					<mavenCoordinates>
-						<artifactId>testID</artifactId>
-						<groupId>testGroupId</groupId>
-						<version>testVersion</version>
-					</mavenCoordinates>
-					<bundleCoordinates>
-						<symbolicName>testName</symbolicName>
-						<bundleVersion>testVersion</bundleVersion>
-					</bundleCoordinates>
-					<declaredLicense>
-						<licenseStatement op="AND">
-							<license>
-								<name>testLicense</name>
-							</license>
-							<licenseStatement op="OR">
-								<license>
-									<name>otherLicense</name>
-								</license>
-								<license>
-									<name>thirdLicense</name>
-								</license>
-							</licenseStatement>
-						</licenseStatement>
-					</declaredLicense>
-				</artifact>
-			</overrideValue>
-		</override>
-	</overrides>
+    <!-- Override Artifact values -->
+    <overrides>
+        <override>
+            <artifactSelector>
+                    <filename>director-ant.jar</filename>
+            </artifactSelector>
+            <overrideValue>
+                <artifact>
+                    <mavenCoordinates>
+                        <artifactId>testID</artifactId>
+                    </mavenCoordinates>
+                </artifact>
+            </overrideValue>
+        </override>
+        <override>
+            <artifactSelector>
+                <filename>overrideAll.jar</filename>
+            </artifactSelector>
+            <overrideValue>
+                <artifact>
+                    <filename>overrideName.jar</filename>
+                    <mavenCoordinates>
+                        <artifactId>testID</artifactId>
+                        <groupId>testGroupId</groupId>
+                        <version>testVersion</version>
+                    </mavenCoordinates>
+                    <bundleCoordinates>
+                        <symbolicName>testName</symbolicName>
+                        <bundleVersion>testVersion</bundleVersion>
+                    </bundleCoordinates>
+                    <declaredLicense>
+                        <licenseStatement op="AND">
+                            <license>
+                                <name>testLicense</name>
+                            </license>
+                            <licenseStatement op="OR">
+                                <license>
+                                    <name>otherLicense</name>
+                                </license>
+                                <license>
+                                    <name>thirdLicense</name>
+                                </license>
+                            </licenseStatement>
+                        </licenseStatement>
+                    </declaredLicense>
+                </artifact>
+            </overrideValue>
+        </override>
+    </overrides>
 
-	<!-- Ignore for BomResolving, artifact will be ignored during download,
-		validation and license validation -->
-	<removeArtifact>
-		<artifactSelector>
-			<filename>org.eclipse.emf.source.jar</filename>
-		</artifactSelector>
-	</removeArtifact>
+    <!-- Ignore for BomResolving, artifact will be ignored during download,
+        validation and license validation -->
+    <removeArtifact>
+        <artifactSelector>
+            <filename>org.eclipse.emf.source.jar</filename>
+        </artifactSelector>
+    </removeArtifact>
 
-	<addArtifact>
-		<artifact>
-			<filename>addArtifact.jar</filename>
-			<mavenCoordinates>
-				<artifactId>addArtifactId</artifactId>
-				<groupId>addGroupId</groupId>
-				<version>addVersion</version>
-			</mavenCoordinates>
-			<bundleCoordinates>
-				<symbolicName>addSymbolicName</symbolicName>
-				<bundleVersion>addBundleVersion</bundleVersion>
-			</bundleCoordinates>
-			<declaredLicense>
-				<license>
-					<name>Apache</name>
-				</license>
-			</declaredLicense>
-			<isProprietary>false</isProprietary>
-			<matchState>EXACT</matchState>
-		</artifact>
-		<artifact>
-			<filename>addArtifact2.jar</filename>
-			<mavenCoordinates>
-				<artifactId>addArtifactId</artifactId>
-				<groupId>addGroupId</groupId>
-				<version>addVersion</version>
-			</mavenCoordinates>
-			<bundleCoordinates>
-				<symbolicName>addSymbolicName</symbolicName>
-				<bundleVersion>addBundleVersion</bundleVersion>
-			</bundleCoordinates>
-			<isProprietary>false</isProprietary>
-			<matchState>SIMILAR</matchState>
-		</artifact>
-	</addArtifact>
+    <addArtifact>
+        <artifact>
+            <filename>addArtifact.jar</filename>
+            <mavenCoordinates>
+                <artifactId>addArtifactId</artifactId>
+                <groupId>addGroupId</groupId>
+                <version>addVersion</version>
+            </mavenCoordinates>
+            <bundleCoordinates>
+                <symbolicName>addSymbolicName</symbolicName>
+                <bundleVersion>addBundleVersion</bundleVersion>
+            </bundleCoordinates>
+            <declaredLicense>
+                <license>
+                    <name>Apache</name>
+                </license>
+            </declaredLicense>
+            <isProprietary>false</isProprietary>
+            <matchState>EXACT</matchState>
+        </artifact>
+        <artifact>
+            <filename>addArtifact2.jar</filename>
+            <mavenCoordinates>
+                <artifactId>addArtifactId</artifactId>
+                <groupId>addGroupId</groupId>
+                <version>addVersion</version>
+            </mavenCoordinates>
+            <bundleCoordinates>
+                <symbolicName>addSymbolicName</symbolicName>
+                <bundleVersion>addBundleVersion</bundleVersion>
+            </bundleCoordinates>
+            <isProprietary>false</isProprietary>
+            <matchState>SIMILAR</matchState>
+        </artifact>
+    </addArtifact>
 
 
 
-	<sourceResolving>
-		<preferP2>
-			<artifactSelector>
-				<filename>slf4j-api-1.6.6.jar</filename>
-			</artifactSelector>
-		</preferP2>
-		<!--ignore for source Download -->
-		<ignoreForSourceResolving>
-			<artifactSelector>
-				<filename>slf4j-api-1.6.6.jar
-				</filename>
-			</artifactSelector>
-		</ignoreForSourceResolving>
-	</sourceResolving>
+    <sourceResolving>
+        <preferP2>
+            <artifactSelector>
+                <filename>slf4j-api-1.6.6.jar</filename>
+            </artifactSelector>
+        </preferP2>
+        <!--ignore for source Download -->
+        <ignoreForSourceResolving>
+            <artifactSelector>
+                <filename>slf4j-api-1.6.6.jar
+                </filename>
+            </artifactSelector>
+        </ignoreForSourceResolving>
+    </sourceResolving>
 
-	<setFinalLicenses>
-		<!-- set effective license for Artifact -->
-		<setFinalLicense>
-			<artifactSelector>
-				<filename>overrideName.jar</filename>
-			</artifactSelector>
-			<license>
-				<name>EPL-2.0</name>
-			</license>
-		</setFinalLicense>
-	</setFinalLicenses>
+    <setFinalLicenses>
+        <!-- set effective license for Artifact -->
+        <setFinalLicense>
+            <artifactSelector>
+                <filename>overrideName.jar</filename>
+            </artifactSelector>
+            <license>
+                <name>EPL-2.0</name>
+            </license>
+        </setFinalLicense>
+    </setFinalLicenses>
 
-	<sourceValidation failOnMissingSources="true" failOnIncompleteSources="false">
-		<!-- ignore for sourceValidation -->
-		<handleSourceAsValid incompleteSources="true" missingSources="true">
-			<artifactSelector>
-				<filename>org.eclipse.emf.source.jar</filename>
-			</artifactSelector>
-		</handleSourceAsValid>
-	</sourceValidation>
+    <sourceValidation failOnMissingSources="true" failOnIncompleteSources="false">
+        <!-- ignore for sourceValidation -->
+        <handleSourceAsValid incompleteSources="true" missingSources="true">
+            <artifactSelector>
+                <filename>org.eclipse.emf.source.jar</filename>
+            </artifactSelector>
+        </handleSourceAsValid>
+    </sourceValidation>
 </config>
-      

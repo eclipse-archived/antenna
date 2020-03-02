@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -24,7 +25,7 @@ public class SW360ReleaseLinkObjects extends LinkObjects {
         return this.selfComponent;
     }
 
-    public SW360ReleaseLinkObjects setSelfComponent(Self selfComponent)	{
+    public SW360ReleaseLinkObjects setSelfComponent(Self selfComponent) {
         this.selfComponent = selfComponent;
         return this;
     }
