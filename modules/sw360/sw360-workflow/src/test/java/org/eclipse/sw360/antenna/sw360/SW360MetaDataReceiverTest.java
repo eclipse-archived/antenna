@@ -105,14 +105,14 @@ public class SW360MetaDataReceiverTest {
     public void testGetLicenseDetails() {
         SW360SparseLicense sparseLicense = new SW360SparseLicense();
         SW360License sw360License = new SW360License();
-        when(licenseClientAdapter.getLicenseDetails(sparseLicense, headers))
+        when(licenseClientAdapter.getLicenseDetails(sparseLicense))
                 .thenReturn(Optional.of(sw360License));
         setUp();
 
         Optional<SW360License> licenseDetails = metaDataReceiver.getLicenseDetails(sparseLicense);
 
         assertThat(licenseDetails).hasValue(sw360License);
-        verify(licenseClientAdapter, times(1)).getLicenseDetails(sparseLicense, headers);
+        verify(licenseClientAdapter, times(1)).getLicenseDetails(sparseLicense);
     }
 
     @Test

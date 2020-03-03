@@ -62,8 +62,7 @@ public class SW360MetaDataReceiver {
     }
 
     public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense) {
-        HttpHeaders headers = sw360ConnectionConfiguration.getHttpHeaders();
-        return licenseClientAdapter.getLicenseDetails(sparseLicense, headers);
+        return licenseClientAdapter.getLicenseDetails(sparseLicense);
     }
 
     public Optional<Path> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath) {

@@ -59,7 +59,7 @@ public class SW360MetaDataUpdaterTest {
         licenseAntenna.setId(licenseName);
         when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName, headers))
                 .thenReturn(true);
-        when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName, headers))
+        when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName))
                 .thenReturn(Optional.of(license));
         setUp();
 
@@ -67,8 +67,8 @@ public class SW360MetaDataUpdaterTest {
 
         assertThat(licenses).hasSize(1);
 
-        verify(licenseClientAdapter, times(1)).isLicenseOfArtifactAvailable(licenseName, headers);
-        verify(licenseClientAdapter, times(1)).getSW360LicenseByAntennaLicense(licenseName, headers);
+        verify(licenseClientAdapter, times(1)).isLicenseOfArtifactAvailable(licenseName);
+        verify(licenseClientAdapter, times(1)).getSW360LicenseByAntennaLicense(licenseName);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class SW360MetaDataUpdaterTest {
         licenseAntenna.setId(licenseName);
         when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName, headers))
                 .thenReturn(false);
-        when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName, headers))
+        when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName))
                 .thenReturn(Optional.of(license));
         setUp();
 
@@ -88,7 +88,7 @@ public class SW360MetaDataUpdaterTest {
 
         assertThat(licenses).hasSize(0);
 
-        verify(licenseClientAdapter, times(1)).isLicenseOfArtifactAvailable(licenseName, headers);
+        verify(licenseClientAdapter, times(1)).isLicenseOfArtifactAvailable(licenseName);
     }
 
     @Test

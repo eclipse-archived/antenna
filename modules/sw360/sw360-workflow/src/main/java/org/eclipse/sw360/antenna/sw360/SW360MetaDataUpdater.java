@@ -22,10 +22,13 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SW360MetaDataUpdater {
@@ -35,7 +38,6 @@ public class SW360MetaDataUpdater {
     private SW360ProjectClientAdapter projectClientAdapter;
     private SW360LicenseClientAdapter licenseClientAdapter;
     private SW360ReleaseClientAdapter releaseClientAdapter;
-    private SW360ConnectionConfiguration sw360ConnectionConfiguration;
 
     private final boolean updateReleases;
     private final boolean uploadSources;
@@ -44,23 +46,20 @@ public class SW360MetaDataUpdater {
         projectClientAdapter = sw360ConnectionConfiguration.getSW360ProjectClientAdapter();
         licenseClientAdapter = sw360ConnectionConfiguration.getSW360LicenseClientAdapter();
         releaseClientAdapter = sw360ConnectionConfiguration.getSW360ReleaseClientAdapter();
-        this.sw360ConnectionConfiguration = sw360ConnectionConfiguration;
         this.updateReleases = updateReleases;
         this.uploadSources = uploadSources;
     }
 
     public Set<SW360License> getLicenses(List<License> licenses) {
-        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
-
         return licenses.stream()
-                .filter(license -> isLicenseInSW360(license, header))
-                .map(license -> licenseClientAdapter.getSW360LicenseByAntennaLicense(license.getId(), header))
+                .filter(this::isLicenseInSW360)
+                .map(license -> licenseClientAdapter.getSW360LicenseByAntennaLicense(license.getName()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
     }
 
-    private boolean isLicenseInSW360(License license, HttpHeaders header) {
+    private boolean isLicenseInSW360(License license) {
         if (licenseClientAdapter.isLicenseOfArtifactAvailable(license.getId(), header)) {
             LOGGER.debug("License [{}] found in SW360.", license.getId());
             return true;

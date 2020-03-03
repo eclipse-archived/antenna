@@ -16,7 +16,6 @@ import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.rest.SW360AuthenticationClient;
-import org.eclipse.sw360.antenna.sw360.rest.SW360LicenseClient;
 import org.eclipse.sw360.antenna.sw360.rest.SW360RestTemplateFactory;
 import org.springframework.web.client.RestTemplate;
 
@@ -148,8 +147,8 @@ public class SW360ConnectionConfigurationFactory {
      * @return the {@code SW360LicenseClientAdapter}
      */
     SW360LicenseClientAdapter createLicenseAdapter(RestTemplate restTemplate, String restUrl) {
-        return new SW360LicenseClientAdapter()
-                .setLicenseClient(new SW360LicenseClient(restUrl, restTemplate));
+        //TODO create correct license client
+        return new SW360LicenseClientAdapter(null);
     }
 
     /**
