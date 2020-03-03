@@ -104,7 +104,7 @@ public class SW360ReleaseClientAdapterTest {
         SW360Component component = getSw360Component(sparseRelease, "componentName");
         component.set_Links(links);
 
-        when(componentClientAdapter.getOrCreateComponent(any(), eq(header)))
+        when(componentClientAdapter.getOrCreateComponent(any()))
                 .thenReturn(Optional.of(component));
         when(releaseClient.createRelease(release, header))
                 .thenReturn(release);
@@ -116,7 +116,7 @@ public class SW360ReleaseClientAdapterTest {
 
         assertThat(createdRelease).isEqualTo(release);
         verify(releaseClient).createRelease(release, header);
-        verify(componentClientAdapter).getOrCreateComponent(any(), eq(header));
+        verify(componentClientAdapter).getOrCreateComponent(any());
     }
 
     @Test
@@ -166,7 +166,7 @@ public class SW360ReleaseClientAdapterTest {
                 .setVersion(RELEASE_VERSION1);
         String componentName = "componentName";
         SW360Component component = getSw360Component(sparseRelease, componentName);
-        when(componentClientAdapter.getComponentByName(release.getName(), header))
+        when(componentClientAdapter.getComponentByName(release.getName()))
                 .thenReturn(Optional.of(component));
 
         releaseClientAdapter = new SW360ReleaseClientAdapter(componentClientAdapter);

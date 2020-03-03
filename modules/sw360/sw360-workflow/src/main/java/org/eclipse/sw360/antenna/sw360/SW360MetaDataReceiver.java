@@ -53,7 +53,7 @@ public class SW360MetaDataReceiver {
 
     public Optional<SW360Release> findReleaseForArtifact(Artifact artifact) {
         HttpHeaders headers = sw360ConnectionConfiguration.getHttpHeaders();
-        Optional<SW360Component> component = getComponentByArtifact(artifact, headers);
+        Optional<SW360Component> component = getComponentByArtifact(artifact);
         if (component.isPresent()) {
 
             String releaseVersionOfArtifact = ArtifactToReleaseUtils.createSW360ReleaseVersion(artifact);
@@ -73,10 +73,10 @@ public class SW360MetaDataReceiver {
         return releaseClientAdapter.downloadAttachment(release, attachment, downloadPath, header);
     }
 
-    private Optional<SW360Component> getComponentByArtifact(Artifact artifact, HttpHeaders header) {
+    private Optional<SW360Component> getComponentByArtifact(Artifact artifact) {
         try {
             String componentName = ArtifactToComponentUtils.createComponentName(artifact);
-            return componentClientAdapter.getComponentByName(componentName, header);
+            return componentClientAdapter.getComponentByName(componentName);
         } catch (ExecutionException e) {
             LOGGER.debug("No component found for {}. Reason: {}", artifact.prettyPrint(), e.getMessage());
             LOGGER.debug("Error: ", e);

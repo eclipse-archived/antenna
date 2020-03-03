@@ -82,7 +82,7 @@ public class SW360ReleaseClientAdapter {
 
         if (releaseFromArtifact.getComponentId() == null) {
             final SW360Component componentFromRelease = SW360ComponentAdapterUtils.createFromRelease(releaseFromArtifact);
-            final Optional<SW360Component> componentFromSW360 = sw360ComponentClientAdapter.getOrCreateComponent(componentFromRelease, header);
+            final Optional<SW360Component> componentFromSW360 = sw360ComponentClientAdapter.getOrCreateComponent(componentFromRelease);
             componentFromSW360.ifPresent(cfs -> {
                 if (cfs.get_Embedded().getReleases().stream()
                         .map(SW360SparseRelease::getVersion)
@@ -146,7 +146,7 @@ public class SW360ReleaseClientAdapter {
     }
 
     public Optional<SW360SparseRelease> getReleaseByNameAndVersion(SW360Release sw360ReleaseFromArtifact, HttpHeaders headers) {
-        return sw360ComponentClientAdapter.getComponentByName(sw360ReleaseFromArtifact.getName(), headers)
+        return sw360ComponentClientAdapter.getComponentByName(sw360ReleaseFromArtifact.getName())
                 .map(SW360Component::get_Embedded)
                 .map(SW360ComponentEmbedded::getReleases)
                 .flatMap(releases -> releases.stream()

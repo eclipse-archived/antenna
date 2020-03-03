@@ -62,7 +62,7 @@ public class SW360MetaDataReceiverTest {
         final String componentName = ArtifactToComponentUtils.createComponentName(artifact);
         final SW360Component sw360Component = new SW360Component();
         final SW360Release release = new SW360Release();
-        when(componentClientAdapter.getComponentByName(componentName, headers))
+        when(componentClientAdapter.getComponentByName(componentName))
                 .thenReturn(Optional.of(sw360Component));
         when(releaseClientAdapter.getReleaseByVersion(sw360Component, version, headers))
                 .thenReturn(Optional.of(release));
@@ -71,7 +71,7 @@ public class SW360MetaDataReceiverTest {
 
         assertThat(releaseForArtifact).isPresent();
         assertThat(releaseForArtifact).hasValue(release);
-        verify(componentClientAdapter, times(1)).getComponentByName(componentName, headers);
+        verify(componentClientAdapter, times(1)).getComponentByName(componentName);
         verify(releaseClientAdapter, times(1)).getReleaseByVersion(sw360Component, version, headers);
     }
 
@@ -81,13 +81,13 @@ public class SW360MetaDataReceiverTest {
         final Artifact artifact = new Artifact()
                 .addFact(new ArtifactCoordinates(new Coordinate("name", version)));
         final String componentName = ArtifactToComponentUtils.createComponentName(artifact);
-        when(componentClientAdapter.getComponentByName(componentName, headers))
+        when(componentClientAdapter.getComponentByName(componentName))
                 .thenReturn(Optional.empty());
         setUp();
         final Optional<SW360Release> releaseForArtifact = metaDataReceiver.findReleaseForArtifact(artifact);
 
         assertThat(releaseForArtifact).isNotPresent();
-        verify(componentClientAdapter, times(1)).getComponentByName(componentName, headers);
+        verify(componentClientAdapter, times(1)).getComponentByName(componentName);
         verify(releaseClientAdapter, never()).getReleaseByVersion(any(), any(), any());
     }
 
@@ -98,7 +98,7 @@ public class SW360MetaDataReceiverTest {
         final Optional<SW360Release> releaseForArtifact = metaDataReceiver.findReleaseForArtifact(new Artifact());
 
         assertThat(releaseForArtifact).isNotPresent();
-        verify(componentClientAdapter, never()).getComponentByName(any(), any());
+        verify(componentClientAdapter, never()).getComponentByName(any());
     }
 
     @Test

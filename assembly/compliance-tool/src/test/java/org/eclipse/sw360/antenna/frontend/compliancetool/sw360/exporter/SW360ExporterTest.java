@@ -113,11 +113,11 @@ public class SW360ExporterTest {
     @Before
     public void setUp() throws IOException {
         SW360SparseComponent sparseComponent = SW360TestUtils.mkSW360SparseComponent("testComponent");
-        when(componentClientAdapterMock.getComponents(headers))
+        when(componentClientAdapterMock.getComponents())
                 .thenReturn(Collections.singletonList(sparseComponent));
 
         SW360Component component = SW360TestUtils.mkSW360Component("testComponent");
-        when(componentClientAdapterMock.getComponentById(any(), eq(headers)))
+        when(componentClientAdapterMock.getComponentById(any()))
                 .thenReturn(Optional.of(component));
         release = SW360TestUtils.mkSW360Release("testRelease");
         release.setClearingState(clearingState);

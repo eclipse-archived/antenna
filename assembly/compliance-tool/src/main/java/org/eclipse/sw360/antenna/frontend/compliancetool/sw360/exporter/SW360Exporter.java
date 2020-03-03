@@ -51,9 +51,9 @@ public class SW360Exporter {
         HttpHeaders downloadHeader = RestUtils.deepCopyHeaders(headers);
         downloadHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
 
-        Collection<SW360SparseComponent> components = connectionConfiguration.getSW360ComponentClientAdapter().getComponents(headers);
+        Collection<SW360SparseComponent> components = connectionConfiguration.getSW360ComponentClientAdapter().getComponents();
 
-        Collection<SW360SparseRelease> sw360SparseReleases = getReleasesFromComponents(components, headers);
+        Collection<SW360SparseRelease> sw360SparseReleases = getReleasesFromComponents(components);
 
         Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases, headers);
 
@@ -91,11 +91,11 @@ public class SW360Exporter {
                 .collect(Collectors.toSet());
     }
 
-    private Collection<SW360SparseRelease> getReleasesFromComponents(Collection<SW360SparseComponent> components, HttpHeaders headers) {
+    private Collection<SW360SparseRelease> getReleasesFromComponents(Collection<SW360SparseComponent> components) {
         return components.stream()
                 .map(this::getIdFromHalResource)
                 .filter(id -> !id.equals(""))
-                .map(id -> connectionConfiguration.getSW360ComponentClientAdapter().getComponentById(id, headers))
+                .map(id -> connectionConfiguration.getSW360ComponentClientAdapter().getComponentById(id))
                 .map(component -> component.orElse(null))
                 .filter(Objects::nonNull)
                 .flatMap(component -> component.get_Embedded().getReleases().stream())

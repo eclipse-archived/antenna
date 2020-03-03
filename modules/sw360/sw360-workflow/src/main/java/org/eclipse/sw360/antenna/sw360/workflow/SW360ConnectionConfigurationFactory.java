@@ -16,7 +16,6 @@ import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.rest.SW360AuthenticationClient;
-import org.eclipse.sw360.antenna.sw360.rest.SW360ComponentClient;
 import org.eclipse.sw360.antenna.sw360.rest.SW360LicenseClient;
 import org.eclipse.sw360.antenna.sw360.rest.SW360ProjectClient;
 import org.eclipse.sw360.antenna.sw360.rest.SW360RestTemplateFactory;
@@ -124,8 +123,8 @@ public class SW360ConnectionConfigurationFactory {
      * @return the {@code SW360ComponentClientAdapter}
      */
     SW360ComponentClientAdapter createComponentAdapter(RestTemplate restTemplate, String restUrl) {
-        return new SW360ComponentClientAdapter()
-                .setComponentClient(new SW360ComponentClient(restUrl, restTemplate));
+        //TODO create correct component client
+        return new SW360ComponentClientAdapter(null);
     }
 
     /**
