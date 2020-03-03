@@ -8,12 +8,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.client;
+package org.eclipse.sw360.antenna.sw360.client.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 import org.eclipse.sw360.antenna.http.api.HttpClient;
+import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.junit.Before;
 import org.junit.Test;
 

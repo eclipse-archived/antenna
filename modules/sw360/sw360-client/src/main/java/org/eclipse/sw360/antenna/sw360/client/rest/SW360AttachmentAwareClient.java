@@ -14,7 +14,7 @@ package org.eclipse.sw360.antenna.sw360.client.rest;
 import org.eclipse.sw360.antenna.http.api.RequestBuilder;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
-import org.eclipse.sw360.antenna.sw360.client.SW360ClientConfig;
+import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment;
