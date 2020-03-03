@@ -64,7 +64,7 @@ public class SW360MetaDataReceiverTest {
         final SW360Release release = new SW360Release();
         when(componentClientAdapter.getComponentByName(componentName))
                 .thenReturn(Optional.of(sw360Component));
-        when(releaseClientAdapter.getReleaseByVersion(sw360Component, version, headers))
+        when(releaseClientAdapter.getReleaseByVersion(sw360Component, version))
                 .thenReturn(Optional.of(release));
         setUp();
         final Optional<SW360Release> releaseForArtifact = metaDataReceiver.findReleaseForArtifact(artifact);
@@ -72,7 +72,7 @@ public class SW360MetaDataReceiverTest {
         assertThat(releaseForArtifact).isPresent();
         assertThat(releaseForArtifact).hasValue(release);
         verify(componentClientAdapter, times(1)).getComponentByName(componentName);
-        verify(releaseClientAdapter, times(1)).getReleaseByVersion(sw360Component, version, headers);
+        verify(releaseClientAdapter, times(1)).getReleaseByVersion(sw360Component, version);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class SW360MetaDataReceiverTest {
 
         assertThat(releaseForArtifact).isNotPresent();
         verify(componentClientAdapter, times(1)).getComponentByName(componentName);
-        verify(releaseClientAdapter, never()).getReleaseByVersion(any(), any(), any());
+        verify(releaseClientAdapter, never()).getReleaseByVersion(any(), any());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class SW360MetaDataReceiverTest {
         final SW360Release release = new SW360Release();
         final SW360SparseAttachment attachment = new SW360SparseAttachment().setFilename("attachmentFile.file");
         final Path attachmentPath = downloadPath.resolve(attachment.getFilename());
-        when(releaseClientAdapter.downloadAttachment(release, attachment, downloadPath, headers))
+        when(releaseClientAdapter.downloadAttachment(release, attachment, downloadPath))
                 .thenReturn(Optional.of(attachmentPath));
         setUp();
 
@@ -129,6 +129,6 @@ public class SW360MetaDataReceiverTest {
 
         assertThat(downloadedAttachmentPath).isPresent();
         assertThat(downloadedAttachmentPath).hasValue(attachmentPath);
-        verify(releaseClientAdapter, times(1)).downloadAttachment(release, attachment, downloadPath, headers);
+        verify(releaseClientAdapter, times(1)).downloadAttachment(release, attachment, downloadPath);
     }
 }

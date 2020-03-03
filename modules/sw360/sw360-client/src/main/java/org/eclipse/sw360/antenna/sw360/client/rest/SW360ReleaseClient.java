@@ -95,13 +95,13 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
     // KnownLimitation: this can not properly handle e.g. the hashes,
     // which are mapped to numbered keys like `hash_1=...`, `hash_2=...`, ...
     // but can change in the order of the values
-    public CompletableFuture<List<SW360SparseRelease>> getReleasesByExternalIds(Map<String, Object> externalIds) {
+    public CompletableFuture<List<SW360SparseRelease>> getReleasesByExternalIds(Map<String, ?> externalIds) {
         String url = getExternalIdUrl(externalIds);
         return executeJsonRequest(HttpUtils.get(url), SW360ReleaseList.class, TAG_GET_RELEASES_BY_EXTERNAL_IDS)
                 .thenApply(SW360ResourceUtils::getSw360SparseReleases);
     }
 
-    private String getExternalIdUrl(Map<String, Object> externalIds) {
+    private String getExternalIdUrl(Map<String, ?> externalIds) {
         return HttpUtils.addQueryParameters(resourceUrl(RELEASES_ENDPOINT_APPENDIX, PATH_SEARCH_EXT_IDS),
                 externalIds);
     }

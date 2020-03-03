@@ -137,7 +137,8 @@ public class SW360ConnectionConfigurationFactory {
      */
     SW360ReleaseClientAdapter createReleaseAdapter(RestTemplate restTemplate, String restUrl,
                                                    SW360ComponentClientAdapter componentClientAdapter) {
-        return new SW360ReleaseClientAdapter(restUrl, restTemplate, componentClientAdapter);
+        //TODO create correct release client
+        return new SW360ReleaseClientAdapter(null, componentClientAdapter);
     }
 
     /**

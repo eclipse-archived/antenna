@@ -28,20 +28,27 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 public class SW360ExporterTest {
@@ -129,10 +136,10 @@ public class SW360ExporterTest {
         release2.setCopyrights("Higher Date");
         release2.setCreatedOn("zzzz-mm-dd");
 
-        when(releaseClientAdapterMock.getReleaseById(any(), eq(headers)))
+        when(releaseClientAdapterMock.getReleaseById(any()))
                 .thenReturn(Optional.of(release), Optional.of(release2));
         Path path = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("test-source.txt")).getPath());
-        when(releaseClientAdapterMock.downloadAttachment(any(), any(), any(), eq(headers)))
+        when(releaseClientAdapterMock.downloadAttachment(any(), any(), any()))
                 .thenReturn(Optional.ofNullable(path));
 
         when(connectionConfigurationMock.getHttpHeaders())
@@ -167,12 +174,10 @@ public class SW360ExporterTest {
         List<CSVRecord> records = csvParser.getRecords();
 
         assertThat(records.size()).isEqualTo(expectedNumOfReleases);
-        ArgumentCaptor<HttpHeaders> captor = ArgumentCaptor.forClass(HttpHeaders.class);
-        verify(releaseClientAdapterMock, atLeast(expectedNumOfReleases)).downloadAttachment(any(), any(),any() , captor.capture());
+        verify(releaseClientAdapterMock, atLeast(expectedNumOfReleases)).downloadAttachment(any(), any(), any());
 
         if (expectedNumOfReleases == 2) {
             assertThat(records.get(1).get("Copyrights")).isEqualTo(release.getCopyrights());
-            assertThat(captor.getValue().getAccept()).containsExactly(MediaType.APPLICATION_OCTET_STREAM);
         }
     }
 }

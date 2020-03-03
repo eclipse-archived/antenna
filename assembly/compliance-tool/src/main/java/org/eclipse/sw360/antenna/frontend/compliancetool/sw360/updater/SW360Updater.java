@@ -18,7 +18,6 @@ import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
-import org.springframework.http.HttpHeaders;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -46,12 +45,11 @@ public class SW360Updater {
 
     public void execute() {
         Collection<Artifact> artifacts = getArtifactsFromCsvFile(configuration.getProperties());
-        HttpHeaders headers = configuration.getConnectionConfiguration().getHttpHeaders();
 
-        artifacts.forEach(artifact -> uploadReleaseWithClearingDocumentFromArtifact(artifact, headers));
+        artifacts.forEach(this::uploadReleaseWithClearingDocumentFromArtifact);
     }
 
-    private void uploadReleaseWithClearingDocumentFromArtifact(Artifact artifact, HttpHeaders headers) {
+    private void uploadReleaseWithClearingDocumentFromArtifact(Artifact artifact) {
         SW360Release release = updater.artifactToReleaseInSW360(artifact);
         SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnectionConfiguration().getSW360ReleaseClientAdapter();
 
@@ -61,7 +59,7 @@ public class SW360Updater {
             Map<Path, SW360AttachmentType> attachmentPathMap =
                     Collections.singletonMap(getOrGenerateClearingDocument(release, artifact),
                             SW360AttachmentType.CLEARING_REPORT);
-            releaseClientAdapter.uploadAttachments(release, attachmentPathMap, headers);
+            releaseClientAdapter.uploadAttachments(release, attachmentPathMap);
         }
     }
 

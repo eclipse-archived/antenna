@@ -94,14 +94,14 @@ public class SW360MetaDataUpdaterTest {
     @Test
     public void testGetOrCreateRelease() {
         final SW360Release release = new SW360Release();
-        when(releaseClientAdapter.getOrCreateRelease(release, headers, updateReleases))
+        when(releaseClientAdapter.getOrCreateRelease(release, updateReleases))
                 .thenReturn(release);
         setUp();
 
         final SW360Release getOrCreatedRelease = metaDataUpdater.getOrCreateRelease(release);
 
         assertThat(getOrCreatedRelease).isEqualTo(release);
-        verify(releaseClientAdapter, times(1)).getOrCreateRelease(release, headers, updateReleases);
+        verify(releaseClientAdapter, times(1)).getOrCreateRelease(release, updateReleases);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class SW360MetaDataUpdaterTest {
     @Test
     public void testUploadAttachments() {
         final SW360Release release = new SW360Release();
-        when(releaseClientAdapter.uploadAttachments(release, Collections.emptyMap(), headers))
+        when(releaseClientAdapter.uploadAttachments(release, Collections.emptyMap()))
                 .thenReturn(release);
 
         setUp();
@@ -155,7 +155,6 @@ public class SW360MetaDataUpdaterTest {
         final SW360Release releaseWithAttachment = metaDataUpdater.uploadAttachments(release, Collections.emptyMap());
 
         assertThat(releaseWithAttachment).isEqualTo(release);
-        verify(connectionConfiguration).getHttpHeaders();
-        verify(releaseClientAdapter).uploadAttachments(release, Collections.emptyMap(), headers);
+        verify(releaseClientAdapter).uploadAttachments(release, Collections.emptyMap());
     }
 }

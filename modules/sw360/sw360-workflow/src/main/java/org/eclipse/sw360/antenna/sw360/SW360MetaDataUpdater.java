@@ -70,8 +70,7 @@ public class SW360MetaDataUpdater {
     }
 
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact) {
-        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
-        return releaseClientAdapter.getOrCreateRelease(sw360ReleaseFromArtifact, header, updateReleases);
+        return releaseClientAdapter.getOrCreateRelease(sw360ReleaseFromArtifact, updateReleases);
     }
 
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) {
@@ -95,7 +94,6 @@ public class SW360MetaDataUpdater {
     }
 
     public SW360Release uploadAttachments(SW360Release sw360Release, Map<Path, SW360AttachmentType> attachments) {
-        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
-        return releaseClientAdapter.uploadAttachments(sw360Release, attachments, header);
+        return releaseClientAdapter.uploadAttachments(sw360Release, attachments);
     }
 }

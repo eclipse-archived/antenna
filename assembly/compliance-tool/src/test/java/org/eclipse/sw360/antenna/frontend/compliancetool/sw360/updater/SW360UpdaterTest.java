@@ -147,7 +147,7 @@ public class SW360UpdaterTest {
             verify(generator).createClearingDocument(release, getTargetDir());
         }
         verify(updater).artifactToReleaseInSW360(any());
-        verify(releaseClientAdapter, times(expectUpload ? 1 : 0)).uploadAttachments(any(), eq(testAttachmentMap), eq(HEADERS));
+        verify(releaseClientAdapter, times(expectUpload ? 1 : 0)).uploadAttachments(any(), eq(testAttachmentMap));
     }
 
     private Map<Path, SW360AttachmentType> createExpectedAttachmentMap() {

@@ -52,12 +52,11 @@ public class SW360MetaDataReceiver {
     }
 
     public Optional<SW360Release> findReleaseForArtifact(Artifact artifact) {
-        HttpHeaders headers = sw360ConnectionConfiguration.getHttpHeaders();
         Optional<SW360Component> component = getComponentByArtifact(artifact);
         if (component.isPresent()) {
 
             String releaseVersionOfArtifact = ArtifactToReleaseUtils.createSW360ReleaseVersion(artifact);
-            return releaseClientAdapter.getReleaseByVersion(component.get(), releaseVersionOfArtifact, headers);
+            return releaseClientAdapter.getReleaseByVersion(component.get(), releaseVersionOfArtifact);
         }
         return Optional.empty();
     }
@@ -70,7 +69,7 @@ public class SW360MetaDataReceiver {
     public Optional<Path> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath) {
         HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
         header.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
-        return releaseClientAdapter.downloadAttachment(release, attachment, downloadPath, header);
+        return releaseClientAdapter.downloadAttachment(release, attachment, downloadPath);
     }
 
     private Optional<SW360Component> getComponentByArtifact(Artifact artifact) {

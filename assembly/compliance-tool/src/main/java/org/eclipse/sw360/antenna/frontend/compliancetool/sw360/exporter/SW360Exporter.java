@@ -55,10 +55,10 @@ public class SW360Exporter {
 
         Collection<SW360SparseRelease> sw360SparseReleases = getReleasesFromComponents(components);
 
-        Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases, headers);
+        Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases);
 
         List<Artifact> artifacts = sw360ReleasesNotApproved.stream()
-                .map(release -> releaseAsArtifact(release, downloadHeader))
+                .map(release -> releaseAsArtifact(release))
                 .collect(Collectors.toList());
 
         File csvFile = configuration.getTargetDir()
@@ -73,11 +73,11 @@ public class SW360Exporter {
         csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
     }
 
-    private Artifact releaseAsArtifact(SW360Release release, HttpHeaders headers) {
+    private Artifact releaseAsArtifact(SW360Release release) {
         Artifact artifact = ArtifactToReleaseUtils.convertToArtifactWithoutSourceFile(release, new Artifact("SW360"));
         Set<SW360SparseAttachment> sparseAttachments = getSparseAttachmentsSource(release);
         sparseAttachments.forEach(sparseAttachment -> {
-            Optional<Path> path = connectionConfiguration.getSW360ReleaseClientAdapter().downloadAttachment(release, sparseAttachment, configuration.getSourcesPath(), headers);
+            Optional<Path> path = connectionConfiguration.getSW360ReleaseClientAdapter().downloadAttachment(release, sparseAttachment, configuration.getSourcesPath());
             path.ifPresent(pth -> artifact.addFact(new ArtifactSourceFile(pth)));
         });
         return artifact;
@@ -102,11 +102,11 @@ public class SW360Exporter {
                 .collect(Collectors.toList());
     }
 
-    private Collection<SW360Release> getNonApprovedReleasesFromSpareReleases(Collection<SW360SparseRelease> sw360SparseReleases, HttpHeaders headers) {
+    private Collection<SW360Release> getNonApprovedReleasesFromSpareReleases(Collection<SW360SparseRelease> sw360SparseReleases) {
         return sw360SparseReleases.stream()
                 .map(this::getIdFromHalResource)
                 .filter(id -> !id.equals(""))
-                .map(id -> connectionConfiguration.getSW360ReleaseClientAdapter().getReleaseById(id, headers))
+                .map(id -> connectionConfiguration.getSW360ReleaseClientAdapter().getReleaseById(id))
                 .map(Optional::get)
                 .filter(sw360Release -> !isApproved(sw360Release))
                 .sorted(Comparator.comparing(SW360Release::getCreatedOn).reversed())
