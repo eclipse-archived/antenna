@@ -109,15 +109,15 @@ public class SW360MetaDataUpdaterTest {
         final String projectName = "projectName";
         final String projectVersion = "projectVersion";
         final String projectId = "12345";
-        when(projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion, headers))
+        when(projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion))
                 .thenReturn(Optional.of(projectId));
         setUp();
 
         metaDataUpdater.createProject(projectName, projectVersion, Collections.emptySet());
 
-        verify(projectClientAdapter, times(1)).getProjectIdByNameAndVersion(projectName, projectVersion, headers);
-        verify(projectClientAdapter, never()).addProject(projectName, projectVersion, headers);
-        verify(projectClientAdapter, times(1)).addSW360ReleasesToSW360Project(projectId, Collections.emptySet(), headers);
+        verify(projectClientAdapter, times(1)).getProjectIdByNameAndVersion(projectName, projectVersion);
+        verify(projectClientAdapter, never()).addProject(projectName, projectVersion);
+        verify(projectClientAdapter, times(1)).addSW360ReleasesToSW360Project(projectId, Collections.emptySet());
     }
 
     @Test
@@ -125,17 +125,17 @@ public class SW360MetaDataUpdaterTest {
         final String projectName = "projectName";
         final String projectVersion = "projectVersion";
         final String projectId = "12345";
-        when(projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion, headers))
+        when(projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion))
                 .thenReturn(Optional.empty());
-        when(projectClientAdapter.addProject(projectName, projectVersion, headers))
+        when(projectClientAdapter.addProject(projectName, projectVersion))
                 .thenReturn(projectId);
         setUp();
 
         metaDataUpdater.createProject(projectName, projectVersion, Collections.emptySet());
 
-        verify(projectClientAdapter, times(1)).getProjectIdByNameAndVersion(projectName, projectVersion, headers);
-        verify(projectClientAdapter, times(1)).addProject(projectName, projectVersion, headers);
-        verify(projectClientAdapter, times(1)).addSW360ReleasesToSW360Project(projectId, Collections.emptySet(), headers);
+        verify(projectClientAdapter, times(1)).getProjectIdByNameAndVersion(projectName, projectVersion);
+        verify(projectClientAdapter, times(1)).addProject(projectName, projectVersion);
+        verify(projectClientAdapter, times(1)).addSW360ReleasesToSW360Project(projectId, Collections.emptySet());
     }
 
     @Test

@@ -74,9 +74,7 @@ public class SW360MetaDataUpdater {
     }
 
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) {
-        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
-
-        Optional<String> projectId = projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion, header);
+        Optional<String> projectId = projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion);
 
         String id;
         if (projectId.isPresent()) {
@@ -84,9 +82,9 @@ public class SW360MetaDataUpdater {
             LOGGER.debug("Could not update project {}, because the endpoint is not available.", projectId.get());
             id = projectId.get();
         } else {
-            id = projectClientAdapter.addProject(projectName, projectVersion, header);
+            id = projectClientAdapter.addProject(projectName, projectVersion);
         }
-        projectClientAdapter.addSW360ReleasesToSW360Project(id, releases, header);
+        projectClientAdapter.addSW360ReleasesToSW360Project(id, releases);
     }
 
     public boolean isUploadSources() {

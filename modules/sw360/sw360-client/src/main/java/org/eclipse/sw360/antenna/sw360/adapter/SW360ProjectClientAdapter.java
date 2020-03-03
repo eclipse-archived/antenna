@@ -12,16 +12,15 @@
 
 package org.eclipse.sw360.antenna.sw360.adapter;
 
-import org.eclipse.sw360.antenna.sw360.rest.SW360ProjectClient;
+import org.eclipse.sw360.antenna.sw360.client.rest.SW360ProjectClient;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
-import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ProjectAdapterUtils;
-import org.springframework.http.HttpHeaders;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,18 +28,17 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class SW360ProjectClientAdapter {
-    private SW360ProjectClient projectClient;
+import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
 
-    public SW360ProjectClientAdapter setProjectClient(SW360ProjectClient projectClient) {
-        if (this.projectClient == null) {
-            this.projectClient = projectClient;
-        }
-        return this;
+public class SW360ProjectClientAdapter {
+    private final SW360ProjectClient projectClient;
+
+    public SW360ProjectClientAdapter(SW360ProjectClient client) {
+        projectClient = client;
     }
 
-    public Optional<String> getProjectIdByNameAndVersion(String projectName, String projectVersion, HttpHeaders header) {
-        List<SW360Project> projects = projectClient.searchByName(projectName, header);
+    public Optional<String> getProjectIdByNameAndVersion(String projectName, String projectVersion) {
+        List<SW360Project> projects = block(projectClient.searchByName(projectName));
 
         return projects.stream()
                 .filter(pr -> SW360ProjectAdapterUtils.hasEqualCoordinates(pr, projectName, projectVersion))
@@ -49,7 +47,7 @@ public class SW360ProjectClientAdapter {
                 .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink);
     }
 
-    public String addProject(String projectName, String projectVersion, HttpHeaders header) {
+    public String addProject(String projectName, String projectVersion) {
         SW360Project sw360Project = new SW360Project();
         SW360ProjectAdapterUtils.prepareProject(sw360Project, projectName, projectVersion);
 
@@ -57,12 +55,12 @@ public class SW360ProjectClientAdapter {
             throw new SW360ClientException("Can not write invalid project with name=" + projectName + " and version=" + projectVersion);
         }
 
-        SW360Project responseProject = projectClient.createProject(sw360Project, header);
+        SW360Project responseProject = block(projectClient.createProject(sw360Project));
 
         return SW360HalResourceUtility.getLastIndexOfSelfLink(responseProject.get_Links()).orElse("");
     }
 
-    public void addSW360ReleasesToSW360Project(String id, Collection<SW360Release> releases, HttpHeaders header) {
+    public void addSW360ReleasesToSW360Project(String id, Collection<SW360Release> releases) {
         List<String> releaseLinks = releases.stream()
                 .map(SW360Release::get_Links)
                 .filter(Objects::nonNull)
@@ -70,10 +68,10 @@ public class SW360ProjectClientAdapter {
                 .filter(Objects::nonNull)
                 .map(Self::getHref)
                 .collect(Collectors.toList());
-        projectClient.addReleasesToProject(id, releaseLinks, header);
+        projectClient.addReleasesToProject(id, releaseLinks);
     }
 
-    public List<SW360SparseRelease> getLinkedReleases(String projectId, HttpHeaders header) {
-        return projectClient.getLinkedReleases(projectId, true, header);
+    public List<SW360SparseRelease> getLinkedReleases(String projectId) {
+        return block(projectClient.getLinkedReleases(projectId, true));
     }
 }
