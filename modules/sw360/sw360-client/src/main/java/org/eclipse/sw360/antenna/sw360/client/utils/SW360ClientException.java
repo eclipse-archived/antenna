@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.utils;
+package org.eclipse.sw360.antenna.sw360.client.utils;
 
 public class SW360ClientException extends RuntimeException {
     public SW360ClientException(String s) {

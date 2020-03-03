@@ -16,7 +16,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
-import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;

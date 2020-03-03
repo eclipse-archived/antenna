@@ -11,6 +11,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.utils;
 
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentList;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;

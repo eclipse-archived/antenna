@@ -19,7 +19,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
-import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ProjectAdapterUtils;
 import org.springframework.http.HttpHeaders;
 

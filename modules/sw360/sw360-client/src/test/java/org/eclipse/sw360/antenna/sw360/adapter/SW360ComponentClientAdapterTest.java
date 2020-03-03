@@ -15,7 +15,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
-import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;

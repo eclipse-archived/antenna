@@ -14,6 +14,7 @@ package org.eclipse.sw360.antenna.sw360.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

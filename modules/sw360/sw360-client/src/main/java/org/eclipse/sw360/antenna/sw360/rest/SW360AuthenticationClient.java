@@ -15,7 +15,7 @@ package org.eclipse.sw360.antenna.sw360.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
-import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;

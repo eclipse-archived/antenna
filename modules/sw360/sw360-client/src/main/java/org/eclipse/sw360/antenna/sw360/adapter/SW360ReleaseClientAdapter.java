@@ -19,7 +19,7 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentEmbedded;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
-import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ComponentAdapterUtils;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ReleaseAdapterUtils;
 import org.slf4j.Logger;
