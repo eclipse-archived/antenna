@@ -19,10 +19,10 @@ import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessToken;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
+import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static org.eclipse.sw360.antenna.http.utils.HttpConstants.URL_PATH_SEPARATOR;
@@ -166,34 +166,27 @@ public abstract class SW360Client {
         CompletableFuture<T> futRequest = getTokenProvider().doWithToken(accessToken ->
                 getClientConfig().getHttpClient().execute(accessToken.tokenProducer(producer),
                         applyChecks(processor, tag, accessToken)));
-        return canRetry ? futRequest.handle((result, wrappedException) ->
-                checkIfRetry(futRequest, wrappedException))
-                .thenCompose(optFuture -> optFuture.orElseGet(() ->
-                        executeWithExpiredTokenCheck(producer, processor, tag, false))) :
+        return canRetry ?
+                FutureUtils.withConditionalFallback(futRequest,
+                        this::checkIfRetry,
+                        () -> executeWithExpiredTokenCheck(producer, processor, tag, false)) :
                 futRequest;
     }
 
     /**
      * Checks whether a request needs to be retried because the access token
      * may have expired. The method checks whether the request failed with the
-     * special {@code RequestUnauthorizedException} exception. If so, result is
-     * an empty optional, meaning that a result is not yet available.
-     * Otherwise, the optional contains the future to be returned to the
-     * caller.
+     * special {@code RequestUnauthorizedException} exception.
      *
-     * @param futRequest       the future with the result of the request execution
-     * @param wrappedException the exception the request failed with if any
-     * @param <T>              the result type of the request
-     * @return an {@code Optional} with the result to be returned
+     * @param exception the exception the request failed with if any
+     * @return a flag whether a retry should be attempted
      */
-    private <T> Optional<CompletableFuture<T>> checkIfRetry(CompletableFuture<T> futRequest,
-                                                            Throwable wrappedException) {
-        Throwable exception = HttpUtils.unwrapCompletionException(wrappedException);
+    private boolean checkIfRetry(Throwable exception) {
         if (exception instanceof UnauthorizedRequestException) {
             getTokenProvider().invalidate(((UnauthorizedRequestException) exception).token);
-            return Optional.empty();
+            return true;
         } else {
-            return Optional.of(futRequest);
+            return false;
         }
     }
 
@@ -206,8 +199,7 @@ public abstract class SW360Client {
      * @return true if the request was unauthorized, false otherwise
      */
     private static boolean isRequestUnauthorized(Throwable exception) {
-        return exception instanceof FailedRequestException &&
-                ((FailedRequestException) exception).getStatusCode() == HttpConstants.STATUS_ERR_UNAUTHORIZED;
+        return FutureUtils.isFailedRequestWithStatus(exception, HttpConstants.STATUS_ERR_UNAUTHORIZED);
     }
 
     /**
