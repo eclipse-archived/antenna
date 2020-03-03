@@ -28,8 +28,12 @@ public class SW360LicenseClientAdapter {
         licenseClient = client;
     }
 
+    public SW360LicenseClient getLicenseClient() {
+        return licenseClient;
+    }
+
     public boolean isLicenseOfArtifactAvailable(String license) {
-        List<SW360SparseLicense> sw360Licenses = block(licenseClient.getLicenses());
+        List<SW360SparseLicense> sw360Licenses = block(getLicenseClient().getLicenses());
 
         return sw360Licenses.stream()
                 .map(SW360SparseLicense::getShortName)
@@ -37,10 +41,10 @@ public class SW360LicenseClientAdapter {
     }
 
     public Optional<SW360License> getSW360LicenseByAntennaLicense(String license) {
-        return block(optionalFuture(licenseClient.getLicenseByName(license)));
+        return block(optionalFuture(getLicenseClient().getLicenseByName(license)));
     }
 
     public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense) {
-        return block(optionalFuture(licenseClient.getLicenseByName(sparseLicense.getShortName())));
+        return block(optionalFuture(getLicenseClient().getLicenseByName(sparseLicense.getShortName())));
     }
 }

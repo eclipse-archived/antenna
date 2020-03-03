@@ -37,8 +37,12 @@ public class SW360ProjectClientAdapter {
         projectClient = client;
     }
 
+    public SW360ProjectClient getProjectClient() {
+        return projectClient;
+    }
+
     public Optional<String> getProjectIdByNameAndVersion(String projectName, String projectVersion) {
-        List<SW360Project> projects = block(projectClient.searchByName(projectName));
+        List<SW360Project> projects = block(getProjectClient().searchByName(projectName));
 
         return projects.stream()
                 .filter(pr -> SW360ProjectAdapterUtils.hasEqualCoordinates(pr, projectName, projectVersion))
@@ -55,7 +59,7 @@ public class SW360ProjectClientAdapter {
             throw new SW360ClientException("Can not write invalid project with name=" + projectName + " and version=" + projectVersion);
         }
 
-        SW360Project responseProject = block(projectClient.createProject(sw360Project));
+        SW360Project responseProject = block(getProjectClient().createProject(sw360Project));
 
         return SW360HalResourceUtility.getLastIndexOfSelfLink(responseProject.get_Links()).orElse("");
     }
@@ -68,10 +72,10 @@ public class SW360ProjectClientAdapter {
                 .filter(Objects::nonNull)
                 .map(Self::getHref)
                 .collect(Collectors.toList());
-        projectClient.addReleasesToProject(id, releaseLinks);
+        getProjectClient().addReleasesToProject(id, releaseLinks);
     }
 
     public List<SW360SparseRelease> getLinkedReleases(String projectId) {
-        return block(projectClient.getLinkedReleases(projectId, true));
+        return block(getProjectClient().getLinkedReleases(projectId, true));
     }
 }

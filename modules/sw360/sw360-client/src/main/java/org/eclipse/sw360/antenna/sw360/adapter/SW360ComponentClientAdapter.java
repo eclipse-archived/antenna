@@ -31,6 +31,10 @@ public class SW360ComponentClientAdapter {
         componentClient = client;
     }
 
+    public SW360ComponentClient getComponentClient() {
+        return componentClient;
+    }
+
     public Optional<SW360Component> getOrCreateComponent(SW360Component componentFromRelease) {
         if(componentFromRelease.getComponentId() != null) {
             return getComponentById(componentFromRelease.getComponentId());
@@ -43,15 +47,15 @@ public class SW360ComponentClientAdapter {
         if(!SW360ComponentAdapterUtils.isValidComponent(component)) {
             throw new SW360ClientException("Can not write invalid component for " + component.getName());
         }
-        return block(componentClient.createComponent(component));
+        return block(getComponentClient().createComponent(component));
     }
 
     public Optional<SW360Component> getComponentById(String componentId) {
-        return block(optionalFuture(componentClient.getComponent(componentId)));
+        return block(optionalFuture(getComponentClient().getComponent(componentId)));
     }
 
     public Optional<SW360Component> getComponentByName(String componentName) {
-        List<SW360SparseComponent> components = block(componentClient.searchByName(componentName));
+        List<SW360SparseComponent> components = block(getComponentClient().searchByName(componentName));
 
         return components.stream()
                 .filter(c -> c.getName().equals(componentName))
@@ -64,6 +68,6 @@ public class SW360ComponentClientAdapter {
     }
 
     public List<SW360SparseComponent> getComponents() {
-        return block(componentClient.getComponents());
+        return block(getComponentClient().getComponents());
     }
 }

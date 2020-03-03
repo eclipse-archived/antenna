@@ -70,6 +70,15 @@ public class AccessTokenProvider {
     }
 
     /**
+     * Returns the {@code SW360AuthenticationClient} used by this object.
+     *
+     * @return the {@code SW360AuthenticationClient}
+     */
+    public SW360AuthenticationClient getAuthClient() {
+        return authClient;
+    }
+
+    /**
      * Returns a future with an {@code AccessToken} to be used to authenticate
      * against the SW360 server. If necessary, the underlying authentication
      * client is asked to fetch a new token. A successful token result is
@@ -85,7 +94,7 @@ public class AccessTokenProvider {
         CompletableFuture<AccessToken> result = tokenFuture;
         if (tokenFuture == null) {
             LOG.debug("Obtaining a new access token for SW360.");
-            tokenFuture = result = authClient.getOAuth2AccessToken()
+            tokenFuture = result = getAuthClient().getOAuth2AccessToken()
                     .thenApply(AccessToken::new);
             tokenFuture.whenComplete(this::handleTokenResult);
         }

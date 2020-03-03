@@ -44,13 +44,21 @@ public class SW360ReleaseClientAdapter {
         sw360ComponentClientAdapter = componentClientAdapter;
     }
 
+    public SW360ReleaseClient getReleaseClient() {
+        return releaseClient;
+    }
+
+    public SW360ComponentClientAdapter getComponentAdapter() {
+        return sw360ComponentClientAdapter;
+    }
+
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateReleases) {
         // NOTE: this code does now always merge with the SW360Release used for querying
         return getRelease(sw360ReleaseFromArtifact)
                 .map(sw360ReleaseFromArtifact::mergeWith)
                 .map(sw360Release -> {
                     if(updateReleases) {
-                        return block(releaseClient.patchRelease(sw360Release));
+                        return block(getReleaseClient().patchRelease(sw360Release));
                     } else {
                         return sw360Release;
                     }
@@ -71,7 +79,7 @@ public class SW360ReleaseClientAdapter {
 
         if (releaseFromArtifact.getComponentId() == null) {
             final SW360Component componentFromRelease = SW360ComponentAdapterUtils.createFromRelease(releaseFromArtifact);
-            final Optional<SW360Component> componentFromSW360 = sw360ComponentClientAdapter.getOrCreateComponent(componentFromRelease);
+            final Optional<SW360Component> componentFromSW360 = getComponentAdapter().getOrCreateComponent(componentFromRelease);
             componentFromSW360.ifPresent(cfs -> {
                 if (cfs.get_Embedded().getReleases().stream()
                         .map(SW360SparseRelease::getVersion)
@@ -82,13 +90,13 @@ public class SW360ReleaseClientAdapter {
             });
         }
 
-        return block(releaseClient.createRelease(releaseFromArtifact));
+        return block(getReleaseClient().createRelease(releaseFromArtifact));
     }
 
     public SW360Release uploadAttachments(SW360Release sw360item, Map<Path, SW360AttachmentType> attachments) {
         for(Map.Entry<Path, SW360AttachmentType> attachment : attachments.entrySet()) {
             if (!attachmentIsPotentialDuplicate(attachment.getKey(), sw360item.get_Embedded().getAttachments())) {
-                sw360item = block(releaseClient.uploadAndAttachAttachment(sw360item, attachment.getKey(), attachment.getValue()));
+                sw360item = block(getReleaseClient().uploadAndAttachAttachment(sw360item, attachment.getKey(), attachment.getValue()));
             }
         }
         return sw360item;
@@ -100,7 +108,7 @@ public class SW360ReleaseClientAdapter {
     }
 
     public Optional<SW360Release> getReleaseById(String releaseId) {
-        return block(optionalFuture(releaseClient.getRelease(releaseId)));
+        return block(optionalFuture(getReleaseClient().getRelease(releaseId)));
     }
 
     public Optional<SW360Release> enrichSparseRelease(SW360SparseRelease sparseRelease) {
@@ -124,7 +132,7 @@ public class SW360ReleaseClientAdapter {
 
     public Optional<SW360SparseRelease> getReleaseByExternalIds(Map<String, ?> externalIds) {
         final List<SW360SparseRelease> releasesByExternalIds =
-                block(releaseClient.getReleasesByExternalIds(externalIds));
+                block(getReleaseClient().getReleasesByExternalIds(externalIds));
         if (releasesByExternalIds.isEmpty()) {
             return Optional.empty();
         } else if (releasesByExternalIds.size() == 1) {
@@ -136,7 +144,7 @@ public class SW360ReleaseClientAdapter {
     }
 
     public Optional<SW360SparseRelease> getReleaseByNameAndVersion(SW360Release sw360ReleaseFromArtifact) {
-        return sw360ComponentClientAdapter.getComponentByName(sw360ReleaseFromArtifact.getName())
+        return getComponentAdapter().getComponentByName(sw360ReleaseFromArtifact.getName())
                 .map(SW360Component::get_Embedded)
                 .map(SW360ComponentEmbedded::getReleases)
                 .flatMap(releases -> releases.stream()
@@ -163,6 +171,6 @@ public class SW360ReleaseClientAdapter {
 
     public Optional<Path> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath) {
         return Optional.ofNullable(release.get_Links().getSelf())
-                .flatMap(self -> block(optionalFuture(releaseClient.downloadAttachment(self.getHref(), attachment, downloadPath))));
+                .flatMap(self -> block(optionalFuture(getReleaseClient().downloadAttachment(self.getHref(), attachment, downloadPath))));
     }
 }
