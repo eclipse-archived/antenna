@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.frontend.stub.cli;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.api.FrontendCommons;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
@@ -29,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -105,7 +105,7 @@ public class AntennaCLISettingsReader {
     private void setVersionFromPom(MetaDataStoringProject project) {
         File pomFile = project.getConfigFile();
         try {
-            String pom = FileUtils.readFileToString(pomFile, StandardCharsets.UTF_8);
+            String pom = new String(Files.readAllBytes(pomFile.toPath()), StandardCharsets.UTF_8);
             XmlSettingsReader reader = new XmlSettingsReader(pom);
             String version = reader.getStringPropertyByXPath("project", "version");
             if (version != null && !"".equals(version)) {
