@@ -13,7 +13,16 @@
 package org.eclipse.sw360.antenna.sw360.workflow.processors;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.*;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactChangeStatus;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactReleaseTagURL;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSoftwareHeritageID;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
+import org.eclipse.sw360.antenna.model.artifact.facts.CopyrightStatement;
+import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
+import org.eclipse.sw360.antenna.model.artifact.facts.ObservedLicenseInformation;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.license.LicenseInformation;
@@ -31,22 +40,30 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
 import org.eclipse.sw360.antenna.sw360.utils.TestUtils;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SW360EnricherTest extends AntennaTestWithMockedContext {
     private List<Artifact> artifacts;
@@ -61,10 +78,18 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         artifact0.addFact(new ArtifactFilename("filename0"));
 
         artifacts = Collections.singletonList(artifact0);
+        connector = Mockito.mock(SW360MetaDataReceiver.class);
 
-        sw360Enricher = new SW360Enricher();
+        sw360Enricher = new SW360Enricher() {
+            @Override
+            SW360MetaDataReceiver createMetaDataReceiver(Map<String, String> configMap) {
+                return connector;
+            }
+        };
         sw360Enricher.setAntennaContext(antennaContextMock);
+    }
 
+    private static Map<String, String> createStandardConfigMap() {
         Map<String, String> configMap = new HashMap<>();
         configMap.put("rest.server.url", "rest_url");
         configMap.put("auth.server.url", "auth_url");
@@ -73,25 +98,27 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         configMap.put("client.id", "client_user");
         configMap.put("client.password", "client_password");
         configMap.put("proxy.use", "false");
-        sw360Enricher.configure(configMap);
-
-        connector = Mockito.mock(SW360MetaDataReceiver.class);
-        ReflectionTestUtils.setField(sw360Enricher, "connector", connector);
+        return configMap;
     }
 
-    @After
-    public void after() {
-        temporaryFolder.delete();
+    @Test
+    public void testMetaDataReceiverIsCreated() {
+        sw360Enricher = new SW360Enricher();
+        sw360Enricher.setAntennaContext(antennaContextMock);
 
-        verify(toolConfigMock, atLeast(0)).getProxyHost();
-        verify(toolConfigMock, atLeast(0)).getProxyPort();
+        SW360MetaDataReceiver metaDataReceiver = sw360Enricher.createMetaDataReceiver(createStandardConfigMap());
+        assertThat(metaDataReceiver).isNotNull();
+        verify(toolConfigMock).getProxyHost();
+        verify(toolConfigMock).getProxyPort();
     }
 
     @Test
     public void testWithDownloadActivated() throws IOException {
-        ReflectionTestUtils.setField(sw360Enricher, "downloadAttachments", true);
         final Path downloadPath = temporaryFolder.newFolder("download.directory").toPath();
-        ReflectionTestUtils.setField(sw360Enricher, "downloadPath", downloadPath);
+        Map<String, String> configMap = createStandardConfigMap();
+        configMap.put("download.attachments", "true");
+        configMap.put("download.directory", downloadPath.toString());
+        sw360Enricher.configure(configMap);
 
         final String downloadFilename = "downloadedSource.jar";
         SW360SparseAttachment sparseAttachment = new SW360SparseAttachment()
@@ -114,6 +141,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         assertThat(artifact.get().askFor(ArtifactSourceFile.class)).isPresent();
         assertThat(artifact.get().askForGet(ArtifactSourceFile.class)).hasValue(Paths.get(downloadFilename));
         verify(connector, never()).getLicenseDetails(any());
+        verify(toolConfigMock).getAntennaTargetDirectory();
     }
 
     @Test
@@ -124,6 +152,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         when(connector.findReleaseForArtifact(artifacts.get(0))).thenReturn(Optional.of(release0));
 
+        sw360Enricher.configure(createStandardConfigMap());
         sw360Enricher.process(artifacts);
 
         assertThat(artifacts.size()).isEqualTo(1);
@@ -175,6 +204,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     public void testWhenNoReleaseIsFoundInFindRelease() {
         when(connector.findReleaseForArtifact(any())).thenReturn(Optional.empty());
 
+        sw360Enricher.configure(createStandardConfigMap());
         final Collection<Artifact> process = sw360Enricher.process(artifacts);
 
         assertThat(process).containsExactlyElementsOf(artifacts);
@@ -195,6 +225,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         when(connector.findReleaseForArtifact(artifacts.get(0))).thenReturn(Optional.of(release0));
         when(connector.getLicenseDetails(apacheSparse)).thenReturn(Optional.of(apache));
 
+        sw360Enricher.configure(createStandardConfigMap());
         sw360Enricher.process(artifacts);
 
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses()).hasSize(1);
@@ -220,6 +251,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         when(connector.findReleaseForArtifact(artifacts.get(0))).thenReturn(Optional.of(release0));
         when(connector.getLicenseDetails(any())).thenReturn(Optional.of(apache), Optional.of(mit));
 
+        sw360Enricher.configure(createStandardConfigMap());
         sw360Enricher.process(artifacts);
 
         List<String> licenseNames = ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0))
@@ -250,6 +282,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         when(connector.findReleaseForArtifact(artifacts.get(0))).thenReturn(Optional.of(release0));
         when(connector.getLicenseDetails(any())).thenReturn(Optional.of(mit));
 
+        sw360Enricher.configure(createStandardConfigMap());
         sw360Enricher.process(artifacts);
 
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses()).hasSize(1);
