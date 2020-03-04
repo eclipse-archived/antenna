@@ -8,11 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.rest;
-
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
+package org.eclipse.sw360.antenna.sw360.rest.resource;
 
 public class SW360SimpleHalResource extends SW360HalResource<LinkObjects, Embedded> {
     @Override

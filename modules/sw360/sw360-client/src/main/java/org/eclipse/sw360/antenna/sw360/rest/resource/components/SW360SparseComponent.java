@@ -11,7 +11,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.rest.resource.components;
 
-import org.eclipse.sw360.antenna.sw360.rest.SW360SimpleHalResource;
+import org.eclipse.sw360.antenna.sw360.rest.resource.SW360SimpleHalResource;
 
 import java.util.Objects;
 

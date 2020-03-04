@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.sw360.rest.resource.attachments;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.eclipse.sw360.antenna.sw360.rest.SW360SimpleHalResource;
+import org.eclipse.sw360.antenna.sw360.rest.resource.SW360SimpleHalResource;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 
 import java.nio.file.Path;
