@@ -34,6 +34,56 @@ import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
  */
 public class SW360ConnectionConfigurationFactory {
     /**
+     * The name of the configuration property that defines the base URL of the
+     * REST API of the SW360 server to be accessed. The URLs of concrete
+     * resources (like {@code /components} or {@code /releases} are resolved
+     * relative to this URL.
+     */
+    public static final String REST_SERVER_URL_KEY = "rest.server.url";
+
+    /**
+     * The name of the configuration property that defines the endpoint of the
+     * authentication server to obtain an access token. The value must be the
+     * full URL including the {@code /token} suffix.
+     */
+    public static final String AUTH_SERVER_URL_KEY = "auth.server.url";
+
+    /**
+     * The name of the configuration property that sets the user name.
+     * Access tokens are requested on behalf of this user.
+     */
+    public static final String USERNAME_KEY = "user.id";
+
+    /**
+     * The name of the configuration property for the password of the user.
+     * This password is needed when requesting an access token for the current
+     * user.
+     */
+    public static final String PASSWORD_KEY = "user.password";
+
+    /**
+     * The name of the configuration property defining the ID of the OAuth 2
+     * client. This property is checked by the authorization server when an
+     * access token is requested.
+     */
+    public static final String CLIENT_USER_KEY = "client.id";
+
+    /**
+     * The name of the configuration property defining the password of the
+     * OAuth 2 client to be passed to the authorization server when requesting
+     * an access token.
+     */
+    public static final String CLIENT_PASSWORD_KEY = "client.password";
+
+    /**
+     * The name of the configuration property that determines whether an HTTP
+     * proxy should be used. Only if this property has a value of
+     * <strong>true</strong>, the configured proxy host and port are used. The
+     * default value is <strong>false</strong>.
+     */
+    public static final String PROXY_USE = "proxy.use";
+
+    /**
      * The factory for creating a new HTTP client.
      */
     private final HttpClientFactory httpClientFactory;
@@ -81,12 +131,12 @@ public class SW360ConnectionConfigurationFactory {
                                             Getter<Boolean> getBooleanConfigValue,
                                             String proxyHost, int proxyPort) {
         ProxySettings settings = createProxySettings(getBooleanConfigValue, proxyHost, proxyPort);
-        String restUrl = getConfigValue.apply(SW360ConnectionConfiguration.REST_SERVER_URL_KEY);
-        String authUrl = getConfigValue.apply(SW360ConnectionConfiguration.AUTH_SERVER_URL_KEY);
-        String user = getConfigValue.apply(SW360ConnectionConfiguration.USERNAME_KEY);
-        String password = getConfigValue.apply(SW360ConnectionConfiguration.PASSWORD_KEY);
-        String clientId = getConfigValue.apply(SW360ConnectionConfiguration.CLIENT_USER_KEY);
-        String clientPassword = getConfigValue.apply(SW360ConnectionConfiguration.CLIENT_PASSWORD_KEY);
+        String restUrl = getConfigValue.apply(REST_SERVER_URL_KEY);
+        String authUrl = getConfigValue.apply(AUTH_SERVER_URL_KEY);
+        String user = getConfigValue.apply(USERNAME_KEY);
+        String password = getConfigValue.apply(PASSWORD_KEY);
+        String clientId = getConfigValue.apply(CLIENT_USER_KEY);
+        String clientPassword = getConfigValue.apply(CLIENT_PASSWORD_KEY);
         ObjectMapper mapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         HttpClient httpClient = createHttpClient(settings, mapper);
@@ -140,7 +190,7 @@ public class SW360ConnectionConfigurationFactory {
      */
     private static ProxySettings createProxySettings(Getter<Boolean> getBooleanConfigValue,
                                                      String proxyHost, int proxyPort) {
-        Boolean useProxy = getBooleanConfigValue.apply(SW360ConnectionConfiguration.PROXY_USE);
+        Boolean useProxy = getBooleanConfigValue.apply(PROXY_USE);
         return ProxySettings.fromConfig(useProxy, proxyHost, proxyPort);
     }
 

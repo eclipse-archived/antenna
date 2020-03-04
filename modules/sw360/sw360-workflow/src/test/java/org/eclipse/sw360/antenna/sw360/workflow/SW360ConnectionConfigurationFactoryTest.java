@@ -49,12 +49,12 @@ public class SW360ConnectionConfigurationFactoryTest {
      */
     private static SW360ConnectionConfigurationFactory.Getter<String> stringConfigGetter() {
         Map<String, String> props = new HashMap<>();
-        props.put(SW360ConnectionConfiguration.REST_SERVER_URL_KEY, REST_URL);
-        props.put(SW360ConnectionConfiguration.AUTH_SERVER_URL_KEY, AUTH_URL);
-        props.put(SW360ConnectionConfiguration.USERNAME_KEY, USER);
-        props.put(SW360ConnectionConfiguration.PASSWORD_KEY, PASSWORD);
-        props.put(SW360ConnectionConfiguration.CLIENT_USER_KEY, CLIENT_ID);
-        props.put(SW360ConnectionConfiguration.CLIENT_PASSWORD_KEY, CLIENT_SECRET);
+        props.put(SW360ConnectionConfigurationFactory.REST_SERVER_URL_KEY, REST_URL);
+        props.put(SW360ConnectionConfigurationFactory.AUTH_SERVER_URL_KEY, AUTH_URL);
+        props.put(SW360ConnectionConfigurationFactory.USERNAME_KEY, USER);
+        props.put(SW360ConnectionConfigurationFactory.PASSWORD_KEY, PASSWORD);
+        props.put(SW360ConnectionConfigurationFactory.CLIENT_USER_KEY, CLIENT_ID);
+        props.put(SW360ConnectionConfigurationFactory.CLIENT_PASSWORD_KEY, CLIENT_SECRET);
 
         return props::get;
     }
@@ -69,7 +69,7 @@ public class SW360ConnectionConfigurationFactoryTest {
      */
     private static SW360ConnectionConfigurationFactory.Getter<Boolean> booleanConfigGetter(boolean useProxy) {
         return key -> {
-            if (!SW360ConnectionConfiguration.PROXY_USE.equals(key)) {
+            if (!SW360ConnectionConfigurationFactory.PROXY_USE.equals(key)) {
                 fail("Unsupported boolean property: " + key);
             }
             return useProxy;
