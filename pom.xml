@@ -551,6 +551,10 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <!--
+                The flatten plugin is required to resolve the "revision" property used in the version tag of POMs in a
+                multi-module setup, see https://maven.apache.org/maven-ci-friendly.html#Install_.2F_Deploy.
+            -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
