@@ -51,8 +51,6 @@ public class LicenseStatementTest {
             .isTrue();
 
         assertThat(licenseStatement.evaluate()).isEqualTo("( Apache-2.0 AND EPL-2.0 )");
-        assertThat(licenseStatement.evaluateLong())
-                .isEqualTo("( Apache License 2.0 AND Eclipse Public License 2.0 )");
     }
 
     @Test
@@ -62,7 +60,6 @@ public class LicenseStatementTest {
 
         assertThat(licenseStatement.getLicenses()).isNotNull();
         assertThat(licenseStatement.evaluate()).isEqualTo("");
-        assertThat(licenseStatement.evaluateLong()).isEqualTo("");
     }
 
     @Test

@@ -44,7 +44,6 @@ public class WithLicenseTest {
         assertThat(withLicense.getException()).isEqualTo(exception);
 
         assertThat(withLicense.evaluate()).isEqualTo("Apache-2.0 WITH Exp.");
-        assertThat(withLicense.evaluateLong()).isEqualTo("Apache License 2.0 WITH Exception");
     }
 
     @Test

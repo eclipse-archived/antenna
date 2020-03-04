@@ -78,7 +78,6 @@ public class LicenseTest {
         assertThat(license.getThreatGroup()).hasValue("Unknown");
 
         assertThat(license.evaluate()).isEqualTo(licenseId);
-        assertThat(license.evaluateLong()).isEqualTo(licenseName);
     }
 
     @Test

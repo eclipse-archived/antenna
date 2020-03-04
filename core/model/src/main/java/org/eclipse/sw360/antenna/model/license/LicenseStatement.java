@@ -59,19 +59,6 @@ public class LicenseStatement implements LicenseInformation {
     }
 
     @Override
-    public String evaluateLong() {
-        if (isEmpty()) {
-            return "";
-        }
-        return "( " +
-                licenses
-                    .stream()
-                    .map(LicenseInformation::evaluateLong)
-                    .collect(Collectors.joining(" " + this.op.toString() + " "))
-                + " )";
-    }
-
-    @Override
     public boolean isEmpty() {
         return licenses == null || licenses.isEmpty() || licenses.stream().allMatch(LicenseInformation::isEmpty);
     }

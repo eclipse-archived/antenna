@@ -14,7 +14,6 @@ import java.util.List;
 
 public interface LicenseInformation {
     String evaluate();
-    String evaluateLong();
     boolean isEmpty();
     List<License> getLicenses();
 }

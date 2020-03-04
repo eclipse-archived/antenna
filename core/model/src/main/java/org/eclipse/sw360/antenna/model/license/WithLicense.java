@@ -50,11 +50,6 @@ public class WithLicense implements LicenseInformation {
     }
 
     @Override
-    public String evaluateLong() {
-        return license.getCommonName() + " WITH " + exception.getCommonName();
-    }
-
-    @Override
     public boolean isEmpty() {
         return this.license.isEmpty() && this.exception.isEmpty();
     }

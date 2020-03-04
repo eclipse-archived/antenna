@@ -105,11 +105,6 @@ public class License implements LicenseInformation {
     }
 
     @Override
-    public String evaluateLong() {
-        return getCommonName();
-    }
-
-    @Override
     public boolean isEmpty() {
         return this.id == null;
     }

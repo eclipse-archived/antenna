@@ -99,13 +99,8 @@ public class CSVGenerator extends AbstractGenerator {
 
             LicenseInformation finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact);
             StringBuilder licenses = new StringBuilder();
-            if (finalLicenses.evaluateLong() != null) {
-                licenses.append(finalLicenses.evaluateLong());
-                licenses.append(" ");
-            } else {
-                licenses.append(finalLicenses.evaluate());
-                licenses.append(" ");
-            }
+            licenses.append(finalLicenses.evaluate());
+            licenses.append(" ");
             information.append(licenses);
             licenses.append(";");
             information.append("\n");

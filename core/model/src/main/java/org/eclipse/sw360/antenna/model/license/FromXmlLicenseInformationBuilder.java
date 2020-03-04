@@ -26,7 +26,6 @@ public class FromXmlLicenseInformationBuilder {
     @XmlType(name = "licenseInformation")
     public abstract static class AbstractLicenseInformation {
         public abstract String evaluate();
-        public abstract String evaluateLong();
         public abstract boolean isEmpty();
         public abstract List<License> getLicenses();
     }
