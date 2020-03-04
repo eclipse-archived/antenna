@@ -560,9 +560,8 @@
                 <artifactId>flatten-maven-plugin</artifactId>
                 <version>1.1.0</version>
                 <configuration>
-                    <embedBuildProfileDependencies>true</embedBuildProfileDependencies>
                     <updatePomFile>true</updatePomFile>
-                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
                 </configuration>
                 <executions>
                     <execution>
