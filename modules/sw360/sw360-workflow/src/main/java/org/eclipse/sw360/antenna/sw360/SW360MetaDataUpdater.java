@@ -16,10 +16,10 @@ import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +42,10 @@ public class SW360MetaDataUpdater {
     private final boolean updateReleases;
     private final boolean uploadSources;
 
-    public SW360MetaDataUpdater(SW360ConnectionConfiguration sw360ConnectionConfiguration, boolean updateReleases, boolean uploadSources) {
-        projectClientAdapter = sw360ConnectionConfiguration.getSW360ProjectClientAdapter();
-        licenseClientAdapter = sw360ConnectionConfiguration.getSW360LicenseClientAdapter();
-        releaseClientAdapter = sw360ConnectionConfiguration.getSW360ReleaseClientAdapter();
+    public SW360MetaDataUpdater(SW360Connection connection, boolean updateReleases, boolean uploadSources) {
+        projectClientAdapter = connection.getProjectAdapter();
+        licenseClientAdapter = connection.getLicenseAdapter();
+        releaseClientAdapter = connection.getReleaseAdapter();
         this.updateReleases = updateReleases;
         this.uploadSources = uploadSources;
     }

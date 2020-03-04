@@ -64,15 +64,15 @@ public class SW360UpdaterTest {
         updater.setAntennaContext(antennaContextMock);
 
         Map<String, String> configMap = Stream.of(new String[][]{
-                {"rest.server.url", ""},
-                {"auth.server.url", ""},
-                {"user.id", ""},
-                {"user.password", ""},
-                {"client.id", ""},
-                {"client.password", ""},
+                {"rest.server.url", "https://sw360.org/api"},
+                {"auth.server.url", "https://auth.sw360.org/token"},
+                {"user.id", "scott"},
+                {"user.password", "tiger"},
+                {"client.id", "test-client"},
+                {"client.password", "test-client-pwd"},
                 {"upload_sources", "true"},
                 {"update_releases", "true"},
-                {"proxy.use", ""}})
+                {"proxy.use", "true"}})
                 .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
 
         updater.configure(configMap);

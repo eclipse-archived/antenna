@@ -14,40 +14,40 @@ import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SW360MetaDataUpdaterTest {
     private SW360MetaDataUpdater metaDataUpdater;
-    private SW360ConnectionConfiguration connectionConfiguration = mock(SW360ConnectionConfiguration.class);
+    private SW360Connection connection = mock(SW360Connection.class);
     private SW360ProjectClientAdapter projectClientAdapter = mock(SW360ProjectClientAdapter.class);
     private SW360LicenseClientAdapter licenseClientAdapter = mock(SW360LicenseClientAdapter.class);
     private SW360ReleaseClientAdapter releaseClientAdapter = mock(SW360ReleaseClientAdapter.class);
-    final private HttpHeaders headers = mock(HttpHeaders.class);
     final private boolean uploadSources = true;
     final private boolean updateReleases = false;
 
     public void setUp() {
-        when(connectionConfiguration.getHttpHeaders())
-                .thenReturn(headers);
-        when(connectionConfiguration.getSW360ReleaseClientAdapter())
+        when(connection.getReleaseAdapter())
                 .thenReturn(releaseClientAdapter);
-        when(connectionConfiguration.getSW360ProjectClientAdapter())
+        when(connection.getProjectAdapter())
                 .thenReturn(projectClientAdapter);
-        when(connectionConfiguration.getSW360LicenseClientAdapter())
+        when(connection.getLicenseAdapter())
                 .thenReturn(licenseClientAdapter);
 
-        metaDataUpdater = new SW360MetaDataUpdater(connectionConfiguration, updateReleases, uploadSources);
+        metaDataUpdater = new SW360MetaDataUpdater(connection, updateReleases, uploadSources);
     }
 
     @Test

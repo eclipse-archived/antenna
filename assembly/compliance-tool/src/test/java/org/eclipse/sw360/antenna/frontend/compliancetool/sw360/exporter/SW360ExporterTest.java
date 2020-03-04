@@ -17,11 +17,11 @@ import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuratio
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ClearingState;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,7 +29,6 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mock;
-import org.springframework.http.HttpHeaders;
 
 import java.io.File;
 import java.io.IOException;
@@ -113,9 +112,7 @@ public class SW360ExporterTest {
     SW360Configuration configurationMock = mock(SW360Configuration.class);
 
     @Mock
-    SW360ConnectionConfiguration connectionConfigurationMock = mock(SW360ConnectionConfiguration.class);
-
-    HttpHeaders headers = new HttpHeaders();
+    SW360Connection connectionMock = mock(SW360Connection.class);
 
     @Before
     public void setUp() throws IOException {
@@ -140,17 +137,15 @@ public class SW360ExporterTest {
                 .thenReturn(Optional.of(release), Optional.of(release2));
         Path path = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("test-source.txt")).getPath());
         when(releaseClientAdapterMock.downloadAttachment(any(), any(), any()))
-                .thenReturn(Optional.ofNullable(path));
+                .thenReturn(Optional.of(path));
 
-        when(connectionConfigurationMock.getHttpHeaders())
-                .thenReturn(headers);
-        when(connectionConfigurationMock.getSW360ComponentClientAdapter())
+        when(connectionMock.getComponentAdapter())
                 .thenReturn(componentClientAdapterMock);
-        when(connectionConfigurationMock.getSW360ReleaseClientAdapter())
+        when(connectionMock.getReleaseAdapter())
                 .thenReturn(releaseClientAdapterMock);
 
-        when(configurationMock.getConnectionConfiguration())
-                .thenReturn(connectionConfigurationMock);
+        when(configurationMock.getConnection())
+                .thenReturn(connectionMock);
         csvFile = folder.newFile("sample.csv");
         when(configurationMock.getCsvFileName())
                 .thenReturn(csvFile.getName());

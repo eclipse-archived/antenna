@@ -16,42 +16,43 @@ import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToComponentUtils;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SW360MetaDataReceiverTest {
     private SW360MetaDataReceiver metaDataReceiver;
-    private SW360ConnectionConfiguration connectionConfiguration = mock(SW360ConnectionConfiguration.class);
+    private SW360Connection connection = mock(SW360Connection.class);
     private SW360LicenseClientAdapter licenseClientAdapter = mock(SW360LicenseClientAdapter.class);
     private SW360ReleaseClientAdapter releaseClientAdapter = mock(SW360ReleaseClientAdapter.class);
     private SW360ComponentClientAdapter componentClientAdapter = mock(SW360ComponentClientAdapter.class);
-    private HttpHeaders headers = mock(HttpHeaders.class);
 
     public void setUp() {
-        when(connectionConfiguration.getHttpHeaders())
-                .thenReturn(headers);
-        when(connectionConfiguration.getSW360ReleaseClientAdapter())
+        when(connection.getReleaseAdapter())
                 .thenReturn(releaseClientAdapter);
-        when(connectionConfiguration.getSW360ComponentClientAdapter())
+        when(connection.getComponentAdapter())
                 .thenReturn(componentClientAdapter);
-        when(connectionConfiguration.getSW360LicenseClientAdapter())
+        when(connection.getLicenseAdapter())
                 .thenReturn(licenseClientAdapter);
 
-        metaDataReceiver = new SW360MetaDataReceiver(connectionConfiguration);
+        metaDataReceiver = new SW360MetaDataReceiver(connection);
     }
 
     @Test

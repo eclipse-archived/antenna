@@ -51,6 +51,11 @@ public class SW360AuthenticationClient {
     private static final String FMT_REQUEST_BODY = "%s=%s&%s=%s&%s=%s";
 
     /**
+     * Tag for the request to obtain the access token.
+     */
+    private static final String TAG = "get_access_token";
+
+    /**
      * Stores the current configuration with all credentials.
      */
     private final SW360ClientConfig clientConfig;
@@ -83,7 +88,7 @@ public class SW360AuthenticationClient {
      */
     public CompletableFuture<String> getOAuth2AccessToken() {
         return getClientConfig().getHttpClient()
-                .execute(this::initTokenRequest, HttpUtils.checkResponse(this::extractToken));
+                .execute(this::initTokenRequest, HttpUtils.checkResponse(this::extractToken, TAG));
     }
 
     /**

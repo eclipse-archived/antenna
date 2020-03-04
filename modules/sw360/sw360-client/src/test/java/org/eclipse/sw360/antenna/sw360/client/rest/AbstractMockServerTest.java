@@ -22,15 +22,13 @@ import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
 import org.eclipse.sw360.antenna.http.impl.HttpClientFactoryImpl;
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
-import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessToken;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;
+import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.junit.BeforeClass;
 import org.junit.Rule;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.URL;
@@ -98,18 +96,6 @@ public class AbstractMockServerTest {
     public static void setUpOnce() {
         objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
-
-    /**
-     * Creates the rest template for sending requests to the HTTP server. We
-     * cannot use the default template here because PATCH requests need to be
-     * executed (that are not supported in the default configuration).
-     *
-     * @return the rest template
-     */
-    protected static RestTemplate createRestTemplate() {
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        return new RestTemplate(factory);
     }
 
     /**
@@ -297,8 +283,7 @@ public class AbstractMockServerTest {
      */
     protected SW360ClientConfig createClientConfig() {
         HttpClientFactory clientFactory = new HttpClientFactoryImpl();
-        HttpClientConfig httpClientConfig = HttpClientConfig.basicConfig()
-                .withObjectMapper(objectMapper);
+        HttpClientConfig httpClientConfig = HttpClientConfig.basicConfig();
         HttpClient httpClient = clientFactory.newHttpClient(httpClientConfig);
 
         return SW360ClientConfig.createConfig(wireMockRule.baseUrl(), wireMockRule.url(TOKEN_ENDPOINT),

@@ -51,7 +51,7 @@ public class SW360Updater {
 
     private void uploadReleaseWithClearingDocumentFromArtifact(Artifact artifact) {
         SW360Release release = updater.artifactToReleaseInSW360(artifact);
-        SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnectionConfiguration().getSW360ReleaseClientAdapter();
+        SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnection().getReleaseAdapter();
 
         if (release.getClearingState() != null &&
                 !release.getClearingState().isEmpty() &&

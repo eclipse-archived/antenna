@@ -15,7 +15,7 @@ package org.eclipse.sw360.antenna.sw360.workflow.processors;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
 
 import java.nio.file.Path;
@@ -54,12 +54,12 @@ public class SW360Enricher extends AbstractProcessor {
         }
 
         SW360ConnectionConfigurationFactory configurationFactory = new SW360ConnectionConfigurationFactory();
-        SW360ConnectionConfiguration sw360ConnectionConfiguration =
-                configurationFactory.createConfiguration(key -> getConfigValue(key, configMap),
+        SW360Connection connection =
+                configurationFactory.createConnection(key -> getConfigValue(key, configMap),
                         key -> getBooleanConfigValue(key, configMap),
                         sw360ProxyHost, sw360ProxyPort);
 
-        connector = new SW360MetaDataReceiver(sw360ConnectionConfiguration);
+        connector = new SW360MetaDataReceiver(connection);
     }
 
     @Override

@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.sw360.client.auth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.rest.AbstractMockServerTest;
 import org.junit.Before;
@@ -58,8 +59,9 @@ public class SW360AuthenticationClientIT extends AbstractMockServerTest {
                 .willReturn(aJsonResponse(STATUS_ERR_SERVER)));
 
         CompletableFuture<String> futToken = authenticationClient.getOAuth2AccessToken();
-        IOException exception = extractException(futToken, IOException.class);
-        assertThat(exception.getMessage()).contains(String.valueOf(STATUS_ERR_SERVER));
+        FailedRequestException exception = extractException(futToken, FailedRequestException.class);
+        assertThat(exception.getStatusCode()).isEqualTo(STATUS_ERR_SERVER);
+        assertThat(exception.getTag()).contains("get_access_token");
     }
 
     @Test

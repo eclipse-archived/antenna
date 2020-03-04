@@ -13,7 +13,6 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter.SW360Exporter;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater.SW360Updater;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
@@ -59,7 +58,7 @@ public class AntennaComplianceToolTest {
 
         Field configuration = exporter.getClass().getDeclaredField("configuration");
         configuration.setAccessible(true);
-        assertThat(((SW360Configuration) configuration.get(exporter)).getConnectionConfiguration()).isNotNull();
+        assertThat(((SW360Configuration) configuration.get(exporter)).getConnection()).isNotNull();
         assertThat(((SW360Configuration) configuration.get(exporter)).getProperties()).isNotNull();
     }
 

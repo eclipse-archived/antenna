@@ -42,8 +42,8 @@ public class SW360ConfigurationTest {
         SW360Configuration configuration = new SW360Configuration(propertiesFile);
         assertThat(configuration.getTargetDir()).isEqualTo(Paths.get("./"));
         assertThat(configuration.getCsvFileName()).isEqualTo("sample.csv");
-        assertThat(configuration.getConnectionConfiguration().getSW360ReleaseClientAdapter()).isNotNull();
-        assertThat(configuration.getConnectionConfiguration().getSW360ComponentClientAdapter()).isNotNull();
+        assertThat(configuration.getConnection().getReleaseAdapter()).isNotNull();
+        assertThat(configuration.getConnection().getComponentAdapter()).isNotNull();
     }
 
     @Test
