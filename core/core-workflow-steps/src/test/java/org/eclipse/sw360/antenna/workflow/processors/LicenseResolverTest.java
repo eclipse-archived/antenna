@@ -58,10 +58,10 @@ public class LicenseResolverTest extends AntennaTestWithMockedContext {
         ArtifactSelector selector = new ArtifactFilename("aopalliance-1.0.jar", "0235ba8b489512805ac1");
 
         License license1 = new License();
-        license1.setName("license1");
+        license1.setId("license1");
 
         License license2 = new License();
-        license2.setName("license2");
+        license2.setId("license2");
 
         Map<ArtifactSelector, LicenseInformation> configuredLicenses = new HashMap<>();
         configuredLicense = new LicenseStatement(Stream.of(license1, license2)

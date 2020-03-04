@@ -107,7 +107,7 @@ public class LicenseSupportTest {
         final LicenseInformation licenseInformation = LicenseSupport.parseSpdxExpression(license);
         assertThat(licenseInformation.getLicenses().size())
                 .isEqualTo(1);
-        assertThat(licenseInformation.getLicenses().get(0).getName())
+        assertThat(licenseInformation.getLicenses().get(0).getId())
                 .isEqualTo(license);
     }
 
@@ -133,14 +133,14 @@ public class LicenseSupportTest {
         assertThat(licenseInformation.getLicenses().size())
                 .isEqualTo(2);
         assertThat(licenseInformation).isInstanceOf(WithLicense.class);
-        assertThat(((WithLicense) licenseInformation).getLicense().getName()).isEqualTo("BSD");
-        assertThat(((WithLicense) licenseInformation).getException().getName()).isEqualTo("Exception");
+        assertThat(((WithLicense) licenseInformation).getLicense().getId()).isEqualTo("BSD");
+        assertThat(((WithLicense) licenseInformation).getException().getId()).isEqualTo("Exception");
     }
 
     @Test
     public void testSPDXParsing7() {
         final LicenseInformation licenseInformation = LicenseSupport.fromSPDXExpression("Apache-2.0");
         assertThat(licenseInformation).isInstanceOf(License.class);
-        assertThat(((License) licenseInformation).getName()).isEqualTo("Apache-2.0");
+        assertThat(((License) licenseInformation).getId()).isEqualTo("Apache-2.0");
     }
 }

@@ -71,11 +71,11 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
      * If it is found in the licenseKnowledgeBase.
      */
     private void aliasToIdentifier(License license) {
-        String licenseId = this.knowledgeBase.getLicenseIdForAlias(license.getName());
+        String licenseId = this.knowledgeBase.getLicenseIdForAlias(license.getId());
         if (licenseId != null) {
-            license.setName(licenseId);
+            license.setId(licenseId);
         } else {
-            licenseId = license.getName();
+            licenseId = license.getId();
         }
         setLongName(license, licenseId);
     }
@@ -85,11 +85,11 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
      * it is found in the knowledgeBase.
      */
     private void setLongName(License license, String licenseId) {
-        String configuredLongName = license.getLongName();
+        String configuredLongName = license.getCommonName();
         if (StringUtils.isEmpty(configuredLongName)) {
             String longName = this.knowledgeBase.getLicenseNameForId(licenseId);
             if (longName != null) {
-                license.setLongName(longName);
+                license.setCommonName(longName);
             }            
         }
     }
@@ -104,7 +104,7 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
     private void setText(License license) {
         String configuredText = license.getText();
         if (StringUtils.isEmpty(configuredText)) {
-            String id = license.getName();
+            String id = license.getId();
             Optional.ofNullable(knowledgeBase.getTextForId(id))
                 .ifPresent(license::setText);
         }
@@ -114,7 +114,7 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
     private void setThreatGroup(License license) {
         Optional<String> threatGroupOfLicense = license.getThreatGroup();
         if (!threatGroupOfLicense.isPresent() || threatGroupOfLicense.get().isEmpty()) {
-            String threatGroupOfKb = this.knowledgeBase.getThreatGroupForId(license.getName());
+            String threatGroupOfKb = this.knowledgeBase.getThreatGroupForId(license.getId());
             license.setThreatGroup(threatGroupOfKb);
         }
     }
@@ -122,7 +122,7 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
     private void setClassification(License license) {
         Optional<String> classificationOfLicense = license.getClassification();
         if (!classificationOfLicense.isPresent() || classificationOfLicense.get().isEmpty()) {
-            String classificationOfKb = this.knowledgeBase.getClassificationById(license.getName());
+            String classificationOfKb = this.knowledgeBase.getClassificationById(license.getId());
             license.setClassification(classificationOfKb);
         }
     }

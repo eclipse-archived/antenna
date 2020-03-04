@@ -21,8 +21,8 @@ public class HTMLReportUtils {
 
     public static String getLicenseAsHtmlListItem(License license) {
         return String.format("<li><a href=\"#%s\">%s</a></li>",
-                StringEscapeUtils.escapeHtml4(license.getName()),
-                license.getLongName() != null ?
-                        StringEscapeUtils.escapeHtml4(license.getLongName()) : StringEscapeUtils.escapeHtml4(license.getName()));
+                StringEscapeUtils.escapeHtml4(license.getId()),
+                license.getCommonName() != null ?
+                        StringEscapeUtils.escapeHtml4(license.getCommonName()) : StringEscapeUtils.escapeHtml4(license.getId()));
     }
 }

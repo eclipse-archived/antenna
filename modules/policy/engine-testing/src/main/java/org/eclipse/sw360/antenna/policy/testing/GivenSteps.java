@@ -110,7 +110,7 @@ public class GivenSteps {
     private License createLicense(String licenseExpression, Optional<String> threatGroup) {
         License license = new License();
         String[] licenseText = licenseExpression.split("::");
-        license.setName(licenseText[0]);
+        license.setId(licenseText[0]);
         if (licenseText.length > 1) {
             license.setText(licenseText[1]);
         }

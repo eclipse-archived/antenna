@@ -46,12 +46,12 @@ public class WithLicense implements LicenseInformation {
 
     @Override
     public String evaluate() {
-        return license.getName() + " WITH " + exception.getName();
+        return license.getId() + " WITH " + exception.getId();
     }
 
     @Override
     public String evaluateLong() {
-        return license.getLongName() + " WITH " + exception.getLongName();
+        return license.getCommonName() + " WITH " + exception.getCommonName();
     }
 
     @Override

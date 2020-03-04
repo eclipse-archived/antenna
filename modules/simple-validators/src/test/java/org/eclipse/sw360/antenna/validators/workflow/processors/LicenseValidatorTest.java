@@ -44,15 +44,15 @@ public class LicenseValidatorTest extends AntennaTestWithMockedContext {
     public void init() {
 
         allowedLicense = new License();
-        allowedLicense.setName("allowedLicense");
+        allowedLicense.setId("allowedLicense");
         allowedLicense.setText("text of allowedLicense");
 
         forbiddenLicense = new License();
-        forbiddenLicense.setName("forbiddenLicense");
+        forbiddenLicense.setId("forbiddenLicense");
         forbiddenLicense.setText("text of forbiddenLicense");
 
         emptyTextLicense = new License();
-        emptyTextLicense.setName("licenseWithoutText");
+        emptyTextLicense.setId("licenseWithoutText");
 
         emptyLicense = new License();
 
@@ -60,7 +60,7 @@ public class LicenseValidatorTest extends AntennaTestWithMockedContext {
         validator.setAntennaContext(antennaContextMock);
 
         configMap = new HashMap<>();
-        configMap.put(FORBIDDEN_LICENSES_KEY, forbiddenLicense.getName());
+        configMap.put(FORBIDDEN_LICENSES_KEY, forbiddenLicense.getId());
     }
 
     public Artifact mkArtifact(License decladerLicense) {

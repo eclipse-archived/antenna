@@ -117,7 +117,7 @@ public class SW360EnricherImpl {
 
     private void updateLicense(License license, List<SW360SparseLicense> sw360licenses) {
         sw360licenses.stream()
-                .filter(l -> l.getShortName().equals(license.getName()))
+                .filter(l -> l.getShortName().equals(license.getId()))
                 .findFirst()
                 .ifPresent(l -> enrichLicenseWithSW360Data(license, l));
     }
@@ -134,7 +134,7 @@ public class SW360EnricherImpl {
     }
 
     private License makeLicenseFromLicenseDetails(License license, SW360License licenseDetails) {
-        license.setLongName(licenseDetails.getFullName());
+        license.setCommonName(licenseDetails.getFullName());
         license.setText(licenseDetails.getText());
         return license;
     }

@@ -65,20 +65,20 @@ public class HTMLReportGeneratorTest extends AntennaTestWithMockedContext {
         htmlReportGenerator.configure(Collections.emptyMap());
 
         final License license1 = new License();
-        license1.setName(licenseName1);
+        license1.setId(licenseName1);
         license1.setText(licenseText1);
         final ArtifactForHTMLReport artifact1 = new ArtifactForHTMLReport(artifactId1, license1);
 
         final ArtifactForHTMLReport artifact2 = new ArtifactForHTMLReport(artifactId2, null);
 
         final License license2 = new License();
-        license2.setName(licenseName2);
+        license2.setId(licenseName2);
         license2.setText(licenseText2);
-        license2.setLongName(licenseFullName2);
+        license2.setCommonName(licenseFullName2);
         final ArtifactForHTMLReport artifact3 = new ArtifactForHTMLReport(artifactId3, license2);
 
         final License license3 = new License();
-        license3.setName(licenseName3);
+        license3.setId(licenseName3);
         license3.setText(licenseText3);
         final LicenseStatement license4 = new LicenseStatement();
         license4.setLicenses(Stream.of(license1, license3).collect(Collectors.toList()));

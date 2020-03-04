@@ -75,7 +75,7 @@ public class ArtifactAdapter implements ArtifactAndLicense {
     */
    public static String createKey(License license) {
       // valid keys are likely: numbers and letters but no special chars or even '-'
-      int hashCode = license.getName().hashCode();
+      int hashCode = license.getId().hashCode();
       String prefix = hashCode < 0 ? "n" : "p";
       return prefix + Math.abs(hashCode);
    }
@@ -128,7 +128,7 @@ public class ArtifactAdapter implements ArtifactAndLicense {
    private static List<LicenseInfo> createLicenses(LicenseInformation licenseInformation) {
       return licenseInformation.getLicenses()
               .stream()
-              .map(l -> new LicenseInfo(createKey(l), getLicenseText(l), l.getName(), l.getLongName()))
+              .map(l -> new LicenseInfo(createKey(l), getLicenseText(l), l.getId(), l.getCommonName()))
               .collect(Collectors.toList());
    }
 

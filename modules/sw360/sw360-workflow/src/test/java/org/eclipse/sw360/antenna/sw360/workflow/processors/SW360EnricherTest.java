@@ -37,7 +37,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -141,12 +140,12 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
 
         assertThat(artifact0.askFor(DeclaredLicenseInformation.class).isPresent()).isTrue();
         License tempDLicense = new License();
-        tempDLicense.setName(TestUtils.RELEASE_DECLEARED_LICENSE);
+        tempDLicense.setId(TestUtils.RELEASE_DECLEARED_LICENSE);
         assertThat(artifact0.askForGet(DeclaredLicenseInformation.class).get().getLicenses()).contains(tempDLicense);
 
         assertThat(artifact0.askFor(ObservedLicenseInformation.class).isPresent()).isTrue();
         License tempOLicense = new License();
-        tempOLicense.setName(TestUtils.RELEASE_OBSERVED_LICENSE);
+        tempOLicense.setId(TestUtils.RELEASE_OBSERVED_LICENSE);
         assertThat(artifact0.askForGet(ObservedLicenseInformation.class).get().getLicenses()).contains(tempOLicense);
 
         LicenseStatement licenseStatement = new LicenseStatement(Stream.of(tempDLicense, tempOLicense)
@@ -199,7 +198,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         sw360Enricher.process(artifacts);
 
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses()).hasSize(1);
-        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().get(0).getName()).isEqualTo("apache2");
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().get(0).getId()).isEqualTo("apache2");
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().get(0).getText()).isEqualTo("Some text");
     }
 
@@ -235,7 +234,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     @Test
     public void differingLicenseIsOverwritten() {
         License apache = new License();
-        apache.setName("apache2");
+        apache.setId("apache2");
 
         artifacts.get(0).addFact(new DeclaredLicenseInformation(apache));
 

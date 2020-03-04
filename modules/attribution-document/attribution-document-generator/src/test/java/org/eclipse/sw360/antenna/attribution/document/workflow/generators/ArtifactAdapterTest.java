@@ -82,7 +82,7 @@ class ArtifactAdapterTest {
    @Test
    void generateKey() {
       License license = new License();
-      license.setName("ASL2.0");
+      license.setId("ASL2.0");
       String key = ArtifactAdapter.createKey(license);
       assertThat(key).isEqualTo("p1939860698");
    }

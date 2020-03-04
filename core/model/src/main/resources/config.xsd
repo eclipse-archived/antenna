@@ -182,6 +182,7 @@
                 <xsd:all>
                 <xsd:element name="id" type="xsd:string" minOccurs="0" />
                 <xsd:element name="name" type="xsd:string" minOccurs="0" />
+                <xsd:element name="commonName" type="xsd:string" minOccurs="0" />
                 <xsd:element name="longName" type="xsd:string" minOccurs="0" />
                 <xsd:element name="text" type="xsd:string" minOccurs="0" />
                 <xsd:element name="properties" minOccurs="0">

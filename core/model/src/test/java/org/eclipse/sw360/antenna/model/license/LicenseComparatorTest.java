@@ -11,7 +11,6 @@
  */
 package org.eclipse.sw360.antenna.model.license;
 
-import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.util.LicenseComparator;
 import org.junit.Test;
 
@@ -22,10 +21,10 @@ public class LicenseComparatorTest {
     @Test
     public void testCompare() {
         License license = new License();
-        license.setName("EPL-1.0");
+        license.setId("EPL-1.0");
         license.setText("");
         License compareLicense = new License();
-        compareLicense.setName("a");
+        compareLicense.setId("a");
         LicenseComparator comparator = new LicenseComparator();
         assertThat(comparator.compare(license, license)).isEqualTo(0);
         assertThat(comparator.compare(compareLicense, license)).isPositive();

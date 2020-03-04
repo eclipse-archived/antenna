@@ -58,7 +58,7 @@ public class ArtifactTest {
 
 
         license = new License();
-        license.setName("testLicense");
+        license.setId("testLicense");
         artifact.setFlag(Artifact.IS_IGNORE_FOR_DOWNLOAD_KEY);
     }
 
@@ -145,19 +145,19 @@ public class ArtifactTest {
     public void testGetFinalLicense() {
         Artifact artifact = new Artifact();
         License declaredLicenses = new License();
-        declaredLicenses.setName("license1");
-        declaredLicenses.setLongName("licenseNumber1");
+        declaredLicenses.setId("license1");
+        declaredLicenses.setCommonName("licenseNumber1");
 
         artifact.addFact(new DeclaredLicenseInformation(declaredLicenses));
         artifact.addFact(new ConfiguredLicenseInformation(new LicenseStatement()));
         artifact.addFact(new OverriddenLicenseInformation(new LicenseStatement()));
 
-        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact).evaluate().equals(declaredLicenses.getName()));
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact).evaluate()).isEqualTo(declaredLicenses.getId());
 
         LicenseStatement observedLicenses = new LicenseStatement();
         License license2 = new License();
-        license2.setName("license2");
-        license2.setLongName("licenseNumber2");
+        license2.setId("license2");
+        license2.setCommonName("licenseNumber2");
         observedLicenses.setLicenses(Stream.of(license2, declaredLicenses).collect(Collectors.toList()));
         observedLicenses.setOp(LicenseOperator.AND);
         artifact.addFact(new ObservedLicenseInformation(observedLicenses));
@@ -171,13 +171,13 @@ public class ArtifactTest {
         assertThat(observedLicenses.getLicenses().equals(licenses)).isTrue();
 
         License configuredLicense = new License();
-        configuredLicense.setName("license3");
+        configuredLicense.setId("license3");
         artifact.addFact(new ConfiguredLicenseInformation(configuredLicense));
 
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact)).isEqualTo(configuredLicense);
 
         License overriddenLicense = new License();
-        overriddenLicense.setName("license4");
+        overriddenLicense.setId("license4");
         artifact.addFact(new OverriddenLicenseInformation(overriddenLicense));
         artifact.addFact(new ConfiguredLicenseInformation(new LicenseStatement()));
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifact)).isEqualTo(overriddenLicense);

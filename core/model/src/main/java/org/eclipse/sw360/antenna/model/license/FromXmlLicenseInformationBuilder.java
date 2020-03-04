@@ -70,7 +70,11 @@ public class FromXmlLicenseInformationBuilder {
                 @XmlElement(name = "name")
         })
         private String id;
-        private String longName;
+        @XmlElements({
+                @XmlElement(name = "commonName"),
+                @XmlElement(name = "longName")
+        })
+        private String commonName;
         private String text;
         private Map<String, String> properties = new HashMap<>();
 
@@ -78,8 +82,8 @@ public class FromXmlLicenseInformationBuilder {
             this.id = id;
         }
 
-        public void setLongName(String longName) {
-            this.longName = longName;
+        public void setCommonName(String commonName) {
+            this.commonName = commonName;
         }
 
         public void setText(String text) {
@@ -92,7 +96,7 @@ public class FromXmlLicenseInformationBuilder {
 
         @Override
         public LicenseInformation build() {
-            return new License(id, longName, text, properties);
+            return new License(id, commonName, text, properties);
         }
     }
 

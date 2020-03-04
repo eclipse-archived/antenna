@@ -38,13 +38,13 @@ public class ArtifactLicenseUtilsTest {
     @Before
     public void setUp() {
         mit = new License();
-        mit.setName("MIT");
+        mit.setId("MIT");
 
         apache = new License();
-        apache.setName("Apache-2.0");
+        apache.setId("Apache-2.0");
 
         epl = new License();
-        epl.setName("EPL-2.0");
+        epl.setId("EPL-2.0");
     }
 
     @Test
@@ -62,7 +62,7 @@ public class ArtifactLicenseUtilsTest {
                     .findAny()
                     .get()
                     .evaluate())
-                .isEqualTo(mit.getName());
+                .isEqualTo(mit.getId());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class ArtifactLicenseUtilsTest {
                 .isEqualTo(2);
         assertThat(finalLicenses.getLicenses()
                     .stream()
-                    .filter(l -> l.evaluate().equals(apache.getName()))
+                    .filter(l -> l.evaluate().equals(apache.getId()))
                     .collect(Collectors.toList())
                     .size())
                 .isEqualTo(1);
@@ -114,6 +114,6 @@ public class ArtifactLicenseUtilsTest {
         assertThat(finalLicenses.getLicenses().size())
                 .isEqualTo(2);
         assertThat(finalLicenses.getLicenses().get(0).evaluate())
-                .isEqualTo(epl.getName());
+                .isEqualTo(epl.getId());
     }
 }

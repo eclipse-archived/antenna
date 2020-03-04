@@ -41,12 +41,12 @@ public class LicenseStatementTest {
 
         assertThat(licenseStatement.getLicenses()
                 .stream()
-                .map(License::getName)
+                .map(License::getId)
                 .anyMatch(l -> "Apache-2.0".equals(l)))
             .isTrue();
         assertThat(licenseStatement.getLicenses()
                 .stream()
-                .map(License::getName)
+                .map(License::getId)
                 .anyMatch(l -> "EPL-2.0".equals(l)))
             .isTrue();
 
@@ -77,7 +77,7 @@ public class LicenseStatementTest {
         assertThat(licenseStatement.getLicenses().size()).isEqualTo(2);
         assertThat(licenseStatement.getLicenses()
                 .stream()
-                .map(License::getName)
+                .map(License::getId)
                 .anyMatch(n -> "GPL".equals(n)))
                 .isFalse();
 
@@ -85,7 +85,7 @@ public class LicenseStatementTest {
         assertThat(licenseStatement.getLicenses().size()).isEqualTo(3);
         assertThat(licenseStatement.getLicenses()
                 .stream()
-                .map(License::getName)
+                .map(License::getId)
                 .anyMatch(n -> "GPL".equals(n)))
             .isTrue();
     }

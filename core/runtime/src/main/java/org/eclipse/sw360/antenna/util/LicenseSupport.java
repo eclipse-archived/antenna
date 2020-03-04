@@ -31,7 +31,7 @@ public class LicenseSupport {
         }
 
         License license = new License();
-        license.setName(iterator.next());
+        license.setId(iterator.next());
         if (licenses.size() == 1) {
             return license;
         } else {
@@ -83,7 +83,7 @@ public class LicenseSupport {
             return LicenseSupport.fromSPDXExpression(expression);
         } catch (SpdxException e) {
             License unparsableExpression = new License();
-            unparsableExpression.setName(expression);
+            unparsableExpression.setId(expression);
             return unparsableExpression;
         }
     }
@@ -102,7 +102,7 @@ public class LicenseSupport {
     public static LicenseInformation fromSpdxLicenseReferenceExpression(SpdxLicenseReferenceExpression spdxLicenseReferenceExpression) {
         String licenseId = spdxLicenseReferenceExpression.component1();
         License license = new License();
-        license.setName(licenseId);
+        license.setId(licenseId);
         return license;
     }
 
@@ -113,7 +113,7 @@ public class LicenseSupport {
             licenseId += "+";
         }
         License license = new License();
-        license.setName(licenseId);
+        license.setId(licenseId);
         return license;
     }
 

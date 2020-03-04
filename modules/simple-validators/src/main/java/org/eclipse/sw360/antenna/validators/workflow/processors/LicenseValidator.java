@@ -74,15 +74,15 @@ public class LicenseValidator extends AbstractComplianceChecker {
                 return results;
             }
             for (License license : finalLicenses.getLicenses()) {
-                if(ignoredLicenseIds.contains(license.getName())){
-                    LOGGER.debug("Do not validate license=[" + license.getName() + "], since it is ignored for validation");
+                if(ignoredLicenseIds.contains(license.getId())){
+                    LOGGER.debug("Do not validate license=[{}], since it is ignored for validation", license.getId());
                     continue;
                 }
-                if (forbiddenLicenseIds.contains(license.getName())) {
+                if (forbiddenLicenseIds.contains(license.getId())) {
                     results.add(new DefaultPolicyEvaluation.DefaultEvaluationResult(
                             "LicenseValidator::forbiddenLicense",
                             artifact
-                            + " is licensed under the forbidden license " + license.getName(),
+                            + " is licensed under the forbidden license " + license.getId(),
                             forbiddenLicenseSeverity, artifact));
                 }
                 if (license.getText() == null || "".equals(license.getText())) {

@@ -282,7 +282,7 @@ public class CSVArtifactMapper {
     private static void addLicenseFact(CSVRecord record, Artifact artifact, String licenseType,
                                        Function<License, ArtifactLicenseInformation> licenseFactCreator) {
         License license = new License();
-        license.setName(record.get(licenseType));
+        license.setId(record.get(licenseType));
         artifact.addFact(licenseFactCreator.apply(license));
     }
 

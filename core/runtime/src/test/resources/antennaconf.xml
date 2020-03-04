@@ -129,6 +129,7 @@
 			</artifactSelector>
 			<license>
 				<name>EPL-2.0</name>
+				<longName>Eclipse Public License 2.0</longName>
 			</license>
 		</setFinalLicense>
 		<setFinalLicense>
@@ -137,6 +138,7 @@
 			</artifactSelector>
 			<license>
 				<id>Apache-2.0</id>
+				<commonName>Apache License 2.0</commonName>
 			</license>
 		</setFinalLicense>
 	</setFinalLicenses>

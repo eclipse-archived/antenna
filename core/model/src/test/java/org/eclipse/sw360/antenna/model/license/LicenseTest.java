@@ -36,7 +36,7 @@ public class LicenseTest {
 
         assertThat(license.isEmpty()).isFalse();
         assertThat(license.getProperties().size()).isEqualTo(0);
-        assertThat(license.getName()).isEqualTo(licenseId);
+        assertThat(license.getId()).isEqualTo(licenseId);
     }
 
     @Test
@@ -47,8 +47,8 @@ public class LicenseTest {
         License license = new License(licenseId, licenseName, licenseText);
 
         assertThat(license.isEmpty()).isFalse();
-        assertThat(license.getName()).isEqualTo(licenseId);
-        assertThat(license.getLongName()).isEqualTo(licenseName);
+        assertThat(license.getId()).isEqualTo(licenseId);
+        assertThat(license.getCommonName()).isEqualTo(licenseName);
         assertThat(license.getText()).isEqualTo(licenseText);
         assertThat(license.getProperties().size()).isEqualTo(0);
     }
@@ -68,8 +68,8 @@ public class LicenseTest {
 
         assertThat(license.isEmpty()).isFalse();
 
-        assertThat(license.getName()).isEqualTo(licenseId);
-        assertThat(license.getLongName()).isEqualTo(licenseName);
+        assertThat(license.getId()).isEqualTo(licenseId);
+        assertThat(license.getCommonName()).isEqualTo(licenseName);
         assertThat(license.getText()).isEqualTo(licenseText);
 
         assertThat(license.getProperties().size()).isEqualTo(3);

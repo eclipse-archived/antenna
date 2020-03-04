@@ -56,7 +56,8 @@ public class ConfigurationTest {
         assertThat(configuration.getIgnoreForSourceResolving().size()).isEqualTo(1);
 
         License license = new License();
-        license.setName("EPL-2.0");
+        license.setId("EPL-2.0");
+        license.setCommonName("Eclipse Public License 2.0");
 
         ArtifactIdentifier identifier = new ArtifactFilename("overrideName.jar");
         assertThat(configuration.getFinalLicenses().keySet().stream().anyMatch(k -> k.matches(identifier))).isTrue();
@@ -142,20 +143,22 @@ public class ConfigurationTest {
     @Test
     public void testSetFinalLicensesWithMultipleXmlElements() {
         ArtifactIdentifier artifactIdentifier = new ArtifactFilename("overrideName.jar");
-        License licenseWithName = (License) configuration.getFinalLicenses().entrySet().stream()
+        License licenseWithOldSyntax = (License) configuration.getFinalLicenses().entrySet().stream()
                 .filter(e -> e.getKey().matches(artifactIdentifier))
                 .map(Map.Entry::getValue)
                 .findAny()
                 .get();
-        assertThat(licenseWithName.getName()).isEqualTo("EPL-2.0");
+        assertThat(licenseWithOldSyntax.getId()).isEqualTo("EPL-2.0");
+        assertThat(licenseWithOldSyntax.getCommonName()).isEqualTo("Eclipse Public License 2.0");
 
         ArtifactIdentifier artifactIdentifier2 = new ArtifactFilename("setFinalLicenses.jar");
-        License licenseWithId = (License) configuration.getFinalLicenses().entrySet()
+        License licenseWithNewSyntax = (License) configuration.getFinalLicenses().entrySet()
                 .stream()
                 .filter(e -> e.getKey().matches(artifactIdentifier2))
                 .map(Map.Entry::getValue)
                 .findAny()
                 .get();
-        assertThat(licenseWithId.getName()).isEqualTo("Apache-2.0");
+        assertThat(licenseWithNewSyntax.getId()).isEqualTo("Apache-2.0");
+        assertThat(licenseWithNewSyntax.getCommonName()).isEqualTo("Apache License 2.0");
     }
 }

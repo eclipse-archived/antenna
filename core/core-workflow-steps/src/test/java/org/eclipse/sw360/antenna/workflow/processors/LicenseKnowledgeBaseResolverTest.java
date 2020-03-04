@@ -15,7 +15,6 @@ import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
 import org.eclipse.sw360.antenna.model.license.License;
-import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +72,7 @@ public class LicenseKnowledgeBaseResolverTest {
     @Test
     public void testArtifactWithOnlyKnownLicenseId() {
         License license = new License();
-        license.setName(LICENSE_ID);
+        license.setId(LICENSE_ID);
         
         Artifact artifact = new Artifact();
         artifact.addFact(new ConfiguredLicenseInformation(license));
@@ -85,8 +84,8 @@ public class LicenseKnowledgeBaseResolverTest {
         assertThat(finalLicenses.stream()
                 .findAny())
                 .hasValueSatisfying(l -> {
-                    assertThat(l.getName()).isEqualTo(LICENSE_ID);
-                    assertThat(l.getLongName()).isEqualTo(LICENSE_NAME);
+                    assertThat(l.getId()).isEqualTo(LICENSE_ID);
+                    assertThat(l.getCommonName()).isEqualTo(LICENSE_NAME);
                     assertThat(l.getText()).isEqualTo(LICENSE_TEXT);
                     assertThat(l.getThreatGroup()).hasValue(LICENSE_THREAT_GROUP);
                     assertThat(l.getClassification()).hasValue(LICENSE_CLASSIFICATION);
@@ -96,8 +95,8 @@ public class LicenseKnowledgeBaseResolverTest {
     @Test
     public void testArtifactWithFullyConfiguredLicense() {
         License license = new License();
-        license.setName(LICENSE_ID);
-        license.setLongName(LICENSE_NAME);
+        license.setId(LICENSE_ID);
+        license.setCommonName(LICENSE_NAME);
         license.setText(LICENSE_TEXT);
         license.setThreatGroup(LICENSE_THREAT_GROUP);
         license.setClassification(LICENSE_CLASSIFICATION);
@@ -113,8 +112,8 @@ public class LicenseKnowledgeBaseResolverTest {
         assertThat(finalLicenses.stream()
                 .findAny())
                 .hasValueSatisfying(l -> {
-                    assertThat(l.getName()).isEqualTo(LICENSE_ID);
-                    assertThat(l.getLongName()).isEqualTo(LICENSE_NAME);
+                    assertThat(l.getId()).isEqualTo(LICENSE_ID);
+                    assertThat(l.getCommonName()).isEqualTo(LICENSE_NAME);
                     assertThat(l.getText()).isEqualTo(LICENSE_TEXT);
                     assertThat(l.getThreatGroup()).hasValue(LICENSE_THREAT_GROUP);
                     assertThat(l.getClassification()).hasValue(LICENSE_CLASSIFICATION);
@@ -125,7 +124,7 @@ public class LicenseKnowledgeBaseResolverTest {
     public void testArtifactWithUnknownLicense() {
         String licenseName = "Unknown license";
         License license = new License();
-        license.setName(licenseName);
+        license.setId(licenseName);
         
         Artifact artifact = new Artifact();
         artifact.addFact(new ConfiguredLicenseInformation(license));
@@ -136,8 +135,8 @@ public class LicenseKnowledgeBaseResolverTest {
         assertThat(finalLicenses.size()).isEqualTo(1);
         assertThat(finalLicenses.stream()
                 .findAny()).hasValueSatisfying(l -> {
-                    assertThat(l.getName()).isEqualTo(licenseName);
-                    assertThat(l.getLongName()).isNull();
+                    assertThat(l.getId()).isEqualTo(licenseName);
+                    assertThat(l.getCommonName()).isNull();
                     assertThat(l.getText()).isNull();
                     assertThat(l.getThreatGroup()).isNotPresent();
                     assertThat(l.getClassification()).isNotPresent();
