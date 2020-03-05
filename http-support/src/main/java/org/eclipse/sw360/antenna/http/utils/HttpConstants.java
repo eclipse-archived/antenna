@@ -71,6 +71,12 @@ public final class HttpConstants {
     public static final String HEADER_CONTENT_TYPE = "Content-Type";
 
     /**
+     * Constant for the HTTP header for defining the media type(s) accepted by
+     * the client.
+     */
+    public static final String HEADER_ACCEPT = "Accept";
+
+    /**
      * Constant for the HTTP Authorization header.
      */
     public static final String HEADER_AUTHORIZATION = "Authorization";

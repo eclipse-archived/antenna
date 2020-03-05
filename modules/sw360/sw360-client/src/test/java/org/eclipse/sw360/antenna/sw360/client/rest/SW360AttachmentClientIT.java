@@ -35,6 +35,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.binaryEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -133,6 +134,7 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
         attachment.get_Links().setSelf(new Self(wireMockRule.baseUrl() + "/test/attachments/" + attachmentID));
         attachment.setFilename(fileName);
         wireMockRule.stubFor(get(urlPathEqualTo(itemRef + "/attachments/" + attachmentID))
+                .withHeader(HttpConstants.HEADER_ACCEPT, equalTo(HttpConstants.CONTENT_OCTET_STREAM))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
                         .withBodyFile(testFile)));
 
