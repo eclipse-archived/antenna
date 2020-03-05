@@ -136,8 +136,7 @@ public class SW360ClientIT extends AbstractMockServerTest {
      */
     private static void checkTestProjects(List<SW360Project> projects) {
         String[] expectedProjects = {
-                "Central-Waivers_UNKNOWN-License", "Central-Waivers_No-Sources", "SheriffToolTest",
-                "Central-Waivers_No-Source-License"
+                "Project_Foo", "Project_Bar", "Project_other", "Project_test"
         };
         List<String> actualProjectNames = projects.stream()
                 .map(SW360Project::getName)

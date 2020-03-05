@@ -12,14 +12,14 @@
   },
   "_links": {
     "sw360:component": {
-      "href": "https://sw360-backend-production.osm-si.com/resource/api/components/dc3ac8ed4e7e7cde576006c0b63a467b"
+      "href": "https://sw360.test.com/resource/api/components/xxxxxxyyyyyzzzzz7b"
     },
     "self": {
-      "href": "https://sw360-backend-production.osm-si.com/resource/api/releases/dc3ac8ed4e7e7cde576006c0b63a46a4"
+      "href": "https://sw360.test.com/resource/api/releases/xxxxxxyyyyyzzzzza4"
     },
     "curies": [
       {
-        "href": "https://sw360-backend-production.osm-si.com/resource/docs/{rel}.html",
+        "href": "https://sw360.test.com/resource/docs/{rel}.html",
         "name": "sw360",
         "templated": true
       }

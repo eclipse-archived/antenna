@@ -5,7 +5,7 @@
         "name": "jackson-annotations",
         "_links": {
           "self": {
-            "href": "https://sw360-backend-production.osm-si.com/resource/api/components/dc3ac8ed4e7e7cde576006c0b62c8c34"
+            "href": "https://sw360.test.com/resource/api/components/xxxxxxyyyyyzzzzz8c34"
           }
         }
       },
@@ -13,7 +13,7 @@
         "name": "jakarta.validation-api",
         "_links": {
           "self": {
-            "href": "https://sw360-backend-production.osm-si.com/resource/api/components/dc3ac8ed4e7e7cde576006c0b62c9e53"
+            "href": "https://sw360.test.com/resource/api/components/xxxxxxyyyyyzzzzz9e53"
           }
         }
       },
@@ -21,7 +21,7 @@
         "name": "jsoup",
         "_links": {
           "self": {
-            "href": "https://sw360-backend-production.osm-si.com/resource/api/components/dc3ac8ed4e7e7cde576006c0b62cb9ee"
+            "href": "https://sw360.test.com/resource/api/components/xxxxxxyyyyyzzzzzb9ee"
           }
         }
       }
@@ -30,7 +30,7 @@
   "_links": {
     "curies": [
       {
-        "href": "https://sw360-backend-production.osm-si.com/resource/docs/{rel}.html",
+        "href": "https://sw360.test.com/resource/docs/{rel}.html",
         "name": "sw360",
         "templated": true
       }

@@ -27,59 +27,61 @@ import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
  * configuration.
  * </p>
  * <p>
- * This class processes configuration settings to extract all the information
- * required by the client library. It then uses the correct factories to
- * create an {@code SW360Connection} object.
+ * This class processes configuration settings from the Antenna tool
+ * configuration to extract all the information required by the client library.
+ * It then uses the correct factories to create an {@code SW360Connection}
+ * object.
  * </p>
  */
 public class SW360ConnectionConfigurationFactory {
     /**
-     * The name of the configuration property that defines the base URL of the
-     * REST API of the SW360 server to be accessed. The URLs of concrete
-     * resources (like {@code /components} or {@code /releases} are resolved
-     * relative to this URL.
+     * The name of the property from the Antenna tool configuration that
+     * defines the base URL of the REST API of the SW360 server to be accessed.
+     * The URLs of concrete resources (like {@code /components} or
+     * {@code /releases} are resolved relative to this URL.
      */
     public static final String REST_SERVER_URL_KEY = "rest.server.url";
 
     /**
-     * The name of the configuration property that defines the endpoint of the
-     * authentication server to obtain an access token. The value must be the
-     * full URL including the {@code /token} suffix.
+     * The name of the property from the Antenna tool configuration that
+     * defines the endpoint of the authentication server to obtain an access
+     * token. The value must be the full URL including the {@code /token}
+     * suffix.
      */
     public static final String AUTH_SERVER_URL_KEY = "auth.server.url";
 
     /**
-     * The name of the configuration property that sets the user name.
-     * Access tokens are requested on behalf of this user.
+     * The name of the property from the Antenna tool configuration that sets
+     * the user name. Access tokens are requested on behalf of this user.
      */
     public static final String USERNAME_KEY = "user.id";
 
     /**
-     * The name of the configuration property for the password of the user.
-     * This password is needed when requesting an access token for the current
-     * user.
+     * The name of the property from the Antenna tool configuration for the
+     * password of the user. This password is needed when requesting an access
+     * token for the current user.
      */
     public static final String PASSWORD_KEY = "user.password";
 
     /**
-     * The name of the configuration property defining the ID of the OAuth 2
-     * client. This property is checked by the authorization server when an
-     * access token is requested.
+     * The name of the property from the Antenna tool configuration defining
+     * the ID of the OAuth 2 client. This property is checked by the
+     * authorization server when an access token is requested.
      */
     public static final String CLIENT_USER_KEY = "client.id";
 
     /**
-     * The name of the configuration property defining the password of the
-     * OAuth 2 client to be passed to the authorization server when requesting
-     * an access token.
+     * The name of the property from the Antenna tool configuration defining
+     * the password of the OAuth 2 client to be passed to the authorization
+     * server when requesting an access token.
      */
     public static final String CLIENT_PASSWORD_KEY = "client.password";
 
     /**
-     * The name of the configuration property that determines whether an HTTP
-     * proxy should be used. Only if this property has a value of
-     * <strong>true</strong>, the configured proxy host and port are used. The
-     * default value is <strong>false</strong>.
+     * The name of the property from the Antenna tool configuration that
+     * determines whether an HTTP proxy should be used. Only if this property
+     * has a value of <strong>true</strong>, the configured proxy host and port
+     * are used. The default value is <strong>false</strong>.
      */
     public static final String PROXY_USE = "proxy.use";
 

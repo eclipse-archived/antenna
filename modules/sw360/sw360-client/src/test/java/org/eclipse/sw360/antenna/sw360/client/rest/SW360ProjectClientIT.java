@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.rest;
 
-import org.apache.http.HttpStatus;
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
@@ -41,8 +40,7 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
      * The names of the projects defined in the test data.
      */
     private static final String[] PROJECT_NAMES = {
-            "Central-Waivers_UNKNOWN-License", "Central-Waivers_No-Sources", "SheriffToolTest",
-            "Central-Waivers_No-Source-License"
+            "Project_Foo", "Project_Bar", "Project_other", "Project_test"
     };
 
     private SW360ProjectClient projectClient;
@@ -81,7 +79,7 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
     @Test
     public void testSearchByNameNoContent() {
         wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
-                .willReturn(aResponse().withStatus(202)));
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_ACCEPTED)));
 
         extractException(projectClient.searchByName("foo"), IOException.class);
     }
@@ -89,7 +87,7 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
     @Test
     public void testSearchByNameError() {
         wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
-                .willReturn(aJsonResponse(HttpStatus.SC_BAD_REQUEST)));
+                .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_BAD_REQUEST)));
 
         FailedRequestException exception =
                 expectFailedRequest(projectClient.searchByName("foo"), HttpConstants.STATUS_ERR_BAD_REQUEST);

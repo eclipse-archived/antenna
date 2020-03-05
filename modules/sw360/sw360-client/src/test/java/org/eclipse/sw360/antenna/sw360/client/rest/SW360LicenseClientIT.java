@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.rest;
 
-import org.apache.http.HttpStatus;
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
@@ -84,7 +83,7 @@ public class SW360LicenseClientIT extends AbstractMockServerTest {
     public void testGetLicenseByName() throws IOException {
         final String licenseName = "tst";
         wireMockRule.stubFor(get(urlPathEqualTo("/licenses/" + licenseName))
-                .willReturn(aJsonResponse(HttpStatus.SC_OK)
+                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
                         .withBodyFile("license.json")));
 
         SW360License license = waitFor(licenseClient.getLicenseByName(licenseName));
@@ -96,7 +95,7 @@ public class SW360LicenseClientIT extends AbstractMockServerTest {
     @Test
     public void testGetLicenseByNameUnknown() {
         wireMockRule.stubFor(get(anyUrl())
-                .willReturn(aResponse().withStatus(HttpStatus.SC_NOT_FOUND)));
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_ERR_NOT_FOUND)));
 
         FailedRequestException exception =
                 expectFailedRequest(licenseClient.getLicenseByName("unknown"), HttpConstants.STATUS_ERR_NOT_FOUND);
@@ -106,7 +105,7 @@ public class SW360LicenseClientIT extends AbstractMockServerTest {
     @Test
     public void testGetLicenseByNameNoContent() {
         wireMockRule.stubFor(get(anyUrl())
-                .willReturn(aResponse().withStatus(HttpStatus.SC_NO_CONTENT)));
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_OK)));
 
         extractException(licenseClient.getLicenseByName("foo"), IOException.class);
     }

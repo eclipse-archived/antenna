@@ -58,7 +58,7 @@ public class ProxySettingsTest {
     }
 
     @Test
-    public void testIsUseProxyUndefinedPort() {
+    public void testIsProxyUseUndefinedPort() {
         ProxySettings settings = ProxySettings.useProxy(PROXY_HOST, ProxySettings.UNDEFINED_PORT);
 
         assertThat(settings.isProxyUse()).isFalse();
