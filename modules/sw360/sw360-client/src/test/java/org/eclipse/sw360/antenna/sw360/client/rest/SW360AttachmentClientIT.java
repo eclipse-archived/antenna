@@ -28,6 +28,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aMultipart;
@@ -45,6 +46,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.sw360.antenna.http.utils.HttpUtils.waitFor;
 
 public class SW360AttachmentClientIT extends AbstractMockServerTest {
+    /**
+     * The name of the directory where downloaded attachments are stored.
+     */
+    private static final String DOWNLOAD_DIRECTORY = "downloads";
+
+    /**
+     * File name used for a test attachment.
+     */
+    private static final String ATTACHMENT_FILE = "testAttachment.json";
+
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
@@ -63,7 +74,7 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
      * @return the attachment download directory
      */
     private Path getDownloadDir() {
-        return temporaryFolder.getRoot().toPath().resolve("downloads");
+        return temporaryFolder.getRoot().toPath().resolve(DOWNLOAD_DIRECTORY);
     }
 
     @Test
@@ -126,13 +137,12 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
     @Test
     public void testDownloadAttachment() throws IOException {
         final String attachmentID = "test-attachment-id";
-        final String fileName = "testAttachment.json";
         final String itemRef = "/testComponent";
         final String testFile = "project.json";
         Path downloadDir = getDownloadDir();
         SW360SparseAttachment attachment = new SW360SparseAttachment();
         attachment.get_Links().setSelf(new Self(wireMockRule.baseUrl() + "/test/attachments/" + attachmentID));
-        attachment.setFilename(fileName);
+        attachment.setFilename(ATTACHMENT_FILE);
         wireMockRule.stubFor(get(urlPathEqualTo(itemRef + "/attachments/" + attachmentID))
                 .withHeader(HttpConstants.HEADER_ACCEPT, equalTo(HttpConstants.CONTENT_OCTET_STREAM))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
@@ -140,7 +150,7 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
 
         Path path = waitFor(attachmentClient.downloadAttachment(wireMockRule.baseUrl() + itemRef,
                 attachment, downloadDir));
-        assertThat(path.getFileName().toString()).isEqualTo(fileName);
+        assertThat(path.getFileName().toString()).isEqualTo(ATTACHMENT_FILE);
         assertThat(path.getParent()).isEqualTo(downloadDir);
         SW360Project expData = readTestJsonFile(resolveTestFileURL(testFile), SW360Project.class);
         SW360Project actData = readTestJsonFile(path.toUri().toURL(), SW360Project.class);
@@ -151,6 +161,14 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
     public void testDownloadAttachmentPathAlreadyExisting() throws IOException {
         Path downloadDir = getDownloadDir();
         Files.createDirectory(downloadDir);
+
+        testDownloadAttachment();
+    }
+
+    @Test
+    public void testDownloadAttachmentIfFileIsAlreadyPresent() throws IOException {
+        Path attachment = Files.createDirectory(getDownloadDir()).resolve(ATTACHMENT_FILE);
+        Files.write(attachment, Arrays.asList("This", "is", "a", "test."));
 
         testDownloadAttachment();
     }

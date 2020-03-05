@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -135,11 +136,12 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?, ?
             return executeRequest(builder -> builder.uri(url)
                     .header(HttpConstants.HEADER_ACCEPT, HttpConstants.CONTENT_OCTET_STREAM),
                     response -> {
-                        Files.copy(response.bodyStream(), targetFile);
+                        Files.copy(response.bodyStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
                         return targetFile;
                     }, TAG_DOWNLOAD_ATTACHMENT);
         } catch (IOException e) {
-            LOGGER.warn("Request to write downloaded attachment {} to {} failed with {}", attachment.getFilename(), downloadPath, e.getMessage());
+            LOGGER.warn("Request to write downloaded attachment {} to {} failed with {}",
+                    attachment.getFilename(), downloadPath, e.getMessage());
             LOGGER.debug("Error: ", e);
             CompletableFuture<Path> failedFuture = new CompletableFuture<>();
             failedFuture.completeExceptionally(e);
