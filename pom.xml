@@ -560,6 +560,7 @@
                 <configuration>
                     <updatePomFile>true</updatePomFile>
                     <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
