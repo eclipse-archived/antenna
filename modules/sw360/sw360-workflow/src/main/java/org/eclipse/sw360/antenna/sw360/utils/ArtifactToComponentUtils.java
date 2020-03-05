@@ -19,9 +19,6 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename.ArtifactF
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class ArtifactToComponentUtils {
 
     private ArtifactToComponentUtils() {}
@@ -29,14 +26,21 @@ public class ArtifactToComponentUtils {
     public static String createComponentName(Artifact artifact) {
         return artifact.askFor(ArtifactCoordinates.class)
                 .map(ArtifactCoordinates::getMainCoordinate)
-                .map(o -> Stream.of(o.getNamespace(), o.getName()))
-                .map(o -> o.collect(Collectors.joining("/")))
+                .map(ArtifactToComponentUtils::createNameForCoordinate)
                 .orElseGet(() -> artifact.askFor(ArtifactFilename.class)
                         .flatMap(ArtifactFilename::getBestFilenameEntryGuess)
                         .map(ArtifactFilenameEntry::getFilename)
-                        .orElseThrow(() -> new ExecutionException("Artifact " + artifact.prettyPrint() + " does not have " +
-                                "enough facts to create a component name. Please provide more information " +
-                                "by an analyzer (" + artifact.getAnalysisSource() + ")")));
+                        .orElseThrow(
+                                () -> new ExecutionException("Artifact " + artifact.prettyPrint() + " does not have " +
+                                        "enough facts to create a component name. Please provide more information " +
+                                        "by an analyzer (" + artifact.getAnalysisSource() + ")")));
+    }
+
+    private static String createNameForCoordinate(Coordinate coordinate) {
+        if (coordinate.hasNamespace()) {
+            return coordinate.getNamespace() + "/" + coordinate.getName();
+        }
+        return coordinate.getName();
     }
 
     public static String createComponentVersion(Artifact artifact) {

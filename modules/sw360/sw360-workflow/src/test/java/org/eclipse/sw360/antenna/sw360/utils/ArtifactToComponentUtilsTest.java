@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -15,6 +16,7 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
+import org.eclipse.sw360.antenna.model.coordinates.CoordinateBuilder;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentType;
 import org.junit.Rule;
@@ -37,7 +39,7 @@ public class ArtifactToComponentUtilsTest {
     private String expectedExceptionMsg;
 
     public ArtifactToComponentUtilsTest(Artifact artifact, String expectedName, SW360ComponentType expectedType,
-                                        Class<? extends Exception> expectedException, String expectedExceptionMsg) {
+            Class<? extends Exception> expectedException, String expectedExceptionMsg) {
         this.artifact = artifact;
         this.expectedName = expectedName;
         this.expectedType = expectedType;
@@ -48,45 +50,45 @@ public class ArtifactToComponentUtilsTest {
 
     @Parameterized.Parameters(name = "{index}: input={0}")
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
+        return Arrays.asList(new Object[][]{
                 {
-                    new Artifact()
-                            .setProprietary(true)
-                            .addFact(new ArtifactCoordinates(
-                                    new Coordinate(Coordinate.Types.MAVEN, "org.example", "lib", "1.0"))),
+                        new Artifact()
+                                .setProprietary(true)
+                                .addFact(new ArtifactCoordinates(
+                                new Coordinate(Coordinate.Types.MAVEN, "org.example", "lib", "1.0"))),
                         "org.example/lib",
                         SW360ComponentType.INTERNAL,
                         null, null
                 },
                 {
-                    new Artifact()
-                            .setProprietary(false)
-                            .addFact(new ArtifactCoordinates(
-                                    new Coordinate(Coordinate.Types.NPM, "@organisation", "framework", "1.0"))),
+                        new Artifact()
+                                .setProprietary(false)
+                                .addFact(new ArtifactCoordinates(
+                                new Coordinate(Coordinate.Types.NPM, "@organisation", "framework", "1.0"))),
                         "@organisation/framework",
                         SW360ComponentType.OSS,
                         null, null
                 },
                 {
-                    new Artifact()
-                            .setProprietary(false)
-                            .addFact(new ArtifactCoordinates(
-                                    new Coordinate(Coordinate.Types.NUGET, "Org.Example", "Library", "1.0"))),
+                        new Artifact()
+                                .setProprietary(false)
+                                .addFact(new ArtifactCoordinates(
+                                new Coordinate(Coordinate.Types.NUGET, "Org.Example", "Library", "1.0"))),
                         "Org.Example/Library",
                         SW360ComponentType.OSS,
                         null, null
                 },
                 {
-                    new Artifact()
-                        .setProprietary(false)
-                        .addFact(new ArtifactFilename("library-filename.ext")),
+                        new Artifact()
+                                .setProprietary(false)
+                                .addFact(new ArtifactFilename("library-filename.ext")),
                         "library-filename.ext",
                         SW360ComponentType.OSS,
                         null, null
                 },
                 {
-                    new Artifact()
-                        .setProprietary(false),
+                        new Artifact()
+                                .setProprietary(false),
                         null,
                         SW360ComponentType.OSS,
                         ExecutionException.class, "does not have enough facts to create a component name."
@@ -110,5 +112,41 @@ public class ArtifactToComponentUtilsTest {
 
         assertThat(component.getName()).isEqualTo(expectedName);
         assertThat(component.getComponentType()).isEqualTo(expectedType);
+    }
+
+    private static final String COORD_NAME = "Foo";
+    private static final String COORD_NAMESPACE = "Bar";
+    private static final String COORD_TYPE = "maven";
+    private static final String COORD_VERSION = "1.0.0";
+
+    @Test
+    public void testCreateComponentNameWithNamespace() {
+        Artifact artifact = new Artifact();
+        artifact.addFact(new ArtifactCoordinates(
+                new CoordinateBuilder()
+                        .withType(COORD_TYPE)
+                        .withName(COORD_NAME)
+                        .withNamespace(COORD_NAMESPACE)
+                        .withVersion(COORD_VERSION)
+                        .build()));
+
+        String name = ArtifactToComponentUtils.createComponentName(artifact);
+
+        assertThat(name).isEqualTo(COORD_NAMESPACE + "/" + COORD_NAME);
+    }
+
+    @Test
+    public void testCreateComponentNameWithoutNamespace() {
+        Artifact artifact = new Artifact();
+        artifact.addFact(new ArtifactCoordinates(
+                new CoordinateBuilder()
+                        .withType(COORD_TYPE)
+                        .withName(COORD_NAME)
+                        .withVersion(COORD_VERSION)
+                        .build()));
+
+        String name = ArtifactToComponentUtils.createComponentName(artifact);
+
+        assertThat(name).isEqualTo(COORD_NAME);
     }
 }
