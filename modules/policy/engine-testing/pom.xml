@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.eclipse.sw360.antenna</groupId>
         <artifactId>policy-module</artifactId>
-        <version>${revision}${qualifier}</version>
+        <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>engine-testing</artifactId>
