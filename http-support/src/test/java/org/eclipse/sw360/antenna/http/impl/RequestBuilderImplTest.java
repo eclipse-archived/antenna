@@ -12,7 +12,6 @@ package org.eclipse.sw360.antenna.http.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.sw360.antenna.http.api.HttpExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,8 +53,8 @@ public class RequestBuilderImplTest {
         try {
             requestBuilder.bodyJson(data);
             fail("No exception thrown!");
-        } catch (HttpExecutionException hex) {
-            assertThat(hex.getCause()).isEqualTo(exception);
+        } catch (IllegalStateException iex) {
+            assertThat(iex.getCause()).isEqualTo(exception);
         }
     }
 

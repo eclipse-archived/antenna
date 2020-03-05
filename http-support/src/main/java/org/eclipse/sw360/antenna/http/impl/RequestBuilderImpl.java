@@ -17,7 +17,6 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import org.eclipse.sw360.antenna.http.api.HttpExecutionException;
 import org.eclipse.sw360.antenna.http.api.RequestBuilder;
 import org.eclipse.sw360.antenna.http.api.RequestProducer;
 
@@ -117,7 +116,7 @@ class RequestBuilderImpl implements RequestBuilder {
         try {
             return bodyString(mapper.writeValueAsString(payload), "application/json");
         } catch (JsonProcessingException e) {
-            throw new HttpExecutionException(e);
+            throw new IllegalStateException(e);
         }
     }
 
