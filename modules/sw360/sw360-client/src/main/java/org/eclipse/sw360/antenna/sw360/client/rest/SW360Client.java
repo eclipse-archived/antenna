@@ -13,12 +13,10 @@ package org.eclipse.sw360.antenna.sw360.client.rest;
 
 import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.ResponseProcessor;
-import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
-import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
-import org.eclipse.sw360.antenna.sw360.client.auth.AccessToken;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
+import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +104,7 @@ public abstract class SW360Client {
     protected <T> CompletableFuture<T> executeRequest(Consumer<? super RequestBuilder> producer,
                                                       ResponseProcessor<T> processor,
                                                       String tag) {
-        return executeWithExpiredTokenCheck(producer, processor, tag, true);
+        return manageTokenAndExecute(producer, processor, tag, true);
     }
 
     /**
@@ -160,107 +158,31 @@ public abstract class SW360Client {
      * @param <T>       the type of the result
      * @return a future with the result of the request
      */
-    private <T> CompletableFuture<T> executeWithExpiredTokenCheck(Consumer<? super RequestBuilder> producer,
-                                                                  ResponseProcessor<T> processor,
-                                                                  String tag,
-                                                                  boolean canRetry) {
+    private <T> CompletableFuture<T> manageTokenAndExecute(Consumer<? super RequestBuilder> producer,
+                                                           ResponseProcessor<T> processor,
+                                                           String tag,
+                                                           boolean canRetry) {
         LOG.debug("Executing request '{}'{}.", tag, canRetry ? "" : " (retry)");
 
         CompletableFuture<T> futRequest = getTokenProvider().doWithToken(accessToken ->
                 getClientConfig().getHttpClient().execute(accessToken.tokenProducer(producer),
-                        applyChecks(processor, tag, accessToken)));
+                HttpUtils.checkResponse(processor, tag)));
         return canRetry ?
-                FutureUtils.withConditionalFallback(futRequest,
+                FutureUtils.wrapFutureForConditionalFallback(futRequest,
                         this::checkIfRetry,
-                        () -> executeWithExpiredTokenCheck(producer, processor, tag, false)) :
+                        () -> manageTokenAndExecute(producer, processor, tag, false)) :
                 futRequest;
     }
 
     /**
      * Checks whether a request needs to be retried because the access token
      * may have expired. The method checks whether the request failed with the
-     * special {@code RequestUnauthorizedException} exception.
+     * status code UNAUTHORIZED.
      *
      * @param exception the exception the request failed with if any
      * @return a flag whether a retry should be attempted
      */
     private boolean checkIfRetry(Throwable exception) {
-        if (exception instanceof UnauthorizedRequestException) {
-            getTokenProvider().invalidate(((UnauthorizedRequestException) exception).token);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Checks whether the given exception indicates an unauthorized request.
-     * This could mean that the access token has expired, and the request may
-     * be retried with a fresh token.
-     *
-     * @param exception the exception causing the request to fail
-     * @return true if the request was unauthorized, false otherwise
-     */
-    private static boolean isRequestUnauthorized(Throwable exception) {
         return FutureUtils.isFailedRequestWithStatus(exception, HttpConstants.STATUS_ERR_UNAUTHORIZED);
-    }
-
-    /**
-     * Adds some checks to the original {@code ResponseProcessor} for a request
-     * to be executed. Before this processor is invoked, it is first checked
-     * whether the response has a successful status code. The status code
-     * indicating an unauthorized request is handled in a special way as it
-     * might cause the request to be retried.
-     *
-     * @param processor   the original {@code ResponseProcessor}
-     * @param tag         a tag to identify the request
-     * @param accessToken the current access token
-     * @param <T>         the type of the result
-     * @return the decorated {@code ResponseProcessor}
-     */
-    private static <T> ResponseProcessor<T> applyChecks(ResponseProcessor<T> processor, String tag,
-                                                        AccessToken accessToken) {
-        return checkUnauthorized(HttpUtils.checkResponse(processor, tag), tag, accessToken);
-    }
-
-    /**
-     * Returns a special {@code ResponseProcessor} that wraps another processor
-     * and checks whether the request failed because it was unauthorized. In
-     * this case, the exception is transformed and enriched with the (probably
-     * expired) access token.
-     *
-     * @param processor the {@code ResponseProcessor} to be wrapped
-     * @param token     the current access token
-     * @param <T>       the type of the result generated
-     * @return the result of the {@code ResponseProcessor}
-     */
-    private static <T> ResponseProcessor<T> checkUnauthorized(ResponseProcessor<T> processor, String tag,
-                                                              AccessToken token) {
-        return response -> {
-            try {
-                return processor.process(response);
-            } catch (FailedRequestException e) {
-                if (isRequestUnauthorized(e)) {
-                    throw new UnauthorizedRequestException(tag, token);
-                } else {
-                    throw e;
-                }
-            }
-        };
-    }
-
-    /**
-     * A special exception class to indicate that a request failed because it
-     * was unauthorized. Such requests may be retried with a fresh access
-     * token. The main purpose of this class is to transport the access token
-     * through the processing chain, so that it can be invalidated.
-     */
-    private static class UnauthorizedRequestException extends FailedRequestException {
-        private final AccessToken token;
-
-        public UnauthorizedRequestException(String tag, AccessToken token) {
-            super(tag, HttpConstants.STATUS_ERR_UNAUTHORIZED);
-            this.token = token;
-        }
     }
 }

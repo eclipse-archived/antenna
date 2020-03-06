@@ -18,8 +18,8 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.eclipse.sw360.antenna.http.HttpClient;
 import org.eclipse.sw360.antenna.http.HttpClientFactory;
-import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
 import org.eclipse.sw360.antenna.http.HttpClientFactoryImpl;
+import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessToken;
@@ -33,7 +33,6 @@ import org.junit.Rule;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -41,7 +40,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -141,8 +139,8 @@ public class AbstractMockServerTest {
      *
      * @return a mock access token provider
      */
-    protected static AccessTokenProvider createMockTokenProvider() {
-        return spy(new AccessTokenProvider(mock(SW360AuthenticationClient.class)));
+    protected static AccessTokenProviderTestImpl createMockTokenProvider() {
+        return spy(new AccessTokenProviderTestImpl(mock(SW360AuthenticationClient.class)));
     }
 
     /**
@@ -158,7 +156,9 @@ public class AbstractMockServerTest {
     protected static void prepareAccessTokens(AccessTokenProvider provider,
                                               CompletableFuture<AccessToken> tokenFuture,
                                               CompletableFuture<AccessToken>... moreTokenFutures) {
-        doReturn(tokenFuture, (Object[]) moreTokenFutures).when(provider).obtainAccessToken();
+        assertThat(provider).isInstanceOf(AccessTokenProviderTestImpl.class);
+        AccessTokenProviderTestImpl testProvider = (AccessTokenProviderTestImpl) provider;
+        doReturn(tokenFuture, (Object[]) moreTokenFutures).when(testProvider).obtainAccessToken();
     }
 
     /**
@@ -197,22 +197,6 @@ public class AbstractMockServerTest {
      */
     protected static String toJson(Object data) throws JsonProcessingException {
         return objectMapper.writeValueAsString(data);
-    }
-
-    /**
-     * Checks whether the given {@code Optional} is defined and returns its
-     * content. Fails the test if this is not the case.
-     *
-     * @param optional the {@code Optional} to be checked
-     * @param <T>      the type of the optional
-     * @return the content of the {@code Optional}
-     */
-    protected static <T> T assertPresent(Optional<T> optional) {
-        if (!optional.isPresent()) {
-            fail("Got no value!");
-            throw new AssertionError();  // to make compiler happy, will not be executed
-        }
-        return optional.get();
     }
 
     /**
@@ -288,5 +272,26 @@ public class AbstractMockServerTest {
 
         return SW360ClientConfig.createConfig(wireMockRule.baseUrl(), wireMockRule.url(TOKEN_ENDPOINT),
                 USER, PASSWORD, CLIENT_ID, CLIENT_PASSWORD, httpClient, objectMapper);
+    }
+
+    /**
+     * A specialized {@code AccessTokenProvider} implementation used within
+     * tests. This class increases the visibility of some methods, so that they
+     * can be manipulated by spies.
+     */
+    static class AccessTokenProviderTestImpl extends AccessTokenProvider {
+        public AccessTokenProviderTestImpl(SW360AuthenticationClient authClient) {
+            super(authClient);
+        }
+
+        @Override
+        public CompletableFuture<AccessToken> obtainAccessToken() {
+            return super.obtainAccessToken();
+        }
+
+        @Override
+        public synchronized void invalidate(AccessToken token) {
+            super.invalidate(token);
+        }
     }
 }

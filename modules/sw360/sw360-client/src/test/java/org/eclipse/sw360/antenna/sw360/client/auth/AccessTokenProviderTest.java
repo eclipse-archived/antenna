@@ -10,6 +10,8 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.auth;
 
+import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
+import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -162,5 +164,52 @@ public class AccessTokenProviderTest {
 
         Object result = tokenProvider.doWithToken(func).join();
         assertThat(result).isEqualTo(TOKEN);
+    }
+
+    /**
+     * Returns a function to be passed to {@code doWithToken()} that produces
+     * a future failing with the passed in exception.
+     *
+     * @param exception the exception to fail the future with
+     * @return the future simulating a failed request
+     */
+    private static Function<AccessToken, CompletableFuture<Object>> failedRequestFunction(Throwable exception) {
+        return token -> {
+            CompletableFuture<Object> failedFuture = new CompletableFuture<>();
+            failedFuture.completeExceptionally(exception);
+            return failedFuture;
+        };
+    }
+
+    @Test
+    public void testDoWithTokenFailedRequest() {
+        Throwable exception = new FailedRequestException("failure", HttpConstants.STATUS_ERR_NOT_FOUND);
+        Function<AccessToken, CompletableFuture<Object>> func = failedRequestFunction(exception);
+        expectTokenRequest(CompletableFuture.completedFuture(TOKEN), CompletableFuture.completedFuture("other"));
+
+        try {
+            tokenProvider.doWithToken(func).join();
+            fail("No exception thrown!");
+        } catch (CompletionException ex) {
+            assertThat(ex.getCause()).isEqualTo(exception);
+        }
+        assertThat(tokenProvider.obtainAccessToken().join().getToken()).isEqualTo(TOKEN);
+    }
+
+    @Test
+    public void testDoWithTokenFailedRequestTokenExpired() {
+        String freshToken = "refreshed_access_token";
+        Throwable exception = new FailedRequestException("failure", HttpConstants.STATUS_ERR_UNAUTHORIZED);
+        Function<AccessToken, CompletableFuture<Object>> func = failedRequestFunction(exception);
+        expectTokenRequest(CompletableFuture.completedFuture(TOKEN),
+                CompletableFuture.completedFuture(freshToken));
+
+        try {
+            tokenProvider.doWithToken(func).join();
+            fail("No exception thrown!");
+        } catch (CompletionException ex) {
+            assertThat(ex.getCause()).isEqualTo(exception);
+        }
+        assertThat(tokenProvider.obtainAccessToken().join().getToken()).isEqualTo(freshToken);
     }
 }

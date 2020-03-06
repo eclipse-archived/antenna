@@ -10,6 +10,8 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.auth;
 
+import org.eclipse.sw360.antenna.http.utils.HttpConstants;
+import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,11 +24,14 @@ import java.util.function.Function;
  * server.
  * </p>
  * <p>
- * An instance of this class can be queried for a current access token. On
- * first access, the token is obtained asynchronously and then cached. The
- * token is valid for a certain time span, typically one hour. When a request
- * with the token yields a 401 Unauthorized error, the instance should be
- * notified by calling the {@link #invalidate(AccessToken)} method; this causes
+ * An instance of this class can be asked to execute a request with a valid
+ * access token. The request to be executed is specified using a function that
+ * accepts an access token and returns a future result. The management of the
+ * token is fully handled by this class: On first access, the token is obtained
+ * asynchronously and then cached. The token is valid for a certain time span,
+ * typically one hour. When a request with the token yields a 401 Unauthorized
+ * error, this is detected by inspecting the future for the result of the
+ * request execution. The cache for the token is then invalidated. This causes
  * a new token to be requested the next time a client asks for one.
  * </p>
  * <p>
@@ -79,6 +84,22 @@ public class AccessTokenProvider {
     }
 
     /**
+     * Obtains an access token first and then invokes a function to consume it
+     * and produce a future result. This can be used for instance to send a
+     * request as soon as a token becomes available.
+     *
+     * @param func the function producing the future result with the access
+     *             token
+     * @param <T>  the result type of the function
+     * @return the resulting future
+     */
+    public <T> CompletableFuture<T> doWithToken(Function<? super AccessToken, ? extends CompletableFuture<T>> func) {
+        return obtainAccessToken()
+                .thenCompose(token -> func.apply(token)
+                        .whenComplete((result, exception) -> onRequestComplete(token, exception)));
+    }
+
+    /**
      * Returns a future with an {@code AccessToken} to be used to authenticate
      * against the SW360 server. If necessary, the underlying authentication
      * client is asked to fetch a new token. A successful token result is
@@ -88,7 +109,7 @@ public class AccessTokenProvider {
      *
      * @return a future with the {@code AccessToken}
      */
-    public synchronized CompletableFuture<AccessToken> obtainAccessToken() {
+    protected synchronized CompletableFuture<AccessToken> obtainAccessToken() {
         // The variable is needed to make sure that always a non-null result is
         // returned; even if whenComplete() runs in the same thread.
         CompletableFuture<AccessToken> result = tokenFuture;
@@ -104,37 +125,23 @@ public class AccessTokenProvider {
 
     /**
      * Invalidates the token cached internally if it equals the token
-     * specified. This method should be called if a request using a token fails
-     * with a 401 Unauthorized error. The cache is then cleared, so the next
-     * time a client asks for a token, a new one is requested from the server.
-     * The token parameter is required to deal with a race condition: If there
-     * are multiple concurrent requests that all fail with a 401 error, this
-     * method will be called multiple times. In this constellation, it has to
-     * be prevented that a token that has just been renewed is invalidated
-     * immediately again; this is achieved by comparing the cached token
-     * against the specified one.
+     * specified. This method is called automatically if a request using a
+     * token fails with a 401 Unauthorized error. The cache is then cleared, so
+     * the next time a client asks for a token, a new one is requested from the
+     * server. The token parameter is required to deal with a race condition:
+     * If there are multiple concurrent requests that all fail with a 401
+     * error, this method will be called multiple times. In this constellation,
+     * it has to be prevented that a token that has just been renewed is
+     * invalidated immediately again; this is achieved by comparing the cached
+     * token against the specified one.
      *
      * @param token the token that should be invalidated
      */
-    public synchronized void invalidate(AccessToken token) {
+    protected synchronized void invalidate(AccessToken token) {
         if (token.equals(accessToken)) {
             LOG.debug("Invalidating access token for SW360.");
             clearCache();
         }
-    }
-
-    /**
-     * Convenience function that obtains an access token first and then invokes
-     * a function to consume it and produce a future result. This can be used
-     * for instance to send a request as soon as a token becomes available.
-     *
-     * @param func the function producing the future result with the access
-     *             token
-     * @param <T>  the result type of the function
-     * @return the resulting future
-     */
-    public <T> CompletableFuture<T> doWithToken(Function<? super AccessToken, ? extends CompletableFuture<T>> func) {
-        return obtainAccessToken().thenCompose(func);
     }
 
     /**
@@ -151,6 +158,21 @@ public class AccessTokenProvider {
             LOG.debug("Stacktrace:", error);
         } else {
             accessToken = token;
+        }
+    }
+
+    /**
+     * An action that is called for each request after its completion. It
+     * checks whether the request failed with an exception indicating that the
+     * access token has expired. If so, the token cache is invalidated.
+     *
+     * @param token     the current access token
+     * @param exception the exception from the request future
+     */
+    private void onRequestComplete(AccessToken token, Throwable exception) {
+        LOG.debug("Request with access token completed. Exception is {}.", String.valueOf(exception));
+        if (FutureUtils.isFailedRequestWithStatus(exception, HttpConstants.STATUS_ERR_UNAUTHORIZED)) {
+            invalidate(token);
         }
     }
 

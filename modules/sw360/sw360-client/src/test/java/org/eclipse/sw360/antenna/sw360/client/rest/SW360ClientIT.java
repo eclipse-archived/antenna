@@ -15,7 +15,6 @@ import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessToken;
-import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectList;
 import org.junit.Before;
@@ -30,6 +29,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -47,7 +47,7 @@ public class SW360ClientIT extends AbstractMockServerTest {
     /**
      * Mock for the token provider.
      */
-    private AccessTokenProvider tokenProvider;
+    private AccessTokenProviderTestImpl tokenProvider;
 
     /**
      * The client to be tested.
@@ -178,7 +178,7 @@ public class SW360ClientIT extends AbstractMockServerTest {
      * @param token the token to be invalidated
      */
     private void thenTokenIsInvalidated(String token) {
-        verify(tokenProvider).invalidate(new AccessToken(token));
+        verify(tokenProvider, atLeastOnce()).invalidate(new AccessToken(token));
     }
 
     @Test

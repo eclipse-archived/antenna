@@ -70,9 +70,9 @@ public class FutureUtils {
      * @param <T>       the result type of the future
      * @return the future with the conditional fallback
      */
-    public static <T> CompletableFuture<T> withConditionalFallback(CompletableFuture<T> future,
-                                                                   Predicate<? super Throwable> condition,
-                                                                   Supplier<? extends CompletableFuture<T>> fallback) {
+    public static <T> CompletableFuture<T> wrapFutureForConditionalFallback(CompletableFuture<T> future,
+                                                                            Predicate<? super Throwable> condition,
+                                                                            Supplier<? extends CompletableFuture<T>> fallback) {
         return future.handle((result, exception) ->
                 exceptionMatches(exception, condition) ?
                         Optional.<CompletableFuture<T>>empty() :
@@ -96,7 +96,7 @@ public class FutureUtils {
      */
     public static <T> CompletableFuture<Optional<T>> optionalFuture(CompletableFuture<? extends T> future) {
         CompletableFuture<Optional<T>> optFuture = future.thenApply(Optional::of);
-        return withConditionalFallback(optFuture,
+        return wrapFutureForConditionalFallback(optFuture,
                 FutureUtils::resourceNotFound,
                 () -> CompletableFuture.completedFuture(Optional.empty()));
     }
