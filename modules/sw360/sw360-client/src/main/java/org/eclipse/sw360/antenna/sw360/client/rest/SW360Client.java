@@ -11,7 +11,6 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.rest;
 
-import org.eclipse.sw360.antenna.http.api.RequestProducer;
 import org.eclipse.sw360.antenna.http.api.ResponseProcessor;
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;

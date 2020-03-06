@@ -12,7 +12,7 @@ package org.eclipse.sw360.antenna.http.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.sw360.antenna.http.api.RequestProducer;
+import org.eclipse.sw360.antenna.http.api.RequestBuilder;
 import org.eclipse.sw360.antenna.http.api.Response;
 import org.eclipse.sw360.antenna.http.api.ResponseProcessor;
 
@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -236,14 +237,14 @@ public final class HttpUtils {
     }
 
     /**
-     * Returns a very simple {@code RequestProducer} that just configures its
-     * {@code RequestBuilder} with the given URI. This causes an HTTP GET
+     * Returns a very simple {@code Consumer} for a {@code RequestBuilder} that
+     * just configures the builder with the given URI. This causes an HTTP GET
      * request to this URI without further properties.
      *
      * @param uri the URI to be retrieved
-     * @return the {@code RequestProducer} generating this GET request
+     * @return the {@code Consumer} generating this GET request
      */
-    public static RequestProducer get(String uri) {
+    public static Consumer<RequestBuilder> get(String uri) {
         return builder -> builder.uri(uri);
     }
 

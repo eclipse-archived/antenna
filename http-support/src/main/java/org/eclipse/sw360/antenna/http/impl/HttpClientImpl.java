@@ -17,7 +17,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.eclipse.sw360.antenna.http.api.HttpClient;
-import org.eclipse.sw360.antenna.http.api.RequestProducer;
+import org.eclipse.sw360.antenna.http.api.RequestBuilder;
 import org.eclipse.sw360.antenna.http.api.ResponseProcessor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 class HttpClientImpl implements HttpClient {
     private static final Logger LOG = LoggerFactory.getLogger(HttpClientImpl.class);
@@ -51,9 +52,10 @@ class HttpClientImpl implements HttpClient {
     }
 
     @Override
-    public <T> CompletableFuture<T> execute(RequestProducer producer, ResponseProcessor<T> processor) {
+    public <T> CompletableFuture<T> execute(Consumer<? super RequestBuilder> producer,
+                                            ResponseProcessor<? extends T> processor) {
         RequestBuilderImpl builder = new RequestBuilderImpl(getMapper());
-        producer.produceRequest(builder);
+        producer.accept(builder);
         CompletableFuture<T> resultFuture = new CompletableFuture<>();
         Request request = builder.build();
         LOG.debug("HTTP request {} {}", request.method(), request.url());
@@ -72,7 +74,7 @@ class HttpClientImpl implements HttpClient {
      * @param <T>          the type of the result object
      * @return the callback for asynchronous request execution
      */
-    <T> Callback createCallback(ResponseProcessor<T> processor, CompletableFuture<T> resultFuture) {
+    <T> Callback createCallback(ResponseProcessor<? extends T> processor, CompletableFuture<T> resultFuture) {
         return new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {

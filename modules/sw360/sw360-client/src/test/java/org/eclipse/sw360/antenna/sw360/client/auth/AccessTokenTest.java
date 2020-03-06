@@ -12,7 +12,6 @@ package org.eclipse.sw360.antenna.sw360.client.auth;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.eclipse.sw360.antenna.http.api.RequestBuilder;
-import org.eclipse.sw360.antenna.http.api.RequestProducer;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.junit.Test;
 

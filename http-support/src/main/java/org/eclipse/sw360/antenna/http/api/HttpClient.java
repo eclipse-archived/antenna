@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.http.api;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 /**
  * <p>
@@ -18,11 +19,23 @@ import java.util.concurrent.CompletableFuture;
  * </p>
  * <p>
  * An object implementing this interface allows the execution of asynchronous
- * HTTP requests. Requests are defined by {@link RequestProducer} objects,
- * which are invoked with a concrete {@link RequestBuilder} to generate a
- * proper request representation. When the response arrives it is passed to a
- * {@link ResponseProcessor}, which can evaluate the data and generate a
- * corresponding result object.
+ * HTTP requests. The interface supports lambda expressions for defining the
+ * requests to be executed and consuming the responses. Requests are defined by
+ * {@code Consumer} objects, which are invoked with a concrete
+ * {@link RequestBuilder} to generate a proper request representation. This
+ * allows for a declarative approach when specifying the properties of requests
+ * as shown in the following example:
+ * </p>
+ * <pre>
+ * httpClient.execute(builder -> builder.method(RequestBuilder.Method.POST)
+ *                                 .uri(endpointUri())
+ *                                 .body(body -> body.string(CONTENT, CONTENT_TEXT_PLAIN)),
+ *                                 ...);
+ * </pre>
+ * <p>
+ * When the response arrives it is passed to a {@link ResponseProcessor}, which
+ * can evaluate the data and generate a corresponding result object. Again, a
+ * lambda expression can be provided to process the response.
  * </p>
  * <p>
  * Implementations of this interface are expected to be thread-safe. They are
@@ -32,8 +45,8 @@ import java.util.concurrent.CompletableFuture;
 public interface HttpClient {
     /**
      * Executes an HTTP request asynchronously and returns a future object with
-     * the result. The method first invokes the {@code RequestProducer} to
-     * generate the request to be executed. This request is then sent to the
+     * the result. The method first invokes the {@code Consumer} to generate
+     * the request to be executed. This request is then sent to the
      * server. If sending fails, e.g. because no connection could be
      * established, the resulting future is failed with the corresponding
      * exception. Otherwise, the {@code ResponseProcessor} is invoked with a
@@ -45,5 +58,6 @@ public interface HttpClient {
      * @param <T>       the type of the result produced by the {@code ResponseProcessor}
      * @return a future with the result of the execution
      */
-    <T> CompletableFuture<T> execute(RequestProducer producer, ResponseProcessor<T> processor);
+    <T> CompletableFuture<T> execute(Consumer<? super RequestBuilder> producer,
+                                     ResponseProcessor<? extends T> processor);
 }

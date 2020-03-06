@@ -256,7 +256,7 @@ public class HttpRequestExecutionIT {
         CompletableFuture<String> futResponse =
                 httpClient.execute(builder -> builder.method(RequestBuilder.Method.POST)
                                 .uri(endpointUri())
-                        .body(b -> b.string(CONTENT, CONTENT_TEXT_PLAIN)),
+                                .body(b -> b.string(CONTENT, CONTENT_TEXT_PLAIN)),
                         checkResponse(HttpRequestExecutionIT::responseToString, hasStatus(201)));
         String response = futResponse.join();
         assertThat(response)
@@ -273,7 +273,7 @@ public class HttpRequestExecutionIT {
 
         CompletableFuture<String> futResponse =
                 httpClient.execute(builder -> builder.method(RequestBuilder.Method.PATCH)
-                        .body(body -> body.file(file, CONTENT_OCTET_STREAM))
+                                .body(body -> body.file(file, CONTENT_OCTET_STREAM))
                                 .uri(endpointUri()),
                         checkResponse(HttpRequestExecutionIT::responseToString));
         String response = futResponse.join();
