@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.http.impl;
+package org.eclipse.sw360.antenna.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.Call;
@@ -16,7 +16,6 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.eclipse.sw360.antenna.http.api.ResponseProcessor;
 import org.junit.Before;
 import org.junit.Test;
 

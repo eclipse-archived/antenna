@@ -12,11 +12,11 @@ package org.eclipse.sw360.antenna.sw360.workflow;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.sw360.antenna.http.api.HttpClient;
-import org.eclipse.sw360.antenna.http.api.HttpClientFactory;
+import org.eclipse.sw360.antenna.http.HttpClient;
+import org.eclipse.sw360.antenna.http.HttpClientFactory;
 import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
 import org.eclipse.sw360.antenna.http.config.ProxySettings;
-import org.eclipse.sw360.antenna.http.impl.HttpClientFactoryImpl;
+import org.eclipse.sw360.antenna.http.HttpClientFactoryImpl;
 import org.eclipse.sw360.antenna.sw360.client.SW360ConnectionFactory;
 import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;

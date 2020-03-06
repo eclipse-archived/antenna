@@ -11,9 +11,11 @@
 package org.eclipse.sw360.antenna.sw360.client.auth;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.eclipse.sw360.antenna.http.api.RequestBuilder;
+import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.junit.Test;
+
+import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -56,15 +58,16 @@ public class AccessTokenTest {
     public void testRequestProducerAddingTokenCanBeCreated() {
         RequestBuilder builder = mock(RequestBuilder.class);
         RequestBuilder builderResult = mock(RequestBuilder.class);
-        RequestProducer wrappedProducer = mock(RequestProducer.class);
+        @SuppressWarnings("unchecked")
+        Consumer<RequestBuilder> wrappedProducer = mock(Consumer.class);
         when(builder.header(HttpConstants.HEADER_AUTHORIZATION, AUTH_HEADER_VALUE))
                 .thenReturn(builderResult);
 
         AccessToken accessToken = new AccessToken(TOKEN);
-        RequestProducer producer = accessToken.tokenProducer(wrappedProducer);
-        producer.produceRequest(builder);
+        Consumer<RequestBuilder> producer = accessToken.tokenProducer(wrappedProducer);
+        producer.accept(builder);
         verify(builder).header(HttpConstants.HEADER_AUTHORIZATION, AUTH_HEADER_VALUE);
-        verify(wrappedProducer).produceRequest(builderResult);
+        verify(wrappedProducer).accept(builderResult);
     }
 
     @Test

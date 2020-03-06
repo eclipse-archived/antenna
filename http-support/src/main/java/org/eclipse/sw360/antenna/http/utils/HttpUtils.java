@@ -12,9 +12,10 @@ package org.eclipse.sw360.antenna.http.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.sw360.antenna.http.api.RequestBuilder;
-import org.eclipse.sw360.antenna.http.api.Response;
-import org.eclipse.sw360.antenna.http.api.ResponseProcessor;
+import org.eclipse.sw360.antenna.http.HttpClient;
+import org.eclipse.sw360.antenna.http.RequestBuilder;
+import org.eclipse.sw360.antenna.http.Response;
+import org.eclipse.sw360.antenna.http.ResponseProcessor;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * <p>
  * A class providing static utility functions related to the usage of
- * {@link org.eclipse.sw360.antenna.http.api.HttpClient} objects.
+ * {@link HttpClient} objects.
  * </p>
  */
 public final class HttpUtils {

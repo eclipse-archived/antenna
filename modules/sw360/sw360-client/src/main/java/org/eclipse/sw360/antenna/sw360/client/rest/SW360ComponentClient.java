@@ -12,7 +12,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.rest;
 
-import org.eclipse.sw360.antenna.http.api.RequestBuilder;
+import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
@@ -115,7 +115,7 @@ public class SW360ComponentClient extends SW360Client {
     public CompletableFuture<SW360Component> createComponent(SW360Component sw360Component) {
         return executeJsonRequest(builder -> builder.method(RequestBuilder.Method.POST)
                         .uri(resourceUrl(COMPONENTS_ENDPOINT))
-                        .bodyJson(sw360Component),
+                        .body(body -> body.json(sw360Component)),
                 SW360Component.class, TAG_CREATE_COMPONENT);
     }
 }

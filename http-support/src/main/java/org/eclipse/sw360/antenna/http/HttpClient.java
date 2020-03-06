@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.http.api;
+package org.eclipse.sw360.antenna.http;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;

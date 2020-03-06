@@ -13,8 +13,8 @@
 
 package org.eclipse.sw360.antenna.sw360.client.auth;
 
-import org.eclipse.sw360.antenna.http.api.RequestBuilder;
-import org.eclipse.sw360.antenna.http.api.Response;
+import org.eclipse.sw360.antenna.http.RequestBuilder;
+import org.eclipse.sw360.antenna.http.Response;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Attributes;
@@ -103,7 +103,7 @@ public class SW360AuthenticationClient {
                 .header(HEADER_AUTHORIZATION,
                         generateBasicAuthHeader(getClientConfig().getClientId(),
                                 getClientConfig().getClientPassword()))
-                .bodyString(generateTokenRequestBody(), CONTENT_TYPE_FORM);
+                .body(body -> body.string(generateTokenRequestBody(), CONTENT_TYPE_FORM));
     }
 
     /**

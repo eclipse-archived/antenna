@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.http.impl;
+package org.eclipse.sw360.antenna.http;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -16,9 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 import org.apache.commons.io.IOUtils;
-import org.eclipse.sw360.antenna.http.api.HttpClient;
-import org.eclipse.sw360.antenna.http.api.RequestBuilder;
-import org.eclipse.sw360.antenna.http.api.Response;
 import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;

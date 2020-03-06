@@ -10,8 +10,8 @@
  */
 package org.eclipse.sw360.antenna.http.utils;
 
-import org.eclipse.sw360.antenna.http.api.Response;
-import org.eclipse.sw360.antenna.http.api.ResponseProcessor;
+import org.eclipse.sw360.antenna.http.Response;
+import org.eclipse.sw360.antenna.http.ResponseProcessor;
 import org.junit.Test;
 
 import java.io.IOException;

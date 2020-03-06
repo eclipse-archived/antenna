@@ -8,11 +8,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.http.impl;
+package org.eclipse.sw360.antenna.http;
 
 import okhttp3.OkHttpClient;
-import org.eclipse.sw360.antenna.http.api.HttpClient;
-import org.eclipse.sw360.antenna.http.api.HttpClientFactory;
 import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
 import org.eclipse.sw360.antenna.http.config.ProxySettings;
 

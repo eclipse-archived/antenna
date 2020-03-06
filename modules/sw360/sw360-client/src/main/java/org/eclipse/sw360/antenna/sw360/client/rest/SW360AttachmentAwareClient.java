@@ -11,7 +11,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.rest;
 
-import org.eclipse.sw360.antenna.http.api.RequestBuilder;
+import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
@@ -99,10 +99,10 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?, ?
         final String self = itemToModify.get_Links().getSelf().getHref();
         return executeJsonRequest(builder -> builder.method(RequestBuilder.Method.POST)
                         .uri(self + ATTACHMENTS_ENDPOINT)
-                        .bodyPart("attachment", part ->
-                                part.bodyJson(sw360Attachment))
-                        .bodyPart("file", part ->
-                                part.bodyFile(fileToAttach, HttpConstants.CONTENT_OCTET_STREAM)),
+                        .multiPart("attachment", part ->
+                                part.json(sw360Attachment))
+                        .multiPart("file", part ->
+                                part.file(fileToAttach, HttpConstants.CONTENT_OCTET_STREAM)),
                 getHandledClassType(), TAG_UPLOAD_ATTACHMENT);
     }
 

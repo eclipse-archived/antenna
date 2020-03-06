@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.http.impl;
+package org.eclipse.sw360.antenna.http;
 
 import okhttp3.Response;
 import okhttp3.ResponseBody;
@@ -23,7 +23,7 @@ import java.util.Set;
  * Antenna HTTP library on top of a response object from OkHttpClient.
  * </p>
  */
-class ResponseImpl implements org.eclipse.sw360.antenna.http.api.Response {
+class ResponseImpl implements org.eclipse.sw360.antenna.http.Response {
     /** An empty stream to be returned if a response has no body.*/
     private static final InputStream EMPTY_STREAM = new ByteArrayInputStream(new byte[0]);
 

@@ -13,7 +13,7 @@
 
 package org.eclipse.sw360.antenna.sw360.client.rest;
 
-import org.eclipse.sw360.antenna.http.api.RequestBuilder;
+import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
@@ -91,7 +91,7 @@ public class SW360ProjectClient extends SW360Client {
     public CompletableFuture<SW360Project> createProject(SW360Project sw360Project) {
         return executeJsonRequest(builder -> builder.method(RequestBuilder.Method.POST)
                 .uri(resourceUrl(PROJECTS_ENDPOINT))
-                .bodyJson(sw360Project),
+                .body(body -> body.json(sw360Project)),
                 SW360Project.class, TAG_CREATE_PROJECT);
     }
 
@@ -106,7 +106,7 @@ public class SW360ProjectClient extends SW360Client {
     public CompletableFuture<Void> addReleasesToProject(String projectId, List<String> releases) {
         return executeRequest(builder -> builder.method(RequestBuilder.Method.POST)
                 .uri(resourceUrl(PROJECTS_ENDPOINT, projectId, SW360Attributes.PROJECT_RELEASES))
-                .bodyJson(releases),
+                .body(body -> body.json(releases)),
                 HttpUtils.nullProcessor(), TAG_ADD_RELEASES_TO_PROJECT);
     }
 

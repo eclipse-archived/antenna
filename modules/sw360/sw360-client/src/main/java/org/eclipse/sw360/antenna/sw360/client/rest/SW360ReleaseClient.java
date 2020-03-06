@@ -12,7 +12,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.rest;
 
-import org.eclipse.sw360.antenna.http.api.RequestBuilder;
+import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
@@ -116,7 +116,7 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
     public CompletableFuture<SW360Release> createRelease(SW360Release sw360Release) {
         return executeJsonRequest(builder -> builder.method(RequestBuilder.Method.POST)
                         .uri(resourceUrl(RELEASES_ENDPOINT_APPENDIX))
-                        .bodyJson(sw360Release),
+                        .body(body -> body.json(sw360Release)),
                 SW360Release.class, TAG_CREATE_RELEASE);
     }
 
@@ -131,7 +131,7 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
     public CompletableFuture<SW360Release> patchRelease(SW360Release sw360Release) {
         return executeJsonRequest(builder -> builder.method(RequestBuilder.Method.PATCH)
                         .uri(resourceUrl(RELEASES_ENDPOINT_APPENDIX, sw360Release.getReleaseId()))
-                        .bodyJson(sw360Release),
+                        .body(body -> body.json(sw360Release)),
                 SW360Release.class, TAG_UPDATE_RELEASE);
     }
 }
