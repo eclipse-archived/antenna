@@ -57,7 +57,7 @@ public class SW360MetaDataUpdaterTest {
                 .setShortName(licenseName);
         License licenseAntenna = new License();
         licenseAntenna.setId(licenseName);
-        when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName, headers))
+        when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName))
                 .thenReturn(true);
         when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName))
                 .thenReturn(Optional.of(license));
@@ -78,7 +78,7 @@ public class SW360MetaDataUpdaterTest {
                 .setShortName(licenseName);
         License licenseAntenna = new License();
         licenseAntenna.setId(licenseName);
-        when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName, headers))
+        when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName))
                 .thenReturn(false);
         when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName))
                 .thenReturn(Optional.of(license));

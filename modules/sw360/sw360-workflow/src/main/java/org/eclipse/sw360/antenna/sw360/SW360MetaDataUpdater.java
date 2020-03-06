@@ -53,14 +53,14 @@ public class SW360MetaDataUpdater {
     public Set<SW360License> getLicenses(List<License> licenses) {
         return licenses.stream()
                 .filter(this::isLicenseInSW360)
-                .map(license -> licenseClientAdapter.getSW360LicenseByAntennaLicense(license.getName()))
+                .map(license -> licenseClientAdapter.getSW360LicenseByAntennaLicense(license.getId()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
     }
 
     private boolean isLicenseInSW360(License license) {
-        if (licenseClientAdapter.isLicenseOfArtifactAvailable(license.getId(), header)) {
+        if (licenseClientAdapter.isLicenseOfArtifactAvailable(license.getId())) {
             LOGGER.debug("License [{}] found in SW360.", license.getId());
             return true;
         }
