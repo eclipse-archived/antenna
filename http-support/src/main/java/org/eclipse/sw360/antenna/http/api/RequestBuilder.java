@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.http.api;
 
-import java.nio.file.Path;
+import java.util.function.Consumer;
 
 /**
  * <p>
@@ -53,53 +53,19 @@ public interface RequestBuilder {
      */
     RequestBuilder header(String name, String value);
 
-    /**
-     * Sets the request body as a string. Based on the media type, the content
-     * header is set.
-     *
-     * @param body      the request body as string
-     * @param mediaType the media type of the content
-     * @return this request builder
-     */
-    RequestBuilder bodyString(String body, String mediaType);
-
-    /**
-     * Sets the request body as a file. This can be used to upload files to a
-     * server. Based on the media type, the content header is set.
-     *
-     * @param path      the path to the file to be uploaded
-     * @param mediaType the media type of the content
-     * @return this request builder
-     */
-    RequestBuilder bodyFile(Path path, String mediaType);
-
-    /**
-     * Sets the request body as an object that is serialized to JSON. This
-     * method uses an internal JSON object mapper to generate a JSON
-     * representation from the object passed in. It also automatically sets a
-     * correct {@code Content-Type} header.
-     *
-     * @param payload the object to be used as request payload
-     * @return this request builder
-     */
-    RequestBuilder bodyJson(Object payload);
+    RequestBuilder body(Consumer<RequestBodyBuilder> bodyProducer);
 
     /**
      * Adds a part of a multi-part request to this builder. When using this
      * method, a multi-part request is generated. It has to be called for each
-     * part. The single parts are defined via {@code RequestProducer} objects
-     * that are passed new {@code RequestBuilder} instances for the definition
-     * of the parts. Note that for the definition of a part only a subset of
-     * the methods provided by the {@code RequestBuilder} interface makes
-     * sense. When using this method to define a multi-part request, the other
-     * methods for setting the request body should not be used; they do not
-     * have any effect then.
+     * part. The single parts are defined via consumer objects that are passed
+     * {@code RequestPartBuilder} instances for the definition of the parts.
      *
      * @param name         the name of the part
      * @param partProducer the producer for the request part
      * @return this request builder
      */
-    RequestBuilder bodyPart(String name, RequestProducer partProducer);
+    RequestBuilder multiPart(String name, Consumer<RequestBodyBuilder> partProducer);
 
     /**
      * An enumeration class for the HTTP methods supported by the HTTP client.

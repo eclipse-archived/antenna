@@ -256,7 +256,7 @@ public class HttpRequestExecutionIT {
         CompletableFuture<String> futResponse =
                 httpClient.execute(builder -> builder.method(RequestBuilder.Method.POST)
                                 .uri(endpointUri())
-                                .bodyString(CONTENT, CONTENT_TEXT_PLAIN),
+                        .body(b -> b.string(CONTENT, CONTENT_TEXT_PLAIN)),
                         checkResponse(HttpRequestExecutionIT::responseToString, hasStatus(201)));
         String response = futResponse.join();
         assertThat(response)
@@ -273,8 +273,8 @@ public class HttpRequestExecutionIT {
 
         CompletableFuture<String> futResponse =
                 httpClient.execute(builder -> builder.method(RequestBuilder.Method.PATCH)
-                                .uri(endpointUri())
-                                .bodyFile(file, CONTENT_OCTET_STREAM),
+                        .body(body -> body.file(file, CONTENT_OCTET_STREAM))
+                                .uri(endpointUri()),
                         checkResponse(HttpRequestExecutionIT::responseToString));
         String response = futResponse.join();
         assertThat(response)
@@ -314,7 +314,7 @@ public class HttpRequestExecutionIT {
                         builder.method(RequestBuilder.Method.PUT)
                                 .uri(endpointUri())
                                 .header(HEADER_NAME, HEADER_VALUE)
-                                .bodyJson(payload),
+                                .body(body -> body.json(payload)),
                 HttpRequestExecutionIT::responseToString);
         String response = futResponse.join();
         assertThat(response)
@@ -350,13 +350,9 @@ public class HttpRequestExecutionIT {
         CompletableFuture<String> futResponse = httpClient.execute(builder ->
                         builder.uri(endpointUri())
                                 .method(RequestBuilder.Method.POST)
-                                .bodyPart("json", partBuilder ->
-                                        partBuilder.bodyJson(jsonObj))
-                                .bodyPart("plain", partBuilder ->
-                                        partBuilder.bodyString(CONTENT, CONTENT_TEXT_PLAIN))
-                                .bodyPart("file", partBuilder ->
-                                        partBuilder.bodyFile(testFilePath, CONTENT_OCTET_STREAM))
-                                .bodyFile(testFilePath, CONTENT_OCTET_STREAM),
+                                .multiPart("json", body -> body.json(jsonObj))
+                                .multiPart("plain", body -> body.string(CONTENT, CONTENT_TEXT_PLAIN))
+                                .multiPart("file", body -> body.file(testFilePath, CONTENT_OCTET_STREAM)),
                 HttpRequestExecutionIT::responseToString);
         String response = futResponse.join();
         List<ServeEvent> allServeEvents = wireMockRule.getAllServeEvents();

@@ -10,22 +10,27 @@
  */
 package org.eclipse.sw360.antenna.http.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.Headers;
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import org.eclipse.sw360.antenna.http.api.RequestBodyBuilder;
 import org.eclipse.sw360.antenna.http.api.RequestBuilder;
-import org.eclipse.sw360.antenna.http.api.RequestProducer;
 
-import java.nio.file.Path;
+import java.util.function.Consumer;
 
 /**
  * <p>
  * Implementation of the {@code RequestBuilder} interface based on the builder
  * class of OkHttpClient.
+ * </p>
+ * <p>
+ * This class allows defining the various properties of an HTTP request. It can
+ * handle multipart requests as well. Note that you can either set a regular
+ * request body using the {@link #body(Consumer)} method or define a multipart
+ * request by invoking {@link #multiPart(String, Consumer)} an arbitrary number
+ * of times; but it is not possible to call both of these methods.
  * </p>
  */
 class RequestBuilderImpl implements RequestBuilder {
@@ -53,12 +58,6 @@ class RequestBuilderImpl implements RequestBuilder {
      * The body of the request.
      */
     private RequestBody body;
-
-    /**
-     * Stores the name of a file to be uploaded. This field is only defined if
-     * a body of type file has been set.
-     */
-    private String fileName;
 
     /**
      * A builder for constructing a multi-part request. This is used only if
@@ -98,36 +97,34 @@ class RequestBuilderImpl implements RequestBuilder {
     }
 
     @Override
-    public RequestBuilder bodyString(String str, String mediaType) {
-        body = RequestBody.create(str, MediaType.parse(mediaType));
-        return this;
-    }
-
-    @Override
-    public RequestBuilder bodyFile(Path path, String mediaType) {
-        body = RequestBody.create(path.toFile(), MediaType.parse(mediaType));
-        Path fileNamePath = path.getFileName();
-        fileName = (fileNamePath != null) ? fileNamePath.toString() : null;
-        return this;
-    }
-
-    @Override
-    public RequestBuilder bodyJson(Object payload) {
-        try {
-            return bodyString(mapper.writeValueAsString(payload), "application/json");
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException(e);
+    public RequestBuilder body(Consumer<RequestBodyBuilder> bodyProducer) {
+        if (multipartBuilder != null) {
+            throw new IllegalStateException("A normal body cannot be added to a multipart request");
         }
+        if (getBody() != null) {
+            throw new IllegalStateException("A request can only have a single body");
+        }
+
+        RequestBodyBuilderImpl bodyBuilder = new RequestBodyBuilderImpl(mapper);
+        bodyProducer.accept(bodyBuilder);
+
+        body = bodyBuilder.getBody();
+        return this;
     }
 
     @Override
-    public RequestBuilder bodyPart(String name, RequestProducer partProducer) {
-        MultipartRequestBuilder builder = new MultipartRequestBuilder(mapper, name);
-        partProducer.produceRequest(builder);
+    public RequestBuilder multiPart(String name, Consumer<RequestBodyBuilder> partProducer) {
+        if (getBody() != null) {
+            throw new IllegalStateException("The request already has a normal body. You can either " +
+                    "have a body or a multipart request, but not both.");
+        }
+
         if (multipartBuilder == null) {
             multipartBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         }
-        builder.addMultipartBody(multipartBuilder);
+        RequestBodyBuilderImpl bodyBuilder = new RequestBodyBuilderImpl(mapper);
+        partProducer.accept(bodyBuilder);
+        multipartBuilder.addFormDataPart(name, bodyBuilder.getFileName(), bodyBuilder.getBody());
         return this;
     }
 
@@ -159,15 +156,5 @@ class RequestBuilderImpl implements RequestBuilder {
      */
     RequestBody getBody() {
         return body;
-    }
-
-    /**
-     * Returns the name of a file to be uploaded or <strong>null</strong> if
-     * this is not a request to upload a file.
-     *
-     * @return the name of a file to be uploaded
-     */
-    String getFileName() {
-        return fileName;
     }
 }

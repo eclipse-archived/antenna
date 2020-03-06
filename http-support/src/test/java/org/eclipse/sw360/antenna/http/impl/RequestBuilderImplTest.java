@@ -10,18 +10,12 @@
  */
 package org.eclipse.sw360.antenna.http.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Unit test class for {@code RequestBuilderImpl}. This class tests some
@@ -29,40 +23,36 @@ import static org.mockito.Mockito.when;
  */
 public class RequestBuilderImplTest {
     /**
-     * Mock for the JSON mapper.
-     */
-    private ObjectMapper mapper;
-
-    /**
      * The builder to be tested.
      */
     private RequestBuilderImpl requestBuilder;
 
     @Before
     public void setUp() {
-        mapper = mock(ObjectMapper.class);
+        ObjectMapper mapper = mock(ObjectMapper.class);
         requestBuilder = new RequestBuilderImpl(mapper);
     }
 
-    @Test
-    public void testHandlingOfJsonProcessingException() throws JsonProcessingException {
-        Object data = new Object();
-        JsonProcessingException exception = mock(JsonProcessingException.class);
-        when(mapper.writeValueAsString(data)).thenThrow(exception);
+    @Test(expected = IllegalStateException.class)
+    public void testMultipartAndNormalBody() {
+        requestBuilder.multiPart("part",
+                body -> body.string("test", HttpConstants.CONTENT_TEXT_PLAIN));
 
-        try {
-            requestBuilder.bodyJson(data);
-            fail("No exception thrown!");
-        } catch (IllegalStateException iex) {
-            assertThat(iex.getCause()).isEqualTo(exception);
-        }
+        requestBuilder.body(body -> body.string("other test", HttpConstants.CONTENT_TEXT_PLAIN));
     }
 
-    @Test
-    public void testBodyFileNoFileName() {
-        Path folderPath = Paths.get("/");
+    @Test(expected = IllegalStateException.class)
+    public void testNormalBodyAndMultipart() {
+        requestBuilder.body(body -> body.string("other test", HttpConstants.CONTENT_TEXT_PLAIN));
 
-        requestBuilder.bodyFile(folderPath, "text/plain");
-        assertThat(requestBuilder.getFileName()).isNull();
+        requestBuilder.multiPart("part",
+                body -> body.string("test", HttpConstants.CONTENT_TEXT_PLAIN));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testMultipleBodies() {
+        requestBuilder.body(body -> body.string("body1", HttpConstants.CONTENT_TEXT_PLAIN));
+
+        requestBuilder.body(body -> body.string("body12", HttpConstants.CONTENT_TEXT_PLAIN));
     }
 }
