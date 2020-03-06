@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -15,15 +16,16 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformati
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.ObservedLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.OverriddenLicenseInformation;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
+import org.eclipse.sw360.antenna.model.license.LicenseOperator;
+import org.eclipse.sw360.antenna.model.license.LicenseStatement;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -36,13 +38,13 @@ public class ArtifactLicenseUtilsTest {
     @Before
     public void setUp() {
         mit = new License();
-        mit.setName("MIT");
+        mit.setId("MIT");
 
         apache = new License();
-        apache.setName("Apache-2.0");
+        apache.setId("Apache-2.0");
 
         epl = new License();
-        epl.setName("EPL-2.0");
+        epl.setId("EPL-2.0");
     }
 
     @Test
@@ -59,16 +61,15 @@ public class ArtifactLicenseUtilsTest {
                     .stream()
                     .findAny()
                     .get()
-                    .getName())
-                .isEqualTo(mit.getName());
+                    .evaluate())
+                .isEqualTo(mit.getId());
     }
 
     @Test
     public void testEffectiveLicenseWithAndInObservedAsFinal() {
         LicenseStatement observedLicenseStatement = new LicenseStatement();
-        observedLicenseStatement.setLeftStatement(epl);
+        observedLicenseStatement.setLicenses(Stream.of(epl, apache).collect(Collectors.toList()));
         observedLicenseStatement.setOp(LicenseOperator.AND);
-        observedLicenseStatement.setRightStatement(apache);
 
         Artifact artifact = new Artifact("Test")
                 .addFact(new DeclaredLicenseInformation(apache))
@@ -80,7 +81,7 @@ public class ArtifactLicenseUtilsTest {
                 .isEqualTo(2);
         assertThat(finalLicenses.getLicenses()
                     .stream()
-                    .filter(l -> l.getName().equals(apache.getName()))
+                    .filter(l -> l.evaluate().equals(apache.getId()))
                     .collect(Collectors.toList())
                     .size())
                 .isEqualTo(1);
@@ -89,9 +90,8 @@ public class ArtifactLicenseUtilsTest {
     @Test
     public void testEffectiveLicenseWithOrInObserved() {
         LicenseStatement observedLicenseStatement = new LicenseStatement();
-        observedLicenseStatement.setLeftStatement(epl);
+        observedLicenseStatement.setLicenses(Stream.of(epl, apache).collect(Collectors.toList()));
         observedLicenseStatement.setOp(LicenseOperator.OR);
-        observedLicenseStatement.setRightStatement(apache);
 
         Artifact artifact = new Artifact("Test")
                 .addFact(new DeclaredLicenseInformation(apache))
@@ -113,7 +113,7 @@ public class ArtifactLicenseUtilsTest {
 
         assertThat(finalLicenses.getLicenses().size())
                 .isEqualTo(2);
-        assertThat(finalLicenses.getLicenses().get(0).getName())
-                .isEqualTo(epl.getName());
+        assertThat(finalLicenses.getLicenses().get(0).evaluate())
+                .isEqualTo(epl.getId());
     }
 }

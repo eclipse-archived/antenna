@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -14,9 +15,9 @@ package org.eclipse.sw360.antenna.validators.workflow.processors;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.api.IPolicyEvaluation;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.workflow.stubs.AbstractComplianceChecker;
 import org.eclipse.sw360.antenna.workflow.stubs.DefaultPolicyEvaluation;
 import org.slf4j.Logger;
@@ -73,15 +74,15 @@ public class LicenseValidator extends AbstractComplianceChecker {
                 return results;
             }
             for (License license : finalLicenses.getLicenses()) {
-                if(ignoredLicenseIds.contains(license.getName())){
-                    LOGGER.debug("Do not validate license=[" + license.getName() + "], since it is ignored for validation");
+                if(ignoredLicenseIds.contains(license.getId())){
+                    LOGGER.debug("Do not validate license=[{}], since it is ignored for validation", license.getId());
                     continue;
                 }
-                if (forbiddenLicenseIds.contains(license.getName())) {
+                if (forbiddenLicenseIds.contains(license.getId())) {
                     results.add(new DefaultPolicyEvaluation.DefaultEvaluationResult(
                             "LicenseValidator::forbiddenLicense",
                             artifact
-                            + " is licensed under the forbidden license " + license.getName(),
+                            + " is licensed under the forbidden license " + license.getId(),
                             forbiddenLicenseSeverity, artifact));
                 }
                 if (license.getText() == null || "".equals(license.getText())) {

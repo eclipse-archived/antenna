@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,9 +11,9 @@
  */
 package org.eclipse.sw360.antenna.workflow.generators;
 
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseOperator;
+import org.eclipse.sw360.antenna.model.license.LicenseStatement;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
 import org.junit.Before;
@@ -64,24 +65,23 @@ public class HTMLReportGeneratorTest extends AntennaTestWithMockedContext {
         htmlReportGenerator.configure(Collections.emptyMap());
 
         final License license1 = new License();
-        license1.setName(licenseName1);
+        license1.setId(licenseName1);
         license1.setText(licenseText1);
         final ArtifactForHTMLReport artifact1 = new ArtifactForHTMLReport(artifactId1, license1);
 
         final ArtifactForHTMLReport artifact2 = new ArtifactForHTMLReport(artifactId2, null);
 
         final License license2 = new License();
-        license2.setName(licenseName2);
+        license2.setId(licenseName2);
         license2.setText(licenseText2);
-        license2.setLongName(licenseFullName2);
+        license2.setCommonName(licenseFullName2);
         final ArtifactForHTMLReport artifact3 = new ArtifactForHTMLReport(artifactId3, license2);
 
         final License license3 = new License();
-        license3.setName(licenseName3);
+        license3.setId(licenseName3);
         license3.setText(licenseText3);
         final LicenseStatement license4 = new LicenseStatement();
-        license4.setLeftStatement(license1);
-        license4.setRightStatement(license3);
+        license4.setLicenses(Stream.of(license1, license3).collect(Collectors.toList()));
         license4.setOp(LicenseOperator.AND);
         final ArtifactForHTMLReport artifact4 = new ArtifactForHTMLReport(artifactId4, license4);
 

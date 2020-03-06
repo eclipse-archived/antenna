@@ -12,7 +12,7 @@
 
 package org.eclipse.sw360.antenna.sw360;
 
-import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
@@ -54,18 +54,18 @@ public class SW360MetaDataUpdater {
 
         return licenses.stream()
                 .filter(license -> isLicenseInSW360(license, header))
-                .map(license -> licenseClientAdapter.getSW360LicenseByAntennaLicense(license.getName(), header))
+                .map(license -> licenseClientAdapter.getSW360LicenseByAntennaLicense(license.getId(), header))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
     }
 
     private boolean isLicenseInSW360(License license, HttpHeaders header) {
-        if (licenseClientAdapter.isLicenseOfArtifactAvailable(license.getName(), header)) {
-            LOGGER.debug("License [{}] found in SW360.", license.getName());
+        if (licenseClientAdapter.isLicenseOfArtifactAvailable(license.getId(), header)) {
+            LOGGER.debug("License [{}] found in SW360.", license.getId());
             return true;
         }
-        LOGGER.debug("License [{}] unknown in SW360.", license.getName());
+        LOGGER.debug("License [{}] unknown in SW360.", license.getId());
         return false;
     }
 

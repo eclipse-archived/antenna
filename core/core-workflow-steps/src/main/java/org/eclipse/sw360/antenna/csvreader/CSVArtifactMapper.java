@@ -22,8 +22,8 @@ import org.eclipse.sw360.antenna.model.artifact.ArtifactFactWithPayload;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.coordinates.CoordinateBuilder;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -282,7 +282,7 @@ public class CSVArtifactMapper {
     private static void addLicenseFact(CSVRecord record, Artifact artifact, String licenseType,
                                        Function<License, ArtifactLicenseInformation> licenseFactCreator) {
         License license = new License();
-        license.setName(record.get(licenseType));
+        license.setId(record.get(licenseType));
         artifact.addFact(licenseFactCreator.apply(license));
     }
 

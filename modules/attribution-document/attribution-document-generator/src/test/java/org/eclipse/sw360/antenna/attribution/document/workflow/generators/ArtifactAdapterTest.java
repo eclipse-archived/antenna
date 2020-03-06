@@ -1,5 +1,6 @@
 /**
  * Copyright (c) Robert Bosch Manufacturing Solutions GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -21,7 +22,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.CopyrightStatement;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
 import org.junit.jupiter.api.Test;
 
@@ -81,7 +82,7 @@ class ArtifactAdapterTest {
    @Test
    void generateKey() {
       License license = new License();
-      license.setName("ASL2.0");
+      license.setId("ASL2.0");
       String key = ArtifactAdapter.createKey(license);
       assertThat(key).isEqualTo("p1939860698");
    }

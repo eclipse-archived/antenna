@@ -17,10 +17,9 @@ import org.eclipse.sw360.antenna.api.IProject;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
+import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.util.ClassCodeSourceLocation;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.After;
@@ -55,10 +54,10 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
         analyzer.setAntennaContext(antennaContextMock);
 
         license1 = new License();
-        license1.setName("Apache-2.0");
+        license1.setId("Apache-2.0");
 
         license2 = new License();
-        license2.setName("Apache-2.0 OR MIT");
+        license2.setId("Apache-2.0 OR MIT");
     }
 
     @Test

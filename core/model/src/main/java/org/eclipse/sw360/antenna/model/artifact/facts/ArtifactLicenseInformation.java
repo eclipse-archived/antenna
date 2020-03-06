@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -12,8 +13,8 @@
 package org.eclipse.sw360.antenna.model.artifact.facts;
 
 import org.eclipse.sw360.antenna.model.artifact.ArtifactFactWithPayload;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseStatement;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
+import org.eclipse.sw360.antenna.model.license.LicenseStatement;
 
 public abstract class ArtifactLicenseInformation extends ArtifactFactWithPayload<LicenseInformation> {
     public ArtifactLicenseInformation(LicenseInformation payload) {
@@ -33,11 +34,6 @@ public abstract class ArtifactLicenseInformation extends ArtifactFactWithPayload
         if(licenseInformation == null) {
             return true;
         }
-        if(licenseInformation instanceof LicenseStatement) {
-            final LicenseStatement licenseStatement = (LicenseStatement) licenseInformation;
-            return licenseStatement.getLicenseInfo().size() == 0 ||
-                    isEmpty(licenseStatement.getLeftStatement()) && isEmpty(licenseStatement.getRightStatement());
-        }
-        return false;
+        return licenseInformation.isEmpty();
     }
 }

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -19,8 +20,6 @@ import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,15 +47,15 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
     private static final String KEY_OSS = "OpenSource";
     private static final String KEY_DELIVER_SRC = "DeliverSources";
     private static final String KEY_DELIVER_LICENSE = "DeliverLicense";
-    private static final String KEY_CLASSIFICATION = "CoveredByINSTStandardProcess";
+    private static final String KEY_CLASSIFICATION = "Classification";
     private static final String KEY_THREAT_GROUP = "ThreatGroup";
     private static final Collection<String> KEY_LIST = Arrays.asList(KEY_IDENT, KEY_ALIAS, KEY_NAME, KEY_URL, KEY_OSS, KEY_DELIVER_SRC, KEY_DELIVER_LICENSE, KEY_CLASSIFICATION, KEY_THREAT_GROUP);
 
     private final Map<String, String> aliasIdMap = new HashMap<>();
     private final Map<String, String> idLicenseMap = new HashMap<>();
     private final Map<String, String> idTextMap = new HashMap<>();
-    private final Map<String, LicenseThreatGroup> idThreatGroupMap = new HashMap<>();
-    private final Map<String, LicenseClassification> idClassificationMap = new HashMap<>();
+    private final Map<String, String> idThreatGroupMap = new HashMap<>();
+    private final Map<String, String> idClassificationMap = new HashMap<>();
 
     private final List<Consumer<CSVRecord>> mapperFunctions = new ArrayList<>();
 
@@ -104,40 +103,10 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
         mapperFunctions.add(row -> this.idLicenseMap.put(row.get(KEY_IDENT), row.get(KEY_NAME)));
 
         // threat group mapper
-        mapperFunctions.add(row -> {
-            LicenseThreatGroup threatGroup = LicenseThreatGroup.UNKNOWN;
-
-            String threadGroupString = row.get(KEY_THREAT_GROUP);
-            if(threadGroupString != null && threadGroupString.length() > 0) {
-                try {
-                    threatGroup = LicenseThreatGroup.fromValue(threadGroupString);
-                } catch (IllegalArgumentException e) {
-                    String errMsg = String.format(
-                            "Illegal threat group [%s] for license [%s]. Falling back to UNKNOWN",
-                            threadGroupString, row.get(KEY_IDENT));
-                    LOGGER.warn(errMsg);
-                    reporter.add(row.get(KEY_IDENT), MessageType.PROCESSING_FAILURE, errMsg);
-                }
-            }
-
-            this.idThreatGroupMap.put(row.get(KEY_IDENT), threatGroup);
-        });
+        mapperFunctions.add(row -> this.idThreatGroupMap.put(row.get(KEY_IDENT), row.get(KEY_THREAT_GROUP)));
 
         // classification mapper
-        mapperFunctions.add(row -> {
-            LicenseClassification lc;
-            try {
-                lc = LicenseClassification.fromValue(row.get(KEY_CLASSIFICATION));
-            } catch (IllegalArgumentException e) {
-                String errMsg = String.format(
-                        "Illegal classifier %s for licenses %s. Falling back to NOT_CLASSIFIED",
-                        row.get(KEY_CLASSIFICATION), row.get(KEY_IDENT));
-                LOGGER.warn(errMsg);
-                reporter.add(row.get(KEY_IDENT), MessageType.PROCESSING_FAILURE, errMsg);
-                lc = LicenseClassification.NOT_CLASSIFIED;
-            }
-            this.idClassificationMap.put(row.get(KEY_IDENT), lc);
-        });
+        mapperFunctions.add(row -> this.idClassificationMap.put(row.get(KEY_IDENT), row.get(KEY_CLASSIFICATION)));
     }
 
     /**
@@ -227,13 +196,12 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
     }
 
     @Override
-    public LicenseThreatGroup getThreatGroupForId(String id) {
+    public String getThreatGroupForId(String id) {
         return this.idThreatGroupMap.get(id);
     }
 
     @Override
-    public LicenseClassification getClassificationById(String licenseId) {
-        Optional<LicenseClassification> classification = Optional.ofNullable(this.idClassificationMap.get(licenseId));
-        return classification.orElse(LicenseClassification.NOT_CLASSIFIED);
+    public String getClassificationById(String licenseId) {
+        return this.idClassificationMap.get(licenseId);
     }
 }

@@ -1,5 +1,6 @@
 /**
  * Copyright (c) Robert Bosch Manufacturing Solutions GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -23,9 +24,9 @@ import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.CopyrightStatement;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 
 /**
  * This adapter helps to encapsulate Antenna API.
@@ -74,7 +75,7 @@ public class ArtifactAdapter implements ArtifactAndLicense {
     */
    public static String createKey(License license) {
       // valid keys are likely: numbers and letters but no special chars or even '-'
-      int hashCode = license.getName().hashCode();
+      int hashCode = license.getId().hashCode();
       String prefix = hashCode < 0 ? "n" : "p";
       return prefix + Math.abs(hashCode);
    }
@@ -127,7 +128,7 @@ public class ArtifactAdapter implements ArtifactAndLicense {
    private static List<LicenseInfo> createLicenses(LicenseInformation licenseInformation) {
       return licenseInformation.getLicenses()
               .stream()
-              .map(l -> new LicenseInfo(createKey(l), getLicenseText(l), l.getName(), l.getLongName()))
+              .map(l -> new LicenseInfo(createKey(l), getLicenseText(l), l.getId(), l.getCommonName()))
               .collect(Collectors.toList());
    }
 

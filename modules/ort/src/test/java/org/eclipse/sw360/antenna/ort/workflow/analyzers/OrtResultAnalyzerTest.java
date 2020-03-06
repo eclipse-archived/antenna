@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -12,8 +13,8 @@ package org.eclipse.sw360.antenna.ort.workflow.analyzers;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -69,14 +70,14 @@ public class OrtResultAnalyzerTest {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(LicenseInformation::evaluate))
-                .contains("( Apache-2.0 AND ( BSD-2-Clause AND MIT ) )");
+                .contains("( Apache-2.0 AND BSD-2-Clause AND MIT )");
 
         assertThat(artifacts.stream()
                 .map(artifact -> artifact.askForGet(DeclaredLicenseInformation.class))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(LicenseInformation::evaluate))
-                .doesNotContain("( Apache-2.0 AND ( BSD-2-Clause AND MIT ) )");
+                .doesNotContain("( Apache-2.0 AND BSD-2-Clause AND MIT )");
 
         assertThat(artifacts.stream()
                 .map(artifact -> artifact.askForGet(CopyrightStatement.class))

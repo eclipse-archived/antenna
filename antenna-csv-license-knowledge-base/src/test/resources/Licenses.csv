@@ -1,4 +1,4 @@
-Identifier;Aliases;Name;LicenseURL;OpenSource;DeliverSources;DeliverLicense;CoveredByINSTStandardProcess;ThreatGroup
+Identifier;Aliases;Name;LicenseURL;OpenSource;DeliverSources;DeliverLicense;Classification;ThreatGroup
 AFL-1.1;AFL1;Academic Free License v1.1;;;;;;
 AFL-1.2;AFL2;Academic Free License v1.2;;;;;;
 JDL;;Java Advanced Imaging Distribution License;http://java.net/projects/jai/sources/svn/content/trunk/www/jdl-jai.pdf;;;;;

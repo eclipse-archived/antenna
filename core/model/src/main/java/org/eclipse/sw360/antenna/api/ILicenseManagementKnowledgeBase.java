@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,9 +11,6 @@
  */
 
 package org.eclipse.sw360.antenna.api;
-
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
 
 import java.nio.charset.Charset;
 
@@ -51,7 +49,7 @@ public interface ILicenseManagementKnowledgeBase {
      * @param id
      * @return Returns the Classification for the id.
      */
-    LicenseClassification getClassificationById(String id);
+    String getClassificationById(String id);
 
-    LicenseThreatGroup getThreatGroupForId(String id);
+    String getThreatGroupForId(String id);
 }

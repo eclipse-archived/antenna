@@ -18,6 +18,10 @@ import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactIdentifier;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
+import org.eclipse.sw360.antenna.model.license.LicenseOperator;
+import org.eclipse.sw360.antenna.model.license.LicenseStatement;
 import org.eclipse.sw360.antenna.model.xml.generated.*;
 import org.eclipse.sw360.antenna.xml.XMLResolverJaxB;
 import org.junit.Before;
@@ -52,11 +56,12 @@ public class ConfigurationTest {
         assertThat(configuration.getIgnoreForSourceResolving().size()).isEqualTo(1);
 
         License license = new License();
-        license.setName("EPL-2.0");
+        license.setId("EPL-2.0");
+        license.setCommonName("Eclipse Public License 2.0");
 
         ArtifactIdentifier identifier = new ArtifactFilename("overrideName.jar");
         assertThat(configuration.getFinalLicenses().keySet().stream().anyMatch(k -> k.matches(identifier))).isTrue();
-        List<License> list = configuration.getFinalLicenses().entrySet().stream()
+        List<LicenseInformation> list = configuration.getFinalLicenses().entrySet().stream()
                 .filter(e -> e.getKey().matches(identifier))
                 .map(Map.Entry::getValue)
                 .map(LicenseInformation::getLicenses)
@@ -108,7 +113,7 @@ public class ConfigurationTest {
         assertThat(declaredLicenseInformation
                 .getLicenses()
                 .get(0)
-                .getName()
+                .evaluate()
         ).isEqualTo("testLicense");
         assertThat(declaredLicenseInformation
                 .evaluate())
@@ -123,8 +128,7 @@ public class ConfigurationTest {
     @Test
     public void addArtifactTest() throws Exception {
         Artifact artifact = configuration.getAddArtifact().get(0);
-
-        assertThat(artifact.askForGet(DeclaredLicenseInformation.class).get().getLicenses().get(0).getName())
+        assertThat(artifact.askForGet(DeclaredLicenseInformation.class).get().getLicenses().get(0).evaluate())
                 .isEqualTo("Apache");
         assertThat(artifact.askFor(ArtifactFilename.class).get().getFilenames())
                 .contains("addArtifact.jar");
@@ -134,5 +138,27 @@ public class ConfigurationTest {
                 .isFalse();
         assertThat(artifact.getMatchState())
                 .isEqualTo(MatchState.EXACT);
+    }
+
+    @Test
+    public void testSetFinalLicensesWithMultipleXmlElements() {
+        ArtifactIdentifier artifactIdentifier = new ArtifactFilename("overrideName.jar");
+        License licenseWithOldSyntax = (License) configuration.getFinalLicenses().entrySet().stream()
+                .filter(e -> e.getKey().matches(artifactIdentifier))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .get();
+        assertThat(licenseWithOldSyntax.getId()).isEqualTo("EPL-2.0");
+        assertThat(licenseWithOldSyntax.getCommonName()).isEqualTo("Eclipse Public License 2.0");
+
+        ArtifactIdentifier artifactIdentifier2 = new ArtifactFilename("setFinalLicenses.jar");
+        License licenseWithNewSyntax = (License) configuration.getFinalLicenses().entrySet()
+                .stream()
+                .filter(e -> e.getKey().matches(artifactIdentifier2))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .get();
+        assertThat(licenseWithNewSyntax.getId()).isEqualTo("Apache-2.0");
+        assertThat(licenseWithNewSyntax.getCommonName()).isEqualTo("Apache License 2.0");
     }
 }

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2014,2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -95,7 +96,7 @@ public class MultipleConfigsResolverTest {
 
     @Test
     public void testFinalLicenses() {
-        assertThat(this.mergedConfigs.getFinalLicenses().size()).isEqualTo(1);
+        assertThat(this.mergedConfigs.getFinalLicenses().size()).isEqualTo(2);
     }
 
     @Test

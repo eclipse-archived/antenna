@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -18,8 +19,8 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.api.Attachable;
 
 import java.io.File;
@@ -98,13 +99,8 @@ public class CSVGenerator extends AbstractGenerator {
 
             LicenseInformation finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact);
             StringBuilder licenses = new StringBuilder();
-            if (finalLicenses.evaluateLong() != null) {
-                licenses.append(finalLicenses.evaluateLong());
-                licenses.append(" ");
-            } else {
-                licenses.append(finalLicenses.evaluate());
-                licenses.append(" ");
-            }
+            licenses.append(finalLicenses.evaluate());
+            licenses.append(" ");
             information.append(licenses);
             licenses.append(";");
             information.append("\n");

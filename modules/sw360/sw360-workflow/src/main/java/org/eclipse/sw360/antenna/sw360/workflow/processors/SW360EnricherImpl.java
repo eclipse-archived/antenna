@@ -15,9 +15,9 @@ import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactLicenseInformation;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
@@ -117,7 +117,7 @@ public class SW360EnricherImpl {
 
     private void updateLicense(License license, List<SW360SparseLicense> sw360licenses) {
         sw360licenses.stream()
-                .filter(l -> l.getShortName().equals(license.getName()))
+                .filter(l -> l.getShortName().equals(license.getId()))
                 .findFirst()
                 .ifPresent(l -> enrichLicenseWithSW360Data(license, l));
     }
@@ -134,7 +134,7 @@ public class SW360EnricherImpl {
     }
 
     private License makeLicenseFromLicenseDetails(License license, SW360License licenseDetails) {
-        license.setLongName(licenseDetails.getFullName());
+        license.setCommonName(licenseDetails.getFullName());
         license.setText(licenseDetails.getText());
         return license;
     }

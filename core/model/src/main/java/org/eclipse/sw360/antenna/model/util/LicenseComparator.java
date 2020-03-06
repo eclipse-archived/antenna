@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -11,7 +12,8 @@
 
 package org.eclipse.sw360.antenna.model.util;
 
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
+
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 
 import java.io.Serializable;
 import java.util.Comparator;

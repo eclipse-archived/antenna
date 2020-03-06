@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -17,10 +18,8 @@ import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.knowledgebase.LicenseKnowledgeBaseFactory;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactLicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,28 +57,27 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
                 .flatMap(List::stream)
                 .map(ArtifactLicenseInformation::get)
                 .map(LicenseInformation::getLicenses)
-                .forEach(licenses -> {
-                    aliasToIdentifier(licenses);
-                    setText(licenses);
-                    setThreatGroup(licenses);
-                    setClassification(licenses);
-        });
+                .flatMap(List::stream)
+                .forEach(license -> {
+                    aliasToIdentifier(license);
+                    setText(license);
+                    setThreatGroup(license);
+                    setClassification(license);
+                });
     }
 
     /**
      * Replaces the aliases with the license Identifier.
      * If it is found in the licenseKnowledgeBase.
      */
-    private void aliasToIdentifier(List<License> licenses) {
-        licenses.forEach(license -> {
-            String licenseId = this.knowledgeBase.getLicenseIdForAlias(license.getName());
-            if (licenseId != null) {
-                license.setName(licenseId);
-            } else {
-                licenseId = license.getName();
-            }
-            setLongName(license, licenseId);
-        });
+    private void aliasToIdentifier(License license) {
+        String licenseId = this.knowledgeBase.getLicenseIdForAlias(license.getId());
+        if (licenseId != null) {
+            license.setId(licenseId);
+        } else {
+            licenseId = license.getId();
+        }
+        setLongName(license, licenseId);
     }
 
     /**
@@ -87,49 +85,46 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
      * it is found in the knowledgeBase.
      */
     private void setLongName(License license, String licenseId) {
-        String configuredLongName = license.getLongName();
+        String configuredLongName = license.getCommonName();
         if (StringUtils.isEmpty(configuredLongName)) {
             String longName = this.knowledgeBase.getLicenseNameForId(licenseId);
             if (longName != null) {
-                license.setLongName(longName);
+                license.setCommonName(longName);
             }            
         }
     }
 
     /**
-     * Sets text in Licenses of artifacts and extends idTextMap in
+     * Sets text in License of artifact and extends idTextMap in
      * LicenseKnowledgeBase.
      *
-     * @param licenses
+     * @param license
      *            List of licenses for which the text will be set
      */
-    private void setText(List<License> licenses) {
-        licenses.forEach(license -> {
-            String configuredText = license.getText();
-            if (StringUtils.isEmpty(configuredText)) {
-                String id = license.getName();
-                Optional.ofNullable(knowledgeBase.getTextForId(id))
-                    .ifPresent(license::setText);
-            }
-        });
+    private void setText(License license) {
+        String configuredText = license.getText();
+        if (StringUtils.isEmpty(configuredText)) {
+            String id = license.getId();
+            Optional.ofNullable(knowledgeBase.getTextForId(id))
+                .ifPresent(license::setText);
+        }
     }
 
-    private void setThreatGroup(List<License> licenses) {
-        licenses.forEach(license -> {
-            if (license.getThreatGroup() == null) {
-                LicenseThreatGroup threatGroup = this.knowledgeBase.getThreatGroupForId(license.getName());
-                license.setThreatGroup(threatGroup);
-            }
-        });
+
+    private void setThreatGroup(License license) {
+        Optional<String> threatGroupOfLicense = license.getThreatGroup();
+        if (!threatGroupOfLicense.isPresent() || threatGroupOfLicense.get().isEmpty()) {
+            String threatGroupOfKb = this.knowledgeBase.getThreatGroupForId(license.getId());
+            license.setThreatGroup(threatGroupOfKb);
+        }
     }
 
-    private void setClassification(List<License> licenses) {
-        licenses.forEach(license -> {
-            if (license.getClassification() == null) {
-                LicenseClassification licenseClassification = this.knowledgeBase.getClassificationById(license.getName());
-                license.setClassification(licenseClassification);                
-            }
-        });
+    private void setClassification(License license) {
+        Optional<String> classificationOfLicense = license.getClassification();
+        if (!classificationOfLicense.isPresent() || classificationOfLicense.get().isEmpty()) {
+            String classificationOfKb = this.knowledgeBase.getClassificationById(license.getId());
+            license.setClassification(classificationOfKb);
+        }
     }
 
     @Override

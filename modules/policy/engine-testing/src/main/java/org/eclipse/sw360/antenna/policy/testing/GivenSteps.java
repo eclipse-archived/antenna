@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -14,10 +15,9 @@ import cucumber.api.java.en.Given;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseOperator;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
+import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
+import org.eclipse.sw360.antenna.model.license.LicenseOperator;
 import org.eclipse.sw360.antenna.util.LicenseSupport;
 
 import java.io.IOException;
@@ -25,8 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class GivenSteps {
     private ScenarioState state;
@@ -109,30 +107,14 @@ public class GivenSteps {
         return LicenseSupport.mapLicenses(Arrays.asList(licenseExpressionParts), operator);
     }
 
-    private static final String UNKNOWN_THREAT_GROUP = "unknown";
-    private static final String LIBERAL_THREAT_GROUP = "liberal";
-    private static final String STRICT_COPYLEFT_THREAT_GROUP = "strict copyleft";
-    private static final String HIGH_RISK_THREAT_GROUP = "high risk";
-    private static final String FREEWARE_THREAT_GROUP = "freeware";
-    private static final String NON_STANDARD_THREAT_GROUP = "non standard";
-
-    private static final Map<String, LicenseThreatGroup> THREAT_GROUP_MAP = Stream.of(new Object[][]{
-            {UNKNOWN_THREAT_GROUP, LicenseThreatGroup.UNKNOWN},
-            {LIBERAL_THREAT_GROUP, LicenseThreatGroup.LIBERAL},
-            {STRICT_COPYLEFT_THREAT_GROUP, LicenseThreatGroup.STRICT_COPYLEFT},
-            {HIGH_RISK_THREAT_GROUP, LicenseThreatGroup.HIGH_RISK},
-            {FREEWARE_THREAT_GROUP, LicenseThreatGroup.FREEWARE},
-            {NON_STANDARD_THREAT_GROUP, LicenseThreatGroup.NON_STANDARD}})
-            .collect(Collectors.toMap(data -> (String) data[0], data -> (LicenseThreatGroup) data[1]));
-
     private License createLicense(String licenseExpression, Optional<String> threatGroup) {
         License license = new License();
         String[] licenseText = licenseExpression.split("::");
-        license.setName(licenseText[0]);
+        license.setId(licenseText[0]);
         if (licenseText.length > 1) {
             license.setText(licenseText[1]);
         }
-        threatGroup.ifPresent(tg -> license.setThreatGroup(THREAT_GROUP_MAP.get(tg)));
+        threatGroup.ifPresent(license::setThreatGroup);
         return license;
     }
 

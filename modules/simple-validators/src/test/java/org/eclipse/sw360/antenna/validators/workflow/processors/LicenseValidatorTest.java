@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2013,2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -13,7 +14,7 @@ package org.eclipse.sw360.antenna.validators.workflow.processors;
 import org.eclipse.sw360.antenna.api.IEvaluationResult;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,15 +44,15 @@ public class LicenseValidatorTest extends AntennaTestWithMockedContext {
     public void init() {
 
         allowedLicense = new License();
-        allowedLicense.setName("allowedLicense");
+        allowedLicense.setId("allowedLicense");
         allowedLicense.setText("text of allowedLicense");
 
         forbiddenLicense = new License();
-        forbiddenLicense.setName("forbiddenLicense");
+        forbiddenLicense.setId("forbiddenLicense");
         forbiddenLicense.setText("text of forbiddenLicense");
 
         emptyTextLicense = new License();
-        emptyTextLicense.setName("licenseWithoutText");
+        emptyTextLicense.setId("licenseWithoutText");
 
         emptyLicense = new License();
 
@@ -59,7 +60,7 @@ public class LicenseValidatorTest extends AntennaTestWithMockedContext {
         validator.setAntennaContext(antennaContextMock);
 
         configMap = new HashMap<>();
-        configMap.put(FORBIDDEN_LICENSES_KEY, forbiddenLicense.getName());
+        configMap.put(FORBIDDEN_LICENSES_KEY, forbiddenLicense.getId());
     }
 
     public Artifact mkArtifact(License decladerLicense) {

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -13,8 +14,9 @@ package org.eclipse.sw360.antenna.model.artifact;
 
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.coordinates.*;
+import org.eclipse.sw360.antenna.model.license.FromXmlLicenseInformationBuilder;
+import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.DeclaredLicense;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseInformation;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -53,7 +55,9 @@ public class FromXmlArtifactBuilder implements IArtifactBuilder {
                 .map(CoordinatesBuilder::build)
                 .forEach(artifact::addCoordinate);
         if(declaredLicense != null) {
-            final LicenseInformation licenseInfo = declaredLicense.getLicenseInfo().getValue();
+            final LicenseInformation licenseInfo =
+                    ((FromXmlLicenseInformationBuilder.ILicenseInformationBuilder) declaredLicense.getLicenseInfo()
+                            .getValue()).build();
             artifact.addFact(new DeclaredLicenseInformation(licenseInfo));
         }
         if(isProprietary != null) {

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -13,10 +14,8 @@ package org.eclipse.sw360.antenna.workflow.processors;
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
+import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
-import org.eclipse.sw360.antenna.model.xml.generated.License;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseClassification;
-import org.eclipse.sw360.antenna.model.xml.generated.LicenseThreatGroup;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -24,8 +23,7 @@ import org.mockito.Mock;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,15 +38,15 @@ public class LicenseKnowledgeBaseResolverTest {
     private static final String LICENSE_ID = "license id";
     private static final String LICENSE_NAME = "configured license name";
     private static final String LICENSE_TEXT = "configured license text";
-    private static final LicenseThreatGroup LICENSE_THREAT_GROUP = LicenseThreatGroup.UNKNOWN;
-    private static final LicenseClassification LICENSE_CLASSIFICATION = LicenseClassification.NOT_CLASSIFIED;
+    private static final String LICENSE_THREAT_GROUP = "configured threat group";
+    private static final String LICENSE_CLASSIFICATION = "configured classification";
     
     // License 2
     private static final String KB_LICENSE_ID = "license kb id";
     private static final String KB_LICENSE_NAME = "knowlegdebase license name";
     private static final String KB_LICENSE_TEXT = "knowledgebase license text";
-    private static final LicenseThreatGroup KB_LICENSE_THREAT_GROUP = LicenseThreatGroup.NON_STANDARD;
-    private static final LicenseClassification KB_LICENSE_CLASSIFICATION = LicenseClassification.NOT_COVERED;
+    private static final String KB_LICENSE_THREAT_GROUP = "any threat group";
+    private static final String KB_LICENSE_CLASSIFICATION = "any classification";
 
     @Before
     public void before() {
@@ -74,7 +72,7 @@ public class LicenseKnowledgeBaseResolverTest {
     @Test
     public void testArtifactWithOnlyKnownLicenseId() {
         License license = new License();
-        license.setName(LICENSE_ID);
+        license.setId(LICENSE_ID);
         
         Artifact artifact = new Artifact();
         artifact.addFact(new ConfiguredLicenseInformation(license));
@@ -82,20 +80,23 @@ public class LicenseKnowledgeBaseResolverTest {
         knowledgeBaseResolver.process(Collections.singletonList(artifact));
 
         final List<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
-        assertEquals(1, finalLicenses.size());
-        License l = finalLicenses.stream().findAny().get();
-        assertEquals(LICENSE_ID, l.getName());
-        assertEquals(LICENSE_NAME, l.getLongName());
-        assertEquals(LICENSE_TEXT, l.getText());
-        assertEquals(LICENSE_THREAT_GROUP, l.getThreatGroup());
-        assertEquals(LICENSE_CLASSIFICATION, l.getClassification());
+        assertThat(finalLicenses.size()).isEqualTo(1);
+        assertThat(finalLicenses.stream()
+                .findAny())
+                .hasValueSatisfying(l -> {
+                    assertThat(l.getId()).isEqualTo(LICENSE_ID);
+                    assertThat(l.getCommonName()).isEqualTo(LICENSE_NAME);
+                    assertThat(l.getText()).isEqualTo(LICENSE_TEXT);
+                    assertThat(l.getThreatGroup()).hasValue(LICENSE_THREAT_GROUP);
+                    assertThat(l.getClassification()).hasValue(LICENSE_CLASSIFICATION);
+        });
     }
     
     @Test
     public void testArtifactWithFullyConfiguredLicense() {
         License license = new License();
-        license.setName(LICENSE_ID);
-        license.setLongName(LICENSE_NAME);
+        license.setId(LICENSE_ID);
+        license.setCommonName(LICENSE_NAME);
         license.setText(LICENSE_TEXT);
         license.setThreatGroup(LICENSE_THREAT_GROUP);
         license.setClassification(LICENSE_CLASSIFICATION);
@@ -107,20 +108,23 @@ public class LicenseKnowledgeBaseResolverTest {
 
 
         final List<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
-        assertEquals(1, finalLicenses.size());
-        License l = finalLicenses.stream().findAny().get();
-        assertEquals(LICENSE_ID, l.getName());
-        assertEquals(LICENSE_NAME, l.getLongName());
-        assertEquals(LICENSE_TEXT, l.getText());
-        assertEquals(LICENSE_THREAT_GROUP, l.getThreatGroup());
-        assertEquals(LICENSE_CLASSIFICATION, l.getClassification());
+        assertThat(finalLicenses.size()).isEqualTo(1);
+        assertThat(finalLicenses.stream()
+                .findAny())
+                .hasValueSatisfying(l -> {
+                    assertThat(l.getId()).isEqualTo(LICENSE_ID);
+                    assertThat(l.getCommonName()).isEqualTo(LICENSE_NAME);
+                    assertThat(l.getText()).isEqualTo(LICENSE_TEXT);
+                    assertThat(l.getThreatGroup()).hasValue(LICENSE_THREAT_GROUP);
+                    assertThat(l.getClassification()).hasValue(LICENSE_CLASSIFICATION);
+        });
     }
     
     @Test
     public void testArtifactWithUnknownLicense() {
         String licenseName = "Unknown license";
         License license = new License();
-        license.setName(licenseName);
+        license.setId(licenseName);
         
         Artifact artifact = new Artifact();
         artifact.addFact(new ConfiguredLicenseInformation(license));
@@ -128,12 +132,14 @@ public class LicenseKnowledgeBaseResolverTest {
         knowledgeBaseResolver.process(Collections.singletonList(artifact));
 
         final List<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
-        assertEquals(1, finalLicenses.size());
-        License l = finalLicenses.stream().findAny().get();
-        assertEquals(licenseName, l.getName());
-        assertNull(l.getLongName());
-        assertNull(l.getText());
-        assertNull(l.getThreatGroup());
-        assertNull(l.getClassification());
+        assertThat(finalLicenses.size()).isEqualTo(1);
+        assertThat(finalLicenses.stream()
+                .findAny()).hasValueSatisfying(l -> {
+                    assertThat(l.getId()).isEqualTo(licenseName);
+                    assertThat(l.getCommonName()).isNull();
+                    assertThat(l.getText()).isNull();
+                    assertThat(l.getThreatGroup()).isNotPresent();
+                    assertThat(l.getClassification()).isNotPresent();
+        });
     }
 }

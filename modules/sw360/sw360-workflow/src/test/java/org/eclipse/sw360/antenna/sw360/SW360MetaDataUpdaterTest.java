@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360;
 
-import org.eclipse.sw360.antenna.model.xml.generated.License;
+import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
@@ -56,7 +56,7 @@ public class SW360MetaDataUpdaterTest {
         final SW360License license = new SW360License()
                 .setShortName(licenseName);
         License licenseAntenna = new License();
-        licenseAntenna.setName(licenseName);
+        licenseAntenna.setId(licenseName);
         when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName, headers))
                 .thenReturn(true);
         when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName, headers))
@@ -77,7 +77,7 @@ public class SW360MetaDataUpdaterTest {
         final SW360License license = new SW360License()
                 .setShortName(licenseName);
         License licenseAntenna = new License();
-        licenseAntenna.setName(licenseName);
+        licenseAntenna.setId(licenseName);
         when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName, headers))
                 .thenReturn(false);
         when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName, headers))
