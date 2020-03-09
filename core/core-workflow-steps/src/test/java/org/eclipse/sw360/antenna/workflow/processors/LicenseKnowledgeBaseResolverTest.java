@@ -12,27 +12,31 @@
 package org.eclipse.sw360.antenna.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
+import org.eclipse.sw360.antenna.knowledgebase.LicenseKnowledgeBaseFactory;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
 import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
+import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class LicenseKnowledgeBaseResolverTest {
+public class LicenseKnowledgeBaseResolverTest extends AntennaTestWithMockedContext {
 
     @Mock
     ILicenseManagementKnowledgeBase knowledgeBaseMock = mock(ILicenseManagementKnowledgeBase.class);
+    @Mock
+    LicenseKnowledgeBaseFactory supplierMock = mock(LicenseKnowledgeBaseFactory.class);
 
-    LicenseKnowledgeBaseResolver knowledgeBaseResolver = new LicenseKnowledgeBaseResolver(knowledgeBaseMock);
+    LicenseKnowledgeBaseResolver knowledgeBaseResolver;
 
     // License 1
     private static final String LICENSE_ID = "license id";
@@ -67,6 +71,51 @@ public class LicenseKnowledgeBaseResolverTest {
                 .thenReturn(KB_LICENSE_THREAT_GROUP);
         when(knowledgeBaseMock.getClassificationById(KB_LICENSE_ID))
                 .thenReturn(KB_LICENSE_CLASSIFICATION);
+
+        when(supplierMock.get())
+                .thenReturn(Arrays.asList(knowledgeBaseMock));
+
+        knowledgeBaseResolver = new LicenseKnowledgeBaseResolver(knowledgeBaseMock, supplierMock);
+    }
+
+    @Test(expected = ConfigurationException.class)
+    public void testProcessorWithoutConfiguration() {
+        LicenseKnowledgeBaseResolver resolver = new LicenseKnowledgeBaseResolver(knowledgeBaseMock, supplierMock);
+
+        resolver.configure(Collections.EMPTY_MAP);
+    }
+
+    @Test
+    public void testProcessorWithConfiguredManager() {
+        ILicenseManagementKnowledgeBase o = mockLicenseManagementKnowledgeBase("SPDX", 0);
+        when(supplierMock.get()).thenReturn(Arrays.asList(o));
+
+        LicenseKnowledgeBaseResolver resolver = new LicenseKnowledgeBaseResolver(null, supplierMock);
+
+        Map<String, String> config = new HashMap<>();
+        config.put("chosen.license.manager", "SPDX");
+        resolver.configure(config);
+
+        assertThat(resolver.getKnowledgeBase().getId()).isEqualTo("SPDX");
+        assertThat(resolver.getKnowledgeBase().getPriority()).isEqualTo(0);
+    }
+
+    @Test
+    public void testProcessorWithMultipleManagers() {
+        ILicenseManagementKnowledgeBase o1 = mockLicenseManagementKnowledgeBase("SPDX", 0);
+        ILicenseManagementKnowledgeBase o2 = mockLicenseManagementKnowledgeBase("CSV", 200);
+        ILicenseManagementKnowledgeBase o3 = mockLicenseManagementKnowledgeBase("TXT", 100);
+        ILicenseManagementKnowledgeBase o4 = mockLicenseManagementKnowledgeBase("JSON", 500);
+        when(supplierMock.get()).thenReturn(Arrays.asList(o1, o2, o3, o4));
+
+        LicenseKnowledgeBaseResolver resolver = new LicenseKnowledgeBaseResolver(null, supplierMock);
+
+        Map<String, String> config = new HashMap<>();
+        config.put("chosen.license.manager", "NOT_AVAILABLE");
+        resolver.configure(config);
+
+        assertThat(resolver.getKnowledgeBase().getId()).isEqualTo("JSON");
+        assertThat(resolver.getKnowledgeBase().getPriority()).isEqualTo(500);
     }
 
     @Test
@@ -141,5 +190,12 @@ public class LicenseKnowledgeBaseResolverTest {
                     assertThat(l.getThreatGroup()).isNotPresent();
                     assertThat(l.getClassification()).isNotPresent();
         });
+    }
+
+    private ILicenseManagementKnowledgeBase mockLicenseManagementKnowledgeBase(String id, int priority) {
+        ILicenseManagementKnowledgeBase o = mock(ILicenseManagementKnowledgeBase.class);
+        when(o.getId()).thenReturn(id);
+        when(o.getPriority()).thenReturn(priority);
+        return o;
     }
 }
