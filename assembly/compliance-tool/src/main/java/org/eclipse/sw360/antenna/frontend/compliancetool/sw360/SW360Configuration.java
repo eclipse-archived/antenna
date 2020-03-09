@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 
 import org.eclipse.sw360.antenna.api.workflow.ConfigurableWorkflowItem;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
 
 import java.io.File;
@@ -27,7 +27,7 @@ import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.Compliance
 public class SW360Configuration extends ConfigurableWorkflowItem {
     private final Map<String, String> properties;
     private final String csvFileName;
-    private final SW360ConnectionConfiguration connectionConfiguration;
+    private final SW360Connection connection;
     private final Path targetDir;
     private final Path sourcesPath;
     private final Path baseDir;
@@ -37,11 +37,11 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
         baseDir = Paths.get(properties.get("basedir"));
         targetDir = baseDir.resolve(properties.get("targetDir"));
         sourcesPath = baseDir.resolve(properties.get("sourcesDirectory"));
-        connectionConfiguration = makeConnectionConfiguration();
+        connection = makeConnection();
         csvFileName = properties.get("csvFilePath");
     }
 
-    private SW360ConnectionConfiguration makeConnectionConfiguration() {
+    private SW360Connection makeConnection() {
         Map<String, String> configMap = Stream.of(new String[][]{
                 {"rest.server.url", getConfigValue("sw360restServerUrl", properties)},
                 {"auth.server.url", getConfigValue("sw360authServerUrl", properties)},
@@ -53,7 +53,7 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
                 {"proxy.use", getConfigValue("proxyUse", properties)}})
                 .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
         SW360ConnectionConfigurationFactory configurationFactory = new SW360ConnectionConfigurationFactory();
-        return configurationFactory.createConfiguration(
+        return configurationFactory.createConnection(
                 key -> getConfigValue(key, configMap),
                 key -> getBooleanConfigValue(key, configMap),
                 properties.get("proxyHost"), Integer.parseInt(properties.get("proxyPort")));
@@ -78,8 +78,8 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
         return properties;
     }
 
-    public SW360ConnectionConfiguration getConnectionConfiguration() {
-        return connectionConfiguration;
+    public SW360Connection getConnection() {
+        return connection;
     }
 
     public Boolean getBooleanConfigValue(String key) {

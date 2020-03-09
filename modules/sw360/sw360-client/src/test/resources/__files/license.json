@@ -8,7 +8,7 @@
   "fullName": "Test License",
   "_links": {
     "self": {
-      "href": "https://sw360-backend-production.osm-si.com/resource/api/licenses/0TST"
+      "href": "https://sw360.test.com/resource/api/licenses/0TST"
     }
   }
 }

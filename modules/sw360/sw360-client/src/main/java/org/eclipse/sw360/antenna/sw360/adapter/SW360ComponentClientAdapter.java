@@ -11,60 +11,63 @@
  */
 package org.eclipse.sw360.antenna.sw360.adapter;
 
-import org.eclipse.sw360.antenna.sw360.rest.SW360ComponentClient;
+import org.eclipse.sw360.antenna.sw360.client.rest.SW360ComponentClient;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
-import org.eclipse.sw360.antenna.sw360.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.utils.SW360ComponentAdapterUtils;
-import org.springframework.http.HttpHeaders;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
+import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.optionalFuture;
+
 public class SW360ComponentClientAdapter {
-    private SW360ComponentClient componentClient;
+    private final SW360ComponentClient componentClient;
 
-    public SW360ComponentClientAdapter setComponentClient(SW360ComponentClient componentClient) {
-        if(this.componentClient == null) {
-            this.componentClient = componentClient;
-        }
-        return this;
+    public SW360ComponentClientAdapter(SW360ComponentClient client) {
+        componentClient = client;
     }
 
-    public Optional<SW360Component> getOrCreateComponent(SW360Component componentFromRelease, HttpHeaders header) {
+    public SW360ComponentClient getComponentClient() {
+        return componentClient;
+    }
+
+    public Optional<SW360Component> getOrCreateComponent(SW360Component componentFromRelease) {
         if(componentFromRelease.getComponentId() != null) {
-            return getComponentById(componentFromRelease.getComponentId(), header);
+            return getComponentById(componentFromRelease.getComponentId());
         }
-        return Optional.of(getComponentByName(componentFromRelease.getName(), header)
-                .orElseGet(() -> createComponent(componentFromRelease, header)));
+        return Optional.of(getComponentByName(componentFromRelease.getName())
+                .orElseGet(() -> createComponent(componentFromRelease)));
     }
 
-    public SW360Component createComponent(SW360Component component, HttpHeaders header) {
-        if(! SW360ComponentAdapterUtils.isValidComponent(component)) {
+    public SW360Component createComponent(SW360Component component) {
+        if(!SW360ComponentAdapterUtils.isValidComponent(component)) {
             throw new SW360ClientException("Can not write invalid component for " + component.getName());
         }
-        return componentClient.createComponent(component, header);
+        return block(getComponentClient().createComponent(component));
     }
 
-    public Optional<SW360Component> getComponentById(String componentId, HttpHeaders header) {
-        return componentClient.getComponent(componentId, header);
+    public Optional<SW360Component> getComponentById(String componentId) {
+        return block(optionalFuture(getComponentClient().getComponent(componentId)));
     }
 
-    public Optional<SW360Component> getComponentByName(String componentName, HttpHeaders header) {
-        List<SW360SparseComponent> components = componentClient.searchByName(componentName, header);
+    public Optional<SW360Component> getComponentByName(String componentName) {
+        List<SW360SparseComponent> components = block(getComponentClient().searchByName(componentName));
 
         return components.stream()
                 .filter(c -> c.getName().equals(componentName))
                 .map(c -> SW360HalResourceUtility.getLastIndexOfSelfLink(c.get_Links()).orElse(""))
-                .map(id -> getComponentById(id, header))
+                .map(this::getComponentById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(c -> c.getName().equals(componentName))
                 .findFirst();
     }
 
-    public List<SW360SparseComponent> getComponents(HttpHeaders header) {
-        return componentClient.getComponents(header);
+    public List<SW360SparseComponent> getComponents() {
+        return block(getComponentClient().getComponents());
     }
 }

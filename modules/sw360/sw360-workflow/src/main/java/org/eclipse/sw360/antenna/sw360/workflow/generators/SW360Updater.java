@@ -16,7 +16,7 @@ import org.eclipse.sw360.antenna.api.IAttachable;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
 
 import java.util.Collection;
@@ -45,8 +45,8 @@ public class SW360Updater extends AbstractGenerator {
         final int sw360ProxyPort = context.getToolConfiguration().getProxyPort();
 
         SW360ConnectionConfigurationFactory configurationFactory = new SW360ConnectionConfigurationFactory();
-        SW360ConnectionConfiguration sw360ConnectionConfiguration =
-                configurationFactory.createConfiguration(key -> getConfigValue(key, configMap),
+        SW360Connection sw360Connection =
+                configurationFactory.createConnection(key -> getConfigValue(key, configMap),
                         key -> getBooleanConfigValue(key, configMap),
                         sw360ProxyHost, sw360ProxyPort);
 
@@ -54,7 +54,7 @@ public class SW360Updater extends AbstractGenerator {
         final boolean updateReleases = getBooleanConfigValue(UPDATE_RELEASES, configMap);
         Boolean uploadSources = getBooleanConfigValue(UPLOAD_SOURCES, configMap);
 
-        sw360MetaDataUpdater = new SW360MetaDataUpdater(sw360ConnectionConfiguration, updateReleases, uploadSources);
+        sw360MetaDataUpdater = new SW360MetaDataUpdater(sw360Connection, updateReleases, uploadSources);
     }
 
     private String getProjectVersion() {

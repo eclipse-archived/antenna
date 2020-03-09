@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.sw360.rest.resource.releases;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.eclipse.sw360.antenna.sw360.rest.SW360SimpleHalResource;
+import org.eclipse.sw360.antenna.sw360.rest.resource.SW360SimpleHalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 

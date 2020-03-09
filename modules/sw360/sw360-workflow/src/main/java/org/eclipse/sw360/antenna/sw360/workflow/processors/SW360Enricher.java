@@ -15,7 +15,7 @@ package org.eclipse.sw360.antenna.sw360.workflow.processors;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
 
 import java.nio.file.Path;
@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class SW360Enricher extends AbstractProcessor {
     private static final String DOWNLOAD_ATTACHMENTS = "download.attachments";
-    private static final String DOWNLOAD_ATTACHMENTS_DIR="download.directory";
+    private static final String DOWNLOAD_ATTACHMENTS_DIR = "download.directory";
     private boolean downloadAttachments;
     private Path downloadPath;
 
@@ -41,10 +41,6 @@ public class SW360Enricher extends AbstractProcessor {
 
         reporter = context.getProcessingReporter();
 
-        // Proxy configuration
-        String sw360ProxyHost = context.getToolConfiguration().getProxyHost();
-        int sw360ProxyPort = context.getToolConfiguration().getProxyPort();
-
         downloadAttachments = getBooleanConfigValue(DOWNLOAD_ATTACHMENTS, configMap);
         if (downloadAttachments) {
             downloadPath = Paths.get(getConfigValue(DOWNLOAD_ATTACHMENTS_DIR, configMap,
@@ -53,17 +49,22 @@ public class SW360Enricher extends AbstractProcessor {
                     .toAbsolutePath();
         }
 
-        SW360ConnectionConfigurationFactory configurationFactory = new SW360ConnectionConfigurationFactory();
-        SW360ConnectionConfiguration sw360ConnectionConfiguration =
-                configurationFactory.createConfiguration(key -> getConfigValue(key, configMap),
-                        key -> getBooleanConfigValue(key, configMap),
-                        sw360ProxyHost, sw360ProxyPort);
-
-        connector = new SW360MetaDataReceiver(sw360ConnectionConfiguration);
+        connector = createMetaDataReceiver(configMap);
     }
 
     @Override
     public Collection<Artifact> process(Collection<Artifact> intermediates) {
         return new SW360EnricherImpl(reporter, connector, downloadAttachments, downloadPath).process(intermediates);
+    }
+
+    SW360MetaDataReceiver createMetaDataReceiver(Map<String, String> configMap) {
+        String sw360ProxyHost = context.getToolConfiguration().getProxyHost();
+        int sw360ProxyPort = context.getToolConfiguration().getProxyPort();
+        SW360ConnectionConfigurationFactory configurationFactory = new SW360ConnectionConfigurationFactory();
+        SW360Connection connection =
+                configurationFactory.createConnection(key -> getConfigValue(key, configMap),
+                        key -> getBooleanConfigValue(key, configMap),
+                        sw360ProxyHost, sw360ProxyPort);
+        return new SW360MetaDataReceiver(connection);
     }
 }

@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.maven;
 
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.util.HttpHelper;
-import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

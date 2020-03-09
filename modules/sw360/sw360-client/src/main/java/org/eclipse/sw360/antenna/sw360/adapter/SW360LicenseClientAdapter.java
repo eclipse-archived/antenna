@@ -11,37 +11,40 @@
  */
 package org.eclipse.sw360.antenna.sw360.adapter;
 
-import org.eclipse.sw360.antenna.sw360.rest.SW360LicenseClient;
+import org.eclipse.sw360.antenna.sw360.client.rest.SW360LicenseClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
-import org.springframework.http.HttpHeaders;
 
 import java.util.List;
 import java.util.Optional;
 
-public class SW360LicenseClientAdapter {
-    private SW360LicenseClient licenseClient;
+import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
+import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.optionalFuture;
 
-    public SW360LicenseClientAdapter setLicenseClient(SW360LicenseClient licenseClient) {
-        if (this.licenseClient == null) {
-            this.licenseClient = licenseClient;
-        }
-        return this;
+public class SW360LicenseClientAdapter {
+    private final SW360LicenseClient licenseClient;
+
+    public SW360LicenseClientAdapter(SW360LicenseClient client) {
+        licenseClient = client;
     }
 
-    public boolean isLicenseOfArtifactAvailable(String license, HttpHeaders header) {
-        List<SW360SparseLicense> sw360Licenses = licenseClient.getLicenses(header);
+    public SW360LicenseClient getLicenseClient() {
+        return licenseClient;
+    }
+
+    public boolean isLicenseOfArtifactAvailable(String license) {
+        List<SW360SparseLicense> sw360Licenses = block(getLicenseClient().getLicenses());
 
         return sw360Licenses.stream()
                 .map(SW360SparseLicense::getShortName)
                 .anyMatch(n -> n.equals(license));
     }
 
-    public Optional<SW360License> getSW360LicenseByAntennaLicense(String license, HttpHeaders header) {
-        return licenseClient.getLicenseByName(license, header);
+    public Optional<SW360License> getSW360LicenseByAntennaLicense(String license) {
+        return block(optionalFuture(getLicenseClient().getLicenseByName(license)));
     }
 
-    public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense, HttpHeaders headers) {
-        return licenseClient.getLicenseByName(sparseLicense.getShortName(), headers);
+    public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense) {
+        return block(optionalFuture(getLicenseClient().getLicenseByName(sparseLicense.getShortName())));
     }
 }

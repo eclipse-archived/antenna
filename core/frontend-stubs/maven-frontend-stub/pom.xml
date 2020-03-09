@@ -116,10 +116,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
@@ -192,6 +188,10 @@
         <dependency>
             <groupId>com.github.heremaps.oss-review-toolkit</groupId>
             <artifactId>downloader</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
         </dependency>
         <!-- ################################ testing dependencies ################################ -->
         <dependency>

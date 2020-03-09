@@ -14,40 +14,40 @@ import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SW360MetaDataUpdaterTest {
     private SW360MetaDataUpdater metaDataUpdater;
-    private SW360ConnectionConfiguration connectionConfiguration = mock(SW360ConnectionConfiguration.class);
+    private SW360Connection connection = mock(SW360Connection.class);
     private SW360ProjectClientAdapter projectClientAdapter = mock(SW360ProjectClientAdapter.class);
     private SW360LicenseClientAdapter licenseClientAdapter = mock(SW360LicenseClientAdapter.class);
     private SW360ReleaseClientAdapter releaseClientAdapter = mock(SW360ReleaseClientAdapter.class);
-    final private HttpHeaders headers = mock(HttpHeaders.class);
     final private boolean uploadSources = true;
     final private boolean updateReleases = false;
 
     public void setUp() {
-        when(connectionConfiguration.getHttpHeaders())
-                .thenReturn(headers);
-        when(connectionConfiguration.getSW360ReleaseClientAdapter())
+        when(connection.getReleaseAdapter())
                 .thenReturn(releaseClientAdapter);
-        when(connectionConfiguration.getSW360ProjectClientAdapter())
+        when(connection.getProjectAdapter())
                 .thenReturn(projectClientAdapter);
-        when(connectionConfiguration.getSW360LicenseClientAdapter())
+        when(connection.getLicenseAdapter())
                 .thenReturn(licenseClientAdapter);
 
-        metaDataUpdater = new SW360MetaDataUpdater(connectionConfiguration, updateReleases, uploadSources);
+        metaDataUpdater = new SW360MetaDataUpdater(connection, updateReleases, uploadSources);
     }
 
     @Test
@@ -57,9 +57,9 @@ public class SW360MetaDataUpdaterTest {
                 .setShortName(licenseName);
         License licenseAntenna = new License();
         licenseAntenna.setId(licenseName);
-        when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName, headers))
+        when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName))
                 .thenReturn(true);
-        when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName, headers))
+        when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName))
                 .thenReturn(Optional.of(license));
         setUp();
 
@@ -67,8 +67,8 @@ public class SW360MetaDataUpdaterTest {
 
         assertThat(licenses).hasSize(1);
 
-        verify(licenseClientAdapter, times(1)).isLicenseOfArtifactAvailable(licenseName, headers);
-        verify(licenseClientAdapter, times(1)).getSW360LicenseByAntennaLicense(licenseName, headers);
+        verify(licenseClientAdapter, times(1)).isLicenseOfArtifactAvailable(licenseName);
+        verify(licenseClientAdapter, times(1)).getSW360LicenseByAntennaLicense(licenseName);
     }
 
     @Test
@@ -78,9 +78,9 @@ public class SW360MetaDataUpdaterTest {
                 .setShortName(licenseName);
         License licenseAntenna = new License();
         licenseAntenna.setId(licenseName);
-        when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName, headers))
+        when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName))
                 .thenReturn(false);
-        when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName, headers))
+        when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName))
                 .thenReturn(Optional.of(license));
         setUp();
 
@@ -88,20 +88,20 @@ public class SW360MetaDataUpdaterTest {
 
         assertThat(licenses).hasSize(0);
 
-        verify(licenseClientAdapter, times(1)).isLicenseOfArtifactAvailable(licenseName, headers);
+        verify(licenseClientAdapter, times(1)).isLicenseOfArtifactAvailable(licenseName);
     }
 
     @Test
     public void testGetOrCreateRelease() {
         final SW360Release release = new SW360Release();
-        when(releaseClientAdapter.getOrCreateRelease(release, headers, updateReleases))
+        when(releaseClientAdapter.getOrCreateRelease(release, updateReleases))
                 .thenReturn(release);
         setUp();
 
         final SW360Release getOrCreatedRelease = metaDataUpdater.getOrCreateRelease(release);
 
         assertThat(getOrCreatedRelease).isEqualTo(release);
-        verify(releaseClientAdapter, times(1)).getOrCreateRelease(release, headers, updateReleases);
+        verify(releaseClientAdapter, times(1)).getOrCreateRelease(release, updateReleases);
     }
 
     @Test
@@ -109,15 +109,15 @@ public class SW360MetaDataUpdaterTest {
         final String projectName = "projectName";
         final String projectVersion = "projectVersion";
         final String projectId = "12345";
-        when(projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion, headers))
+        when(projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion))
                 .thenReturn(Optional.of(projectId));
         setUp();
 
         metaDataUpdater.createProject(projectName, projectVersion, Collections.emptySet());
 
-        verify(projectClientAdapter, times(1)).getProjectIdByNameAndVersion(projectName, projectVersion, headers);
-        verify(projectClientAdapter, never()).addProject(projectName, projectVersion, headers);
-        verify(projectClientAdapter, times(1)).addSW360ReleasesToSW360Project(projectId, Collections.emptySet(), headers);
+        verify(projectClientAdapter, times(1)).getProjectIdByNameAndVersion(projectName, projectVersion);
+        verify(projectClientAdapter, never()).addProject(projectName, projectVersion);
+        verify(projectClientAdapter, times(1)).addSW360ReleasesToSW360Project(projectId, Collections.emptySet());
     }
 
     @Test
@@ -125,17 +125,17 @@ public class SW360MetaDataUpdaterTest {
         final String projectName = "projectName";
         final String projectVersion = "projectVersion";
         final String projectId = "12345";
-        when(projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion, headers))
+        when(projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion))
                 .thenReturn(Optional.empty());
-        when(projectClientAdapter.addProject(projectName, projectVersion, headers))
+        when(projectClientAdapter.addProject(projectName, projectVersion))
                 .thenReturn(projectId);
         setUp();
 
         metaDataUpdater.createProject(projectName, projectVersion, Collections.emptySet());
 
-        verify(projectClientAdapter, times(1)).getProjectIdByNameAndVersion(projectName, projectVersion, headers);
-        verify(projectClientAdapter, times(1)).addProject(projectName, projectVersion, headers);
-        verify(projectClientAdapter, times(1)).addSW360ReleasesToSW360Project(projectId, Collections.emptySet(), headers);
+        verify(projectClientAdapter, times(1)).getProjectIdByNameAndVersion(projectName, projectVersion);
+        verify(projectClientAdapter, times(1)).addProject(projectName, projectVersion);
+        verify(projectClientAdapter, times(1)).addSW360ReleasesToSW360Project(projectId, Collections.emptySet());
     }
 
     @Test
@@ -147,7 +147,7 @@ public class SW360MetaDataUpdaterTest {
     @Test
     public void testUploadAttachments() {
         final SW360Release release = new SW360Release();
-        when(releaseClientAdapter.uploadAttachments(release, Collections.emptyMap(), headers))
+        when(releaseClientAdapter.uploadAttachments(release, Collections.emptyMap()))
                 .thenReturn(release);
 
         setUp();
@@ -155,7 +155,6 @@ public class SW360MetaDataUpdaterTest {
         final SW360Release releaseWithAttachment = metaDataUpdater.uploadAttachments(release, Collections.emptyMap());
 
         assertThat(releaseWithAttachment).isEqualTo(release);
-        verify(connectionConfiguration).getHttpHeaders();
-        verify(releaseClientAdapter).uploadAttachments(release, Collections.emptyMap(), headers);
+        verify(releaseClientAdapter).uploadAttachments(release, Collections.emptyMap());
     }
 }

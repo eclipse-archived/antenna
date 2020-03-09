@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -16,8 +17,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
-import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,9 +52,7 @@ public class HttpHelperTest {
 
     @Before
     public void setUp() throws Exception {
-        ProxySettings proxySettings = new ProxySettings(false, null, 0);
-
-        httpHelper = new HttpHelper(proxySettings);
+        httpHelper = new HttpHelper(ProxySettings.noProxy());
         setVariableValueInObject(httpHelper, "httpClient", httpClientMock);
     }
 

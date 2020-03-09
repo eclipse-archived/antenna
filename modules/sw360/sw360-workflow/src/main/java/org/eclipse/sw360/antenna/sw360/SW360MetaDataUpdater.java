@@ -16,16 +16,19 @@ import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SW360MetaDataUpdater {
@@ -35,33 +38,29 @@ public class SW360MetaDataUpdater {
     private SW360ProjectClientAdapter projectClientAdapter;
     private SW360LicenseClientAdapter licenseClientAdapter;
     private SW360ReleaseClientAdapter releaseClientAdapter;
-    private SW360ConnectionConfiguration sw360ConnectionConfiguration;
 
     private final boolean updateReleases;
     private final boolean uploadSources;
 
-    public SW360MetaDataUpdater(SW360ConnectionConfiguration sw360ConnectionConfiguration, boolean updateReleases, boolean uploadSources) {
-        projectClientAdapter = sw360ConnectionConfiguration.getSW360ProjectClientAdapter();
-        licenseClientAdapter = sw360ConnectionConfiguration.getSW360LicenseClientAdapter();
-        releaseClientAdapter = sw360ConnectionConfiguration.getSW360ReleaseClientAdapter();
-        this.sw360ConnectionConfiguration = sw360ConnectionConfiguration;
+    public SW360MetaDataUpdater(SW360Connection connection, boolean updateReleases, boolean uploadSources) {
+        projectClientAdapter = connection.getProjectAdapter();
+        licenseClientAdapter = connection.getLicenseAdapter();
+        releaseClientAdapter = connection.getReleaseAdapter();
         this.updateReleases = updateReleases;
         this.uploadSources = uploadSources;
     }
 
     public Set<SW360License> getLicenses(List<License> licenses) {
-        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
-
         return licenses.stream()
-                .filter(license -> isLicenseInSW360(license, header))
-                .map(license -> licenseClientAdapter.getSW360LicenseByAntennaLicense(license.getId(), header))
+                .filter(this::isLicenseInSW360)
+                .map(license -> licenseClientAdapter.getSW360LicenseByAntennaLicense(license.getId()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
     }
 
-    private boolean isLicenseInSW360(License license, HttpHeaders header) {
-        if (licenseClientAdapter.isLicenseOfArtifactAvailable(license.getId(), header)) {
+    private boolean isLicenseInSW360(License license) {
+        if (licenseClientAdapter.isLicenseOfArtifactAvailable(license.getId())) {
             LOGGER.debug("License [{}] found in SW360.", license.getId());
             return true;
         }
@@ -70,14 +69,11 @@ public class SW360MetaDataUpdater {
     }
 
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact) {
-        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
-        return releaseClientAdapter.getOrCreateRelease(sw360ReleaseFromArtifact, header, updateReleases);
+        return releaseClientAdapter.getOrCreateRelease(sw360ReleaseFromArtifact, updateReleases);
     }
 
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) {
-        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
-
-        Optional<String> projectId = projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion, header);
+        Optional<String> projectId = projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion);
 
         String id;
         if (projectId.isPresent()) {
@@ -85,9 +81,9 @@ public class SW360MetaDataUpdater {
             LOGGER.debug("Could not update project {}, because the endpoint is not available.", projectId.get());
             id = projectId.get();
         } else {
-            id = projectClientAdapter.addProject(projectName, projectVersion, header);
+            id = projectClientAdapter.addProject(projectName, projectVersion);
         }
-        projectClientAdapter.addSW360ReleasesToSW360Project(id, releases, header);
+        projectClientAdapter.addSW360ReleasesToSW360Project(id, releases);
     }
 
     public boolean isUploadSources() {
@@ -95,7 +91,6 @@ public class SW360MetaDataUpdater {
     }
 
     public SW360Release uploadAttachments(SW360Release sw360Release, Map<Path, SW360AttachmentType> attachments) {
-        HttpHeaders header = sw360ConnectionConfiguration.getHttpHeaders();
-        return releaseClientAdapter.uploadAttachments(sw360Release, attachments, header);
+        return releaseClientAdapter.uploadAttachments(sw360Release, attachments);
     }
 }

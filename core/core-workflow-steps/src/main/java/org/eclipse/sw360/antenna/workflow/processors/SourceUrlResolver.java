@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -17,7 +18,7 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl;
 import org.eclipse.sw360.antenna.util.HttpHelper;
-import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,8 @@ public class SourceUrlResolver extends AbstractProcessor {
     public void configure(Map<String,String> configMap) {
         super.configure(configMap);
         ToolConfiguration toolConfig = context.getToolConfiguration();
-        ProxySettings proxySettings = new ProxySettings(toolConfig.useProxy(), toolConfig.getProxyHost(), toolConfig.getProxyPort());
+        ProxySettings proxySettings =
+                ProxySettings.fromConfig(toolConfig.useProxy(), toolConfig.getProxyHost(), toolConfig.getProxyPort());
         httpHelper = new HttpHelper(proxySettings);
         dependencyTargetDirectory = toolConfig.getDependenciesDirectory();
     }

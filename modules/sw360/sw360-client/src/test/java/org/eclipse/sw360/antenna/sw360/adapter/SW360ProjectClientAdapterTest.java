@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.adapter;
 
-import org.eclipse.sw360.antenna.sw360.rest.SW360ProjectClient;
+import org.eclipse.sw360.antenna.sw360.client.rest.SW360ProjectClient;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
@@ -19,15 +19,19 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseLinkOb
 import org.eclipse.sw360.antenna.sw360.utils.SW360ProjectAdapterUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SW360ProjectClientAdapterTest {
     private static final String PROJECT_VERSION = "1.0-projectVersion";
@@ -38,13 +42,12 @@ public class SW360ProjectClientAdapterTest {
 
     private SW360ProjectClient projectClient = mock(SW360ProjectClient.class);
 
-    private HttpHeaders header = mock(HttpHeaders.class);
     private SW360Project projectWithLink;
     private LinkObjects linkObjects;
 
     @Before
     public void setUp() {
-        projectClientAdapter = new SW360ProjectClientAdapter();
+        projectClientAdapter = new SW360ProjectClientAdapter(projectClient);
 
         String projectHref = "url/" + PROJECT_LAST_INDEX;
         Self projectSelf = new Self().setHref(projectHref);
@@ -58,11 +61,10 @@ public class SW360ProjectClientAdapterTest {
 
     @Test
     public void testGetProjectIdByNameAndVersion() {
-        when(projectClient.searchByName(any(), any()))
-                .thenReturn(Collections.singletonList(projectWithLink));
-        projectClientAdapter.setProjectClient(projectClient);
+        when(projectClient.searchByName(PROJECT_NAME))
+                .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(projectWithLink)));
 
-        Optional<String> projectIdByNameAndVersion = projectClientAdapter.getProjectIdByNameAndVersion(PROJECT_NAME, PROJECT_VERSION, header);
+        Optional<String> projectIdByNameAndVersion = projectClientAdapter.getProjectIdByNameAndVersion(PROJECT_NAME, PROJECT_VERSION);
 
         assertThat(projectIdByNameAndVersion).isPresent();
         assertThat(projectIdByNameAndVersion).hasValue(PROJECT_LAST_INDEX);
@@ -70,19 +72,16 @@ public class SW360ProjectClientAdapterTest {
 
     @Test
     public void testAddProject() {
-        when(projectClient.createProject(any(), any()))
-                .thenReturn(projectWithLink);
-        projectClientAdapter.setProjectClient(projectClient);
+        when(projectClient.createProject(any()))
+                .thenReturn(CompletableFuture.completedFuture(projectWithLink));
 
-        String indexOfSelfLink = projectClientAdapter.addProject(PROJECT_NAME, PROJECT_VERSION, header);
+        String indexOfSelfLink = projectClientAdapter.addProject(PROJECT_NAME, PROJECT_VERSION);
 
         assertThat(indexOfSelfLink).isEqualTo(PROJECT_LAST_INDEX);
     }
 
     @Test
     public void testAddSW360ReleasesToSW360Project() {
-        projectClientAdapter.setProjectClient(projectClient);
-
         SW360ReleaseLinkObjects releaseLinkObjects = new SW360ReleaseLinkObjects();
         releaseLinkObjects.setSelf(linkObjects.getSelf());
         SW360Release release = new SW360Release();
@@ -91,8 +90,8 @@ public class SW360ProjectClientAdapterTest {
 
         Collection<SW360Release> releases = Collections.singletonList(release);
 
-        projectClientAdapter.addSW360ReleasesToSW360Project(PROJECT_LAST_INDEX, releases, header);
+        projectClientAdapter.addSW360ReleasesToSW360Project(PROJECT_LAST_INDEX, releases);
 
-        verify(projectClient, atLeastOnce()).addReleasesToProject(eq(PROJECT_LAST_INDEX), any(), eq(header));
+        verify(projectClient, atLeastOnce()).addReleasesToProject(eq(PROJECT_LAST_INDEX), any());
     }
 }

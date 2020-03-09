@@ -64,7 +64,7 @@ public class AntennaComplianceTool {
         executor.setConfiguration(configuration);
 
         executor.setUpdater(new SW360UpdaterImpl(new SW360MetaDataUpdater(
-                configuration.getConnectionConfiguration(),
+                configuration.getConnection(),
                 configuration.getBooleanConfigValue("sw360updateReleases"),
                 configuration.getBooleanConfigValue("sw360uploadSources")),
                 "redundant project name",

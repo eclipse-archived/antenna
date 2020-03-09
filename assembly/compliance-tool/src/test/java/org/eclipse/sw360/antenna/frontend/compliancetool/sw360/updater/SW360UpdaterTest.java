@@ -14,9 +14,9 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.springframework.http.HttpHeaders;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,8 +46,6 @@ import static org.mockito.Mockito.when;
 @RunWith(Parameterized.class)
 public class SW360UpdaterTest {
     private static final String CLEARING_DOC = "clearing.doc";
-
-    private static final HttpHeaders HEADERS = mock(HttpHeaders.class);
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -86,13 +83,11 @@ public class SW360UpdaterTest {
     }
 
     private void initConnectionConfiguration() {
-        SW360ConnectionConfiguration connectionConfiguration = mock(SW360ConnectionConfiguration.class);
+        SW360Connection connectionConfiguration = mock(SW360Connection.class);
 
-        when(connectionConfiguration.getSW360ReleaseClientAdapter())
+        when(connectionConfiguration.getReleaseAdapter())
                 .thenReturn(releaseClientAdapter);
-        when(connectionConfiguration.getHttpHeaders())
-                .thenReturn(HEADERS);
-        when(configurationMock.getConnectionConfiguration())
+        when(configurationMock.getConnection())
                 .thenReturn(connectionConfiguration);
     }
 
@@ -147,7 +142,7 @@ public class SW360UpdaterTest {
             verify(generator).createClearingDocument(release, getTargetDir());
         }
         verify(updater).artifactToReleaseInSW360(any());
-        verify(releaseClientAdapter, times(expectUpload ? 1 : 0)).uploadAttachments(any(), eq(testAttachmentMap), eq(HEADERS));
+        verify(releaseClientAdapter, times(expectUpload ? 1 : 0)).uploadAttachments(any(), eq(testAttachmentMap));
     }
 
     private Map<Path, SW360AttachmentType> createExpectedAttachmentMap() {

@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -13,11 +14,9 @@ package org.eclipse.sw360.antenna.maven;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.eclipse.sw360.antenna.util.HttpHelper;
-import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mockito;
@@ -56,7 +55,7 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
         this.baseBefore();
         mavenCoordinate = new Coordinate(Coordinate.Types.MAVEN, "groupId", "artifactId", "version");
 
-        ProxySettings proxySettings = new ProxySettings(false, null, 0);
+        ProxySettings proxySettings = ProxySettings.noProxy();
 
         hr = new HttpRequester(proxySettings, new URL("http://test.repo"));
         setVariableValueInObject(hr, "httpHelper", httpHelperMock);

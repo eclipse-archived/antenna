@@ -17,31 +17,37 @@ import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuratio
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ClearingState;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 public class SW360ExporterTest {
@@ -106,18 +112,16 @@ public class SW360ExporterTest {
     SW360Configuration configurationMock = mock(SW360Configuration.class);
 
     @Mock
-    SW360ConnectionConfiguration connectionConfigurationMock = mock(SW360ConnectionConfiguration.class);
-
-    HttpHeaders headers = new HttpHeaders();
+    SW360Connection connectionMock = mock(SW360Connection.class);
 
     @Before
     public void setUp() throws IOException {
         SW360SparseComponent sparseComponent = SW360TestUtils.mkSW360SparseComponent("testComponent");
-        when(componentClientAdapterMock.getComponents(headers))
+        when(componentClientAdapterMock.getComponents())
                 .thenReturn(Collections.singletonList(sparseComponent));
 
         SW360Component component = SW360TestUtils.mkSW360Component("testComponent");
-        when(componentClientAdapterMock.getComponentById(any(), eq(headers)))
+        when(componentClientAdapterMock.getComponentById(any()))
                 .thenReturn(Optional.of(component));
         release = SW360TestUtils.mkSW360Release("testRelease");
         release.setClearingState(clearingState);
@@ -129,21 +133,19 @@ public class SW360ExporterTest {
         release2.setCopyrights("Higher Date");
         release2.setCreatedOn("zzzz-mm-dd");
 
-        when(releaseClientAdapterMock.getReleaseById(any(), eq(headers)))
+        when(releaseClientAdapterMock.getReleaseById(any()))
                 .thenReturn(Optional.of(release), Optional.of(release2));
         Path path = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("test-source.txt")).getPath());
-        when(releaseClientAdapterMock.downloadAttachment(any(), any(), any(), eq(headers)))
-                .thenReturn(Optional.ofNullable(path));
+        when(releaseClientAdapterMock.downloadAttachment(any(), any(), any()))
+                .thenReturn(Optional.of(path));
 
-        when(connectionConfigurationMock.getHttpHeaders())
-                .thenReturn(headers);
-        when(connectionConfigurationMock.getSW360ComponentClientAdapter())
+        when(connectionMock.getComponentAdapter())
                 .thenReturn(componentClientAdapterMock);
-        when(connectionConfigurationMock.getSW360ReleaseClientAdapter())
+        when(connectionMock.getReleaseAdapter())
                 .thenReturn(releaseClientAdapterMock);
 
-        when(configurationMock.getConnectionConfiguration())
-                .thenReturn(connectionConfigurationMock);
+        when(configurationMock.getConnection())
+                .thenReturn(connectionMock);
         csvFile = folder.newFile("sample.csv");
         when(configurationMock.getCsvFileName())
                 .thenReturn(csvFile.getName());
@@ -167,12 +169,10 @@ public class SW360ExporterTest {
         List<CSVRecord> records = csvParser.getRecords();
 
         assertThat(records.size()).isEqualTo(expectedNumOfReleases);
-        ArgumentCaptor<HttpHeaders> captor = ArgumentCaptor.forClass(HttpHeaders.class);
-        verify(releaseClientAdapterMock, atLeast(expectedNumOfReleases)).downloadAttachment(any(), any(),any() , captor.capture());
+        verify(releaseClientAdapterMock, atLeast(expectedNumOfReleases)).downloadAttachment(any(), any(), any());
 
         if (expectedNumOfReleases == 2) {
             assertThat(records.get(1).get("Copyrights")).isEqualTo(release.getCopyrights());
-            assertThat(captor.getValue().getAccept()).containsExactly(MediaType.APPLICATION_OCTET_STREAM);
         }
     }
 }

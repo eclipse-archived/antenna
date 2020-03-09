@@ -16,6 +16,7 @@ import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuratio
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
@@ -25,40 +26,38 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ClearingState
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToReleaseUtils;
-import org.eclipse.sw360.antenna.sw360.utils.RestUtils;
-import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfiguration;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SW360Exporter {
     private SW360Configuration configuration;
-    private SW360ConnectionConfiguration connectionConfiguration;
+    private SW360Connection connection;
 
     public void setConfiguration(SW360Configuration configuration) {
         this.configuration = configuration;
     }
 
     public void execute() {
-        connectionConfiguration = configuration.getConnectionConfiguration();
-        HttpHeaders headers = connectionConfiguration.getHttpHeaders();
-        HttpHeaders downloadHeader = RestUtils.deepCopyHeaders(headers);
-        downloadHeader.setAccept(Collections.singletonList(MediaType.APPLICATION_OCTET_STREAM));
+        connection = configuration.getConnection();
 
-        Collection<SW360SparseComponent> components = connectionConfiguration.getSW360ComponentClientAdapter().getComponents(headers);
+        Collection<SW360SparseComponent> components = connection.getComponentAdapter().getComponents();
 
-        Collection<SW360SparseRelease> sw360SparseReleases = getReleasesFromComponents(components, headers);
+        Collection<SW360SparseRelease> sw360SparseReleases = getReleasesFromComponents(components);
 
-        Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases, headers);
+        Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases);
 
         List<Artifact> artifacts = sw360ReleasesNotApproved.stream()
-                .map(release -> releaseAsArtifact(release, downloadHeader))
+                .map(this::releaseAsArtifact)
                 .collect(Collectors.toList());
 
         File csvFile = configuration.getTargetDir()
@@ -73,11 +72,11 @@ public class SW360Exporter {
         csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
     }
 
-    private Artifact releaseAsArtifact(SW360Release release, HttpHeaders headers) {
+    private Artifact releaseAsArtifact(SW360Release release) {
         Artifact artifact = ArtifactToReleaseUtils.convertToArtifactWithoutSourceFile(release, new Artifact("SW360"));
         Set<SW360SparseAttachment> sparseAttachments = getSparseAttachmentsSource(release);
         sparseAttachments.forEach(sparseAttachment -> {
-            Optional<Path> path = connectionConfiguration.getSW360ReleaseClientAdapter().downloadAttachment(release, sparseAttachment, configuration.getSourcesPath(), headers);
+            Optional<Path> path = connection.getReleaseAdapter().downloadAttachment(release, sparseAttachment, configuration.getSourcesPath());
             path.ifPresent(pth -> artifact.addFact(new ArtifactSourceFile(pth)));
         });
         return artifact;
@@ -91,22 +90,22 @@ public class SW360Exporter {
                 .collect(Collectors.toSet());
     }
 
-    private Collection<SW360SparseRelease> getReleasesFromComponents(Collection<SW360SparseComponent> components, HttpHeaders headers) {
+    private Collection<SW360SparseRelease> getReleasesFromComponents(Collection<SW360SparseComponent> components) {
         return components.stream()
                 .map(this::getIdFromHalResource)
                 .filter(id -> !id.equals(""))
-                .map(id -> connectionConfiguration.getSW360ComponentClientAdapter().getComponentById(id, headers))
+                .map(id -> connection.getComponentAdapter().getComponentById(id))
                 .map(component -> component.orElse(null))
                 .filter(Objects::nonNull)
                 .flatMap(component -> component.get_Embedded().getReleases().stream())
                 .collect(Collectors.toList());
     }
 
-    private Collection<SW360Release> getNonApprovedReleasesFromSpareReleases(Collection<SW360SparseRelease> sw360SparseReleases, HttpHeaders headers) {
+    private Collection<SW360Release> getNonApprovedReleasesFromSpareReleases(Collection<SW360SparseRelease> sw360SparseReleases) {
         return sw360SparseReleases.stream()
                 .map(this::getIdFromHalResource)
                 .filter(id -> !id.equals(""))
-                .map(id -> connectionConfiguration.getSW360ReleaseClientAdapter().getReleaseById(id, headers))
+                .map(id -> connection.getReleaseAdapter().getReleaseById(id))
                 .map(Optional::get)
                 .filter(sw360Release -> !isApproved(sw360Release))
                 .sorted(Comparator.comparing(SW360Release::getCreatedOn).reversed())

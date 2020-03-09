@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -23,7 +24,7 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
-import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,8 +46,6 @@ import static org.mockito.internal.verification.VerificationModeFactory.atLeast;
 public class MavenArtifactResolverImplTest extends AntennaTestWithMockedContext {
     @Mock
     private IArtifactRequester requester = mock(IArtifactRequester.class);
-    @Mock
-    private ProxySettings proxySettings = mock(ProxySettings.class);
 
     private IProject project;
     private MavenArtifactResolverImpl mavenArtifactResolverImpl;
@@ -70,7 +69,7 @@ public class MavenArtifactResolverImplTest extends AntennaTestWithMockedContext 
         when(toolConfigMock.getAntennaTargetDirectory()).thenReturn(targetDir);
         when(toolConfigMock.getDependenciesDirectory()).thenReturn(targetDir.resolve("dependencies"));
 
-        mavenArtifactResolverImpl = new MavenArtifactResolverImpl(proxySettings,
+        mavenArtifactResolverImpl = new MavenArtifactResolverImpl(ProxySettings.noProxy(),
                 antennaContextMock.getGeneric(RepositorySystem.class),
                 antennaContextMock.getGeneric(MavenProject.class),
                 antennaContextMock.getGeneric(LegacySupport.class),

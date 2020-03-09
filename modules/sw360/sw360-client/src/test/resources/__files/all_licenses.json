@@ -6,7 +6,7 @@
         "fullName": "BSD Zero Clause License",
         "_links": {
           "self": {
-            "href": "https://sw360-backend-production.osm-si.com/resource/api/licenses/0BSD"
+            "href": "https://sw360.test.com/resource/api/licenses/0BSD"
           }
         }
       },
@@ -15,7 +15,7 @@
         "fullName": "Attribution Assurance License",
         "_links": {
           "self": {
-            "href": "https://sw360-backend-production.osm-si.com/resource/api/licenses/AAL"
+            "href": "https://sw360.test.com/resource/api/licenses/AAL"
           }
         }
       },
@@ -24,7 +24,7 @@
         "fullName": "Amazon Digital Services License",
         "_links": {
           "self": {
-            "href": "https://sw360-backend-production.osm-si.com/resource/api/licenses/ADSL"
+            "href": "https://sw360.test.com/resource/api/licenses/ADSL"
           }
         }
       },
@@ -33,7 +33,7 @@
         "fullName": "Academic Free License v1.1",
         "_links": {
           "self": {
-            "href": "https://sw360-backend-production.osm-si.com/resource/api/licenses/AFL-1.1"
+            "href": "https://sw360.test.com/resource/api/licenses/AFL-1.1"
           }
         }
       },
@@ -42,7 +42,7 @@
         "fullName": "XPP License",
         "_links": {
           "self": {
-            "href": "https://sw360-backend-production.osm-si.com/resource/api/licenses/xpp"
+            "href": "https://sw360.test.com/resource/api/licenses/xpp"
           }
         }
       }
@@ -51,7 +51,7 @@
   "_links": {
     "curies": [
       {
-        "href": "https://sw360-backend-production.osm-si.com/resource/docs/{rel}.html",
+        "href": "https://sw360.test.com/resource/docs/{rel}.html",
         "name": "sw360",
         "templated": true
       }

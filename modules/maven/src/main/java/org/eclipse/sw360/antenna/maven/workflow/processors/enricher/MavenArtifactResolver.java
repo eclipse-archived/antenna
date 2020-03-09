@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -19,7 +20,7 @@ import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
-import org.eclipse.sw360.antenna.util.ProxySettings;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -44,7 +45,7 @@ public class MavenArtifactResolver extends AbstractProcessor {
     @Override
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
         ToolConfiguration toolConfig = context.getToolConfiguration();
-        ProxySettings proxySettings = new ProxySettings(
+        ProxySettings proxySettings = ProxySettings.fromConfig(
                 toolConfig.useProxy(), toolConfig.getProxyHost(), toolConfig.getProxyPort());
         return new MavenArtifactResolverImpl(
                 proxySettings,
