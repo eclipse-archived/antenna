@@ -23,6 +23,17 @@ public interface ILicenseManagementKnowledgeBase {
     default void init(IProcessingReporter reporter, Charset encoding) {
 
     }
+    /**
+     * @return Returns the unique identifier of the implemented class
+     */
+    default String getId() {
+        return this.getClass().getSimpleName();
+    }
+
+    /**
+     * @return Returns the priority level of the implemented class
+     */
+    int getPriority();
 
     /**
      * 

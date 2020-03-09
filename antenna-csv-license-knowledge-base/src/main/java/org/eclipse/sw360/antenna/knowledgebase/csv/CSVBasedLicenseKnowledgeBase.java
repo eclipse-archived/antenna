@@ -62,6 +62,11 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
     private IProcessingReporter reporter;
     private Charset encoding;
 
+    @Override
+    public int getPriority() {
+        return 100;
+    }
+
     /**
      * This CSVBasedLicenseKnowledgeBase delivers maps for the mapping of:
      * alias to id, id to license and id to text.

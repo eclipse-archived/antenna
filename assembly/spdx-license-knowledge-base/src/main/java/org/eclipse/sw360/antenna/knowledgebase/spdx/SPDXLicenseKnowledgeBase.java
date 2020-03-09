@@ -29,6 +29,11 @@ public class SPDXLicenseKnowledgeBase implements ILicenseManagementKnowledgeBase
         listedLicenses = ListedLicenses.getListedLicenses();
     }
 
+    @Override
+    public int getPriority() {
+        return 0;
+    }
+
     private Optional<SpdxListedLicense> getSpdxLicense(String licenseId) {
         final SpdxListedLicense listedLicenseById;
         try {
