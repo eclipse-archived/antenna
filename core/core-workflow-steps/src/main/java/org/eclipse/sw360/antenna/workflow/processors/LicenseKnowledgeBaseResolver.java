@@ -14,6 +14,8 @@ package org.eclipse.sw360.antenna.workflow.processors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
+import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.knowledgebase.LicenseKnowledgeBaseFactory;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -23,10 +25,8 @@ import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * This LicenseKnowledgeBaseResolver adds values of the specified
@@ -34,7 +34,11 @@ import java.util.Optional;
  */
 public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(LicenseKnowledgeBaseResolver.class);
+    private static final String CHOSEN_LICENSE_MANAGER_KEY = "chosen.license.manager";
+
+    private Supplier<List<ILicenseManagementKnowledgeBase>> knowledgeBaseSupplier;
     private ILicenseManagementKnowledgeBase knowledgeBase;
+    private String chosenManager;
 
     public LicenseKnowledgeBaseResolver() {
         this.workflowStepOrder = 9000;
@@ -90,7 +94,6 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
             String longName = this.knowledgeBase.getLicenseNameForId(licenseId);
             if (longName != null) {
                 license.setCommonName(longName);
-            }            
         }
     }
 
@@ -127,6 +130,16 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
         }
     }
 
+    public LicenseKnowledgeBaseResolver(ILicenseManagementKnowledgeBase knowledgeBase,
+                                        Supplier<List<ILicenseManagementKnowledgeBase>> supplier) {
+        this.knowledgeBase = knowledgeBase;
+        this.knowledgeBaseSupplier = supplier;
+    }
+
+    public ILicenseManagementKnowledgeBase getKnowledgeBase() {
+        return this.knowledgeBase;
+    }
+
     @Override
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
         LOGGER.debug("Resolve knowledge base...");
@@ -138,6 +151,22 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
     @Override
     public void configure(Map<String,String> configMap) {
         super.configure(configMap);
-        this.knowledgeBase = new LicenseKnowledgeBaseFactory(context).get();
+        this.chosenManager = getConfigValue(CHOSEN_LICENSE_MANAGER_KEY, configMap, "");
+
+        if (knowledgeBaseSupplier == null) {
+            knowledgeBaseSupplier = new LicenseKnowledgeBaseFactory(context);
+        }
+
+        List<ILicenseManagementKnowledgeBase> licenseManagers = knowledgeBaseSupplier.get();
+
+        this.knowledgeBase = Optional.ofNullable(knowledgeBase)
+                .orElseGet(() -> licenseManagers.stream()
+                        .filter(l -> chosenManager.equals(l.getId()))
+                        .findFirst()
+                        .orElseGet(() -> licenseManagers.stream()
+                                .sorted(Comparator.comparing(ILicenseManagementKnowledgeBase::getPriority).reversed())
+                                .findFirst()
+                                .orElseThrow(() -> new ConfigurationException("Was not able to find any " +
+                                        "implementation for the ILicenseManagementKnowledgeBase interface."))));
     }
 }
