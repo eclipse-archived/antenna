@@ -12,7 +12,6 @@
 package org.eclipse.sw360.antenna.util;
 
 import org.eclipse.sw360.antenna.http.HttpClient;
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +35,6 @@ public class HttpHelper {
      */
     public HttpHelper(HttpClient httpClient) {
         this.httpClient = httpClient;
-    }
-
-    public HttpHelper(ProxySettings proxySettings) {
-        //TODO remove constructor when all dependencies have been adapted
-        LOGGER.info("Created with proxy settings {}.", proxySettings);
-        httpClient = null;
     }
 
     public File downloadFile(String url, Path targetDirectory) throws IOException {
