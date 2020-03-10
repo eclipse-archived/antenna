@@ -145,4 +145,45 @@ public class AntennaContextTest {
         assertThat(config.proxySettings()).isEqualTo(ProxySettings.useProxy(proxyHost, proxyPort));
         assertThat(context.getHttpClient()).isEqualTo(httpClient);
     }
+
+    @Test
+    public void testContextExtensionEmptyNoMatch() {
+        AntennaContext context = createContext(new AntennaContext.ContextBuilder());
+
+        assertThat(context.getGeneric(Object.class)).isEmpty();
+    }
+
+    @Test
+    public void testContextExtensionNoMatch() {
+        ContextExtension extension = new ContextExtension();
+        assertThat(extension.put(this)).isTrue();
+        AntennaContext context =
+                createContext(new AntennaContext.ContextBuilder().setContextExtensions(extension));
+
+        assertThat(context.getGeneric(JsonBean.class)).isEmpty();
+    }
+
+    @Test
+    public void testContextExtensionDirectMatch() {
+        ContextExtension extension = new ContextExtension();
+        JsonBean bean = new JsonBean();
+        extension.put(bean);
+        AntennaContext context =
+                createContext(new AntennaContext.ContextBuilder().setContextExtensions(extension));
+
+        assertThat(context.getGeneric(JsonBean.class)).contains(bean);
+    }
+
+    @Test
+    public void testContextExtensionBaseClassMatch() {
+        Runnable runnable = () -> {
+        };
+        ContextExtension extension = new ContextExtension();
+        extension.put(runnable);
+        AntennaContext context =
+                createContext(new AntennaContext.ContextBuilder().setContextExtensions(extension));
+
+        assertThat(context.getGeneric(Runnable.class)).contains(runnable);
+        assertThat(context.getGeneric(Object.class)).contains(runnable);
+    }
 }

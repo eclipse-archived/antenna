@@ -81,7 +81,7 @@ public class AntennaContext {
         return this.processingReporter;
     }
 
-    public <T> Optional<T> getGeneric(Class clazz){
+    public <T> Optional<T> getGeneric(Class<? extends T> clazz){
         return this.contextExtension.get(clazz);
     }
 
