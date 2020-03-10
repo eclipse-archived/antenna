@@ -30,7 +30,9 @@ public final class ProxySettings {
      */
     public static final String UNDEFINED_HOST = "";
 
-    /** Constant representing an undefined port. */
+    /**
+     * Constant representing an undefined port.
+     */
     public static final int UNDEFINED_PORT = -1;
 
     private static final ProxySettings EMPTY_SETTINGS = new ProxySettings(UNDEFINED_HOST, UNDEFINED_PORT);
@@ -85,7 +87,7 @@ public final class ProxySettings {
      * @return the new {@code ProxySettings} instance
      */
     public static ProxySettings fromConfig(boolean useProxy, String host, int port) {
-        return useProxy ? useProxy(host, port) : noProxy();
+        return useProxy && settingsDefined(host, port) ? useProxy(host, port) : noProxy();
     }
 
     /**
@@ -95,7 +97,7 @@ public final class ProxySettings {
      * should be used; <strong>false</strong> for a direct internet connection
      */
     public boolean isProxyUse() {
-        return proxyPort != UNDEFINED_PORT && proxyHost != null && !proxyHost.equals(UNDEFINED_HOST);
+        return settingsDefined(proxyHost, proxyPort);
     }
 
     /**
@@ -128,7 +130,7 @@ public final class ProxySettings {
         }
 
         ProxySettings settings = (ProxySettings) o;
-        return  getProxyPort() == settings.getProxyPort() &&
+        return getProxyPort() == settings.getProxyPort() &&
                 Objects.equals(getProxyHost(), settings.getProxyHost());
     }
 
@@ -143,5 +145,17 @@ public final class ProxySettings {
                 ", proxyHost='" + proxyHost + '\'' +
                 ", proxyPort=" + proxyPort +
                 '}';
+    }
+
+    /**
+     * Checks whether the settings for the proxy host and port are defined and
+     * valid.
+     *
+     * @param proxyHost the proxy host
+     * @param proxyPort the proxy port
+     * @return a flag whether the settings are defined
+     */
+    private static boolean settingsDefined(String proxyHost, int proxyPort) {
+        return proxyPort != UNDEFINED_PORT && proxyHost != null && !proxyHost.equals(UNDEFINED_HOST);
     }
 }

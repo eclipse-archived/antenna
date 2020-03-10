@@ -88,4 +88,11 @@ public class ProxySettingsTest {
 
         assertThat(settings).isEqualTo(ProxySettings.noProxy());
     }
+
+    @Test
+    public void testFromConfigUndefined() {
+        ProxySettings settings = ProxySettings.fromConfig(true, null, 128);
+
+        assertThat(settings).isEqualTo(ProxySettings.noProxy());
+    }
 }
