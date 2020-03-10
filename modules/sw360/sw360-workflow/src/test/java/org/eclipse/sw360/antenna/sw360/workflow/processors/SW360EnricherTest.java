@@ -12,6 +12,8 @@
 
 package org.eclipse.sw360.antenna.sw360.workflow.processors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.sw360.antenna.http.HttpClient;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactChangeStatus;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
@@ -30,6 +32,7 @@ import org.eclipse.sw360.antenna.model.license.LicenseOperator;
 import org.eclipse.sw360.antenna.model.license.LicenseStatement;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
@@ -39,9 +42,11 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
 import org.eclipse.sw360.antenna.sw360.utils.TestUtils;
+import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -60,6 +65,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -102,14 +108,37 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     }
 
     @Test
+    public void testDefaultConnectionFactoryIsCreated() {
+        assertThat(sw360Enricher.getConnectionFactory()).isNotNull();
+    }
+
+    @Test
     public void testMetaDataReceiverIsCreated() {
-        sw360Enricher = new SW360Enricher();
+        SW360ConnectionConfigurationFactory connectionFactory = mock(SW360ConnectionConfigurationFactory.class);
+        HttpClient httpClient = mock(HttpClient.class);
+        ObjectMapper mapper = mock(ObjectMapper.class);
+        SW360Connection connection = mock(SW360Connection.class);
+        when(antennaContextMock.getHttpClient()).thenReturn(httpClient);
+        when(antennaContextMock.getObjectMapper()).thenReturn(mapper);
+        when(connectionFactory.createConnection(any(), eq(httpClient), eq(mapper))).thenReturn(connection);
+
+        sw360Enricher = new SW360Enricher(connectionFactory);
         sw360Enricher.setAntennaContext(antennaContextMock);
 
         SW360MetaDataReceiver metaDataReceiver = sw360Enricher.createMetaDataReceiver(createStandardConfigMap());
         assertThat(metaDataReceiver).isNotNull();
-        verify(toolConfigMock).getProxyHost();
-        verify(toolConfigMock).getProxyPort();
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<SW360ConnectionConfigurationFactory.Getter<String>> captor =
+                ArgumentCaptor.forClass(SW360ConnectionConfigurationFactory.Getter.class);
+        verify(connectionFactory).createConnection(captor.capture(), eq(httpClient), eq(mapper));
+        SW360ConnectionConfigurationFactory.Getter<String> getter = captor.getValue();
+        for (Map.Entry<String, String> e : createStandardConfigMap().entrySet()) {
+            assertThat(getter.apply(e.getKey())).isEqualTo(e.getValue());
+        }
+        verify(connection).getReleaseAdapter();
+        verify(antennaContextMock).getHttpClient();
+        verify(antennaContextMock).getObjectMapper();
     }
 
     @Test

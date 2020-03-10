@@ -26,12 +26,27 @@ import java.util.Map;
 public class SW360Enricher extends AbstractProcessor {
     private static final String DOWNLOAD_ATTACHMENTS = "download.attachments";
     private static final String DOWNLOAD_ATTACHMENTS_DIR = "download.directory";
+
+    private final SW360ConnectionConfigurationFactory connectionFactory;
+
     private boolean downloadAttachments;
     private Path downloadPath;
 
     private SW360MetaDataReceiver connector;
 
     public SW360Enricher() {
+        this(new SW360ConnectionConfigurationFactory());
+    }
+
+    /**
+     * Creates a new instance of {@code SW360Enricher} and sets the factory for
+     * creating the SW360 connection. This constructor is used for testing
+     * purposes.
+     *
+     * @param factory the factory for the SW360 connection
+     */
+    SW360Enricher(SW360ConnectionConfigurationFactory factory) {
+        connectionFactory = factory;
         this.workflowStepOrder = 1300;
     }
 
@@ -58,13 +73,13 @@ public class SW360Enricher extends AbstractProcessor {
     }
 
     SW360MetaDataReceiver createMetaDataReceiver(Map<String, String> configMap) {
-        String sw360ProxyHost = context.getToolConfiguration().getProxyHost();
-        int sw360ProxyPort = context.getToolConfiguration().getProxyPort();
-        SW360ConnectionConfigurationFactory configurationFactory = new SW360ConnectionConfigurationFactory();
         SW360Connection connection =
-                configurationFactory.createConnection(key -> getConfigValue(key, configMap),
-                        key -> getBooleanConfigValue(key, configMap),
-                        sw360ProxyHost, sw360ProxyPort);
+                getConnectionFactory().createConnection(key -> getConfigValue(key, configMap),
+                        context.getHttpClient(), context.getObjectMapper());
         return new SW360MetaDataReceiver(connection);
+    }
+
+    SW360ConnectionConfigurationFactory getConnectionFactory() {
+        return connectionFactory;
     }
 }

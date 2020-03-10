@@ -26,12 +26,26 @@ public class SW360Updater extends AbstractGenerator {
     private static final String UPDATE_RELEASES = "update_releases";
     private static final String UPLOAD_SOURCES = "upload_sources";
 
+    private final SW360ConnectionConfigurationFactory connectionFactory;
+
     private String projectName;
     private String projectVersion;
     private SW360MetaDataUpdater sw360MetaDataUpdater;
     private SW360UpdaterImpl updaterImpl;
 
     public SW360Updater() {
+        this(new SW360ConnectionConfigurationFactory());
+    }
+
+    /**
+     * Creates a new instance of {@code SW360Updater} and sets the factory for
+     * creating the SW360 connection. This constructor is used for testing
+     * purposes.
+     *
+     * @param factory the factory for the SW360 connection
+     */
+    SW360Updater(SW360ConnectionConfigurationFactory factory) {
+        connectionFactory = factory;
         this.workflowStepOrder = 1100;
     }
 
@@ -40,15 +54,9 @@ public class SW360Updater extends AbstractGenerator {
         projectName = getProjectName();
         projectVersion = getProjectVersion();
 
-        // Proxy configuration
-        final String sw360ProxyHost = context.getToolConfiguration().getProxyHost();
-        final int sw360ProxyPort = context.getToolConfiguration().getProxyPort();
-
-        SW360ConnectionConfigurationFactory configurationFactory = new SW360ConnectionConfigurationFactory();
         SW360Connection sw360Connection =
-                configurationFactory.createConnection(key -> getConfigValue(key, configMap),
-                        key -> getBooleanConfigValue(key, configMap),
-                        sw360ProxyHost, sw360ProxyPort);
+                getConnectionFactory().createConnection(key -> getConfigValue(key, configMap),
+                        context.getHttpClient(), context.getObjectMapper());
 
         // General configuration
         final boolean updateReleases = getBooleanConfigValue(UPDATE_RELEASES, configMap);
@@ -79,5 +87,9 @@ public class SW360Updater extends AbstractGenerator {
 
     public void setUpdaterImpl(SW360UpdaterImpl updaterImpl) {
         this.updaterImpl = updaterImpl;
+    }
+
+    SW360ConnectionConfigurationFactory getConnectionFactory() {
+        return connectionFactory;
     }
 }
