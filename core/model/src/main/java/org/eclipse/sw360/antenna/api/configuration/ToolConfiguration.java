@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.api.configuration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ public class ToolConfiguration {
     private static final String DEPENDENCIES_DIR = "dependencies";
 
     private final Path antennaTargetDirectory;
+    private final ProxySettings proxySettings;
 
     private List<String> filesToAttach;
     private boolean attachAll;
@@ -52,9 +54,6 @@ public class ToolConfiguration {
     private Workflow workflow;
     private boolean showCopyrightStatements;
     private Charset encodingCharSet;
-    private final String proxyHost;
-    private final int proxyPort;
-    private final boolean useProxy;
 
     private <T> List<T> makeUnmodifiable(List<T> list) {
         if (list == null) {
@@ -86,9 +85,7 @@ public class ToolConfiguration {
         }else{
             this.encodingCharSet = StandardCharsets.UTF_8;
         }
-        this.proxyHost = builder.proxyHost;
-        this.proxyPort = builder.proxyPort;
-        this.useProxy = this.proxyHost != null && !"".equals(this.proxyHost) && this.proxyPort > 0;
+        proxySettings = ProxySettings.fromConfig(true, builder.proxyHost, builder.proxyPort);
     }
 
     @Override
@@ -171,15 +168,19 @@ public class ToolConfiguration {
     }
 
     public boolean useProxy() {
-        return useProxy;
+        return getProxySettings().isProxyUse();
     }
 
     public String getProxyHost() {
-        return proxyHost;
+        return getProxySettings().getProxyHost();
     }
 
     public int getProxyPort() {
-        return proxyPort;
+        return getProxySettings().getProxyPort();
+    }
+
+    public ProxySettings getProxySettings() {
+        return proxySettings;
     }
 
     public static class ConfigurationBuilder {
