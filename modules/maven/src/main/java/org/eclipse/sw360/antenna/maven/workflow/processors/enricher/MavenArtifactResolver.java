@@ -20,7 +20,6 @@ import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactSelector;
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -45,10 +44,8 @@ public class MavenArtifactResolver extends AbstractProcessor {
     @Override
     public Collection<Artifact> process(Collection<Artifact> artifacts) {
         ToolConfiguration toolConfig = context.getToolConfiguration();
-        ProxySettings proxySettings = ProxySettings.fromConfig(
-                toolConfig.useProxy(), toolConfig.getProxyHost(), toolConfig.getProxyPort());
         return new MavenArtifactResolverImpl(
-                proxySettings,
+                context.getHttpClient(),
                 context.getGeneric(RepositorySystem.class),
                 context.getGeneric(MavenProject.class),
                 context.getGeneric(LegacySupport.class),

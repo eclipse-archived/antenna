@@ -11,10 +11,10 @@
  */
 package org.eclipse.sw360.antenna.maven;
 
+import org.eclipse.sw360.antenna.http.HttpClient;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
 import org.eclipse.sw360.antenna.util.HttpHelper;
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +32,12 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.setVariableValueInObject;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 public class HttpRequesterTest extends AntennaTestWithMockedContext {
@@ -55,9 +60,7 @@ public class HttpRequesterTest extends AntennaTestWithMockedContext {
         this.baseBefore();
         mavenCoordinate = new Coordinate(Coordinate.Types.MAVEN, "groupId", "artifactId", "version");
 
-        ProxySettings proxySettings = ProxySettings.noProxy();
-
-        hr = new HttpRequester(proxySettings, new URL("http://test.repo"));
+        hr = new HttpRequester(mock(HttpClient.class), new URL("http://test.repo"));
         setVariableValueInObject(hr, "httpHelper", httpHelperMock);
     }
 

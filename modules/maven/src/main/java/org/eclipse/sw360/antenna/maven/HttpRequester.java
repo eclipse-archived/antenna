@@ -11,9 +11,9 @@
  */
 package org.eclipse.sw360.antenna.maven;
 
+import org.eclipse.sw360.antenna.http.HttpClient;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.util.HttpHelper;
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,15 +36,15 @@ public class HttpRequester extends IArtifactRequester {
     private HttpHelper httpHelper;
     private Optional<URL> sourceRepositoryUrl;
 
-    public HttpRequester(ProxySettings proxySettings, URL sourceRepositoryUrl) {
+    public HttpRequester(HttpClient httpClient, URL sourceRepositoryUrl) {
         super();
-        httpHelper = new HttpHelper(proxySettings);
+        httpHelper = new HttpHelper(httpClient);
         this.sourceRepositoryUrl = Optional.of(sourceRepositoryUrl);
     }
 
-    public HttpRequester(ProxySettings proxySettings) {
+    public HttpRequester(HttpClient httpClient) {
         super();
-        httpHelper = new HttpHelper(proxySettings);
+        httpHelper = new HttpHelper(httpClient);
         this.sourceRepositoryUrl = Optional.empty();
     }
 
