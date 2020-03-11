@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,7 +11,6 @@
  */
 package org.eclipse.sw360.antenna.util;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.xml.generated.Workflow;
 import org.junit.Before;
@@ -24,6 +24,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -100,7 +101,7 @@ public class TemplateRendererTest {
 
     private File writeTemplateFromString(String template) throws IOException {
         final File templateFile = folder.newFile("template.xml");
-        FileUtils.writeStringToFile(templateFile, template, StandardCharsets.UTF_8);
+        Files.write(templateFile.toPath(), template.getBytes(StandardCharsets.UTF_8));
         return templateFile;
     }
 

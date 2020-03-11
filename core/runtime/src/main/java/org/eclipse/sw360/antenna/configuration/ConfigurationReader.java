@@ -25,10 +25,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 /**
  * Reads and validates the configuration.xml and creates a Configuration with
@@ -93,7 +96,9 @@ public class ConfigurationReader implements IConfigReader {
                     LOGGER.warn("Destination file already existed, continuing by overwriting the file.");
                 }
                 LOGGER.debug("Copy configuration file to target folder of antenna.");
-                org.apache.commons.io.FileUtils.copyURLToFile(configFileUri.toURL(), configFromUri);
+                try (InputStream stream = configFileUri.toURL().openStream()) {
+                    Files.copy(stream, configFromUri.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
             } catch (IOException e) {
                 throw new ConfigurationException("Failed to fetch file to target folder of antenna.", e);
             }

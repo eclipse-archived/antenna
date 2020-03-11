@@ -11,7 +11,6 @@
  */
 package org.eclipse.sw360.antenna.maven;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
@@ -29,8 +28,11 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -129,7 +131,7 @@ public class MavenRuntimeRequester extends IArtifactRequester {
 
     private boolean contentEquals(File artifactFile, File targetFile) {
         try {
-            return FileUtils.contentEquals(artifactFile, targetFile);
+            return Arrays.equals(Files.readAllBytes(artifactFile.toPath()), Files.readAllBytes(targetFile.toPath()));
         } catch (IOException e) {
             throw new ExecutionException("File content could not be compared: " + e.getMessage(), e);
         }
@@ -137,7 +139,8 @@ public class MavenRuntimeRequester extends IArtifactRequester {
 
     private void copyFile(File artifactFile, File targetFile) {
         try {
-            FileUtils.copyFile(artifactFile, targetFile);
+            Files.createDirectories(targetFile.getParentFile().toPath());
+            Files.copy(artifactFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new ExecutionException("File could not be copied: " + e.getMessage(), e);
         }

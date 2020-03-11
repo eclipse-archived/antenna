@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
@@ -28,6 +27,7 @@ import org.junit.runners.Parameterized;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -166,7 +166,7 @@ public class SW360UpdaterTest {
         }
         String csvContent = String.format("Artifact Id,Group Id,Version,Coordinate Type,Clearing State,Clearing Document%s" +
                 "test,test,x.x.x,mvn,%s,%s%s", System.lineSeparator(), clearingState, clearingDocPath, System.lineSeparator());
-        FileUtils.writeStringToFile(tempCsvFile, csvContent, StandardCharsets.UTF_8);
+        Files.write(tempCsvFile.toPath(), csvContent.getBytes(StandardCharsets.UTF_8));
         return tempCsvFile.toPath();
     }
 }
