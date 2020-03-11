@@ -66,11 +66,4 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>Spring Plugins Repository</id>
-            <url>http://repo.spring.io/plugins-release/</url>
-        </repository>
-    </repositories>
 </project>
