@@ -34,7 +34,6 @@
         <wiremock.version>2.26.0</wiremock.version>
         <slf4j.version>1.7.26</slf4j.version>
         <log4j2.version>2.13.0</log4j2.version>
-        <spring.version>5.1.2.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ort.rev>3f85d301f7</ort.rev>
     </properties>
@@ -358,18 +357,6 @@
         <repository>
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring.io</id>
-            <url>https://repo.spring.io/plugins-release/</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
