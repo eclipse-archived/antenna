@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.frontend.testing.testProjects;
 
+import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.eclipse.sw360.antenna.model.xml.generated.WorkflowStep;
 
 import java.util.ArrayList;
@@ -95,11 +96,11 @@ public abstract class AbstractTestProjectWithExpectations extends AbstractTestPr
     }
 
     public int getExpectedProxyPort() {
-        return 0;
+        return ProxySettings.noProxy().getProxyPort();
     }
 
     public String getExpectedProxyHost() {
-        return null;
+        return ProxySettings.noProxy().getProxyHost();
     }
 
     public boolean getExpectedToolConfigurationMavenInstalled() {

@@ -22,10 +22,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils.mapPropertiesFile;
+import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils.createMappedConfigurationData;
 
 public class SW360Configuration extends ConfigurableWorkflowItem {
-    private final Map<String, String> properties;
+    private final SW360ConnectionConfigurationFactory connectionFactory;
+    private final ComplianceFeatureUtils.MappedConfigurationData configurationData;
     private final String csvFileName;
     private final SW360Connection connection;
     private final Path targetDir;
@@ -33,15 +34,29 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
     private final Path baseDir;
 
     public SW360Configuration(File propertiesFile) {
-        properties = mapPropertiesFile(propertiesFile);
-        baseDir = Paths.get(properties.get("basedir"));
-        targetDir = baseDir.resolve(properties.get("targetDir"));
-        sourcesPath = baseDir.resolve(properties.get("sourcesDirectory"));
+        this(propertiesFile, new SW360ConnectionConfigurationFactory());
+    }
+
+    /**
+     * Creates a new instance of {@code SW360Configuration} with the path to
+     * the properties file and the factory to create the SW360 connection. This
+     * constructor is used for testing purposes.
+     *
+     * @param propertiesFile the file containing configuration properties
+     * @param factory        the factory for the SW360 connection
+     */
+    SW360Configuration(File propertiesFile, SW360ConnectionConfigurationFactory factory) {
+        connectionFactory = factory;
+        configurationData = createMappedConfigurationData(propertiesFile);
+        baseDir = Paths.get(configurationData.getProperties().get("basedir"));
+        targetDir = baseDir.resolve(configurationData.getProperties().get("targetDir"));
+        sourcesPath = baseDir.resolve(configurationData.getProperties().get("sourcesDirectory"));
         connection = makeConnection();
-        csvFileName = properties.get("csvFilePath");
+        csvFileName = configurationData.getProperties().get("csvFilePath");
     }
 
     private SW360Connection makeConnection() {
+        Map<String, String> properties = configurationData.getProperties();
         Map<String, String> configMap = Stream.of(new String[][]{
                 {"rest.server.url", getConfigValue("sw360restServerUrl", properties)},
                 {"auth.server.url", getConfigValue("sw360authServerUrl", properties)},
@@ -52,11 +67,10 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
                 {"download.attachments", getConfigValue("sw360downloadSources", properties, "false")},
                 {"proxy.use", getConfigValue("proxyUse", properties)}})
                 .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
-        SW360ConnectionConfigurationFactory configurationFactory = new SW360ConnectionConfigurationFactory();
-        return configurationFactory.createConnection(
+        return connectionFactory.createConnection(
                 key -> getConfigValue(key, configMap),
-                key -> getBooleanConfigValue(key, configMap),
-                properties.get("proxyHost"), Integer.parseInt(properties.get("proxyPort")));
+                configurationData.getContext().getHttpClient(),
+                configurationData.getContext().getObjectMapper());
     }
 
     public Path getBaseDir() {
@@ -75,7 +89,7 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
     }
 
     public Map<String, String> getProperties() {
-        return properties;
+        return configurationData.getProperties();
     }
 
     public SW360Connection getConnection() {
@@ -83,6 +97,14 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
     }
 
     public Boolean getBooleanConfigValue(String key) {
-        return getBooleanConfigValue(key, properties);
+        return getBooleanConfigValue(key, configurationData.getProperties());
+    }
+
+    public ComplianceFeatureUtils.MappedConfigurationData getConfigurationData() {
+        return configurationData;
+    }
+
+    SW360ConnectionConfigurationFactory getConnectionFactory() {
+        return connectionFactory;
     }
 }

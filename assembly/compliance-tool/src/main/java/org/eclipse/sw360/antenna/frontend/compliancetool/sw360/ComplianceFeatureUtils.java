@@ -10,6 +10,8 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 
+import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
+import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.csvreader.CSVArtifactMapper;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
@@ -95,5 +97,86 @@ public class ComplianceFeatureUtils {
         }
 
         return value;
+    }
+
+    /**
+     * Reads in a properties file, replaces references to environment
+     * variables, creates a (partially initialized) {@code AntennaContext}, and
+     * returns the result as a {@code MappedConfigurationData} object. This
+     * method bridges between the limited configuration of the compliance tool
+     * and the configuration of Antenna. Although the compliance tool does not
+     * need the full configuration settings supported by Antenna, it uses some
+     * central services that need to be configured (e.g. the central HTTP
+     * client). To make this possible, parts of the configuration for the
+     * compliance tool are used to create an Antenna context, from which those
+     * service objects can be obtained.
+     *
+     * @param propertiesFile the properties file with the configuration of the
+     *                       compliance tool
+     * @return the resulting {@code MappedConfigurationData} object
+     */
+    public static MappedConfigurationData createMappedConfigurationData(File propertiesFile) {
+        Map<String, String> properties = mapPropertiesFile(propertiesFile);
+
+        ToolConfiguration.ConfigurationBuilder configurationBuilder =
+                new ToolConfiguration.ConfigurationBuilder();
+        if (Boolean.parseBoolean(properties.get("proxyUse"))) {
+            configurationBuilder.setProxyHost(properties.get("proxyHost"))
+                    .setProxyPort(Integer.parseInt(properties.get("proxyPort")));
+        }
+        AntennaContext context = new AntennaContext.ContextBuilder()
+                .setToolConfiguration(configurationBuilder.buildConfiguration())
+                .buildContext();
+        return new MappedConfigurationData(properties, context);
+    }
+
+    /**
+     * A class representing configuration data for the compliance tool that has
+     * already been processed.
+     */
+    public static class MappedConfigurationData {
+        /**
+         * A map with properties from the config file.
+         */
+        private final Map<String, String> properties;
+
+        /**
+         * A context that has been created from the configuration.
+         */
+        private final AntennaContext context;
+
+        /**
+         * Creates a new instance of {@code MappedConfigurationData} with the
+         * given content.
+         *
+         * @param properties properties from the configuration file
+         * @param context    a context created from the properties
+         */
+        public MappedConfigurationData(Map<String, String> properties, AntennaContext context) {
+            this.properties = Collections.unmodifiableMap(new HashMap<>(properties));
+            this.context = context;
+        }
+
+        /**
+         * Returns a (unmodifiable) map with properties that have been read
+         * from the configuration file.
+         *
+         * @return a map with configuration properties
+         */
+        public Map<String, String> getProperties() {
+            return properties;
+        }
+
+        /**
+         * Returns a partial {@code AntennaContext} that was created from the
+         * content of the configuration file. This object is not fully
+         * initialized, as the compliance tool does not require a full Antenna
+         * configuration. But it allows access to central service objects.
+         *
+         * @return the Antenna context created from the configuration
+         */
+        public AntennaContext getContext() {
+            return context;
+        }
     }
 }
