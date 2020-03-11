@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2013,2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -11,11 +12,9 @@
 package org.eclipse.sw360.antenna.testing.util;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -131,12 +130,11 @@ public class JarCreator {
         createNestedJar("", innerJar, outerJar);
     }
     private void createNestedJar(String subDirs, File innerJar, File outerJar) throws IOException {
-        try (FileInputStream inJarWithManifest = new FileInputStream(innerJar);
-             FileOutputStream outJarInJar = new FileOutputStream(outerJar);
-             JarOutputStream jaroutJarInJar = new JarOutputStream(outJarInJar)){
+        try (FileOutputStream outJarInJar = new FileOutputStream(outerJar);
+             JarOutputStream jaroutJarInJar = new JarOutputStream(outJarInJar)) {
             ZipEntry zipE = new ZipEntry(Paths.get(subDirs, innerJar.getName()).toString());
             jaroutJarInJar.putNextEntry(zipE);
-            IOUtils.copy(inJarWithManifest, jaroutJarInJar);
+            Files.copy(innerJar.toPath(), jaroutJarInJar);
             jaroutJarInJar.closeEntry();
         }
     }
