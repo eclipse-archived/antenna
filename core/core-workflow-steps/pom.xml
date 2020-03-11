@@ -50,6 +50,10 @@
             <groupId>com.github.cliftonlabs</groupId>
             <artifactId>json-simple</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
         <!-- ################################ testing dependencies ################################ -->
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
@@ -72,4 +76,19 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Generates the service provider definitions (i.e. META-INF/services/* -->
+            <plugin>
+                <groupId>eu.somatik.serviceloader-maven-plugin</groupId>
+                <artifactId>serviceloader-maven-plugin</artifactId>
+                <configuration>
+                    <services>
+                        <param>org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase</param>
+                    </services>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

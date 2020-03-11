@@ -64,7 +64,6 @@
         <module>assembly</module>
         <!-- misc -->
         <module>antenna-license-provider</module>
-        <module>antenna-csv-license-knowledge-base</module>
         <module>antenna-documentation</module>
         <module>http-support</module>
     </modules>
