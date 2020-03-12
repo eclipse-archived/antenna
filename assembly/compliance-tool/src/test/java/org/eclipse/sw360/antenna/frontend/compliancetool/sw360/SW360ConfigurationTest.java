@@ -10,7 +10,8 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
+import org.eclipse.sw360.antenna.api.service.ServiceFactory;
+import org.eclipse.sw360.antenna.http.HttpClient;
 import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
 import org.junit.Rule;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,10 +50,11 @@ public class SW360ConfigurationTest {
     }
 
     @Test
-    public void testDefaultConnectionFactory() {
+    public void testDefaultFactories() {
         SW360Configuration config = new SW360Configuration(configFile("compliancetool-exporter.properties"));
 
         assertThat(config.getConnectionFactory()).isNotNull();
+        assertThat(config.getServiceFactory()).isNotNull();
     }
 
     @Test
@@ -103,14 +106,17 @@ public class SW360ConfigurationTest {
 
     @Test
     public void testConnection() {
-        SW360ConnectionConfigurationFactory factory = mock(SW360ConnectionConfigurationFactory.class);
+        SW360ConnectionConfigurationFactory conFactory = mock(SW360ConnectionConfigurationFactory.class);
+        ServiceFactory svcFactory = mock(ServiceFactory.class);
         SW360Connection connection = mock(SW360Connection.class);
-        when(factory.createConnection(any(), any(), any())).thenReturn(connection);
+        HttpClient httpClient = mock(HttpClient.class);
+        when(svcFactory.createHttpClient(true, "proxy.net", 8080))
+                .thenReturn(httpClient);
+        when(conFactory.createConnection(any(), eq(httpClient), eq(ServiceFactory.getObjectMapper())))
+                .thenReturn(connection);
         File propertiesFile = configFile("config-with-proxy.properties");
 
-        SW360Configuration configuration = new SW360Configuration(propertiesFile, factory);
+        SW360Configuration configuration = new SW360Configuration(propertiesFile, conFactory, svcFactory);
         assertThat(configuration.getConnection()).isEqualTo(connection);
-        assertThat(configuration.getConfigurationData().getContext().getToolConfiguration().getProxySettings())
-                .isEqualTo(ProxySettings.useProxy("proxy.net", 8080));
     }
 }
