@@ -28,6 +28,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,8 +60,9 @@ public class HttpHelperTest {
 
     @Test
     public void downloadFileWritesTheFileToDisk() throws Exception {
-        Path targetDirectory = temporaryFolder.newFolder("target").toPath();
-        File expectedJarFile = new File(targetDirectory.toFile(), "archive.zip");
+        File sourceDirectory = temporaryFolder.newFolder("source");
+        File targetDirectory = temporaryFolder.newFolder("target");
+        File expectedJarFile = new File(sourceDirectory, "archive.zip");
 
         when(httpResponseMock.getStatusLine())
                 .thenReturn(statusLine);
@@ -69,15 +72,15 @@ public class HttpHelperTest {
                 .thenReturn(httpEntityMock);
         when(httpClientMock.execute(any(HttpGet.class)))
                 .then((Answer<CloseableHttpResponse>) httpGetMock -> {
-                    new FileOutputStream(expectedJarFile).close();
+                    Files.write(expectedJarFile.toPath(), "dummy content".getBytes(StandardCharsets.UTF_8));
                     return httpResponseMock;
                 });
         when(httpEntityMock.getContent())
                 .then((Answer<InputStream>) result -> new FileInputStream(expectedJarFile));
 
-        File resultFile = httpHelper.downloadFile("https://example.com/folder/archive.zip", targetDirectory);
+        File resultFile = httpHelper.downloadFile("https://example.com/folder/archive.zip", targetDirectory.toPath());
 
-        assertThat(resultFile).isEqualTo(expectedJarFile);
+        assertThat(resultFile).hasSameContentAs(expectedJarFile);
     }
 
     @Test(expected = IOException.class)
