@@ -12,14 +12,11 @@
 
 package org.eclipse.sw360.antenna.api.configuration;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.IProject;
+import org.eclipse.sw360.antenna.api.service.ServiceFactory;
 import org.eclipse.sw360.antenna.http.HttpClient;
-import org.eclipse.sw360.antenna.http.HttpClientFactory;
-import org.eclipse.sw360.antenna.http.HttpClientFactoryImpl;
-import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
 import org.eclipse.sw360.antenna.model.Configuration;
 
 import java.util.Optional;
@@ -47,9 +44,7 @@ public class AntennaContext {
 
     private final ContextExtension contextExtension;
 
-    private final ObjectMapper objectMapper;
-
-    private final HttpClient httpClient;
+    private final ServiceFactory serviceFactory;
 
     private AntennaContext(ContextBuilder builder) {
         this.configuration = builder.configuration;
@@ -61,8 +56,7 @@ public class AntennaContext {
 
         this.processingReporter = builder.processingReporter;
 
-        objectMapper = builder.getObjectMapper();
-        httpClient = builder.createHttpClient();
+        this.serviceFactory = builder.serviceFactory;
     }
 
     public Configuration getConfiguration() {
@@ -95,39 +89,35 @@ public class AntennaContext {
 
     /**
      * Returns a configured {@code HttpClient} instance that can be used for
-     * all interactions with HTTP clients. The HTTP client is created once at
-     * the beginning of the Antenna execution and initialized from the current
-     * tool configuration. It is a thread-safe object and can thus be shared by
+     * all interactions with HTTP clients. The HTTP client is created when it
+     * is accessed for the first time and initialized from the current tool
+     * configuration. It is a thread-safe object and can thus be shared by
      * all components that need to send HTTP requests.
      *
      * @return the shared HTTP client instance
      */
     public HttpClient getHttpClient() {
-        return httpClient;
+        return serviceFactory.createHttpClient(toolConfiguration.useProxy(),
+                toolConfiguration.getProxyHost(), toolConfiguration.getProxyPort());
     }
 
     /**
      * Returns a configured {@code ObjectMapper} for JSON serialization. The
-     * object is created and initialized at the beginning of the Antenna
-     * execution. As it is thread-safe, it can (and should) be used by all
+     * object is created and initialized when it is accessed for the first
+     * time. As it is thread-safe, it can (and should) be used by all
      * components that need to convert objects to and from JSON.
      *
      * @return the shared JSON object mapper
      */
     public ObjectMapper getObjectMapper() {
-        return objectMapper;
+        return ServiceFactory.getObjectMapper();
     }
 
     public static class ContextBuilder {
         /**
-         * The factory for creating the shared HTTP client.
+         * The factory for creating the shared services.
          */
-        private final HttpClientFactory httpClientFactory;
-
-        /**
-         * The shared JSON object mapper.
-         */
-        private final ObjectMapper objectMapper;
+        private final ServiceFactory serviceFactory;
 
         private Configuration configuration;
         private ToolConfiguration toolConfiguration;
@@ -136,19 +126,18 @@ public class AntennaContext {
         private IProcessingReporter processingReporter;
 
         public ContextBuilder() {
-            this(new HttpClientFactoryImpl());
+            this(new ServiceFactory());
         }
 
         /**
          * Creates a new instance of {@code ContextBuilder} and sets the
-         * {@code HttpClientFactory}. This constructor is used for testing
+         * {@code ServiceFactory}. This constructor is used for testing
          * purposes.
          *
-         * @param httpClientFactory the {@code HttpClientFactory}
+         * @param serviceFactory the {@code ServiceFactory}
          */
-        ContextBuilder(HttpClientFactory httpClientFactory) {
-            this.httpClientFactory = httpClientFactory;
-            objectMapper = createObjectMapper();
+        ContextBuilder(ServiceFactory serviceFactory) {
+            this.serviceFactory = serviceFactory;
         }
 
         public ContextBuilder setToolConfiguration(ToolConfiguration configuration) {
@@ -178,47 +167,6 @@ public class AntennaContext {
         public ContextBuilder setContextExtensions(ContextExtension contextExtension) {
             this.contextExtension = contextExtension;
             return this;
-        }
-
-        /**
-         * Returns the object mapper created by this builder.
-         *
-         * @return the shared object mapper
-         */
-        private ObjectMapper getObjectMapper() {
-            return objectMapper;
-        }
-
-        /**
-         * Creates the shared HTTP client object.
-         *
-         * @return the initialized HTTP client
-         */
-        private HttpClient createHttpClient() {
-            HttpClientConfig proxyClientConfig = createHttpClientConfig();
-            return httpClientFactory.newHttpClient(proxyClientConfig);
-        }
-
-        /**
-         * Creates the configuration for the shared HTTP client based on the
-         * settings set for this builder.
-         *
-         * @return the configuration of the shared HTTP client
-         */
-        private HttpClientConfig createHttpClientConfig() {
-            return HttpClientConfig.basicConfig()
-                    .withProxySettings(toolConfiguration.getProxySettings())
-                    .withObjectMapper(getObjectMapper());
-        }
-
-        /**
-         * Creates the shared object mapper instance.
-         *
-         * @return the initialized JSON object mapper
-         */
-        private static ObjectMapper createObjectMapper() {
-            return new ObjectMapper()
-                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         }
     }
 }

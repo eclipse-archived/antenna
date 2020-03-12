@@ -13,20 +13,13 @@ package org.eclipse.sw360.antenna.api.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.IProject;
+import org.eclipse.sw360.antenna.api.service.ServiceFactory;
 import org.eclipse.sw360.antenna.http.HttpClient;
-import org.eclipse.sw360.antenna.http.HttpClientFactory;
-import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class AntennaContextTest {
@@ -85,64 +78,27 @@ public class AntennaContextTest {
         assertThat(context.getHttpClient()).isNotNull();
     }
 
-    /**
-     * Tests the JSON object mapper. By reading a test JSON file, it is checked
-     * whether the mapper has been correctly initialized; especially that
-     * unknown properties are ignored.
-     */
     @Test
-    public void testObjectMapper() throws IOException {
-        JsonBean expBean = new JsonBean();
-        expBean.setName("test");
-        expBean.setAge(42);
+    public void testObjectMapper() {
         AntennaContext context = createContext(new AntennaContext.ContextBuilder());
 
         ObjectMapper mapper = context.getObjectMapper();
-        assertThat(mapper).isNotNull();
-        JsonBean bean = mapper.readValue(getClass().getResource("/testPerson.json"), JsonBean.class);
-        assertThat(bean).isEqualTo(expBean);
-    }
-
-    /**
-     * Obtains the configuration that was passed to the given factory.
-     *
-     * @param factory the HTTP client factory
-     * @return the configuration used to create a client
-     */
-    private static HttpClientConfig fetchHttpClientConfig(HttpClientFactory factory) {
-        ArgumentCaptor<HttpClientConfig> captor = ArgumentCaptor.forClass(HttpClientConfig.class);
-        verify(factory).newHttpClient(captor.capture());
-        return captor.getValue();
+        assertThat(mapper).isSameAs(ServiceFactory.getObjectMapper());
     }
 
     @Test
     public void testHttpClient() {
-        HttpClientFactory factory = mock(HttpClientFactory.class);
+        final String proxyHost = "test.proxy";
+        final int proxyPort = 5555;
+        ServiceFactory serviceFactory = mock(ServiceFactory.class);
         HttpClient httpClient = mock(HttpClient.class);
-        when(factory.newHttpClient(any())).thenReturn(httpClient);
-
-        AntennaContext context = createContext(new AntennaContext.ContextBuilder(factory));
-        HttpClientConfig config = fetchHttpClientConfig(factory);
-        assertThat(config.customObjectMapper()).contains(context.getObjectMapper());
-        assertThat(config.proxySettings()).isEqualTo(ProxySettings.noProxy());
-        assertThat(context.getHttpClient()).isEqualTo(httpClient);
-    }
-
-    @Test
-    public void testHttpClientWithProxyConfiguration() {
-        final String proxyHost = "test.proxy.net";
-        final int proxyPort = 4242;
-        HttpClientFactory factory = mock(HttpClientFactory.class);
-        HttpClient httpClient = mock(HttpClient.class);
-        when(factory.newHttpClient(any())).thenReturn(httpClient);
-        ToolConfiguration.ConfigurationBuilder toolConfigBuilder = defaultToolConfigurationBuilder()
+        when(serviceFactory.createHttpClient(true, proxyHost, proxyPort)).thenReturn(httpClient);
+        ToolConfiguration.ConfigurationBuilder configurationBuilder = defaultToolConfigurationBuilder()
                 .setProxyHost(proxyHost)
                 .setProxyPort(proxyPort);
 
-        AntennaContext context = createContext(new AntennaContext.ContextBuilder(factory), toolConfigBuilder);
-        HttpClientConfig config = fetchHttpClientConfig(factory);
-        assertThat(config.customObjectMapper()).contains(context.getObjectMapper());
-        assertThat(config.proxySettings()).isEqualTo(ProxySettings.useProxy(proxyHost, proxyPort));
+        AntennaContext context =
+                createContext(new AntennaContext.ContextBuilder(serviceFactory), configurationBuilder);
         assertThat(context.getHttpClient()).isEqualTo(httpClient);
     }
 
