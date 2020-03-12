@@ -11,7 +11,6 @@
  */
 package org.eclipse.sw360.antenna.util;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -26,7 +25,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 public class HttpHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpHelper.class);
@@ -42,7 +43,7 @@ public class HttpHelper {
     }
 
     public File downloadFile(String url, Path targetDirectory, String filename) throws IOException {
-        File targetFile = targetDirectory.resolve(filename).toFile();
+        Path targetFile = targetDirectory.resolve(filename);
 
         try (CloseableHttpResponse response = getFromUrl(url)) {
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
@@ -54,15 +55,16 @@ public class HttpHelper {
             HttpEntity entity = response.getEntity();
             if (entity != null) {
                 try (InputStream is = entity.getContent()) {
-                    FileUtils.copyInputStreamToFile(is, targetFile);
+                    Files.createDirectories(targetDirectory);
+                    Files.copy(is, targetFile, StandardCopyOption.REPLACE_EXISTING);
                 }
             }
         }
 
-        if (!targetFile.exists()) {
-            throw new IOException("File " + targetFile.getAbsolutePath() + "does not exist after downloading.");
+        if (!Files.exists(targetFile)) {
+            throw new IOException("File " + targetFile.toAbsolutePath() + "does not exist after downloading.");
         }
-        return targetFile;
+        return targetFile.toFile();
     }
 
     private CloseableHttpClient getConfiguredHttpClient(ProxySettings proxySettings) {

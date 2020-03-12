@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,7 +11,6 @@
  */
 package org.eclipse.sw360.antenna.frontend.gradle;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.frontend.stub.gradle.AntennaImpl;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.AbstractTestProject;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.ExampleTestProject;
@@ -57,7 +57,7 @@ public class AntennaGradlePluginTest {
 
         String buildGradle = "plugins {\nid 'org.eclipse.sw360.antenna'\n}\n" +
         "AntennaConfiguration{\ntoolConfigurationPath '" + exampleTestProject.getProjectPom() + "'\n}";
-        FileUtils.writeStringToFile(projectRoot.resolve("build.gradle").toFile(), buildGradle, StandardCharsets.UTF_8);
+        Files.write(projectRoot.resolve("build.gradle"), buildGradle.getBytes(StandardCharsets.UTF_8));
 
         when(project.getBuildDir())
                 .thenReturn(projectRoot.resolve("build").toFile());
@@ -126,7 +126,7 @@ public class AntennaGradlePluginTest {
 
         String buildGradle = "plugins {\nid 'org.eclipse.sw360.antenna'\n}\n" +
                 "AntennaConfiguration{\ntoolConfigurationPath '" + dest + "'\n}";
-        FileUtils.writeStringToFile(projectRoot.resolve("build.gradle").toFile(), buildGradle, StandardCharsets.UTF_8);
+        Files.write(projectRoot.resolve("build.gradle"), buildGradle.getBytes(StandardCharsets.UTF_8));
 
         AntennaImpl runner = new AntennaImpl("antenna-maven-plugin",
                 dest,

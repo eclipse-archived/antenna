@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2013,2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,7 +11,6 @@
  */
 package org.eclipse.sw360.antenna.workflow.processors;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.sw360.antenna.model.Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
@@ -28,6 +28,8 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +50,7 @@ public class ConfigurationResolverTest extends AntennaTestWithMockedContext {
                 .map(stream -> {
                     try {
                         File out = tmpFolder.newFile(path);
-                        FileUtils.copyInputStreamToFile(stream, out);
+                        Files.copy(stream, out.toPath(), StandardCopyOption.REPLACE_EXISTING);
                         return out;
                     } catch (IOException e) {
                         return null;
