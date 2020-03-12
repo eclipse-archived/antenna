@@ -27,6 +27,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -46,9 +47,8 @@ public class ConfigurationResolverTest extends AntennaTestWithMockedContext {
 
     private File getResourceAsFile(String path) {
         return Optional.ofNullable(getClass().getClassLoader())
-                .map(c -> c.getResourceAsStream(path))
-                .map(stream -> {
-                    try {
+                .map(c -> {
+                    try (InputStream stream = c.getResourceAsStream(path)) {
                         File out = tmpFolder.newFile(path);
                         Files.copy(stream, out.toPath(), StandardCopyOption.REPLACE_EXISTING);
                         return out;
