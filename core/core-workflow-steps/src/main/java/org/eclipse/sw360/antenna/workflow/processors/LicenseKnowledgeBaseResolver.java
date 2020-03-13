@@ -14,12 +14,9 @@ package org.eclipse.sw360.antenna.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.knowledgebase.LicenseKnowledgeBaseFactory;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -29,7 +26,6 @@ import java.util.function.Supplier;
  * CSVBasedLicenseKnowledgeBase to a list of artifacts.
  */
 public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LicenseKnowledgeBaseResolver.class);
     private static final String CHOSEN_LICENSE_MANAGER_KEY = "chosen.license.manager";
 
     private Supplier<List<ILicenseManagementKnowledgeBase>> knowledgeBaseSupplier;
@@ -65,19 +61,24 @@ public class LicenseKnowledgeBaseResolver extends AbstractProcessor {
         this.chosenManager = getConfigValue(CHOSEN_LICENSE_MANAGER_KEY, configMap, "");
 
         if (knowledgeBaseSupplier == null) {
-            knowledgeBaseSupplier = new LicenseKnowledgeBaseFactory(context);
+            knowledgeBaseSupplier = new LicenseKnowledgeBaseFactory();
         }
 
         List<ILicenseManagementKnowledgeBase> licenseManagers = knowledgeBaseSupplier.get();
 
         this.knowledgeBase = Optional.ofNullable(knowledgeBase)
+                .filter(ILicenseManagementKnowledgeBase::isRunnable)
                 .orElseGet(() -> licenseManagers.stream()
                         .filter(l -> chosenManager.equals(l.getId()))
+                        .filter(ILicenseManagementKnowledgeBase::isRunnable)
                         .findFirst()
                         .orElseGet(() -> licenseManagers.stream()
                                 .sorted(Comparator.comparing(ILicenseManagementKnowledgeBase::getPriority).reversed())
+                                .filter(ILicenseManagementKnowledgeBase::isRunnable)
                                 .findFirst()
-                                .orElseThrow(() -> new ConfigurationException("Was not able to find any " +
+                                .orElseThrow(() -> new ConfigurationException("Was not able to find any runnable " +
                                         "implementation for the ILicenseManagementKnowledgeBase interface."))));
+
+        this.knowledgeBase.init(reporter, context.getToolConfiguration().getEncoding());
     }
 }

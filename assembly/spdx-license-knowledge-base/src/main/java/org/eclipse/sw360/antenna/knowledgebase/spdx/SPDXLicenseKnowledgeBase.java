@@ -34,6 +34,11 @@ public class SPDXLicenseKnowledgeBase implements ILicenseManagementKnowledgeBase
         return 0;
     }
 
+    @Override
+    public boolean isRunnable() {
+        return listedLicenses.getSpdxListedLicenseIds().length != 0;
+    }
+
     private Optional<SpdxListedLicense> getSpdxLicense(String licenseId) {
         final SpdxListedLicense listedLicenseById;
         try {

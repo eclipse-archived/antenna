@@ -36,6 +36,11 @@ public interface ILicenseManagementKnowledgeBase {
     int getPriority();
 
     /**
+     * @return {@code true} if ILicenseManagementKnowledgeBase is runnable, otherwise {@code false}
+     */
+    boolean isRunnable();
+
+    /**
      * 
      * @param licenseId
      * @return Returns the license name belonging to the licenseId.
