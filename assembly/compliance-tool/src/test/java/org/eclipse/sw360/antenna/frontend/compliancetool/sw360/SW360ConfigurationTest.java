@@ -10,6 +10,10 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 
+import org.eclipse.sw360.antenna.api.service.ServiceFactory;
+import org.eclipse.sw360.antenna.http.HttpClient;
+import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -25,10 +29,20 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SW360ConfigurationTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
+
+    private File configFile(String s) {
+        String propertiesFilePath =
+                Objects.requireNonNull(this.getClass().getClassLoader().getResource(s)).getPath();
+        return new File(propertiesFilePath);
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConfigurationWithNonExistentFile() {
@@ -36,9 +50,16 @@ public class SW360ConfigurationTest {
     }
 
     @Test
+    public void testDefaultFactories() {
+        SW360Configuration config = new SW360Configuration(configFile("compliancetool-exporter.properties"));
+
+        assertThat(config.getConnectionFactory()).isNotNull();
+        assertThat(config.getServiceFactory()).isNotNull();
+    }
+
+    @Test
     public void testConfigurationWithExporterPropertiesFile() {
-        String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).getPath();
-        File propertiesFile = new File(propertiesFilePath);
+        File propertiesFile = configFile("compliancetool-exporter.properties");
         SW360Configuration configuration = new SW360Configuration(propertiesFile);
         assertThat(configuration.getTargetDir()).isEqualTo(Paths.get("./"));
         assertThat(configuration.getCsvFileName()).isEqualTo("sample.csv");
@@ -48,8 +69,7 @@ public class SW360ConfigurationTest {
 
     @Test
     public void testConfigurationWithUpdaterPropertiesFile() {
-        String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).getPath();
-        File propertiesFile = new File(propertiesFilePath);
+        File propertiesFile = configFile("compliancetool-updater.properties");
         SW360Configuration configuration = new SW360Configuration(propertiesFile);
         assertThat(new File(configuration.getCsvFileName()).getName()).isEqualTo("compliancetool_updater_test.csv");
         assertThat(configuration.getProperties().get("delimiter")).isEqualTo(",");
@@ -82,5 +102,21 @@ public class SW360ConfigurationTest {
         Map<String, String> map = ComplianceFeatureUtils.propertiesToMap(properties, ComplianceFeatureUtils::mapEnvironmentVariable);
         assertThat(map.size()).isEqualTo(1);
         assertThat(map.get(key)).isEqualTo(value);
+    }
+
+    @Test
+    public void testConnection() {
+        SW360ConnectionConfigurationFactory conFactory = mock(SW360ConnectionConfigurationFactory.class);
+        ServiceFactory svcFactory = mock(ServiceFactory.class);
+        SW360Connection connection = mock(SW360Connection.class);
+        HttpClient httpClient = mock(HttpClient.class);
+        when(svcFactory.createHttpClient(true, "proxy.net", 8080))
+                .thenReturn(httpClient);
+        when(conFactory.createConnection(any(), eq(httpClient), eq(ServiceFactory.getObjectMapper())))
+                .thenReturn(connection);
+        File propertiesFile = configFile("config-with-proxy.properties");
+
+        SW360Configuration configuration = new SW360Configuration(propertiesFile, conFactory, svcFactory);
+        assertThat(configuration.getConnection()).isEqualTo(connection);
     }
 }

@@ -10,13 +10,8 @@
  */
 package org.eclipse.sw360.antenna.sw360.workflow;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.http.HttpClient;
-import org.eclipse.sw360.antenna.http.HttpClientFactory;
-import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
-import org.eclipse.sw360.antenna.http.HttpClientFactoryImpl;
 import org.eclipse.sw360.antenna.sw360.client.SW360ConnectionFactory;
 import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
@@ -78,19 +73,6 @@ public class SW360ConnectionConfigurationFactory {
     public static final String CLIENT_PASSWORD_KEY = "client.password";
 
     /**
-     * The name of the property from the Antenna tool configuration that
-     * determines whether an HTTP proxy should be used. Only if this property
-     * has a value of <strong>true</strong>, the configured proxy host and port
-     * are used. The default value is <strong>false</strong>.
-     */
-    public static final String PROXY_USE = "proxy.use";
-
-    /**
-     * The factory for creating a new HTTP client.
-     */
-    private final HttpClientFactory httpClientFactory;
-
-    /**
      * The factory for creating a new connection.
      */
     private final SW360ConnectionFactory connectionFactory;
@@ -100,62 +82,44 @@ public class SW360ConnectionConfigurationFactory {
      * with default settings.
      */
     public SW360ConnectionConfigurationFactory() {
-        this(new HttpClientFactoryImpl(), new SW360ConnectionFactory());
+        this(new SW360ConnectionFactory());
     }
 
     /**
      * Creates a new instance of {@code SW360ConnectionConfigurationFactory}
-     * and sets the factory objects required for the setup of the client
+     * and sets the factory object required for the setup of the client
      * library. This constructor is mainly used for testing purposes.
      *
-     * @param httpClientFactory the factory to create an HTTP client
      * @param connectionFactory the factory to create a client connection
      */
-    SW360ConnectionConfigurationFactory(HttpClientFactory httpClientFactory,
-                                        SW360ConnectionFactory connectionFactory) {
-        this.httpClientFactory = httpClientFactory;
+    SW360ConnectionConfigurationFactory(SW360ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 
     /**
      * Creates a new {@code SW360Connection} object that is initialized from
-     * configuration data. The passed in {@code Getter} objects are used to
-     * read in configuration settings. Other helper objects are created using
-     * the factories associated with this instance.
+     * configuration data. The passed in {@code Getter} object is used to
+     * read in configuration settings. Other helper objects that are to be
+     * used by the connection to be created need to be passed in.
      *
-     * @param getConfigValue        getter for string config settings
-     * @param getBooleanConfigValue getter for boolean config settings
-     * @param proxyHost             the proxy host
-     * @param proxyPort             the proxy port
+     * @param getConfigValue getter for string config settings
+     * @param httpClient     the HTTP client
+     * @param mapper         the JSON mapper
      * @return the new {@code SW360Connection}
      */
-    public SW360Connection createConnection(Getter<String> getConfigValue,
-                                            Getter<Boolean> getBooleanConfigValue,
-                                            String proxyHost, int proxyPort) {
-        ProxySettings settings = createProxySettings(getBooleanConfigValue, proxyHost, proxyPort);
+    public SW360Connection createConnection(Getter<String> getConfigValue, HttpClient httpClient,
+                                            ObjectMapper mapper) {
         String restUrl = getConfigValue.apply(REST_SERVER_URL_KEY);
         String authUrl = getConfigValue.apply(AUTH_SERVER_URL_KEY);
         String user = getConfigValue.apply(USERNAME_KEY);
         String password = getConfigValue.apply(PASSWORD_KEY);
         String clientId = getConfigValue.apply(CLIENT_USER_KEY);
         String clientPassword = getConfigValue.apply(CLIENT_PASSWORD_KEY);
-        ObjectMapper mapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        HttpClient httpClient = createHttpClient(settings, mapper);
 
         SW360ClientConfig clientConfig =
                 SW360ClientConfig.createConfig(restUrl, authUrl, user, password, clientId, clientPassword,
                         httpClient, mapper);
         return connectionFactory.newConnection(clientConfig);
-    }
-
-    /**
-     * Returns the {@code HttpClientFactory} used by this object.
-     *
-     * @return the factory to create a new HTTP client
-     */
-    HttpClientFactory getHttpClientFactory() {
-        return httpClientFactory;
     }
 
     /**
@@ -165,35 +129,6 @@ public class SW360ConnectionConfigurationFactory {
      */
     SW360ConnectionFactory getConnectionFactory() {
         return connectionFactory;
-    }
-
-    /**
-     * Creates the HTTP client to be used for interactions with the SW360
-     * server.
-     *
-     * @param settings proxy settings
-     * @param mapper   the object mapper for JSON serialization
-     * @return the HTTP client
-     */
-    private HttpClient createHttpClient(ProxySettings settings, ObjectMapper mapper) {
-        HttpClientConfig httpClientConfig = HttpClientConfig.basicConfig()
-                .withObjectMapper(mapper)
-                .withProxySettings(settings);
-        return httpClientFactory.newHttpClient(httpClientConfig);
-    }
-
-    /**
-     * Creates the proxy settings to be used from the given configuration data.
-     *
-     * @param getBooleanConfigValue getter for boolean config settings
-     * @param proxyHost             the proxy host
-     * @param proxyPort             the proxy port
-     * @return the {@code ProxySettings} to be used
-     */
-    private static ProxySettings createProxySettings(Getter<Boolean> getBooleanConfigValue,
-                                                     String proxyHost, int proxyPort) {
-        Boolean useProxy = getBooleanConfigValue.apply(PROXY_USE);
-        return ProxySettings.fromConfig(useProxy, proxyHost, proxyPort);
     }
 
     @FunctionalInterface

@@ -15,7 +15,9 @@ import org.apache.maven.plugin.LegacySupport;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.sw360.antenna.api.IProject;
-import org.eclipse.sw360.antenna.maven.*;
+import org.eclipse.sw360.antenna.http.HttpClient;
+import org.eclipse.sw360.antenna.maven.ClassifierInformation;
+import org.eclipse.sw360.antenna.maven.IArtifactRequester;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFile;
@@ -24,7 +26,6 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState;
 import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +39,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.atLeast;
@@ -69,7 +75,7 @@ public class MavenArtifactResolverImplTest extends AntennaTestWithMockedContext 
         when(toolConfigMock.getAntennaTargetDirectory()).thenReturn(targetDir);
         when(toolConfigMock.getDependenciesDirectory()).thenReturn(targetDir.resolve("dependencies"));
 
-        mavenArtifactResolverImpl = new MavenArtifactResolverImpl(ProxySettings.noProxy(),
+        mavenArtifactResolverImpl = new MavenArtifactResolverImpl(mock(HttpClient.class),
                 antennaContextMock.getGeneric(RepositorySystem.class),
                 antennaContextMock.getGeneric(MavenProject.class),
                 antennaContextMock.getGeneric(LegacySupport.class),

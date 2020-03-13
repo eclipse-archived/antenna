@@ -15,7 +15,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.LegacySupport;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
+import org.eclipse.sw360.antenna.http.HttpClient;
 
 import java.io.File;
 import java.net.URL;
@@ -29,27 +29,27 @@ public class ArtifactRequesterFactory {
                                                           Optional<MavenProject> optionalMavenProject,
                                                           Optional<LegacySupport> optionalLegacySupport,
                                                           File basedir,
-                                                          ProxySettings proxySettings,
+                                                          HttpClient httpClient,
                                                           boolean isMavenInstalled,
                                                           URL sourcesRepositoryUrl) {
         if (isMavenInstalled) {
             return useMavenIfRunning(optionalRepositorySystem, optionalMavenProject, optionalLegacySupport, Optional.of(sourcesRepositoryUrl))
                     .orElse(new MavenInvokerRequester(basedir, sourcesRepositoryUrl));
         }
-        return new HttpRequester(proxySettings, sourcesRepositoryUrl);
+        return new HttpRequester(httpClient, sourcesRepositoryUrl);
     }
 
     public static IArtifactRequester getArtifactRequester(Optional<RepositorySystem> optionalRepositorySystem,
                                                           Optional<MavenProject> optionalMavenProject,
                                                           Optional<LegacySupport> optionalLegacySupport,
                                                           File basedir,
-                                                          ProxySettings proxySettings,
+                                                          HttpClient httpClient,
                                                           boolean isMavenInstalled) {
         if (isMavenInstalled) {
             return useMavenIfRunning(optionalRepositorySystem, optionalMavenProject, optionalLegacySupport, Optional.empty())
                     .orElse(new MavenInvokerRequester(basedir));
         }
-        return new HttpRequester(proxySettings);
+        return new HttpRequester(httpClient);
     }
 
     /*

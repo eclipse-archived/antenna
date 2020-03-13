@@ -11,91 +11,98 @@
  */
 package org.eclipse.sw360.antenna.util;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.eclipse.sw360.antenna.http.HttpClientFactory;
+import org.eclipse.sw360.antenna.http.HttpClientFactoryImpl;
+import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
+import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.setVariableValueInObject;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HttpHelperTest {
+    private static final String TEST_CONTENT = "Content of the test file to be downloaded.";
+    private static final String FILE_NAME = "archive.zip";
+    private static final String FILE_PATH = "/test/downloads";
+    private static final String FILE_REQUEST = FILE_PATH + "/" + FILE_NAME;
+
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    @Mock
-    private CloseableHttpClient httpClientMock;
-    @Mock
-    private CloseableHttpResponse httpResponseMock;
-    @Mock
-    private HttpEntity httpEntityMock;
-    @Mock
-    private StatusLine statusLine;
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(options().dynamicPort());
 
     private HttpHelper httpHelper;
 
     @Before
-    public void setUp() throws Exception {
-        httpHelper = new HttpHelper(ProxySettings.noProxy());
-        setVariableValueInObject(httpHelper, "httpClient", httpClientMock);
+    public void setUp() {
+        HttpClientFactory clientFactory = new HttpClientFactoryImpl();
+        httpHelper = new HttpHelper(clientFactory.newHttpClient(HttpClientConfig.basicConfig()));
+    }
+
+    /**
+     * Checks whether the correct file has been downloaded.
+     *
+     * @param targetDirectory the target directory for downloads
+     * @param resultFile      the file returned by the helper
+     */
+    private static void checkDownloadedFile(Path targetDirectory, Path resultFile) throws IOException {
+        assertThat(resultFile.getParent()).isEqualTo(targetDirectory);
+        assertThat(resultFile.getFileName().toString()).isEqualTo(FILE_NAME);
+        byte[] bytes = Files.readAllBytes(resultFile);
+        assertThat(bytes).isEqualTo(TEST_CONTENT.getBytes(StandardCharsets.UTF_8));
     }
 
     @Test
     public void downloadFileWritesTheFileToDisk() throws Exception {
-        File sourceDirectory = temporaryFolder.newFolder("source");
-        File targetDirectory = temporaryFolder.newFolder("target");
-        File expectedJarFile = new File(sourceDirectory, "archive.zip");
+        wireMockRule.stubFor(get(urlPathEqualTo(FILE_REQUEST))
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_OK)
+                        .withBody(TEST_CONTENT)));
 
-        when(httpResponseMock.getStatusLine())
-                .thenReturn(statusLine);
-        when(httpResponseMock.getStatusLine().getStatusCode())
-                .thenReturn(HttpStatus.SC_OK);
-        when(httpResponseMock.getEntity())
-                .thenReturn(httpEntityMock);
-        when(httpClientMock.execute(any(HttpGet.class)))
-                .then((Answer<CloseableHttpResponse>) httpGetMock -> {
-                    Files.write(expectedJarFile.toPath(), "dummy content".getBytes(StandardCharsets.UTF_8));
-                    return httpResponseMock;
-                });
-        when(httpEntityMock.getContent())
-                .then((Answer<InputStream>) result -> new FileInputStream(expectedJarFile));
+        Path targetDirectory = temporaryFolder.newFolder("target").toPath();
 
-        File resultFile = httpHelper.downloadFile("https://example.com/folder/archive.zip", targetDirectory.toPath());
+        Path resultFile = httpHelper.downloadFile(wireMockRule.url(FILE_REQUEST), targetDirectory).toPath();
 
-        assertThat(resultFile).hasSameContentAs(expectedJarFile);
+        checkDownloadedFile(targetDirectory, resultFile);
+    }
+
+    @Test
+    public void downloadFileNameCanBeOverwritten() throws IOException {
+        final String downloadUri = "/foo/bar.txt";
+        wireMockRule.stubFor(get(urlPathEqualTo(downloadUri))
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_OK)
+                        .withBody(TEST_CONTENT)));
+
+        Path targetDirectory = temporaryFolder.newFolder("target").toPath();
+
+        Path resultFile =
+                httpHelper.downloadFile(wireMockRule.url(downloadUri), targetDirectory, FILE_NAME).toPath();
+
+        checkDownloadedFile(targetDirectory, resultFile);
     }
 
     @Test(expected = IOException.class)
     public void downloadFileThrowsExceptionOn404StatusCode() throws Exception {
+        wireMockRule.stubFor(get(anyUrl())
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_ERR_NOT_FOUND)));
         Path targetDirectory = temporaryFolder.newFolder("target").toPath();
 
-        when(httpResponseMock.getStatusLine())
-                .thenReturn(statusLine);
-        when(httpResponseMock.getStatusLine().getStatusCode())
-                .thenReturn(HttpStatus.SC_NOT_FOUND);
-        when(httpClientMock.execute(any(HttpGet.class)))
-                .thenReturn(httpResponseMock);
-
-        httpHelper.downloadFile("https://example.com/archive.zip", targetDirectory);
-
-        verify(httpResponseMock, never()).getEntity();
+        httpHelper.downloadFile(wireMockRule.url("/test"), targetDirectory);
     }
 }

@@ -11,30 +11,30 @@
  */
 package org.eclipse.sw360.antenna.util;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
+import org.eclipse.sw360.antenna.http.HttpClient;
+import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 public class HttpHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpHelper.class);
-    private CloseableHttpClient httpClient;
 
-    public HttpHelper(ProxySettings proxySettings) {
-        httpClient = getConfiguredHttpClient(proxySettings);
+    private final HttpClient httpClient;
+
+    /**
+     * Creates a new instance of {@code HttpHelper} that uses the given client
+     * for HTTP requests.
+     *
+     * @param httpClient the {@code HttpClient} to be used
+     */
+    public HttpHelper(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     public File downloadFile(String url, Path targetDirectory) throws IOException {
@@ -43,49 +43,14 @@ public class HttpHelper {
     }
 
     public File downloadFile(String url, Path targetDirectory, String filename) throws IOException {
+        LOGGER.debug("Downloading from URL {} to file {} in {}.", url, filename, targetDirectory);
         Path targetFile = targetDirectory.resolve(filename);
 
-        try (CloseableHttpResponse response = getFromUrl(url)) {
-            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                throw new IOException("File not found on URL=[" + url + "]");
-            } else if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                throw new IOException("Reason: " + response.getStatusLine().getReasonPhrase());
-            }
-
-            HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                try (InputStream is = entity.getContent()) {
+        return HttpUtils.waitFor(httpClient.execute(HttpUtils.get(url),
+                HttpUtils.checkResponse(response -> {
                     Files.createDirectories(targetDirectory);
-                    Files.copy(is, targetFile, StandardCopyOption.REPLACE_EXISTING);
-                }
-            }
-        }
-
-        if (!Files.exists(targetFile)) {
-            throw new IOException("File " + targetFile.toAbsolutePath() + "does not exist after downloading.");
-        }
-        return targetFile.toFile();
-    }
-
-    private CloseableHttpClient getConfiguredHttpClient(ProxySettings proxySettings) {
-        if (proxySettings.isProxyUse()) {
-            LOGGER.debug("Using proxy on host {} and port {}", proxySettings.getProxyHost(), proxySettings.getProxyPort());
-            return HttpClients.custom()
-                    .useSystemProperties()
-                    .setProxy(new HttpHost(proxySettings.getProxyHost(), proxySettings.getProxyPort()))
-                    .build();
-        } else {
-            return HttpClients.createDefault();
-        }
-    }
-
-    private CloseableHttpResponse getFromUrl(String url) throws IOException {
-        try {
-            HttpGet getRequest = new HttpGet(url);
-            LOGGER.debug("Downloading {}", url);
-            return httpClient.execute(getRequest);
-        } catch (IOException e) {
-            throw new IOException("Error while downloading " + url + ": " + e.getMessage());
-        }
+                    Files.copy(response.bodyStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
+                    return targetFile.toFile();
+                })));
     }
 }

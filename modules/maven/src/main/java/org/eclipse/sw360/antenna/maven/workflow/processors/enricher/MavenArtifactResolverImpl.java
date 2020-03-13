@@ -16,6 +16,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
+import org.eclipse.sw360.antenna.http.HttpClient;
 import org.eclipse.sw360.antenna.maven.ArtifactRequesterFactory;
 import org.eclipse.sw360.antenna.maven.ClassifierInformation;
 import org.eclipse.sw360.antenna.maven.IArtifactRequester;
@@ -25,7 +26,6 @@ import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactJar;
 import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactSourceJar;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,14 +48,14 @@ public class MavenArtifactResolverImpl {
     private final List<ArtifactSelector> sourceResolvingBlacklist;
     private final String preferredSourceQualifier;
     private final URL sourcesRepositoryUrl;
-    private final ProxySettings proxySettings;
+    private final HttpClient httpClient;
     private final Optional<RepositorySystem> optionalRepositorySystem;
     private final Optional<MavenProject> optionalMavenProject;
     private final Optional<LegacySupport> optionalLegacySupport;
     private final boolean isMavenInstalled;
     private final File basedir;
 
-    public MavenArtifactResolverImpl(ProxySettings proxySettings,
+    public MavenArtifactResolverImpl(HttpClient httpClient,
                                      Optional<RepositorySystem> optionalRepositorySystem,
                                      Optional<MavenProject> optionalMavenProject,
                                      Optional<LegacySupport> optionalLegacySupport,
@@ -71,7 +71,7 @@ public class MavenArtifactResolverImpl {
         this.sourcesRepositoryUrl = sourcesRepositoryUrl;
         this.preferredSourceQualifier = preferredSourceQualifier;
         this.processingReporter = processingReporter;
-        this.proxySettings = proxySettings;
+        this.httpClient = httpClient;
         this.optionalRepositorySystem = optionalRepositorySystem;
         this.optionalMavenProject = optionalMavenProject;
         this.optionalLegacySupport = optionalLegacySupport;
@@ -150,10 +150,10 @@ public class MavenArtifactResolverImpl {
         return sourcesRepositoryUrl != null
                 ? ArtifactRequesterFactory.getArtifactRequester(
                 optionalRepositorySystem, optionalMavenProject, optionalLegacySupport,
-                basedir, proxySettings, isMavenInstalled, sourcesRepositoryUrl)
+                basedir, httpClient, isMavenInstalled, sourcesRepositoryUrl)
                 : ArtifactRequesterFactory.getArtifactRequester(
                 optionalRepositorySystem, optionalMavenProject, optionalLegacySupport,
-                basedir, proxySettings, isMavenInstalled);
+                basedir, httpClient, isMavenInstalled);
     }
 
 

@@ -10,11 +10,8 @@
  */
 package org.eclipse.sw360.antenna.sw360.workflow;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.http.HttpClient;
-import org.eclipse.sw360.antenna.http.HttpClientFactory;
-import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
-import org.eclipse.sw360.antenna.http.config.ProxySettings;
-import org.eclipse.sw360.antenna.http.HttpClientFactoryImpl;
 import org.eclipse.sw360.antenna.sw360.client.SW360ConnectionFactory;
 import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
@@ -25,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -38,8 +34,6 @@ public class SW360ConnectionConfigurationFactoryTest {
     private static final String PASSWORD = "tiger";
     private static final String CLIENT_ID = "oauth_client";
     private static final String CLIENT_SECRET = "oauth_client_secret";
-    private static final String PROXY_HOST = "my.proxy.org";
-    private static final int PROXY_PORT = 8888;
 
     /**
      * Returns an object allowing access to string-based test configuration
@@ -59,63 +53,26 @@ public class SW360ConnectionConfigurationFactoryTest {
         return props::get;
     }
 
-    /**
-     * Returns an object allowing access to boolean test configuration
-     * properties. The only boolean property that is supported is the flag
-     * whether a proxy should be used.
-     *
-     * @param useProxy the proxy flag
-     * @return the accessor for boolean properties
-     */
-    private static SW360ConnectionConfigurationFactory.Getter<Boolean> booleanConfigGetter(boolean useProxy) {
-        return key -> {
-            if (!SW360ConnectionConfigurationFactory.PROXY_USE.equals(key)) {
-                fail("Unsupported boolean property: " + key);
-            }
-            return useProxy;
-        };
-    }
-
-    @Test
-    public void testDefaultHttClientFactoryIsCreated() {
-        SW360ConnectionConfigurationFactory factory = new SW360ConnectionConfigurationFactory();
-
-        assertThat(factory.getHttpClientFactory()).isInstanceOf(HttpClientFactoryImpl.class);
-    }
-
     @Test
     public void testDefaultConnectionFactoryIsCreated() {
-        SW360ConnectionConfigurationFactory factory = new SW360ConnectionConfigurationFactory();
+        SW360ConnectionConfigurationFactory factory =
+                new SW360ConnectionConfigurationFactory();
 
         assertThat(factory.getConnectionFactory()).isNotNull();
     }
 
-    /**
-     * Tests the creation of a client connection using the parameters
-     * specified.
-     *
-     * @param useProxy         flag whether a proxy should be used
-     * @param expProxySettings the expected proxy settings
-     */
-    private static void checkConnectionCreation(boolean useProxy, ProxySettings expProxySettings) {
-        HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
+    @Test
+    public void testConnectionCreation() {
         HttpClient httpClient = mock(HttpClient.class);
+        ObjectMapper mapper = mock(ObjectMapper.class);
         SW360ConnectionFactory connectionFactory = mock(SW360ConnectionFactory.class);
         SW360Connection connection = mock(SW360Connection.class);
-        when(httpClientFactory.newHttpClient(any())).thenReturn(httpClient);
         when(connectionFactory.newConnection(any())).thenReturn(connection);
-        SW360ConnectionConfigurationFactory factory =
-                new SW360ConnectionConfigurationFactory(httpClientFactory, connectionFactory);
+        SW360ConnectionConfigurationFactory factory = new SW360ConnectionConfigurationFactory(connectionFactory);
 
         SW360Connection actualConnection =
-                factory.createConnection(stringConfigGetter(), booleanConfigGetter(useProxy),
-                        PROXY_HOST, PROXY_PORT);
+                factory.createConnection(stringConfigGetter(), httpClient, mapper);
         assertThat(actualConnection).isEqualTo(connection);
-
-        ArgumentCaptor<HttpClientConfig> captHttConfig = ArgumentCaptor.forClass(HttpClientConfig.class);
-        verify(httpClientFactory).newHttpClient(captHttConfig.capture());
-        HttpClientConfig httpClientConfig = captHttConfig.getValue();
-        assertThat(httpClientConfig.proxySettings()).isEqualTo(expProxySettings);
 
         ArgumentCaptor<SW360ClientConfig> captSW360Config = ArgumentCaptor.forClass(SW360ClientConfig.class);
         verify(connectionFactory).newConnection(captSW360Config.capture());
@@ -127,16 +84,6 @@ public class SW360ConnectionConfigurationFactoryTest {
         assertThat(sw360ClientConfig.getClientId()).isEqualTo(CLIENT_ID);
         assertThat(sw360ClientConfig.getClientPassword()).isEqualTo(CLIENT_SECRET);
         assertThat(sw360ClientConfig.getHttpClient()).isEqualTo(httpClient);
-        assertThat(sw360ClientConfig.getObjectMapper()).isEqualTo(httpClientConfig.getOrCreateObjectMapper());
-    }
-
-    @Test
-    public void testCreateConnectionWithoutProxy() {
-        checkConnectionCreation(false, ProxySettings.noProxy());
-    }
-
-    @Test
-    public void testCreateConnectionWithProxy() {
-        checkConnectionCreation(true, ProxySettings.useProxy(PROXY_HOST, PROXY_PORT));
+        assertThat(sw360ClientConfig.getObjectMapper()).isEqualTo(mapper);
     }
 }
