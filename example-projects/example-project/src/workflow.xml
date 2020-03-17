@@ -84,6 +84,10 @@
                 <entry key="attribution.doc.copyrightHolder" value="Copyright (c) 2013-2019 Bosch Software Innovations GmbH"/>
             </configuration>
         </step>
+        <step>
+            <name>CycloneDX Bill-of-Material Generator</name>
+            <classHint>com.eclipse.sw360.antenna.cyclonedx.CycloneDXGenerator</classHint>
+        </step>
     </generators>
     <outputHandlers>
         <step>
