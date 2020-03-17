@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
@@ -36,8 +37,8 @@ public class AntennaComplianceToolTest {
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     @Test
-    public void testMainInitWithExporter() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
-        Path propertiesFile = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).getFile());
+    public void testMainInitWithExporter() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, URISyntaxException {
+        Path propertiesFile = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).toURI());
 
         Object[] obj = {new SW360Exporter(), propertiesFile};
         Class<?>[] params = new Class[obj.length];
@@ -63,8 +64,8 @@ public class AntennaComplianceToolTest {
     }
 
     @Test
-    public void testMainInitWithUpdater() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
-        Path propertiesFile = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).getFile());
+    public void testMainInitWithUpdater() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, URISyntaxException {
+        Path propertiesFile = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).toURI());
 
         Object[] obj = {new SW360Updater(), propertiesFile};
         Class<?>[] params = new Class[obj.length];

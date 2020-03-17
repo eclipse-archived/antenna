@@ -115,8 +115,8 @@ public class CsvAnalyzerTest extends AntennaTestWithMockedContext {
 
          assertThat(artifactSourceFile.isPresent()).isTrue();
          assertThat(artifactSourceFile.get().get().toFile()).exists();
-         assertThat(artifactSourceFile.get().get().toAbsolutePath().toString()).
-                 isEqualTo(this.getClass().getClassLoader().getResource("CsvAnalyzerTest/test_source.txt").getPath());
+         assertThat(artifactSourceFile.get().get().toAbsolutePath()).
+                 isEqualTo(Paths.get(this.getClass().getClassLoader().getResource("CsvAnalyzerTest/test_source.txt").toURI()));
      }
 
      @Test

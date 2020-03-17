@@ -32,6 +32,7 @@ import org.mockito.Mock;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -115,7 +116,7 @@ public class SW360ExporterTest {
     SW360Connection connectionMock = mock(SW360Connection.class);
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, URISyntaxException {
         SW360SparseComponent sparseComponent = SW360TestUtils.mkSW360SparseComponent("testComponent");
         when(componentClientAdapterMock.getComponents())
                 .thenReturn(Collections.singletonList(sparseComponent));
@@ -135,7 +136,7 @@ public class SW360ExporterTest {
 
         when(releaseClientAdapterMock.getReleaseById(any()))
                 .thenReturn(Optional.of(release), Optional.of(release2));
-        Path path = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("test-source.txt")).getPath());
+        Path path = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("test-source.txt")).toURI());
         when(releaseClientAdapterMock.downloadAttachment(any(), any(), any()))
                 .thenReturn(Optional.of(path));
 
