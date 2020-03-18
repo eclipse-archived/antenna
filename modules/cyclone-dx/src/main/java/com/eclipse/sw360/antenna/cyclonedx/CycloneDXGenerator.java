@@ -30,10 +30,11 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Creates a CycloneDX Bill-of-Material file with information from Antenna.
@@ -67,7 +68,7 @@ public class CycloneDXGenerator extends AbstractGenerator {
             Document document = gen.generate();
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             DOMSource source = new DOMSource(document);
-            try (FileWriter writer = new FileWriter(targetFile)) {
+            try (Writer writer = new OutputStreamWriter(new FileOutputStream(targetFile), UTF_8)) {
                 StreamResult result = new StreamResult(writer);
                 Transformer transformer = transformerFactory.newTransformer();
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
