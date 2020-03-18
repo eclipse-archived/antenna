@@ -218,9 +218,9 @@ public class AntennaCLIFrontendDebugLogTest {
 
     @Test
     public void testNonExistingConfigFileIsHandled() throws UnsupportedEncodingException {
-        String nonExistingPath = "/non/existing/config.xml";
-        String output = runAntennaAndExpectFailure(nonExistingPath);
+        Path nonExistingPath = Paths.get("non", "existing", "config.xml");
+        String output = runAntennaAndExpectFailure(nonExistingPath.toString());
 
-        assertThat(output).contains(Arrays.asList("Cannot find ", nonExistingPath));
+        assertThat(output).contains(Arrays.asList("Cannot find ", nonExistingPath.toString()));
     }
 }
