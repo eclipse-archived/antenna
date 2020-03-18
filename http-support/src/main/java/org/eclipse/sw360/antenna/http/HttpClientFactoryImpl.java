@@ -41,7 +41,20 @@ public class HttpClientFactoryImpl implements HttpClientFactory {
             Proxy proxy = createProxy(config.proxySettings());
             builder.proxy(proxy);
         }
+        if (unverifiedSSLCertificate()) {
+            builder.hostnameVerifier((s, sslSession) -> true);
+        }
         return builder.build();
+    }
+
+    /**
+     * Using the Property "sw360.client.access.unverified", the connection to
+     * SW360 can be done without verification of the ssl certificate
+     *
+     * @return True, if the client access to SW360 should be done with a self-certified call
+     */
+    private static boolean unverifiedSSLCertificate() {
+        return "true".equalsIgnoreCase(System.getProperty("sw360.client.access.unverified", "false"));
     }
 
     /**
