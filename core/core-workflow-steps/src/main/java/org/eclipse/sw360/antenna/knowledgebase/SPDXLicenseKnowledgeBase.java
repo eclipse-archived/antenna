@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.knowledgebase.spdx;
+package org.eclipse.sw360.antenna.knowledgebase;
 
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
@@ -27,6 +27,16 @@ public class SPDXLicenseKnowledgeBase implements ILicenseManagementKnowledgeBase
 
     public SPDXLicenseKnowledgeBase() {
         listedLicenses = ListedLicenses.getListedLicenses();
+    }
+
+    @Override
+    public int getPriority() {
+        return 0;
+    }
+
+    @Override
+    public boolean isRunnable() {
+        return listedLicenses.getSpdxListedLicenseIds().length != 0;
     }
 
     private Optional<SpdxListedLicense> getSpdxLicense(String licenseId) {

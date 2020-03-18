@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.knowledgebase.csv;
+package org.eclipse.sw360.antenna.knowledgebase;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.Consumer;
@@ -62,6 +61,11 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
     private IProcessingReporter reporter;
     private Charset encoding;
 
+    @Override
+    public int getPriority() {
+        return 100;
+    }
+
     /**
      * This CSVBasedLicenseKnowledgeBase delivers maps for the mapping of:
      * alias to id, id to license and id to text.
@@ -76,10 +80,14 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
         initMaps();
     }
 
+    @Override
+    public boolean isRunnable() {
+        return CSVBasedLicenseKnowledgeBase.class.getClassLoader().getResource(LICENSES_CSV) != null;
+    }
+
     private void checkThatCSVIsOnClasspath() {
-        final URL resource = CSVBasedLicenseKnowledgeBase.class.getClassLoader().getResource(LICENSES_CSV);
-        if(resource == null) {
-            throw new ExecutionException("The required file " + LICENSES_CSV + " was not found on the classpath");
+        if(!isRunnable()) {
+            LOGGER.debug("The required file {} was not found on the classpath", LICENSES_CSV);
         }
     }
 

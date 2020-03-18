@@ -12,27 +12,32 @@
 package org.eclipse.sw360.antenna.workflow.processors;
 
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
+import org.eclipse.sw360.antenna.knowledgebase.LicenseKnowledgeBaseFactory;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ConfiguredLicenseInformation;
 import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
+import org.eclipse.sw360.antenna.testing.AntennaTestWithMockedContext;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.internal.verification.VerificationModeFactory.atLeast;
 
-public class LicenseKnowledgeBaseResolverTest {
+public class LicenseKnowledgeBaseResolverTest extends AntennaTestWithMockedContext {
 
     @Mock
     ILicenseManagementKnowledgeBase knowledgeBaseMock = mock(ILicenseManagementKnowledgeBase.class);
+    @Mock
+    LicenseKnowledgeBaseFactory supplierMock = mock(LicenseKnowledgeBaseFactory.class);
 
-    LicenseKnowledgeBaseResolver knowledgeBaseResolver = new LicenseKnowledgeBaseResolver(knowledgeBaseMock);
+    LicenseKnowledgeBaseResolver knowledgeBaseResolver;
 
     // License 1
     private static final String LICENSE_ID = "license id";
@@ -67,6 +72,46 @@ public class LicenseKnowledgeBaseResolverTest {
                 .thenReturn(KB_LICENSE_THREAT_GROUP);
         when(knowledgeBaseMock.getClassificationById(KB_LICENSE_ID))
                 .thenReturn(KB_LICENSE_CLASSIFICATION);
+
+        when(supplierMock.get())
+                .thenReturn(Arrays.asList(knowledgeBaseMock));
+
+        knowledgeBaseResolver = new LicenseKnowledgeBaseResolver(knowledgeBaseMock, supplierMock);
+    }
+
+    @Test
+    public void testProcessorWithConfiguredManager() {
+        ILicenseManagementKnowledgeBase o = mockLicenseManagementKnowledgeBase("SPDX", 0, true);
+        when(supplierMock.get()).thenReturn(Arrays.asList(o));
+
+        LicenseKnowledgeBaseResolver resolver = new LicenseKnowledgeBaseResolver(null, supplierMock);
+        resolver.setAntennaContext(antennaContextMock);
+
+        Map<String, String> config = new HashMap<>();
+        config.put("chosen.license.manager", "SPDX");
+        resolver.configure(config);
+
+        assertThat(resolver.getKnowledgeBase().getId()).isEqualTo("SPDX");
+        assertThat(resolver.getKnowledgeBase().getPriority()).isEqualTo(0);
+    }
+
+    @Test
+    public void testProcessorWithMultipleManagers() {
+        ILicenseManagementKnowledgeBase o1 = mockLicenseManagementKnowledgeBase("SPDX", 0, true);
+        ILicenseManagementKnowledgeBase o2 = mockLicenseManagementKnowledgeBase("CSV", 200, true);
+        ILicenseManagementKnowledgeBase o3 = mockLicenseManagementKnowledgeBase("TXT", 100, true);
+        ILicenseManagementKnowledgeBase o4 = mockLicenseManagementKnowledgeBase("JSON", 500, true);
+        when(supplierMock.get()).thenReturn(Arrays.asList(o1, o2, o3, o4));
+
+        LicenseKnowledgeBaseResolver resolver = new LicenseKnowledgeBaseResolver(null, supplierMock);
+        resolver.setAntennaContext(antennaContextMock);
+
+        Map<String, String> config = new HashMap<>();
+        config.put("chosen.license.manager", "NOT_AVAILABLE");
+        resolver.configure(config);
+
+        assertThat(resolver.getKnowledgeBase().getId()).isEqualTo("JSON");
+        assertThat(resolver.getKnowledgeBase().getPriority()).isEqualTo(500);
     }
 
     @Test
@@ -141,5 +186,25 @@ public class LicenseKnowledgeBaseResolverTest {
                     assertThat(l.getThreatGroup()).isNotPresent();
                     assertThat(l.getClassification()).isNotPresent();
         });
+    }
+
+    @Override
+    @After
+    public void assertThatOnlyExpectedMethodsAreCalled() {
+        verify(antennaContextMock, atLeast(0)).getToolConfiguration();
+        verify(antennaContextMock, atLeast(0)).getProcessingReporter();
+        verify(toolConfigMock, atLeast(0)).getEncoding();
+
+        // assert that there were no unexpected interactions with the mocked objects
+        verifyNoMoreInteractions(antennaContextMock);
+        verifyNoMoreInteractions(toolConfigMock);
+    }
+
+    private ILicenseManagementKnowledgeBase mockLicenseManagementKnowledgeBase(String id, int priority, boolean runnable) {
+        ILicenseManagementKnowledgeBase o = mock(ILicenseManagementKnowledgeBase.class);
+        when(o.getId()).thenReturn(id);
+        when(o.getPriority()).thenReturn(priority);
+        when(o.isRunnable()).thenReturn(runnable);
+        return o;
     }
 }

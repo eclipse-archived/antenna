@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2013,2016-2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -11,7 +12,6 @@
 package org.eclipse.sw360.antenna.knowledgebase;
 
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
-import org.eclipse.sw360.antenna.knowledgebase.csv.CSVBasedLicenseKnowledgeBase;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -20,19 +20,22 @@ import java.nio.charset.StandardCharsets;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CSVBasedLicenseKnowledgeBaseTest {
-
     IProcessingReporter iProcessingReporter = Mockito.mock(IProcessingReporter.class);
 
     @Test
     public void test() {
         CSVBasedLicenseKnowledgeBase knowledgeBase = new CSVBasedLicenseKnowledgeBase();
         knowledgeBase.init(iProcessingReporter, StandardCharsets.UTF_8);
+        assertThat(knowledgeBase.getPriority()).isEqualTo(100);
+
         String licenseNameForId = knowledgeBase.getLicenseNameForId("AFL-1.1");
         assertThat(licenseNameForId).isEqualTo("Academic Free License v1.1");
         assertThat(knowledgeBase.getLicenseIdForAlias("AFL1")).isEqualTo("AFL-1.1");
         assertThat(knowledgeBase.getLicenseIdForAlias("AFL-1.1")).isNull();
+        assertThat(knowledgeBase.getTextForId("AFL-1.1")).isNotEmpty();
+        assertThat(knowledgeBase.getTextForId("AFL-1.1"))
+                .isEqualTo("Should be license text of AFL-1.1.");
+        assertThat(knowledgeBase.getThreatGroupForId("AFL-1.1")).isEmpty();
+        assertThat(knowledgeBase.getClassificationById("AFL-1.1")).isEmpty();
     }
-
-
-
 }

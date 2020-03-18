@@ -1,0 +1,1 @@
+Should be license text of AFL-1.1.
