@@ -30,7 +30,6 @@
         <module>cli</module>
         <module>maven-plugin</module>
         <module>gradle-plugin</module>
-        <module>spdx-license-knowledge-base</module>
     </modules>
 
 </project>

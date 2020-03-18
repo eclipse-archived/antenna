@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.sw360.antenna.knowledgebase.spdx;
+package org.eclipse.sw360.antenna.knowledgebase;
 
 import org.eclipse.sw360.antenna.api.ILicenseManagementKnowledgeBase;
 import org.eclipse.sw360.antenna.api.IProcessingReporter;
