@@ -97,5 +97,9 @@
             <name>Source Zip Writer</name>
             <classHint>org.eclipse.sw360.antenna.workflow.generators.SourceZipWriter</classHint>
         </step>
+        <step>
+            <name>CycloneDX Bill-of-Material Generator</name>
+            <classHint>com.eclipse.sw360.antenna.cyclonedx.CycloneDXGenerator</classHint>
+        </step>
     </generators>
 </workflow>
