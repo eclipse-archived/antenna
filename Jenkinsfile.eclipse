@@ -49,18 +49,10 @@ spec:
         MAVEN_OPTS = '-Xms5G -Xmx5G'
     }
     parameters {
-        choice(
-            choices: ['build', 'build_and_push'],
-            description: '',
-            name: 'REQUESTED_ACTION')
-        choice(
-            choices: ['eclipse-jarsigner:sign', ''],
-            description: '',
-            name: 'SIGNING_COMMAND')
         booleanParam(
-            name: 'RUN_TESTS',
-            defaultValue: true,
-            description: '')
+            name: 'PUSH_TO_REPO',
+            defaultValue: false,
+            description: 'Push to artifact repository')
     }
     stages {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,51 +86,12 @@ spec:
                     sh """
                       mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                           --batch-mode \
-                          install -DskipTests ${params.SIGNING_COMMAND}
-                      mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
-                          --batch-mode \
-                          install -DskipTests ${params.SIGNING_COMMAND} deploy \
-                          -pl '!core/model-testing,!core/frontend-stubs-testing' \
+                          install -DskipTests eclipse-jarsigner:sign deploy \
+                          -pl '!core/model-testing,!core/frontend-stubs-testing' -X \
                           -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
                     """
                 }
                 sh 'ls repository/org/eclipse/sw360/antenna/'
-            }
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // run tests and try to execute antenna
-        stage('test') {
-            when {
-                environment name: 'RUN_TESTS', value: 'true'
-            }
-            steps {
-                container('maven') {
-                    // run maven tests
-                    sh '''
-                      mvn -Dmaven.repo.local=$(readlink -f localRepository) \
-                        --batch-mode \
-                        test
-                    '''
-                    // test as maven plugin
-                    sh 'MAVEN_OPTS="-Dmaven.repo.local=$(readlink -f ./repository)" .ci-scripts/test-ExampleTestProject-with-maven.sh'
-                    // run SW360 integration tests, if corresponding sqldump is present
-                    sh '''
-                      if [[ -f modules/sw360/src/test/resources/postgres/sw360pgdb.sql ]]; then
-                          .ci-scripts/test-sw360-integration-test.sh
-                      fi
-                    '''
-                    // test as CLI tool
-                    sh '.ci-scripts/test-ExampleTestProject-with-CLI.sh'
-                    // test as gradle plugin
-                    sh 'M2_REPOSITORY="$(readlink -f ./repository)" .ci-scripts/test-ExampleTestProject-with-gradle.sh'
-                    // test the antenna site
-                    sh 'MAVEN_OPTS="-Dmaven.repo.local=$(readlink -f ./repository)" .ci-scripts/test-antenna-documentation-site-tests.sh'
-                    // run static code analysis
-                    sh '''
-                      mvn install -DskipTests pmd:pmd checkstyle:checkstyle-aggregate spotbugs:check -Dmaven.repo.local=$(readlink -f localRepository)
-                    '''
-                }
             }
         }
 
@@ -150,17 +103,10 @@ spec:
         stage ('push repository to download.eclipse.org to antenna/snapshots') {
             when {
                 expression {
-                    wantsToPush = params.REQUESTED_ACTION == 'build_and_push'
-                    return wantsToPush && IS_SNAPSHOT_VERSION
+                    return params.PUSH_TO_REPO && IS_SNAPSHOT_VERSION
                 }
             }
             steps {
-                sh """
-                  if [[ "${params.SIGNING_COMMAND}x" == "x" ]]; then
-                    echo "pushing is only allowed if signing was done"
-                    exit 1
-                  fi
-                """
                 container('maven') {
                     sh 'find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
                 }
@@ -183,17 +129,10 @@ spec:
         stage ('push repository to download.eclipse.org to antenna/releases') {
             when {
                 expression {
-                    wantsToPush = params.REQUESTED_ACTION == 'build_and_push'
-                    return wantsToPush && ! IS_SNAPSHOT_VERSION
+                    return params.PUSH_TO_REPO && ! IS_SNAPSHOT_VERSION
                 }
             }
             steps {
-                sh """
-                  if [[ "${params.SIGNING_COMMAND}x" == "x" ]]; then
-                    echo "pushing is only allowed if signing was done"
-                    exit 1
-                  fi
-                """
                 container('maven') {
                     sh 'find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
                 }
