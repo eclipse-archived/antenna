@@ -87,10 +87,11 @@ spec:
                       mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                           --batch-mode \
                           install -DskipTests eclipse-jarsigner:sign
+                          -pl '!assembly/compliance-tool'
                       mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                           --batch-mode \
                           install -DskipTests eclipse-jarsigner:sign deploy \
-                          -pl '!core/model-testing,!core/frontend-stubs-testing' \
+                          -pl '!core/model-testing,!core/frontend-stubs-testing,!assembly/compliance-tool' \
                           -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
                     """
                 }
