@@ -86,7 +86,7 @@ spec:
                     sh """
                       mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                           --batch-mode \
-                          install -DskipTests eclipse-jarsigner:sign
+                          install -DskipTests eclipse-jarsigner:sign \
                           -pl '!assembly/compliance-tool'
                       mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                           --batch-mode \
