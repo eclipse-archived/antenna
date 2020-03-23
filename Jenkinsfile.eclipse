@@ -86,8 +86,11 @@ spec:
                     sh """
                       mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                           --batch-mode \
-                          install -DskipTests eclipse-jarsigner:sign deploy \
-                          -pl '!core/model-testing,!core/frontend-stubs-testing' -X \
+                          install -DskipTests ${params.SIGNING_COMMAND}
+                      mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
+                          --batch-mode \
+                          install -DskipTests ${params.SIGNING_COMMAND} deploy \
+                          -pl '!core/model-testing,!core/frontend-stubs-testing' \
                           -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
                     """
                 }
