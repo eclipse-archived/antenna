@@ -60,17 +60,19 @@ pipeline {
                 sh 'rm -rf repository'
                 sh 'mkdir -p repository'
                 // build antenna and also deploy it to an output repository
-                sh """
-                  mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
-                      --batch-mode \
-                      install -DskipTests -DskipITs eclipse-jarsigner:sign \
-                      -pl '!assembly/compliance-tool,!assembly/cli'
+                sh 'java -version'
+                sh 'mvn --version'
+//                sh """
+//                    mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
+//                        --batch-mode \
+//                        install -DskipTests -DskipITs eclipse-jarsigner:sign \
+//                        -pl '!assembly/compliance-tool,!assembly/cli'
 //                  mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
 //                      --batch-mode \
 //                      install -DskipTests -DskipITs eclipse-jarsigner:sign deploy \
 //                      -pl '!core/model-testing,!core/frontend-stubs-testing,!assembly/compliance-tool,!assembly/cli' \
 //                      -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
-                """
+//                """
                 sh 'ls repository/org/eclipse/sw360/antenna/'
             }
         }
