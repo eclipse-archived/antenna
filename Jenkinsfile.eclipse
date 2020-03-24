@@ -72,7 +72,6 @@ pipeline {
                         install -DskipTests -DskipITs eclipse-jarsigner:sign deploy \
                         -pl '!core/model-testing,!core/frontend-stubs-testing' \
                         -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
-					ls repository/org/eclipse/sw360/antenna/
                 """
             }
         }
@@ -89,9 +88,7 @@ pipeline {
                 }
             }
             steps {
-                container('maven') {
-                    sh 'find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
-                }
+                sh 'find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
                 sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
                     sh '''
                       ssh -o StrictHostKeyChecking=no \
@@ -115,9 +112,7 @@ pipeline {
                 }
             }
             steps {
-                container('maven') {
-                    sh 'find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
-                }
+                sh 'find repository -iname \'*.jar\' -print -exec jarsigner -verify {} \\;'
                 sshagent ( ['projects-storage.eclipse.org-bot-ssh']) {
                     sh '''
                       ssh -o StrictHostKeyChecking=no \
