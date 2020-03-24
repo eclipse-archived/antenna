@@ -69,8 +69,8 @@ pipeline {
                         --batch-mode \
                         install -DskipTests -DskipITs eclipse-jarsigner:sign deploy \
                         -pl '!core/model-testing,!core/frontend-stubs-testing,!assembly/compliance-tool,!assembly/cli' \
-                        -DaltDeploymentRepository=localRepository::default::file:\$(readlink -f ./repository)
-					ls localRepository/org/eclipse/sw360/antenna/
+                        -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
+					ls repository/org/eclipse/sw360/antenna/
                 """
             }
         }
@@ -80,7 +80,7 @@ pipeline {
         // depending on the version, the result gets pushed to
         //   - https://download.eclipse.org/antenna/snapshots (and all old snapshot builds will be deleted) or
         //   - https://download.eclipse.org/antenna/releases
-/*        stage ('push repository to download.eclipse.org to antenna/snapshots') {
+        stage ('push repository to download.eclipse.org to antenna/snapshots') {
             when {
                 expression {
                     return params.PUSH_TO_REPO && IS_SNAPSHOT_VERSION
@@ -128,6 +128,6 @@ pipeline {
                 }
                 echo 'Release is published at https://download.eclipse.org/antenna/releases'
             }
-        }*/
+        }
     }
 }
