@@ -25,7 +25,7 @@ def IS_SNAPSHOT_VERSION
 pipeline {
     agent any
     tools {
-    	maven 'apache-maven-3.6.0'
+    	maven 'apache-maven-3.5.4'
     	jdk 'oracle-jdk8-latest'
     }
     parameters {
