@@ -65,11 +65,11 @@ pipeline {
                         --batch-mode \
                         install -DskipTests -DskipITs eclipse-jarsigner:sign \
                         -pl '!assembly/compliance-tool,!assembly/cli'
-//                  mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
-//                      --batch-mode \
-//                      install -DskipTests -DskipITs eclipse-jarsigner:sign deploy \
-//                      -pl '!core/model-testing,!core/frontend-stubs-testing,!assembly/compliance-tool,!assembly/cli' \
-//                      -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
+                    mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
+                        --batch-mode \
+                        install -DskipTests -DskipITs eclipse-jarsigner:sign deploy \
+                        -pl '!core/model-testing,!core/frontend-stubs-testing,!assembly/compliance-tool,!assembly/cli' \
+                        -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
 					ls repository/org/eclipse/sw360/antenna/
                 """
             }
