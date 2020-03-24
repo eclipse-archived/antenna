@@ -29,9 +29,13 @@ pipeline {
     }
     parameters {
         booleanParam(
-            name: 'PUSH_TO_REPO',
+            name: 'PUSH',
             defaultValue: true,
             description: 'Push to artifact repository')
+        string(
+        	name: 'VERSION',
+        	defaultValue: '1.0.0-SNAPSHOT',
+        	description: 'Version to build')
     }
     stages {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,7 +69,7 @@ pipeline {
                         install -DskipTests -DskipITs \
                         -pl '!assembly/compliance-tool'
                     mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
-                        --batch-mode \
+                        --batch-mode -X \
                         install -DskipTests -DskipITs eclipse-jarsigner:sign deploy \
                         -pl '!core/model-testing,!core/frontend-stubs-testing,!assembly/compliance-tool' \
                         -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
@@ -82,7 +86,7 @@ pipeline {
         stage ('push repository to download.eclipse.org to antenna/snapshots') {
             when {
                 expression {
-                    return params.PUSH_TO_REPO && IS_SNAPSHOT_VERSION
+                    return params.PUSH && IS_SNAPSHOT_VERSION
                 }
             }
             steps {
@@ -108,7 +112,7 @@ pipeline {
         stage ('push repository to download.eclipse.org to antenna/releases') {
             when {
                 expression {
-                    return params.PUSH_TO_REPO && ! IS_SNAPSHOT_VERSION
+                    return params.PUSH && ! IS_SNAPSHOT_VERSION
                 }
             }
             steps {
