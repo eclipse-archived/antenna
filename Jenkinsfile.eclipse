@@ -37,21 +37,21 @@ pipeline {
     stages {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // we need to know the version of our project, for that we use the maven-help-plugin
-//        stage('determine version') {
-//            steps {
-//                script {
-//                    VERSION = sh (
-//                        script: 'mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout',
-//                        returnStdout: true
-//                    ).trim()
-//                    IS_SNAPSHOT_VERSION = (VERSION ==~ /.*-SNAPSHOT/)
-//                }
-//                sh "echo \"VERSION is: ${VERSION} with IS_SNAPSHOT_VERSION=${IS_SNAPSHOT_VERSION}\""
-//
-//                sh 'rm -rf localRepository'
-//                sh 'mkdir -p localRepository'
-//            }
-//        }
+        stage('determine version') {
+            steps {
+                script {
+                    VERSION = sh (
+                        script: 'mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout',
+                        returnStdout: true
+                    ).trim()
+                    IS_SNAPSHOT_VERSION = (VERSION ==~ /.*-SNAPSHOT/)
+                }
+                sh "echo \"VERSION is: ${VERSION} with IS_SNAPSHOT_VERSION=${IS_SNAPSHOT_VERSION}\""
+
+                sh 'rm -rf localRepository'
+                sh 'mkdir -p localRepository'
+            }
+        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // build antenna
@@ -63,14 +63,14 @@ pipeline {
                     mkdir -p repository
                     mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                         --batch-mode \
-                        install -DskipTests -DskipITs eclipse-jarsigner:sign \
+                        install -DskipTests -DskipITs \
                         -pl '!assembly/compliance-tool,!assembly/cli'
                     mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                         --batch-mode \
                         install -DskipTests -DskipITs eclipse-jarsigner:sign deploy \
                         -pl '!core/model-testing,!core/frontend-stubs-testing,!assembly/compliance-tool,!assembly/cli' \
-                        -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
-					ls repository/org/eclipse/sw360/antenna/
+                        -DaltDeploymentRepository=localRepository::default::file:\$(readlink -f ./repository)
+					ls localRepository/org/eclipse/sw360/antenna/
                 """
             }
         }
