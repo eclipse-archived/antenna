@@ -611,6 +611,7 @@
                 <artifactId>eclipse-jarsigner-plugin</artifactId>
                 <configuration>
                     <resigningStrategy>OVERWRITE</resigningStrategy>
+                    <excludeInnerJars>true</excludeInnerJars>
                 </configuration>
             </plugin>
             <!-- ################################ static code analysis ################################ -->
