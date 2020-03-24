@@ -23,30 +23,10 @@ def VERSION
 def IS_SNAPSHOT_VERSION
 
 pipeline {
-    agent {
-        kubernetes {
-            label 'antenna-build-pod'
-                        yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  restartPolicy: Never
-  containers:
-  - name: maven
-    image: maven:3.6.0-jdk-8
-    command:
-    - cat
-    tty: true
-    resources:
-        requests:
-            memory: "5120Mi"
-        limits:
-            memory: "5120Mi"
-"""
-        }
-    }
-    environment {
-        MAVEN_OPTS = '-Xms5G -Xmx5G'
+    agent any
+    tools {
+    	maven 'apache-maven-3.6.3'
+    	jdk 'oracle-jdk8-latest'
     }
     parameters {
         booleanParam(
@@ -59,14 +39,12 @@ spec:
         // we need to know the version of our project, for that we use the maven-help-plugin
         stage('determine version') {
             steps {
-                container('maven') {
-                    script {
-                        VERSION = sh (
-                            script: 'mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout',
-                            returnStdout: true
-                        ).trim()
-                        IS_SNAPSHOT_VERSION = (VERSION ==~ /.*-SNAPSHOT/)
-                    }
+                script {
+                    VERSION = sh (
+                        script: 'mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout',
+                        returnStdout: true
+                    ).trim()
+                    IS_SNAPSHOT_VERSION = (VERSION ==~ /.*-SNAPSHOT/)
                 }
                 sh "echo \"VERSION is: ${VERSION} with IS_SNAPSHOT_VERSION=${IS_SNAPSHOT_VERSION}\""
 
