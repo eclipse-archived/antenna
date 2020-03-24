@@ -24,7 +24,7 @@ def IS_SNAPSHOT_VERSION
 pipeline {
     agent any
     tools {
-    	maven 'apache-maven-3.5.4'
+    	maven 'apache-maven-3.6.3'
     	jdk 'oracle-jdk8-latest'
     }
     parameters {
@@ -66,12 +66,11 @@ pipeline {
                     mkdir -p repository
                     mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                         --batch-mode \
-                        install -DskipTests -DskipITs\
-                        -pl '!assembly/compliance-tool'
+                        install -DskipTests -DskipITs
                     mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                         --batch-mode -X \
                         install -DskipTests -DskipITs eclipse-jarsigner:sign deploy \
-                        -pl '!core/model-testing,!core/frontend-stubs-testing,!assembly/compliance-tool' \
+                        -pl '!core/model-testing,!core/frontend-stubs-testing,!assembly/cli' \
                         -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
 					ls repository/org/eclipse/sw360/antenna/
                 """
