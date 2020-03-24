@@ -13,7 +13,6 @@
  /*
   * This is a extended version of the file ./Jenkinsfile, for building
   * within the Eclipse Foundation infrastructure, this includes
-  * - support for Kubernetes Agents in EF infrastructure
   * - support for signing artifacts
   * - support for pushing to Eclipse download repository
   */
@@ -31,7 +30,7 @@ pipeline {
     parameters {
         booleanParam(
             name: 'PUSH_TO_REPO',
-            defaultValue: false,
+            defaultValue: true,
             description: 'Push to artifact repository')
     }
     stages {
@@ -64,11 +63,11 @@ pipeline {
                     mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                         --batch-mode \
                         install -DskipTests -DskipITs \
-                        -pl '!assembly/compliance-tool,!assembly/cli'
+                        -pl '!assembly/compliance-tool'
                     mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                         --batch-mode \
                         install -DskipTests -DskipITs eclipse-jarsigner:sign deploy \
-                        -pl '!core/model-testing,!core/frontend-stubs-testing,!assembly/compliance-tool,!assembly/cli' \
+                        -pl '!core/model-testing,!core/frontend-stubs-testing,!assembly/compliance-tool' \
                         -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
 					ls repository/org/eclipse/sw360/antenna/
                 """
@@ -128,6 +127,21 @@ pipeline {
                 }
                 echo 'Release is published at https://download.eclipse.org/antenna/releases'
             }
+        }
+    }
+    post {
+        // send a mail on unsuccessful and fixed builds
+        unsuccessful { // means unstable || failure || aborted
+            emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER!', 
+            body: '''Check console output at $BUILD_URL to view the results.''',
+            recipientProviders: [culprits(), requestor()], 
+            to: 'lars.geyer-blaumeiser@bosch.io'
+        }
+        fixed { // back to normal
+            emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER!', 
+            body: '''Check console output at $BUILD_URL to view the results.''',
+            recipientProviders: [culprits(), requestor()], 
+            to: 'lars.geyer-blaumeiser@bosch.io'
         }
     }
 }
