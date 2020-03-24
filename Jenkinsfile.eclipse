@@ -68,9 +68,9 @@ pipeline {
                         --batch-mode \
                         install -DskipTests -DskipITs
                     mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
-                        --batch-mode -X \
+                        --batch-mode \
                         install -DskipTests -DskipITs eclipse-jarsigner:sign deploy \
-                        -pl '!core/model-testing,!core/frontend-stubs-testing,!assembly/cli' \
+                        -pl '!core/model-testing,!core/frontend-stubs-testing' \
                         -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
 					ls repository/org/eclipse/sw360/antenna/
                 """
