@@ -60,7 +60,7 @@ public class DependencyTest {
             dependency("org.gradle", "gradle-model-core"),
             dependency("org.gradle", "gradle-tooling-api"),
             dependency("org.gradle", "gradle-base-services"),
-            dependency("org.gradle", "gradle-base-services-groovy"),
+            dependency("org.gradle", "gradle-core-api"),
             dependency("org.gradle", "gradle-logging"),
             dependency("org.codehaus.groovy", "groovy"),
             dependency("org.apache.logging.log4j", "log4j-api"),

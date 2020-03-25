@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--
   ~ Copyright (c) Bosch Software Innovations GmbH 2016-2017.
   ~ Copyright (c) Bosch.IO GmbH 2020.
@@ -9,61 +10,58 @@
   ~
   ~ SPDX-License-Identifier: EPL-2.0
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.eclipse.sw360.antenna</groupId>
-        <artifactId>frontend-stubs</artifactId>
-        <version>${revision}</version>
-    </parent>
-
-    <artifactId>gradle-frontend-stub</artifactId>
-    <name>gradle-frontend-stub</name>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>cli-frontend-stub</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.gradle</groupId>
-            <artifactId>gradle-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.gradle</groupId>
-            <artifactId>gradle-model-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.gradle</groupId>
-            <artifactId>gradle-base-services</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.gradle</groupId>
-            <artifactId>gradle-base-services-groovy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.gradle</groupId>
-            <artifactId>gradle-logging</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy</artifactId>
-        </dependency>
-        <!-- ################################ compliance dependency ########################### -->
-        <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>antenna-license-provider</artifactId>
-            <version>1</version>
-            <classifier>licenseinfo</classifier>
-            <type>zip</type>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.eclipse.sw360.antenna</groupId>
+    <artifactId>frontend-stubs</artifactId>
+    <version>${revision}</version>
+  </parent>
+  <artifactId>gradle-frontend-stub</artifactId>
+  <name>gradle-frontend-stub</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.sw360.antenna</groupId>
+      <artifactId>model</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.sw360.antenna</groupId>
+      <artifactId>cli-frontend-stub</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.gradle</groupId>
+      <artifactId>gradle-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.gradle</groupId>
+      <artifactId>gradle-model-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.gradle</groupId>
+      <artifactId>gradle-base-services</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.gradle</groupId>
+      <artifactId>gradle-core-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.gradle</groupId>
+      <artifactId>gradle-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy</artifactId>
+    </dependency>
+    <!-- ################################ compliance dependency ########################### -->
+    <dependency>
+      <groupId>org.eclipse.sw360.antenna</groupId>
+      <artifactId>antenna-license-provider</artifactId>
+      <version>1</version>
+      <classifier>licenseinfo</classifier>
+      <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>
