@@ -51,7 +51,8 @@ public abstract class AbstractTestProjectWithExpectations extends AbstractTestPr
         WorkflowStep generator1 = mkWorkflowStep("HTML Report Writer", "org.eclipse.sw360.antenna.workflow.generators.HTMLReportGenerator");
         WorkflowStep generator2 = mkWorkflowStep("CSV Report Writer", "org.eclipse.sw360.antenna.workflow.generators.CSVGenerator");
         WorkflowStep generator3 = mkWorkflowStep("Source Zip Writer", "org.eclipse.sw360.antenna.workflow.generators.SourceZipWriter");
-        return Stream.of(generator1, generator2, generator3).collect(Collectors.toList());
+        WorkflowStep generator4 = mkWorkflowStep("CycloneDX Bill-of-Material Generator", "com.eclipse.sw360.antenna.cyclonedx.CycloneDXGenerator");
+        return Stream.of(generator1, generator2, generator3, generator4).collect(Collectors.toList());
     }
 
     public List<WorkflowStep> getExpectedToolConfigurationProcessors() {

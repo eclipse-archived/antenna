@@ -36,6 +36,7 @@
         <log4j2.version>2.13.0</log4j2.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ort.rev>3f85d301f7</ort.rev>
+        <cyclonedx.version>2.6.5</cyclonedx.version>
     </properties>
 
     <scm>
@@ -59,6 +60,7 @@
         <module>modules/simple-validators</module>
         <module>modules/ort</module>
         <module>modules/attribution-document</module>
+        <module>modules/cyclone-dx</module>
         <!-- assembly -->
         <module>assembly</module>
         <!-- misc -->
@@ -184,6 +186,11 @@
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>velocity</artifactId>
                 <version>1.7</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-core-java</artifactId>
+                <version>${cyclonedx.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

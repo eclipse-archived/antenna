@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright (c) Bosch Software Innovations GmbH 2017-2018.
+  ~ Copyright (c) Robert Bosch Manufacturing Solutions GmbH 2020.
   ~
   ~ All rights reserved. This program and the accompanying materials
   ~ are made available under the terms of the Eclipse Public License v2.0
@@ -83,6 +84,10 @@
                 <entry key="attribution.doc.productVersion" value="1.0.0"/>
                 <entry key="attribution.doc.copyrightHolder" value="Copyright (c) 2013-2019 Bosch Software Innovations GmbH"/>
             </configuration>
+        </step>
+        <step>
+            <name>CycloneDX Bill-of-Material Generator</name>
+            <classHint>com.eclipse.sw360.antenna.cyclonedx.CycloneDXGenerator</classHint>
         </step>
     </generators>
     <outputHandlers>

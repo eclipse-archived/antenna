@@ -1,0 +1,1372 @@
+{
+    "components": [
+        {
+            "hash": "0792f58090c4e22592ea",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-tribes",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/catalina-tribes.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "0a7d5a8f44493e9228d7",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-websocket-api",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/websocket-api.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "10bb1ff00d3311558d73",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-api",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/tomcat-api.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "226962ed151ad4930c6d",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-util",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/tomcat-util.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "2c9bf1d0e875bfdd3598",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-catalina-ha",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/catalina-ha.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "35d40cec31057ebc2044",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-i18n-ja",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/tomcat-i18n-ja.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "No-Sources",
+                        "licenseName": "No Sources"
+                    }
+                ],
+                "overriddenLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "status": "Selected",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "470505377a2fd9880941",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-jni",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/tomcat-jni.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "4aca6f10a2aff7506f0b",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-i18n-es",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/tomcat-i18n-es.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "No-Sources",
+                        "licenseName": "No Sources"
+                    }
+                ],
+                "overriddenLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "status": "Selected",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "4c6ab199da2f96a8af53",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-servlet-api",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/servlet-api.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    },
+                    {
+                        "licenseId": "CDDL-1.0",
+                        "licenseName": "CDDL-1.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    },
+                    {
+                        "licenseId": "CDDL-1.1",
+                        "licenseName": "CDDL-1.1"
+                    },
+                    {
+                        "licenseId": "GPL-2.0-with-classpath-exception",
+                        "licenseName": "GPL-2.0-with-classpath-exception"
+                    }
+                ],
+                "overriddenLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    },
+                    {
+                        "licenseId": "CDDL-1.0",
+                        "licenseName": "CDDL-1.0"
+                    }
+                ],
+                "status": "Selected",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    },
+                    {
+                        "licenseThreatGroupName": "Weak Copyleft V1",
+                        "licenseThreatGroupLevel": 2,
+                        "licenseThreatGroupCategory": "moderate"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "4c7c44d2991112418928",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-catalina-ant",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/catalina-ant.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "5fe0f1df6d97908f6c5d",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-el-api",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/el-api.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "64cdb239422a317a7a11",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-util-scan",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/tomcat-util-scan.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "65e43fa46456f94c6685",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-annotations-api",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/annotations-api.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "845553a6e0fb58fd3846",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-jasper-el",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/jasper-el.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "8b608f85dd206f13d922",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-jdbc",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/tomcat-jdbc.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "8bd54fa08870c3845ebc",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-dbcp",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/tomcat-dbcp.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "8f1b06e289a7bdc04c6c",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-i18n-ru",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/tomcat-i18n-ru.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "No-Sources",
+                        "licenseName": "No Sources"
+                    }
+                ],
+                "overriddenLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "status": "Selected",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "90dc5643f4d4404a9667",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-jaspic-api",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/jaspic-api.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "96f07daacf0a3c832c47",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "commons-daemon",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "commons-daemon",
+                    "version": "1.1.0"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/bin/commons-daemon.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    },
+                    {
+                        "licenseId": "BSD-3-Clause",
+                        "licenseName": "BSD-3-Clause"
+                    }
+                ],
+                "overriddenLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "status": "Selected",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "98b29c379f1fe130ba09",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-jsp-api",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/jsp-api.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "ade950992eb3caf6ab4f",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "ecj",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.eclipse.jdt",
+                    "version": "3.12.3"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/ecj-4.6.3.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "EPL-1.0",
+                        "licenseName": "EPL-1.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "EPL-1.0",
+                        "licenseName": "EPL-1.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Non-Verbatim V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    },
+                    {
+                        "licenseThreatGroupName": "Weak Copyleft V1",
+                        "licenseThreatGroupLevel": 2,
+                        "licenseThreatGroupCategory": "moderate"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "b3bedc52972d062dedab",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-i18n-fr",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/tomcat-i18n-fr.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "No-Sources",
+                        "licenseName": "No Sources"
+                    }
+                ],
+                "overriddenLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "status": "Selected",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "c1646abfbf29e0a1e6a7",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-coyote",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/tomcat-coyote.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "d2cb023ec9a9d10d5ccb",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-juli",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/bin/tomcat-juli.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "f14d051e9ee8009956a9",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-storeconfig",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/catalina-storeconfig.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "f541c58286000a2b2a8f",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-catalina",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/catalina.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "fb6d89ed07d832255f64",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-websocket",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/tomcat-websocket.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "fe51c28ba7805317daa9",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-jasper",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/jasper.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "113034b92bc6b5e29319",
+            "componentIdentifier": null,
+            "proprietary": false,
+            "matchState": "unknown",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/bin/bootstrap.jar"
+            ],
+            "licenseData": null,
+            "securityData": null
+        },
+        {
+            "hash": "7c58602d7fb5862eafe2",
+            "componentIdentifier": null,
+            "proprietary": false,
+            "matchState": "unknown",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/bin/tomcat-native.tar.gz"
+            ],
+            "licenseData": null,
+            "securityData": null
+        }
+    ],
+    "matchSummary": {
+        "totalComponentCount": 30,
+        "knownComponentCount": 30
+    }
+}
