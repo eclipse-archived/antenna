@@ -25,8 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -45,14 +48,14 @@ public class CycloneDXGenerator extends AbstractGenerator {
 
     @Override
     public Map<String, IAttachable> produce(Collection<Artifact> artifacts) throws ExecutionException {
-        LOG.info("Created a cyclone-dx bill-of-material for {} artifacts", artifacts.size());
+        LOG.debug("Created a cyclone-dx bill-of-material for {} artifacts", artifacts.size());
         List<Component> components = toComponents(artifacts);
         Bom bom = new Bom();
         bom.setComponents(components);
         BomGenerator gen = BomGeneratorFactory.create(CycloneDxSchema.Version.VERSION_11, bom);
         File targetFile = createTargetFile();
         doGenerate(gen, targetFile);
-        LOG.info("Bill-of-material created in {}", targetFile);
+        LOG.debug("Bill-of-material created in {}", targetFile);
         return Collections.singletonMap("cyclonedx-bom", new Attachable("xml", "cyclonedx-bom", targetFile));
     }
 
@@ -67,6 +70,8 @@ public class CycloneDXGenerator extends AbstractGenerator {
         try {
             Document document = gen.generate();
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
             DOMSource source = new DOMSource(document);
             try (Writer writer = new OutputStreamWriter(new FileOutputStream(targetFile), UTF_8)) {
                 StreamResult result = new StreamResult(writer);
@@ -75,8 +80,7 @@ public class CycloneDXGenerator extends AbstractGenerator {
                 transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
                 transformer.transform(source, result);
             }
-
-        } catch (Exception e) {
+        } catch (IOException | ParserConfigurationException | TransformerException e) {
             throw new ExecutionException("Unable to generate CycloneDX bom", e);
         }
     }
