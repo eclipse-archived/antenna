@@ -43,13 +43,9 @@ pipeline {
         stage('determine version') {
             steps {
                 script {
-                    VERSION = sh (
-                        script: 'mvn org.apache.maven.plugins:maven-help-plugin:3.1.0:evaluate -Dexpression=project.version -q -DforceStdout',
-                        returnStdout: true
-                    ).trim()
-                    IS_SNAPSHOT_VERSION = (VERSION ==~ /.*-SNAPSHOT/)
+                    IS_SNAPSHOT_VERSION = (params.VERSION ==~ /.*-SNAPSHOT/)
                 }
-                sh "echo \"VERSION is: ${VERSION} with IS_SNAPSHOT_VERSION=${IS_SNAPSHOT_VERSION}\""
+                sh "echo \"VERSION is: ${params.VERSION} with IS_SNAPSHOT_VERSION=${IS_SNAPSHOT_VERSION}\""
 
                 sh 'rm -rf localRepository'
                 sh 'mkdir -p localRepository'
@@ -66,10 +62,10 @@ pipeline {
                     mkdir -p repository
                     mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                         --batch-mode \
-                        install -DskipTests -DskipITs
+                        install -DskipTests -DskipITs -Drevision=${params.VERSION}
                     mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
                         --batch-mode \
-                        install -DskipTests -DskipITs eclipse-jarsigner:sign deploy \
+                        install -DskipTests -DskipITs  -Drevision=${params.VERSION} eclipse-jarsigner:sign deploy \
                         -pl '!core/model-testing,!core/frontend-stubs-testing' \
                         -DaltDeploymentRepository=localRepositoryFolder::default::file:\$(readlink -f ./repository)
                 """
