@@ -17,8 +17,6 @@
   * - support for pushing to Eclipse download repository
   */
 
-
-def VERSION
 def IS_SNAPSHOT_VERSION
 
 pipeline {
