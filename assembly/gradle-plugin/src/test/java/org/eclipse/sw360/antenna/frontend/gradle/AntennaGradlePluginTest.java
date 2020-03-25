@@ -15,14 +15,12 @@ import org.eclipse.sw360.antenna.frontend.stub.gradle.AntennaImpl;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.AbstractTestProject;
 import org.eclipse.sw360.antenna.frontend.testing.testProjects.ExampleTestProject;
 import org.gradle.api.Project;
-import org.gradle.testkit.runner.BuildResult;
-import org.gradle.testkit.runner.GradleRunner;
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,11 +32,10 @@ import java.nio.file.Paths;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.sw360.antenna.testing.util.AntennaTestingUtils.checkInternetConnectionAndAssume;
-import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AntennaGradlePluginTest {
 
     @Mock
@@ -70,35 +67,6 @@ public class AntennaGradlePluginTest {
     @After
     public void cleanup() throws IOException {
         exampleTestProject.cleanUpTemporaryProjectFolder();
-    }
-
-    @Ignore("steps are not on classpath")
-    @Test
-    public void testWithoutGradle() {
-        checkInternetConnectionAndAssume(Assume::assumeTrue);
-        AntennaImpl runner = new AntennaImpl("antenna-maven-plugin", exampleTestProject.getProjectPom(), project);
-        runner.execute();
-        assertThat(projectRoot.resolve("antenna").toFile()).exists(); // TODO
-    }
-
-    @Test
-    public void testWithGradle() {
-        checkInternetConnectionAndAssume(Assume::assumeTrue);
-        boolean withDebug = false; // whether to enable debugging
-        BuildResult result = GradleRunner.create()
-                .withProjectDir(projectRoot.toFile())
-                .withPluginClasspath()
-                .withArguments(GradlePlugin.TASK_NAME, "--stacktrace")
-                .withDebug(withDebug)
-                .forwardOutput()
-                .build();
-
-
-        assertThat(result.task(":" + GradlePlugin.TASK_NAME).getOutcome()).isEqualTo(SUCCESS);
-
-        assertThat(projectRoot.resolve("build/antenna").toFile()).exists();
-        assertThat(projectRoot.resolve("build/antenna/3rdparty-licenses.html").toFile()).exists();
-        assertThat(projectRoot.resolve("build/antenna/sources.zip").toFile()).exists();
     }
 
     @Test

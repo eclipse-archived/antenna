@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) Bosch Software Innovations GmbH 2019.
+# Copyright (c) Bosch.IO GmbH 2020.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v2.0
@@ -15,8 +16,6 @@ cd "$(dirname "$0")/.."
 tmpdir=$(mktemp -d)
 trap 'rm -rf $tmpdir' EXIT
 cp -r example-projects/example-project/ $tmpdir/example-project/
-cp assembly/gradle-plugin/gradlew $tmpdir/example-project/
-cp -r assembly/gradle-plugin/gradle $tmpdir/example-project/
 if [[ $M2_REPOSITORY ]]; then
     sed -i.bak "s%mavenLocal()%maven {url '${M2_REPOSITORY}'}%" $tmpdir/example-project/build.gradle
 fi
