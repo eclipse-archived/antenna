@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20200326" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>antenna-documentation &#x2013; HTML report generator</title>
+    <title>antenna-documentation &#x2013; CycloneDX Bill-of-Material Generator</title>
     <link rel="stylesheet" href="../css/apache-maven-fluido-1.6.min.css" />
     <link rel="stylesheet" href="../css/site.css" />
     <link rel="stylesheet" href="../css/print.css" media="print" />
@@ -76,28 +76,27 @@
           </div>
         </div>
         <div id="bodyColumn"  class="span10" >
-<h1>HTML report generator</h1>
-<p>This workflow step generates a file <tt>./target/antenna/3rdparty-licenses.html</tt> containing a description of the licensing situation.</p>
 <div class="section">
+<h2><a name="CycloneDX_Bill-of-Material_Generator"></a>CycloneDX Bill-of-Material Generator</h2>
+<div class="section">
+<h3><a name="Purpose"></a>Purpose</h3>
+<p>This generator uses the artifacts collected and enriched by Antenna to create a Bill-of-Material (BOM) in <a class="externalLink" href="https://cyclonedx.org/">CycloneDX</a> format. The result is a file called <tt>cyclonedx.bom.xml</tt> and can be found in the Antenna&#x2019;s target directory. Using that, further processing of information from Antenna can be done in tools supporting this format.</p>
+<p>As example, when using <a class="externalLink" href="https://owasp.org/www-project-dependency-track/">OWASP Dependency-Track</a> the information could be used to report on security vulnerabilities for the collected artifacts.</p></div>
 <div class="section">
 <h3><a name="How_to_use"></a>How to use</h3>
-<p>Add this configuration to the workflow.xml</p>
+<p>Simply add this configuration to <tt>workflow.xml</tt>:</p>
 
 <div>
 <div>
 <pre class="source">&lt;workflow&gt;
     &lt;generators&gt;
         &lt;step&gt;
-            &lt;name&gt;HTML Report Generator&lt;/name&gt;
-            &lt;classHint&gt;org.eclipse.sw360.antenna.workflow.generators.HTMLReportGenerator&lt;/classHint&gt;
+            &lt;name&gt;CycloneDX Bill-of-Material Generator&lt;/name&gt;
+            &lt;classHint&gt;com.eclipse.sw360.antenna.cyclonedx.CycloneDXGenerator&lt;/classHint&gt;
         &lt;/step&gt;
     &lt;/generators&gt;
 &lt;/workflow&gt;
-</pre></div></div>
-</div>
-<div class="section">
-<h3><a name="Magic_string_for_output_handlers"></a>Magic string for output handlers</h3>
-<p>When configuring output handlers, the output of the HTML report generator can be referred to by <tt>attribution-doc</tt>.</p></div></div>
+</pre></div></div></div></div>
         </div>
       </div>
     </div>
