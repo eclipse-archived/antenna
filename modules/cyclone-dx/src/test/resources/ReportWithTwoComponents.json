@@ -1,0 +1,100 @@
+{
+    "components": [
+        {
+            "hash": "0792f58090c4e22592ea",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-tribes",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/catalina-tribes.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        },
+        {
+            "hash": "0a7d5a8f44493e9228d7",
+            "componentIdentifier": {
+                "format": "maven",
+                "coordinates": {
+                    "artifactId": "tomcat-websocket-api",
+                    "classifier": "",
+                    "extension": "jar",
+                    "groupId": "org.apache.tomcat",
+                    "version": "8.5.40"
+                }
+            },
+            "proprietary": false,
+            "matchState": "exact",
+            "pathnames": [
+                "filesForClmScan/target/tomcat/apache-tomcat-8.5.40/lib/websocket-api.jar"
+            ],
+            "licenseData": {
+                "declaredLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "observedLicenses": [
+                    {
+                        "licenseId": "Apache-2.0",
+                        "licenseName": "Apache-2.0"
+                    }
+                ],
+                "overriddenLicenses": [
+                ],
+                "status": "Open",
+                "effectiveLicenseThreats": [
+                    {
+                        "licenseThreatGroupName": "Liberal V1",
+                        "licenseThreatGroupLevel": 0,
+                        "licenseThreatGroupCategory": "no-threat"
+                    }
+                ]
+            },
+            "securityData": {
+                "securityIssues": [
+                ]
+            }
+        }
+    ],
+    "matchSummary": {
+        "totalComponentCount": 2,
+        "knownComponentCount": 2
+    }
+}
