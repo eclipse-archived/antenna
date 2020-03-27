@@ -133,15 +133,19 @@ pipeline {
             steps {
                 script {
                     try {
+                        sh("git config user.name 'Lars Geyer-Blaumeiser'")
+                        sh("git config user.email 'lars.geyer-blaumeiser@bosch.io'")
                         sh("git tag -a ${params.VERSION} -m 'Weekly build tag'")
-/*                        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'GitHub bot', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PWD']]) {
+/*                        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: '7d588c11-a40f-4529-bcaa-57b6d9691af6', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PWD']]) {
                             sh("git config credential.username ${env.GIT_USER}")
                             sh("git config credential.helper '!echo password=\$GIT_PWD; echo'")
                             sh("GIT_ASKPASS=true git push origin --tags")
                         }*/
                     } finally {
-                        sh("git config --unset credential.username")
                         sh("git config --unset credential.helper")
+                        sh("git config --unset credential.username")
+                        sh("git config --unset user.name")
+                        sh("git config --unset user.email")
                     }
                 }
                 echo 'Release is published at https://download.eclipse.org/antenna/releases'
