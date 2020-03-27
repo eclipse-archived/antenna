@@ -139,7 +139,7 @@ pipeline {
                             sh("git tag -a ${params.VERSION} -m 'Weekly build tag'")
                             sh("git config credential.username ${env.GIT_USER}")
                             sh("git config credential.helper '!echo password=\$GIT_PWD; echo'")
-//                            sh("GIT_ASKPASS=true git push origin --tags")
+                            sh("GIT_ASKPASS=true git push origin --tags")
                         }
                     } finally {
                         sh("git config --unset credential.helper")
