@@ -30,10 +30,14 @@ pipeline {
             name: 'PUSH',
             defaultValue: true,
             description: 'Push to artifact repository')
+        booleanParam(
+            name: 'TAG',
+            defaultValue: false,
+            description: 'Tag the build (only if not a snapshot build), version is used as tag name')
         string(
         	name: 'VERSION',
         	defaultValue: '1.0.0-SNAPSHOT',
-        	description: 'Version to build')
+        	description: 'Version to build, SNAPSHOT in name makes it a snapshot build')
     }
     stages {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,6 +120,29 @@ pipeline {
                           -r ./repository/* \
                           genie.antenna@projects-storage.eclipse.org:/home/data/httpd/download.eclipse.org/antenna/releases
                     '''
+                }
+                echo 'Release is published at https://download.eclipse.org/antenna/releases'
+            }
+        }
+        stage ('tag build in eclipse/antenna') {
+            when {
+                expression {
+                    return params.TAG && ! IS_SNAPSHOT_VERSION
+                }
+            }
+            steps {
+                script {
+                    try {
+                        sh("git tag -a ${params.VERSION} -m 'Weekly build tag'")
+/*                        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'GitHub bot', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PWD']]) {
+                            sh("git config credential.username ${env.GIT_USER}")
+                            sh("git config credential.helper '!echo password=\$GIT_PWD; echo'")
+                            sh("GIT_ASKPASS=true git push origin --tags")
+                        }*/
+                    } finally {
+                        sh("git config --unset credential.username")
+                        sh("git config --unset credential.helper")
+                    }
                 }
                 echo 'Release is published at https://download.eclipse.org/antenna/releases'
             }
