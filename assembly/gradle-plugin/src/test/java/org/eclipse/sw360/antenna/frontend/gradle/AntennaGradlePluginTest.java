@@ -74,7 +74,7 @@ public class AntennaGradlePluginTest {
         URI pom = AntennaGradlePluginTest.class.getClassLoader().getResource("pom.xml").toURI();
         URI propertiesFile = AntennaGradlePluginTest.class.getClassLoader().getResource("antennaTestVariable.properties").toURI();
 
-        AntennaImpl runner = new AntennaImpl("antenna-maven-plugin",
+        AntennaImpl runner = new AntennaImpl("antenna-gradle-plugin",
                 Paths.get(pom),
                 project,
                 Paths.get(propertiesFile));
@@ -96,7 +96,7 @@ public class AntennaGradlePluginTest {
                 "AntennaConfiguration{\ntoolConfigurationPath '" + dest + "'\n}";
         Files.write(projectRoot.resolve("build.gradle"), buildGradle.getBytes(StandardCharsets.UTF_8));
 
-        AntennaImpl runner = new AntennaImpl("antenna-maven-plugin",
+        AntennaImpl runner = new AntennaImpl("antenna-gradle-plugin",
                 dest,
                 project);
 

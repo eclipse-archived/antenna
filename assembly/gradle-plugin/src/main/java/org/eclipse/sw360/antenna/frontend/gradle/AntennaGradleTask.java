@@ -15,6 +15,6 @@ import org.eclipse.sw360.antenna.frontend.stub.gradle.AnalyzeTask;
 
 public class AntennaGradleTask extends AnalyzeTask {
     protected String getPluginDescendantArtifactIdName() {
-        return "antenna-maven-plugin";
+        return "antenna-gradle-plugin";
     }
 }
