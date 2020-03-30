@@ -10,10 +10,7 @@
  */
 package org.eclipse.sw360.antenna.model.license;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class LicenseStatement implements LicenseInformation {
@@ -70,6 +67,17 @@ public class LicenseStatement implements LicenseInformation {
     @Override
     public boolean isEmpty() {
         return licenses.isEmpty() || licenses.stream().allMatch(LicenseInformation::isEmpty);
+    }
+
+    /**
+     * This method returns the first level of operands of this operation. This can be either licenses or embedded
+     * license operations. In comparison to getLicenses, this method does not dig into the expression to return
+     * all licenses, but reflects the expression tree by returning only the next level.
+     *
+     * @return The direct operands of the license expression.
+     */
+    public Collection<LicenseInformation> getStatementOperands() {
+        return Collections.unmodifiableCollection(licenses);
     }
 
     @Override

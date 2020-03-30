@@ -88,6 +88,24 @@ public class LicenseStatementTest {
     }
 
     @Test
+    public void testComplexStatement() {
+        License license1 = new License("Apache-2.0");
+        License license2 = new License("EPL-2.0");
+        License license3 = new License("GPL-2.0-later");
+        License license4 = new License("MIT");
+
+        LicenseStatement andStmt = new LicenseStatement(Stream.of(license1, license2, license4).collect(Collectors.toList()), LicenseOperator.AND);
+        LicenseStatement orStmt = new LicenseStatement(Stream.of(license3, andStmt).collect(Collectors.toList()), LicenseOperator.OR);
+
+        assertThat(orStmt.isEmpty()).isFalse();
+        assertThat(andStmt.isEmpty()).isFalse();
+        assertThat(orStmt.getLicenses().size()).isEqualTo(4);
+        assertThat(orStmt.getStatementOperands().size()).isEqualTo(2);
+        assertThat(orStmt.getStatementOperands()).contains(license3);
+        assertThat(orStmt.getStatementOperands()).contains(andStmt);
+    }
+
+    @Test
     public void pushCoverageForEqualsAndHashcode() {
         EqualsVerifier.forClass(LicenseStatement.class)
                 .withRedefinedSuperclass()
