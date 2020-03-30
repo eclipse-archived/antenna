@@ -27,7 +27,7 @@ public class LicenseSupportTest {
         Collection<String> license = Collections.singletonList("Single License");
         LicenseInformation actualLicenseSupport = LicenseSupport.mapLicenses(license);
 
-        assertThat(actualLicenseSupport.toString()).startsWith("Single License");
+        assertThat(actualLicenseSupport.evaluate()).startsWith("Single License");
     }
 
     @Test
@@ -35,7 +35,7 @@ public class LicenseSupportTest {
         Collection<String> license = Arrays.asList("First License", "Second License", "Third License");
         LicenseInformation actualLicenseSupport = LicenseSupport.mapLicenses(license);
 
-        assertThat(actualLicenseSupport.toString())
+        assertThat(actualLicenseSupport.evaluate())
                 .startsWith("( First License AND Second License AND Third License )");
     }
 
@@ -131,10 +131,10 @@ public class LicenseSupportTest {
     public void testSPDXParsing6() {
         final LicenseInformation licenseInformation = LicenseSupport.fromSPDXExpression("BSD WITH Exception");
         assertThat(licenseInformation.getLicenses().size())
-                .isEqualTo(2);
+                .isEqualTo(1);
         assertThat(licenseInformation).isInstanceOf(WithLicense.class);
-        assertThat(((WithLicense) licenseInformation).getLicense().getId()).isEqualTo("BSD");
-        assertThat(((WithLicense) licenseInformation).getException().getId()).isEqualTo("Exception");
+        assertThat(((WithLicense) licenseInformation).getLicenseId()).isEqualTo("BSD");
+        assertThat(((WithLicense) licenseInformation).getExceptionId()).isEqualTo("Exception");
     }
 
     @Test

@@ -91,7 +91,10 @@ public class LicenseSupport {
     private static LicenseInformation fromSpdxWithLicense(SpdxCompoundExpression spdxCompoundExpression) {
         final SpdxExpression license = spdxCompoundExpression.component1();
         final SpdxExpression exception = spdxCompoundExpression.component3();
-        return new WithLicense((License) fromSPDXExpression(license), (License) fromSPDXExpression(exception));
+        final License withLicense = (License) fromSPDXExpression(license);
+        final License exceptionLicense = (License) fromSPDXExpression(exception);
+        return new WithLicense(withLicense.getId(), withLicense.getCommonName(), withLicense.getText(),
+                exceptionLicense.getId(), exceptionLicense.getCommonName(), exceptionLicense.getText());
     }
 
     public static LicenseInformation fromSpdxLicenseExceptionExpression(SpdxLicenseExceptionExpression spdxLicenseExceptionExpression) {

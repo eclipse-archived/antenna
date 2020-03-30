@@ -114,7 +114,7 @@ public class FromXmlLicenseInformationBuilder {
 
         @Override
         public LicenseInformation build() {
-            return new WithLicense((License) license.build(), (License) exception.build());
+            return new WithLicense(license.id, license.commonName, license.text, exception.id, exception.commonName, exception.text);
         }
     }
 }

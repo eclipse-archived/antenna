@@ -10,71 +10,162 @@
  */
 package org.eclipse.sw360.antenna.model.license;
 
-import java.util.Collection;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.function.Consumer;
 
-public class WithLicense implements LicenseInformation {
-    private License license;
-    private License exception;
+public class WithLicense extends License implements LicenseInformation {
+    private static final String SEPARATOR = " WITH ";
+    private static final String TEXT_SEPARATOR = "with exception:";
+
+    private static final String ERROR_MESSAGE_TEMPLATE = "Parameter %s is not separated properly with '%s'";
+
+    private String exceptionId;
+    private String exceptionName;
+    private String exceptionText;
 
     public WithLicense() {
         this(null, null);
     }
 
-    public WithLicense(License license, License exception) {
-        this.license = license != null ? license : new License();
-        this.exception = exception != null ? exception : new License();
+
+    public WithLicense(String licenseId, String exceptionId) {
+        this(licenseId, null, null, exceptionId, null, null);
     }
 
-    public License getLicense() {
-        return license;
+    public WithLicense(String licenseId, String licenseName, String licenseText, String exceptionId,
+            String exceptionName, String exceptionText) {
+        super(licenseId, licenseName, licenseText);
+        this.exceptionId = exceptionId != null ? exceptionId : "";
+        this.exceptionName = exceptionName != null ? exceptionName : "";
+        this.exceptionText = exceptionText != null ? exceptionText : "";
     }
 
-    public void setLicense(License license) {
-        this.license = license != null ? license : new License();
+    public WithLicense(String licenseId, String licenseName, String licenseText) {
+        super();
+        exceptionId = separateStringAndSetFirst(licenseId, SEPARATOR, super::setId);
+        exceptionName = separateStringAndSetFirst(licenseName, SEPARATOR, super::setCommonName);
+        exceptionText = separateStringAndSetFirst(licenseText, TEXT_SEPARATOR, super::setText);
     }
 
-    public License getException() {
-        return exception;
+    private String separateStringAndSetFirst(String source, String separator, Consumer<String> consumer) {
+        String[] splitted = source.split(separator);
+        if (splitted.length != 2) {
+            throw new IllegalArgumentException(String.format(ERROR_MESSAGE_TEMPLATE, source, separator));
+        }
+        consumer.accept(splitted[0].trim());
+        return splitted[1].trim();
     }
 
-    public void setException(License exception) {
-        this.exception = exception != null ? exception : new License();
+    @Override
+    public String getId() {
+        return evaluate();
+    }
+
+    @Override
+    public void setId(String id) {
+        exceptionId = separateStringAndSetFirst(id, SEPARATOR, super::setId);
+    }
+
+    @Override
+    public String getCommonName() {
+        if ("".equals(super.getCommonName()) || "".equals(exceptionName)) {
+            return "";
+        }
+        return super.getCommonName() + SEPARATOR + exceptionName;
+    }
+
+    @Override
+    public void setCommonName(String commonName) {
+        exceptionName = separateStringAndSetFirst(commonName, SEPARATOR, super::setCommonName);
+    }
+
+    @Override
+    public String getText() {
+        if ("".equals(super.getText()) || "".equals(exceptionText)) {
+            return "";
+        }
+        return super.getText() + "\n\n" + TEXT_SEPARATOR + "\n\n" + exceptionText;
+    }
+
+    @Override
+    public void setText(String text) {
+        exceptionText = separateStringAndSetFirst(text, TEXT_SEPARATOR, super::setText);
+    }
+
+    public String getLicenseId() {
+        return super.getId();
+    }
+
+    public void setLicenseId(String licenseId) {
+        super.setId(licenseId);
+    }
+
+    public String getLicenseName() {
+        return super.getCommonName();
+    }
+
+    public void setLicenseName(String licenseName) {
+        super.setCommonName(licenseName);
+    }
+
+    public String getLicenseText() {
+        return super.getText();
+    }
+    public void setLicenseText(String licenseText) {
+        super.setText(licenseText);
+    }
+
+    public String getExceptionId() {
+        return exceptionId;
+    }
+
+    public void setExceptionId(String exceptionId) {
+        this.exceptionId = exceptionId != null ? exceptionId : "";
+    }
+
+    public String getExceptionName() {
+        return exceptionName;
+    }
+
+    public void setExceptionName(String exceptionName) {
+        this.exceptionName = exceptionName != null ? exceptionName : "";
+    }
+
+    public String getExceptionText() {
+        return exceptionText;
+    }
+
+    public void setExceptionText(String exceptionText) {
+        this.exceptionText = exceptionText != null ? exceptionText : "";
     }
 
     @Override
     public String evaluate() {
-        return license.getId() + " WITH " + exception.getId();
+        if (isEmpty()) {
+            return "";
+        }
+        return super.getId() + SEPARATOR + exceptionId;
     }
 
     @Override
     public boolean isEmpty() {
-        return license.isEmpty() && exception.isEmpty();
-    }
-
-    @Override
-    public Collection<License> getLicenses() {
-        return Stream.of(license, exception).collect(Collectors.toList());
+        return super.isEmpty() || exceptionId.trim().isEmpty();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        WithLicense that = (WithLicense) o;
-        return Objects.equals(license, that.license) &&
-                Objects.equals(exception, that.exception);
+        boolean parent = super.equals(o);
+        if (parent && getClass().equals(o.getClass())) {
+            WithLicense that = (WithLicense) o;
+            return Objects.equals(exceptionId, that.exceptionId) &&
+                    Objects.equals(exceptionName, that.exceptionName) &&
+                    Objects.equals(exceptionText, that.exceptionText);
+        }
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(license, exception);
-    }
-
-    @Override
-    public String toString() {
-        return evaluate();
+        return Objects.hash(super.hashCode(), exceptionId.hashCode(), exceptionName.hashCode(), exceptionText.hashCode());
     }
 }
