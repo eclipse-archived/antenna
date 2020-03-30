@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,14 +11,16 @@
  */
 package org.eclipse.sw360.antenna.ort.resolver
 
-import com.here.ort.model.*
-import com.here.ort.model.Package
-
 import org.eclipse.sw360.antenna.model.artifact.Artifact
 import org.eclipse.sw360.antenna.model.artifact.facts.*
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate
 import org.eclipse.sw360.antenna.model.xml.generated.MatchState
 import org.eclipse.sw360.antenna.util.LicenseSupport
+
+import org.ossreviewtoolkit.model.OrtResult
+import org.ossreviewtoolkit.model.Package
+import org.ossreviewtoolkit.model.VcsInfo
+import org.ossreviewtoolkit.model.utils.collectLicenseFindings
 
 import java.io.File
 import java.util.function.Function
@@ -73,7 +76,7 @@ private fun mapHomepage(pkg: Package): ArtifactHomepage? =
     }
 
 class OrtResultArtifactResolver(result: OrtResult) : Function<Package, Artifact> {
-    private val licenseFindings = result.collectLicenseFindings(false)
+    private val licenseFindings = result.collectLicenseFindings()
 
     private fun mapObservedLicense(pkg: Package): ObservedLicenseInformation? =
         licenseFindings[pkg.id]?.keys?.map { it.license }?.let {

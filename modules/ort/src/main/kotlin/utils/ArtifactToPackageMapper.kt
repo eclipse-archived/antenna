@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,7 +11,7 @@
  */
 package org.eclipse.sw360.antenna.ort.utils
 
-import com.here.ort.model.*
+import org.ossreviewtoolkit.model.*
 import org.eclipse.sw360.antenna.model.artifact.Artifact
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceUrl

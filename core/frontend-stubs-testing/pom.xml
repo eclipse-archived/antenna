@@ -152,12 +152,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+            <groupId>com.github.oss-review-toolkit.ort</groupId>
             <artifactId>model</artifactId>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+            <groupId>com.github.oss-review-toolkit.ort</groupId>
             <artifactId>spdx-utils</artifactId>
             <scope>compile</scope>
         </dependency>

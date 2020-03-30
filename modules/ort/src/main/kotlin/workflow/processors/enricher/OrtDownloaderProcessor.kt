@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,10 +11,10 @@
  */
 package org.eclipse.sw360.antenna.ort.workflow.processors.enricher
 
-import com.here.ort.downloader.DownloadException
-import com.here.ort.downloader.Downloader
-import com.here.ort.utils.encodeOrUnknown
-import com.here.ort.utils.packZip
+import org.ossreviewtoolkit.downloader.DownloadException
+import org.ossreviewtoolkit.downloader.Downloader
+import org.ossreviewtoolkit.utils.encodeOrUnknown
+import org.ossreviewtoolkit.utils.packZip
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException
 import org.eclipse.sw360.antenna.model.artifact.Artifact
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile

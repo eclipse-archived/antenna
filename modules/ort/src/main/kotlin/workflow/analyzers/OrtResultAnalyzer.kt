@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,8 +11,8 @@
  */
 package org.eclipse.sw360.antenna.ort.workflow.analyzers
 
-import com.here.ort.model.OrtResult
-import com.here.ort.model.readValue
+import org.ossreviewtoolkit.model.OrtResult
+import org.ossreviewtoolkit.model.readValue
 
 import org.eclipse.sw360.antenna.api.workflow.ManualAnalyzer
 import org.eclipse.sw360.antenna.api.workflow.WorkflowStepResult

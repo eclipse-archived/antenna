@@ -74,7 +74,7 @@
             <artifactId>spotbugs-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+            <groupId>com.github.oss-review-toolkit.ort</groupId>
             <artifactId>spdx-utils</artifactId>
         </dependency>
         <!-- ################################ testing dependencies ################################ -->
