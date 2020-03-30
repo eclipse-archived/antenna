@@ -148,7 +148,7 @@ pipeline {
                         sh("git config --unset user.email")
                     }
                 }
-                echo 'Release is published at https://download.eclipse.org/antenna/releases'
+                echo 'Tag is published at https://github.com/eclipse/antenna'
             }
         }
     }
