@@ -1,9 +1,9 @@
 ## ORT Result Analyzer
 This analyzer uses the information provided in a given result file of a project that was analyzed and / or scanned with
-the [*OSS Review Toolkit* (ORT)](https://github.com/heremaps/oss-review-toolkit/).  
+the [*OSS Review Toolkit* (ORT)](https://github.com/oss-review-toolkit/ort).  
 
 For more information on how to use and execute ORT we refer you to its
-[Getting Started](https://github.com/heremaps/oss-review-toolkit/blob/master/docs/GettingStarted.md) guide.
+[Getting Started](https://github.com/oss-review-toolkit/ort/blob/master/docs/GettingStarted.md) guide.
 
 ### How to use
 Add the following step into the `<analyzers>` section of your workflow.xml
