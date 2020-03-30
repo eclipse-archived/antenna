@@ -1,11 +1,12 @@
 /*
  * Copyright (c) Robert Bosch Manufacturing Solutions GmbH 2020.
- * <p>
+ * Copyright (c) Bosch.IO GmbH 2020.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package com.eclipse.sw360.antenna.cyclonedx;
@@ -13,7 +14,7 @@ package com.eclipse.sw360.antenna.cyclonedx;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.github.packageurl.PackageURLBuilder;
-import org.apache.commons.lang3.Validate;
+
 import org.cyclonedx.model.Component;
 import org.cyclonedx.model.Hash;
 import org.cyclonedx.model.LicenseChoice;
@@ -54,7 +55,10 @@ public final class ArtifactToComponentConverter {
      * @return a component with matching information.
      */
     public static Component toComponent(Artifact artifact) {
-        Validate.isTrue(artifact != null, "Artifact must not be null");
+        if (artifact == null) {
+            throw new IllegalArgumentException("Artifact must not be null");
+        }
+
         Component c = new Component();
         c.setType(Component.Type.LIBRARY);
 
