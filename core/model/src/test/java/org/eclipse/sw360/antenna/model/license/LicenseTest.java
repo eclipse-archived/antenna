@@ -40,6 +40,16 @@ public class LicenseTest {
     }
 
     @Test
+    public void testEqualLicense() {
+        License license1 = new License ("Apache-2.0");
+        License license2 = new License ("Apache-2.0", "Apache License Version 2.0", "Some license text");
+        License license3 = new License ("MIT");
+
+        assertThat(license1.equalLicense(license2)).isTrue();
+        assertThat(license1.equalLicense(license3)).isFalse();
+    }
+
+    @Test
     public void testLicenseWithoutProperties() {
         String licenseId = "Apache-2.0";
         String licenseName = "Apache License 2.0";

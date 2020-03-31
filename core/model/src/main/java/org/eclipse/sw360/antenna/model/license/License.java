@@ -130,6 +130,10 @@ public class License implements LicenseInformation {
                 Objects.equals(properties, license.properties);
     }
 
+    public boolean equalLicense(License license) {
+        return Objects.equals(getId(), license.getId());
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(id, commonName, text, properties);
