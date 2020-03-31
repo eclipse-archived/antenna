@@ -21,16 +21,22 @@ public class LicenseStatement implements LicenseInformation {
     private LicenseOperator op;
 
     public LicenseStatement() {
-        this(new ArrayList<>(), null);
+        this(null, null);
     }
 
     public LicenseStatement(List<LicenseInformation> licenses, LicenseOperator op) {
-        this.licenses = licenses;
-        this.op = op;
+        this.licenses = new ArrayList<>();
+        if (licenses != null) {
+            this.licenses.addAll(licenses);
+        }
+        this.op = op != null ? op : LicenseOperator.AND;
     }
 
     public void setLicenses(List<LicenseInformation> licenses) {
-        this.licenses = licenses;
+        this.licenses.clear();
+        if (licenses != null) {
+            this.licenses.addAll(licenses);
+        }
     }
 
     public LicenseOperator getOp() {
@@ -38,11 +44,14 @@ public class LicenseStatement implements LicenseInformation {
     }
 
     public void setOp(LicenseOperator operator) {
-        this.op = operator;
+        this.op = operator != null ? operator : LicenseOperator.AND;
     }
 
     public boolean addLicenseInformation(LicenseInformation license) {
-        return licenses.add(license);
+        if (license != null) {
+            return licenses.add(license);
+        }
+        return false;
     }
 
     @Override
@@ -60,14 +69,11 @@ public class LicenseStatement implements LicenseInformation {
 
     @Override
     public boolean isEmpty() {
-        return licenses == null || licenses.isEmpty() || licenses.stream().allMatch(LicenseInformation::isEmpty);
+        return licenses.isEmpty() || licenses.stream().allMatch(LicenseInformation::isEmpty);
     }
 
     @Override
     public List<License> getLicenses() {
-        if (licenses == null || this.isEmpty()) {
-            licenses =  new ArrayList<>();
-        }
         return licenses
                 .stream()
                 .map(LicenseInformation::getLicenses)

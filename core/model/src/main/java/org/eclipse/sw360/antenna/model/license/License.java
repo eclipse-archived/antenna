@@ -22,22 +22,25 @@ public class License implements LicenseInformation {
     private Map<String, String> properties;
 
     public License() {
-        properties = new HashMap<>();
+        this(null, null, null, null);
     }
 
     public License(String id) {
-        this(id, "", "", new HashMap<>());
+        this(id, null, null, null);
     }
 
     public License(String id, String commonName, String text) {
-        this(id, commonName, text, new HashMap<>());
+        this(id, commonName, text, null);
     }
 
     public License(String id, String commonName, String text, Map<String, String> properties) {
-        this.id = id;
-        this.commonName = commonName;
-        this.text = text;
-        this.properties = properties;
+        this.id = id != null ? id : "";
+        this.commonName = commonName != null ? commonName : "";
+        this.text = text != null ? text : "";
+        this.properties = new HashMap<>();
+        if (properties != null) {
+            this.properties.putAll(properties);
+        }
     }
 
     public String getId() {
@@ -45,7 +48,7 @@ public class License implements LicenseInformation {
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.id = id != null ? id : "";
     }
 
     public String getCommonName() {
@@ -53,7 +56,7 @@ public class License implements LicenseInformation {
     }
 
     public void setCommonName(String commonName) {
-        this.commonName = commonName;
+        this.commonName = commonName != null ? commonName : "";
     }
 
     public String getText() {
@@ -61,13 +64,10 @@ public class License implements LicenseInformation {
     }
 
     public void setText(String text) {
-        this.text = text;
+        this.text = text != null ? text : "";
     }
 
     public Map<String, String> getProperties() {
-        if (properties == null) {
-            return new HashMap<>();
-        }
         return Collections.unmodifiableMap(properties);
     }
 
@@ -79,11 +79,13 @@ public class License implements LicenseInformation {
     }
 
     public void setProperty(String key, String property) {
-        properties.put(key, property);
+        if (key != null) {
+            properties.put(key, property);
+        }
     }
 
     public Optional<String> getProperty(String key) {
-        return Optional.ofNullable(properties.get(key));
+        return Optional.ofNullable(key != null ? properties.get(key) : null);
     }
 
     public void setThreatGroup(String value) {
@@ -109,7 +111,7 @@ public class License implements LicenseInformation {
 
     @Override
     public boolean isEmpty() {
-        return this.id == null;
+        return "".equals(this.id.trim());
     }
 
     @Override

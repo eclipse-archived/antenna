@@ -20,12 +20,12 @@ public class WithLicense implements LicenseInformation {
     private License exception;
 
     public WithLicense() {
-        this(new License(), new License());
+        this(null, null);
     }
 
     public WithLicense(License license, License exception) {
-        this.license = license;
-        this.exception = exception;
+        this.license = license != null ? license : new License();
+        this.exception = exception != null ? exception : new License();
     }
 
     public License getLicense() {
@@ -33,7 +33,7 @@ public class WithLicense implements LicenseInformation {
     }
 
     public void setLicense(License license) {
-        this.license = license;
+        this.license = license != null ? license : new License();
     }
 
     public License getException() {
@@ -41,7 +41,7 @@ public class WithLicense implements LicenseInformation {
     }
 
     public void setException(License exception) {
-        this.exception = exception;
+        this.exception = exception != null ? exception : new License();
     }
 
     @Override

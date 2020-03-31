@@ -181,8 +181,8 @@ public class LicenseKnowledgeBaseResolverTest extends AntennaTestWithMockedConte
         assertThat(finalLicenses.stream()
                 .findAny()).hasValueSatisfying(l -> {
                     assertThat(l.getId()).isEqualTo(licenseName);
-                    assertThat(l.getCommonName()).isNull();
-                    assertThat(l.getText()).isNull();
+                    assertThat(l.getCommonName()).isBlank();
+                    assertThat(l.getText()).isBlank();
                     assertThat(l.getThreatGroup()).isNotPresent();
                     assertThat(l.getClassification()).isNotPresent();
         });
