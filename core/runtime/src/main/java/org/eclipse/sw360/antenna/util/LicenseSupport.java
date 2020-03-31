@@ -11,7 +11,7 @@
  */
 package org.eclipse.sw360.antenna.util;
 
-import com.here.ort.spdx.*;
+import org.ossreviewtoolkit.spdx.*;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.model.license.*;
 

@@ -56,11 +56,11 @@
             <artifactId>kotlin-stdlib</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+            <groupId>com.github.oss-review-toolkit.ort</groupId>
             <artifactId>model</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+            <groupId>com.github.oss-review-toolkit.ort</groupId>
             <artifactId>downloader</artifactId>
         </dependency>
         <!-- ################################ testing dependencies ################################ -->

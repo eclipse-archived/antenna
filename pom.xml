@@ -35,7 +35,7 @@
         <slf4j.version>1.7.26</slf4j.version>
         <log4j2.version>2.13.0</log4j2.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ort.rev>3f85d301f7</ort.rev>
+        <ort.rev>7daaf7c049</ort.rev>
         <cyclonedx.version>2.6.5</cyclonedx.version>
     </properties>
 
@@ -250,17 +250,17 @@
                 <version>${kotlin.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+                <groupId>com.github.oss-review-toolkit.ort</groupId>
                 <artifactId>model</artifactId>
                 <version>${ort.rev}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+                <groupId>com.github.oss-review-toolkit.ort</groupId>
                 <artifactId>downloader</artifactId>
                 <version>${ort.rev}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.heremaps.oss-review-toolkit</groupId>
+                <groupId>com.github.oss-review-toolkit.ort</groupId>
                 <artifactId>spdx-utils</artifactId>
                 <version>${ort.rev}</version>
             </dependency>
