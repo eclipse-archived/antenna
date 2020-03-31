@@ -56,12 +56,9 @@ public class LicenseStatement implements LicenseInformation {
         if (isEmpty()) {
             return "";
         }
-        return "( " +
-                licenses
-                        .stream()
-                        .map(LicenseInformation::evaluate)
-                        .collect(Collectors.joining(" " + this.op.toString() + " "))
-                + " )";
+        return licenses.stream()
+                .map(LicenseInformation::evaluate)
+                .collect(Collectors.joining(" " + this.op.toString() + " ", "( ", " )"));
     }
 
     @Override
