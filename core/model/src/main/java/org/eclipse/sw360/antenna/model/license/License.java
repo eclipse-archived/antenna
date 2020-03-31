@@ -68,11 +68,14 @@ public class License implements LicenseInformation {
         if (properties == null) {
             return new HashMap<>();
         }
-        return properties;
+        return Collections.unmodifiableMap(properties);
     }
 
     public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
+        this.properties = new HashMap<>();
+        if (properties != null) {
+            this.properties.putAll(properties);
+        }
     }
 
     public void setProperty(String key, String property) {
