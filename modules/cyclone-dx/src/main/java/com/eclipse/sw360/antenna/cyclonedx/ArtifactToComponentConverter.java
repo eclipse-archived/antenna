@@ -135,13 +135,13 @@ public final class ArtifactToComponentConverter {
         }
     }
 
-    private static void addLicensesToComponent(List<License> tinaLicenses, Component c) {
+    private static void addLicensesToComponent(List<License> antennaLicenses, Component c) {
         LicenseChoice licenseChoice = new LicenseChoice();
         c.setLicenseChoice(licenseChoice);
-        for (License tinaLicense : tinaLicenses) {
+        for (License antennaLicense : antennaLicenses) {
             org.cyclonedx.model.License license = new org.cyclonedx.model.License();
-            license.setName(tinaLicense.getCommonName());
-            license.setId(tinaLicense.getId());
+            license.setName(antennaLicense.getCommonName());
+            license.setId(antennaLicense.getId());
             licenseChoice.addLicense(license);
         }
     }
