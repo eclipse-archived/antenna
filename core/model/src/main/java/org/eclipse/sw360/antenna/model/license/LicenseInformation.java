@@ -10,10 +10,10 @@
  */
 package org.eclipse.sw360.antenna.model.license;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface LicenseInformation {
     String evaluate();
     boolean isEmpty();
-    List<License> getLicenses();
+    Collection<License> getLicenses();
 }

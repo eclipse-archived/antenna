@@ -10,7 +10,7 @@
  */
 package org.eclipse.sw360.antenna.model.license;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -55,7 +55,7 @@ public class WithLicense implements LicenseInformation {
     }
 
     @Override
-    public List<License> getLicenses() {
+    public Collection<License> getLicenses() {
         return Stream.of(license, exception).collect(Collectors.toList());
     }
 

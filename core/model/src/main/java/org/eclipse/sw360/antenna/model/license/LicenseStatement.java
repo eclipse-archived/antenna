@@ -73,7 +73,7 @@ public class LicenseStatement implements LicenseInformation {
     }
 
     @Override
-    public List<License> getLicenses() {
+    public Collection<License> getLicenses() {
         return licenses
                 .stream()
                 .map(LicenseInformation::getLicenses)

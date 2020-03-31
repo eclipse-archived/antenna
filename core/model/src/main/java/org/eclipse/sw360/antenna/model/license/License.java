@@ -115,7 +115,7 @@ public class License implements LicenseInformation {
     }
 
     @Override
-    public List<License> getLicenses() {
+    public Collection<License> getLicenses() {
         return Collections.singletonList(this);
     }
 

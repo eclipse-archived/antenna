@@ -107,7 +107,7 @@ public class LicenseSupportTest {
         final LicenseInformation licenseInformation = LicenseSupport.parseSpdxExpression(license);
         assertThat(licenseInformation.getLicenses().size())
                 .isEqualTo(1);
-        assertThat(licenseInformation.getLicenses().get(0).getId())
+        assertThat(licenseInformation.getLicenses().iterator().next().getId())
                 .isEqualTo(license);
     }
 

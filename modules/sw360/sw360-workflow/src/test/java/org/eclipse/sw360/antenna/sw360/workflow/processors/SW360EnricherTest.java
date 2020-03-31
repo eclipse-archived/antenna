@@ -258,8 +258,8 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         sw360Enricher.process(artifacts);
 
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses()).hasSize(1);
-        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().get(0).getId()).isEqualTo("apache2");
-        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().get(0).getText()).isEqualTo("Some text");
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().iterator().next().getId()).isEqualTo("apache2");
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().iterator().next().getText()).isEqualTo("Some text");
     }
 
     @Test
@@ -315,7 +315,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         sw360Enricher.process(artifacts);
 
         assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses()).hasSize(1);
-        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().get(0).evaluate()).isEqualTo("mit");
+        assertThat(ArtifactLicenseUtils.getFinalLicenses(artifacts.get(0)).getLicenses().iterator().next().evaluate()).isEqualTo("mit");
     }
 
     private SW360SparseLicense createSparseLicense(String name, String fullName) {

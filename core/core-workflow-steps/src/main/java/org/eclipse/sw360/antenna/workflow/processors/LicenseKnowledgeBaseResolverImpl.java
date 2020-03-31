@@ -46,7 +46,7 @@ public class LicenseKnowledgeBaseResolverImpl {
                 .flatMap(List::stream)
                 .map(ArtifactLicenseInformation::get)
                 .map(LicenseInformation::getLicenses)
-                .flatMap(List::stream)
+                .flatMap(Collection::stream)
                 .forEach(license -> {
                     aliasToIdentifier(license);
                     setText(license);

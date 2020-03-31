@@ -124,7 +124,7 @@ public class LicenseKnowledgeBaseResolverTest extends AntennaTestWithMockedConte
 
         knowledgeBaseResolver.process(Collections.singletonList(artifact));
 
-        final List<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
+        final Collection<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
         assertThat(finalLicenses.size()).isEqualTo(1);
         assertThat(finalLicenses.stream()
                 .findAny())
@@ -152,7 +152,7 @@ public class LicenseKnowledgeBaseResolverTest extends AntennaTestWithMockedConte
         knowledgeBaseResolver.process(Collections.singletonList(artifact));
 
 
-        final List<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
+        final Collection<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
         assertThat(finalLicenses.size()).isEqualTo(1);
         assertThat(finalLicenses.stream()
                 .findAny())
@@ -176,7 +176,7 @@ public class LicenseKnowledgeBaseResolverTest extends AntennaTestWithMockedConte
 
         knowledgeBaseResolver.process(Collections.singletonList(artifact));
 
-        final List<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
+        final Collection<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
         assertThat(finalLicenses.size()).isEqualTo(1);
         assertThat(finalLicenses.stream()
                 .findAny()).hasValueSatisfying(l -> {
