@@ -51,7 +51,7 @@ public class WithLicense implements LicenseInformation {
 
     @Override
     public boolean isEmpty() {
-        return this.license.isEmpty() && this.exception.isEmpty();
+        return license.isEmpty() && exception.isEmpty();
     }
 
     @Override

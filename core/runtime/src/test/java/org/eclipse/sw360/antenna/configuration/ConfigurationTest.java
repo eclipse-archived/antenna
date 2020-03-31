@@ -46,7 +46,7 @@ public class ConfigurationTest {
         URL xmlUrl = ConfigurationTest.class.getResource("/antennaconf.xml");
         XMLResolverJaxB resolver = new XMLResolverJaxB(StandardCharsets.UTF_8);
         AntennaConfig config = resolver.resolveXML(new File(xmlUrl.toURI()));
-        this.configuration = new Configuration(config);
+        configuration = new Configuration(config);
     }
 
     @Test
