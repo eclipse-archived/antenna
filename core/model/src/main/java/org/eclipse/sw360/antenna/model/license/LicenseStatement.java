@@ -14,14 +14,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class LicenseStatement implements LicenseInformation {
-    private List<LicenseInformation> licenses;
+    private Collection<LicenseInformation> licenses;
     private LicenseOperator op;
 
     public LicenseStatement() {
         this(null, null);
     }
 
-    public LicenseStatement(List<LicenseInformation> licenses, LicenseOperator op) {
+    public LicenseStatement(Collection<LicenseInformation> licenses, LicenseOperator op) {
         this.licenses = new ArrayList<>();
         if (licenses != null) {
             this.licenses.addAll(licenses);
@@ -29,7 +29,7 @@ public class LicenseStatement implements LicenseInformation {
         this.op = op != null ? op : LicenseOperator.AND;
     }
 
-    public void setLicenses(List<LicenseInformation> licenses) {
+    public void setLicenses(Collection<LicenseInformation> licenses) {
         this.licenses.clear();
         if (licenses != null) {
             this.licenses.addAll(licenses);
