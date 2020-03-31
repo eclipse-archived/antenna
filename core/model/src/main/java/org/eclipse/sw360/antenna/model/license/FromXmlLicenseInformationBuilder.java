@@ -17,6 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Helper class for creation of license objects out of config xml statements, not for normal use outside
+ * of config parsing.
+ */
 public class FromXmlLicenseInformationBuilder {
     public interface ILicenseInformationBuilder {
         LicenseInformation build();

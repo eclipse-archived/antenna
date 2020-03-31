@@ -13,14 +13,27 @@ package org.eclipse.sw360.antenna.model.license;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * This class reflects an operation in a SPDX license expression. It combines a set of {@link LicenseInformation}
+ * objects with an operation, either 'AND' or 'OR'.
+ */
 public class LicenseStatement implements LicenseInformation {
     private Collection<LicenseInformation> licenses;
     private LicenseOperator op;
 
+    /**
+     * Constructor for an empty statement, can be enriched by setters below.
+     */
     public LicenseStatement() {
         this(null, null);
     }
 
+    /**
+     * The standard constructor to create a license expression with the given license operands and the given operator.
+     *
+     * @param licenses The license operands of the expression, must not be null.
+     * @param op The operator of the expression, must not be null.
+     */
     public LicenseStatement(Collection<LicenseInformation> licenses, LicenseOperator op) {
         this.licenses = new ArrayList<>();
         if (licenses != null) {
@@ -29,6 +42,11 @@ public class LicenseStatement implements LicenseInformation {
         this.op = op != null ? op : LicenseOperator.AND;
     }
 
+    /**
+     * Replace the license operands of the expression by the given Collection.
+     *
+     * @param licenses The license operands of the expression, must not be null.
+     */
     public void setLicenses(Collection<LicenseInformation> licenses) {
         this.licenses.clear();
         if (licenses != null) {
@@ -36,14 +54,28 @@ public class LicenseStatement implements LicenseInformation {
         }
     }
 
+    /**
+     * @return The operator of the expression, never null
+     */
     public LicenseOperator getOp() {
         return op;
     }
 
+    /**
+     * Reset the operator of the expression.
+     *
+     * @param operator The new operator, must not be null.
+     */
     public void setOp(LicenseOperator operator) {
         this.op = operator != null ? operator : LicenseOperator.AND;
     }
 
+    /**
+     * Add a single operand to the expression.
+     *
+     * @param license The new operand to be added to the expression, must not be null.
+     * @return The result of the add operation to the internal collection.
+     */
     public boolean addLicenseInformation(LicenseInformation license) {
         if (license != null) {
             return licenses.add(license);
@@ -67,9 +99,9 @@ public class LicenseStatement implements LicenseInformation {
     }
 
     /**
-     * This method returns the first level of operands of this operation. This can be either licenses or embedded
-     * license operations. In comparison to getLicenses, this method does not dig into the expression to return
-     * all licenses, but reflects the expression tree by returning only the next level.
+     * This method returns the first level of operands of this operation. This can be either {@link License} objects
+     * or embedded {@link LicenseStatement} objects. In comparison to getLicenses, this method does not dig into the
+     * expression to return all licenses, but reflects the expression tree by returning only the next level.
      *
      * @return The direct operands of the license expression.
      */
