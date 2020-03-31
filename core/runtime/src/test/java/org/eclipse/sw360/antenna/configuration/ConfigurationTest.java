@@ -62,7 +62,7 @@ public class ConfigurationTest {
 
         ArtifactIdentifier identifier = new ArtifactFilename("overrideName.jar");
         assertThat(configuration.getFinalLicenses().keySet().stream().anyMatch(k -> k.matches(identifier))).isTrue();
-        List<LicenseInformation> list = configuration.getFinalLicenses().entrySet().stream()
+        List<License> list = configuration.getFinalLicenses().entrySet().stream()
                 .filter(e -> e.getKey().matches(identifier))
                 .map(Map.Entry::getValue)
                 .map(LicenseInformation::getLicenses)
