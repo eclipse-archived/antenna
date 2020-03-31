@@ -82,6 +82,10 @@ public class License implements LicenseInformation {
         properties.put(key, property);
     }
 
+    public Optional<String> getProperty(String key) {
+        return Optional.ofNullable(properties.get(key));
+    }
+
     public void setThreatGroup(String value) {
         setProperty(THREAT_GROUP_KEY, value);
     }
@@ -96,10 +100,6 @@ public class License implements LicenseInformation {
 
     public Optional<String> getClassification() {
         return getProperty(CLASSIFICATION_KEY);
-    }
-
-    public Optional<String> getProperty(String key) {
-        return Optional.ofNullable(properties.get(key));
     }
 
     @Override
