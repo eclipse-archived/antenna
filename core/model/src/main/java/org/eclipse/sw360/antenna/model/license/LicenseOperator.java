@@ -10,6 +10,10 @@
  */
 package org.eclipse.sw360.antenna.model.license;
 
+/**
+ * Simple operator for license expression according to the SPDX license expression standard. The WITH operator is
+ * missing, because with expressions are handled by a special class {@link WithLicense}
+ */
 public enum LicenseOperator {
     AND,
     OR;

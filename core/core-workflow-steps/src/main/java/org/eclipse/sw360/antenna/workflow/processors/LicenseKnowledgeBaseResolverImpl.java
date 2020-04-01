@@ -46,7 +46,7 @@ public class LicenseKnowledgeBaseResolverImpl {
                 .flatMap(List::stream)
                 .map(ArtifactLicenseInformation::get)
                 .map(LicenseInformation::getLicenses)
-                .flatMap(List::stream)
+                .flatMap(Collection::stream)
                 .forEach(license -> {
                     aliasToIdentifier(license);
                     setText(license);
@@ -105,16 +105,16 @@ public class LicenseKnowledgeBaseResolverImpl {
     private void setThreatGroup(License license) {
         Optional<String> threatGroupOfLicense = license.getThreatGroup();
         if (!threatGroupOfLicense.isPresent() || threatGroupOfLicense.get().isEmpty()) {
-            String threatGroupOfKb = this.knowledgeBase.getThreatGroupForId(license.getId());
-            license.setThreatGroup(threatGroupOfKb);
+            Optional.ofNullable(this.knowledgeBase.getThreatGroupForId(license.getId()))
+                    .ifPresent(license::setThreatGroup);
         }
     }
 
     private void setClassification(License license) {
         Optional<String> classificationOfLicense = license.getClassification();
         if (!classificationOfLicense.isPresent() || classificationOfLicense.get().isEmpty()) {
-            String classificationOfKb = this.knowledgeBase.getClassificationById(license.getId());
-            license.setClassification(classificationOfKb);
+            Optional.ofNullable(this.knowledgeBase.getClassificationById(license.getId()))
+                    .ifPresent(license::setClassification);
         }
     }
 }

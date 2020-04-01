@@ -31,6 +31,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,7 +47,7 @@ public class ConfigurationTest {
         URL xmlUrl = ConfigurationTest.class.getResource("/antennaconf.xml");
         XMLResolverJaxB resolver = new XMLResolverJaxB(StandardCharsets.UTF_8);
         AntennaConfig config = resolver.resolveXML(new File(xmlUrl.toURI()));
-        this.configuration = new Configuration(config);
+        configuration = new Configuration(config);
     }
 
     @Test
@@ -61,11 +62,11 @@ public class ConfigurationTest {
 
         ArtifactIdentifier identifier = new ArtifactFilename("overrideName.jar");
         assertThat(configuration.getFinalLicenses().keySet().stream().anyMatch(k -> k.matches(identifier))).isTrue();
-        List<LicenseInformation> list = configuration.getFinalLicenses().entrySet().stream()
+        List<License> list = configuration.getFinalLicenses().entrySet().stream()
                 .filter(e -> e.getKey().matches(identifier))
                 .map(Map.Entry::getValue)
                 .map(LicenseInformation::getLicenses)
-                .flatMap(List::stream)
+                .flatMap(Collection::stream)
                 .collect(Collectors.toList());
         assertThat(list.contains(license)).isTrue();
         assertThat(configuration.isFailOnMissingSources()).isTrue();
@@ -112,7 +113,8 @@ public class ConfigurationTest {
         ).isEqualTo(LicenseOperator.AND);
         assertThat(declaredLicenseInformation
                 .getLicenses()
-                .get(0)
+                .iterator()
+                .next()
                 .evaluate()
         ).isEqualTo("testLicense");
         assertThat(declaredLicenseInformation
@@ -128,7 +130,7 @@ public class ConfigurationTest {
     @Test
     public void addArtifactTest() throws Exception {
         Artifact artifact = configuration.getAddArtifact().get(0);
-        assertThat(artifact.askForGet(DeclaredLicenseInformation.class).get().getLicenses().get(0).evaluate())
+        assertThat(artifact.askForGet(DeclaredLicenseInformation.class).get().getLicenses().iterator().next().evaluate())
                 .isEqualTo("Apache");
         assertThat(artifact.askFor(ArtifactFilename.class).get().getFilenames())
                 .contains("addArtifact.jar");

@@ -84,7 +84,7 @@ public class SW360UpdaterImpl {
     }
 
     private Set<String> getSetOfLicenseIds(Artifact artifact) {
-        List<License> availableLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
+        Collection<License> availableLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
 
         Set<SW360License> detectedLicenses = sw360MetaDataUpdater.getLicenses(availableLicenses);
         Set<String> licenseIds = Collections.emptySet();

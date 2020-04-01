@@ -91,7 +91,10 @@ public class LicenseSupport {
     private static LicenseInformation fromSpdxWithLicense(SpdxCompoundExpression spdxCompoundExpression) {
         final SpdxExpression license = spdxCompoundExpression.component1();
         final SpdxExpression exception = spdxCompoundExpression.component3();
-        return new WithLicense((License) fromSPDXExpression(license), (License) fromSPDXExpression(exception));
+        final License withLicense = (License) fromSPDXExpression(license);
+        final License exceptionLicense = (License) fromSPDXExpression(exception);
+        return new WithLicense(withLicense.getId(), withLicense.getCommonName(), withLicense.getText(),
+                exceptionLicense.getId(), exceptionLicense.getCommonName(), exceptionLicense.getText());
     }
 
     public static LicenseInformation fromSpdxLicenseExceptionExpression(SpdxLicenseExceptionExpression spdxLicenseExceptionExpression) {
@@ -122,13 +125,11 @@ public class LicenseSupport {
         final SpdxOperator operator = spdxCompoundExpression.component2();
         final SpdxExpression right = spdxCompoundExpression.component3();
 
-        if (license.getOp() == null || license.getOp().toString().isEmpty()) {
-            if (SpdxOperator.AND.equals(operator)) {
-                license.setOp(LicenseOperator.AND);
-            }
-            if (SpdxOperator.OR.equals(operator)) {
-                license.setOp(LicenseOperator.OR);
-            }
+        if (SpdxOperator.AND.equals(operator)) {
+            license.setOp(LicenseOperator.AND);
+        }
+        if (SpdxOperator.OR.equals(operator)) {
+            license.setOp(LicenseOperator.OR);
         }
         if (left instanceof SpdxCompoundExpression) {
             checkCompoundChild((SpdxCompoundExpression) left, license);

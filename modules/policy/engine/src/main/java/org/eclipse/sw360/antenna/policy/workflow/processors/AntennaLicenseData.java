@@ -30,11 +30,13 @@ class AntennaLicenseData implements LicenseData {
 
     @Override
     public Optional<String> getLicenseName() {
-        return Optional.ofNullable(license.getCommonName());
+        return Optional.ofNullable(license.getCommonName())
+                .filter(name -> !name.trim().isEmpty());
     }
 
     @Override
     public Optional<String> getLicenseText() {
-        return Optional.ofNullable(license.getText());
+        return Optional.ofNullable(license.getText())
+                .filter(text -> !text.trim().isEmpty());
     }
 }

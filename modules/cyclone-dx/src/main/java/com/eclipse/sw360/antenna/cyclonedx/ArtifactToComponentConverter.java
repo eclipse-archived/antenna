@@ -28,10 +28,7 @@ import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Converts an {@link Artifact} to a {@link Component}.
@@ -135,13 +132,13 @@ public final class ArtifactToComponentConverter {
         }
     }
 
-    private static void addLicensesToComponent(List<License> tinaLicenses, Component c) {
+    private static void addLicensesToComponent(Collection<License> antennaLicenses, Component c) {
         LicenseChoice licenseChoice = new LicenseChoice();
         c.setLicenseChoice(licenseChoice);
-        for (License tinaLicense : tinaLicenses) {
+        for (License antennaLicense : antennaLicenses) {
             org.cyclonedx.model.License license = new org.cyclonedx.model.License();
-            license.setName(tinaLicense.getCommonName());
-            license.setId(tinaLicense.getId());
+            license.setName(antennaLicense.getCommonName());
+            license.setId(antennaLicense.getId());
             licenseChoice.addLicense(license);
         }
     }

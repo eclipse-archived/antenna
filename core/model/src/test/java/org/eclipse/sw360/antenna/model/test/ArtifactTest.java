@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -161,7 +162,7 @@ public class ArtifactTest {
         observedLicenses.setLicenses(Stream.of(license2, declaredLicenses).collect(Collectors.toList()));
         observedLicenses.setOp(LicenseOperator.AND);
         artifact.addFact(new ObservedLicenseInformation(observedLicenses));
-        List<License> licenses = new ArrayList<>();
+        Collection<License> licenses = new ArrayList<>();
         licenses.add(license2);
         licenses.add(declaredLicenses);
 

@@ -113,7 +113,6 @@ public class ArtifactLicenseUtilsTest {
 
         assertThat(finalLicenses.getLicenses().size())
                 .isEqualTo(2);
-        assertThat(finalLicenses.getLicenses().get(0).evaluate())
-                .isEqualTo(epl.getId());
+        assertThat(finalLicenses.getLicenses()).contains(epl);
     }
 }

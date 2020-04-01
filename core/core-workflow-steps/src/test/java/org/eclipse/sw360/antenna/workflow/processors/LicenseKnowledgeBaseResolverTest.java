@@ -124,7 +124,7 @@ public class LicenseKnowledgeBaseResolverTest extends AntennaTestWithMockedConte
 
         knowledgeBaseResolver.process(Collections.singletonList(artifact));
 
-        final List<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
+        final Collection<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
         assertThat(finalLicenses.size()).isEqualTo(1);
         assertThat(finalLicenses.stream()
                 .findAny())
@@ -152,7 +152,7 @@ public class LicenseKnowledgeBaseResolverTest extends AntennaTestWithMockedConte
         knowledgeBaseResolver.process(Collections.singletonList(artifact));
 
 
-        final List<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
+        final Collection<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
         assertThat(finalLicenses.size()).isEqualTo(1);
         assertThat(finalLicenses.stream()
                 .findAny())
@@ -176,13 +176,13 @@ public class LicenseKnowledgeBaseResolverTest extends AntennaTestWithMockedConte
 
         knowledgeBaseResolver.process(Collections.singletonList(artifact));
 
-        final List<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
+        final Collection<License> finalLicenses = ArtifactLicenseUtils.getFinalLicenses(artifact).getLicenses();
         assertThat(finalLicenses.size()).isEqualTo(1);
         assertThat(finalLicenses.stream()
                 .findAny()).hasValueSatisfying(l -> {
                     assertThat(l.getId()).isEqualTo(licenseName);
-                    assertThat(l.getCommonName()).isNull();
-                    assertThat(l.getText()).isNull();
+                    assertThat(l.getCommonName()).isBlank();
+                    assertThat(l.getText()).isBlank();
                     assertThat(l.getThreatGroup()).isNotPresent();
                     assertThat(l.getClassification()).isNotPresent();
         });
