@@ -77,11 +77,20 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
     }
 
     @Test
-    public void testSearchByNameNoContent() {
+    public void testSearchByNameEmptyResult() {
         wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
                 .willReturn(aResponse().withStatus(HttpConstants.STATUS_ACCEPTED)));
 
         extractException(projectClient.searchByName("foo"), IOException.class);
+    }
+
+    @Test
+    public void testSearchByNameNoContent() throws IOException {
+        wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_NO_CONTENT)));
+
+        List<SW360Project> projects = waitFor(projectClient.searchByName("some project"));
+        assertThat(projects).isEmpty();
     }
 
     @Test
@@ -169,5 +178,14 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
                 expectFailedRequest(projectClient.getLinkedReleases("projectID", false),
                         HttpConstants.STATUS_ERR_BAD_REQUEST);
         assertThat(exception.getTag()).isEqualTo(SW360ProjectClient.TAG_GET_LINKED_RELEASES);
+    }
+
+    @Test
+    public void testGetLinkedReleasesNoContent() throws IOException {
+        wireMockRule.stubFor(get(anyUrl())
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_NO_CONTENT)));
+
+        List<SW360SparseRelease> releases = waitFor(projectClient.getLinkedReleases(PROJECT_NAMES[0], false));
+        assertThat(releases).isEmpty();
     }
 }

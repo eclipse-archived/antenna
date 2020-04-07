@@ -77,7 +77,8 @@ public class SW360ProjectClient extends SW360Client {
     public CompletableFuture<List<SW360Project>> searchByName(String name) {
         String queryUrl = HttpUtils.addQueryParameter(resourceUrl(PROJECTS_ENDPOINT),
                 SW360Attributes.PROJECT_SEARCH_BY_NAME, name);
-        return executeJsonRequest(HttpUtils.get(queryUrl), SW360ProjectList.class, TAG_GET_BY_NAME)
+        return executeJsonRequestWithDefault(HttpUtils.get(queryUrl), SW360ProjectList.class,
+                TAG_GET_BY_NAME, SW360ProjectList::new)
                 .thenApply(SW360ResourceUtils::getSw360Projects);
     }
 
@@ -122,7 +123,8 @@ public class SW360ProjectClient extends SW360Client {
         String uri = HttpUtils.addQueryParameter(resourceUrl(PROJECTS_ENDPOINT, projectId,
                 SW360Attributes.PROJECT_RELEASES),
                 SW360Attributes.PROJECT_RELEASES_TRANSITIVE, transitive);
-        return executeJsonRequest(HttpUtils.get(uri), SW360ReleaseList.class, TAG_GET_LINKED_RELEASES)
+        return executeJsonRequestWithDefault(HttpUtils.get(uri), SW360ReleaseList.class,
+                TAG_GET_LINKED_RELEASES, SW360ReleaseList::new)
                 .thenApply(SW360ResourceUtils::getSw360SparseReleases);
     }
 }
