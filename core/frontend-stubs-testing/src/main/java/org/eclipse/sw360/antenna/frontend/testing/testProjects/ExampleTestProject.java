@@ -118,7 +118,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
         WorkflowStep enricher = mkWorkflowStep("SW360 Enricher", "org.eclipse.sw360.antenna.sw360.workflow.processors.SW360Enricher",
                 Stream.of(new String[][] {
                         { "rest.server.url", "http://localhost:8080/resource/api" },
-                        { "auth.server.url", "http://localhost:8080/authorization/oauth" },
+                        { "auth.server.url", "http://localhost:8080/authorization/oauth/token" },
                         { "user.id", "admin@sw360.org" },
                         { "user.password", "12345" },
                         { "client.id", "trusted-sw360-client" },
@@ -141,7 +141,7 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
         WorkflowStep generator = mkWorkflowStep("SW360 Updater", "org.eclipse.sw360.antenna.sw360.workflow.generators.SW360Updater",
                 Stream.of(new String[][] {
                         { "rest.server.url", "http://localhost:8080/resource/api" },
-                        { "auth.server.url", "http://localhost:8080/authorization/oauth" },
+                        { "auth.server.url", "http://localhost:8080/authorization/oauth/token" },
                         { "user.id", "admin@sw360.org" },
                         { "user.password", "12345" },
                         { "client.id", "trusted-sw360-client" },

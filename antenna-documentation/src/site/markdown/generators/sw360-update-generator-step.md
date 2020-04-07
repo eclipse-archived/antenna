@@ -20,7 +20,7 @@ Add the following step into the `<generators>` section of your workflow.xml
     <classHint>org.eclipse.sw360.antenna.sw360.workflow.generators.SW360Updater</classHint>
     <configuration>
         <entry key="rest.server.url" value="http://localhost:8080/resource/api"/>
-        <entry key="auth.server.url" value="http://localhost:8080/authorization/oauth"/>
+        <entry key="auth.server.url" value="http://localhost:8080/authorization/oauth/token"/>
         <entry key="user.id" value="admin@sw360.org"/>
         <entry key="user.password" value="12345"/>
         <entry key="client.id" value="trusted-sw360-client"/>
