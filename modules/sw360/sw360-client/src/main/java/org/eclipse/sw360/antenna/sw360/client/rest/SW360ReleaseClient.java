@@ -97,7 +97,8 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
     // but can change in the order of the values
     public CompletableFuture<List<SW360SparseRelease>> getReleasesByExternalIds(Map<String, ?> externalIds) {
         String url = getExternalIdUrl(externalIds);
-        return executeJsonRequest(HttpUtils.get(url), SW360ReleaseList.class, TAG_GET_RELEASES_BY_EXTERNAL_IDS)
+        return executeJsonRequestWithDefault(HttpUtils.get(url), SW360ReleaseList.class,
+                TAG_GET_RELEASES_BY_EXTERNAL_IDS, SW360ReleaseList::new)
                 .thenApply(SW360ResourceUtils::getSw360SparseReleases);
     }
 
