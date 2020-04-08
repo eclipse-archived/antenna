@@ -70,6 +70,15 @@ public class SW360LicenseClientIT extends AbstractMockServerTest {
     }
 
     @Test
+    public void testGetLicensesStatusNoContent() throws IOException {
+        wireMockRule.stubFor(get(urlPathEqualTo("/licenses"))
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_NO_CONTENT)));
+
+        List<SW360SparseLicense> licenses = waitFor(licenseClient.getLicenses());
+        assertThat(licenses).isEmpty();
+    }
+
+    @Test
     public void testGetLicensesError() {
         wireMockRule.stubFor(get(urlPathEqualTo("/licenses"))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_BAD_REQUEST)));
