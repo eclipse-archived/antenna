@@ -42,6 +42,12 @@ public final class HttpConstants {
     public static final int STATUS_ACCEPTED = 202;
 
     /**
+     * Constant for the HTTP status code 204 NO_CONTENT indicating that a
+     * request has a null body.
+     */
+    public static final int STATUS_NO_CONTENT = 204;
+
+    /**
      * Constant for the HTTP status code 400 BAD REQUEST indicating a general
      * problem with a request sent by a client.
      */

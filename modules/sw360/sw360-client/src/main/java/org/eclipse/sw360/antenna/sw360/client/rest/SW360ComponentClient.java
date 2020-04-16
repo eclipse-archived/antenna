@@ -86,8 +86,8 @@ public class SW360ComponentClient extends SW360Client {
      * @return a future with a list with all existing components
      */
     public CompletableFuture<List<SW360SparseComponent>> getComponents() {
-        return executeJsonRequest(HttpUtils.get(resourceUrl(COMPONENTS_ENDPOINT)), SW360ComponentList.class,
-                TAG_GET_COMPONENTS)
+        return executeJsonRequestWithDefault(HttpUtils.get(resourceUrl(COMPONENTS_ENDPOINT)), SW360ComponentList.class,
+                TAG_GET_COMPONENTS, SW360ComponentList::new)
                 .thenApply(SW360ResourceUtils::getSw360SparseComponents);
     }
 
@@ -101,7 +101,8 @@ public class SW360ComponentClient extends SW360Client {
     public CompletableFuture<List<SW360SparseComponent>> searchByName(String name) {
         String url = HttpUtils.addQueryParameter(resourceUrl(COMPONENTS_ENDPOINT),
                 SW360Attributes.COMPONENT_SEARCH_BY_NAME, name);
-        return executeJsonRequest(HttpUtils.get(url), SW360ComponentList.class, TAG_GET_COMPONENTS_BY_NAME)
+        return executeJsonRequestWithDefault(HttpUtils.get(url), SW360ComponentList.class,
+                TAG_GET_COMPONENTS_BY_NAME, SW360ComponentList::new)
                 .thenApply(SW360ResourceUtils::getSw360SparseComponents);
     }
 

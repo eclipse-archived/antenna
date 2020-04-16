@@ -60,8 +60,8 @@ public class SW360LicenseClient extends SW360Client {
      * @return a future with the list of licenses
      */
     public CompletableFuture<List<SW360SparseLicense>> getLicenses() {
-        return executeJsonRequest(HttpUtils.get(resourceUrl(LICENSES_ENDPOINT)), SW360LicenseList.class,
-                TAG_GET_LICENSES)
+        return executeJsonRequestWithDefault(HttpUtils.get(resourceUrl(LICENSES_ENDPOINT)), SW360LicenseList.class,
+                TAG_GET_LICENSES, SW360LicenseList::new)
                 .thenApply(SW360ResourceUtils::getSw360SparseLicenses);
     }
 

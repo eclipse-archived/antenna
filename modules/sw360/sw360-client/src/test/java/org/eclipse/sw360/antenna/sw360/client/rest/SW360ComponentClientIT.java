@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -73,11 +74,20 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
     }
 
     @Test
-    public void testGetComponentsNoContent() {
+    public void testGetComponentsNoBody() {
         wireMockRule.stubFor(get(urlPathEqualTo("/components"))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_OK)));
 
         extractException(componentClient.getComponents(), IOException.class);
+    }
+
+    @Test
+    public void testGetComponentsStatusNoContent() throws IOException {
+        wireMockRule.stubFor(get(urlPathEqualTo("/components"))
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_NO_CONTENT)));
+
+        List<SW360SparseComponent> components = waitFor(componentClient.getComponents());
+        assertThat(components).isEmpty();
     }
 
     @Test
@@ -110,6 +120,15 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
 
         List<SW360SparseComponent> components = waitFor(componentClient.searchByName("foo"));
         assertThat(components).hasSize(0);
+    }
+
+    @Test
+    public void testSearchByNameStatusNoContent() throws IOException {
+        wireMockRule.stubFor(get(anyUrl())
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_NO_CONTENT)));
+
+        List<SW360SparseComponent> components = waitFor(componentClient.searchByName("test"));
+        assertThat(components).isEmpty();
     }
 
     @Test

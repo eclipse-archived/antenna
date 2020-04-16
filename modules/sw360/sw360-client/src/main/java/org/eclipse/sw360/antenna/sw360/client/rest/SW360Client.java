@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static org.eclipse.sw360.antenna.http.utils.HttpConstants.URL_PATH_SEPARATOR;
 
@@ -125,6 +126,32 @@ public abstract class SW360Client {
                                                           Class<T> resultClass, String tag) {
         return executeRequest(producer,
                 HttpUtils.jsonResult(getClientConfig().getObjectMapper(), resultClass), tag);
+    }
+
+    /**
+     * Executes a request to SW360 with authentication and retry logic that
+     * expects an optional JSON response. This method extends
+     * {@link #executeJsonRequest(Consumer, Class, String)} by a handling of
+     * responses with status code 204 NO CONTENT. If such a response is
+     * received, the supplier for the default result is invoked, and this
+     * result object is returned.
+     *
+     * @param producer      the {@code RequestProducer}
+     * @param resultClass   the class to which the JSON payload is to be
+     *                      converted
+     * @param tag           a tag to identify the result
+     * @param defaultResult the producer of the default result
+     * @param <T>           the type of the result
+     * @return a future with the result of the request
+     */
+    protected <T> CompletableFuture<T> executeJsonRequestWithDefault(Consumer<? super RequestBuilder> producer,
+                                                                     Class<T> resultClass, String tag,
+                                                                     Supplier<? extends T> defaultResult) {
+        ResponseProcessor<T> processor = response ->
+                (response.statusCode() == HttpConstants.STATUS_NO_CONTENT) ?
+                defaultResult.get() :
+                HttpUtils.jsonResult(getClientConfig().getObjectMapper(), resultClass).process(response);
+        return executeRequest(producer, processor, tag);
     }
 
     /**

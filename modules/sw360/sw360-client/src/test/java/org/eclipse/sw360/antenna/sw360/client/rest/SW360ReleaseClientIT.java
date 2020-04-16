@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -112,6 +113,15 @@ public class SW360ReleaseClientIT extends AbstractMockServerTest {
 
         List<SW360SparseRelease> releases = waitFor(releaseClient.getReleasesByExternalIds(idMap));
         checkReleaseData(releases);
+    }
+
+    @Test
+    public void testGetReleasesByExternalIdsStatusNoContent() throws IOException {
+        wireMockRule.stubFor(get(urlPathEqualTo("/releases/searchByExternalIds"))
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_NO_CONTENT)));
+
+        List<SW360SparseRelease> releases = waitFor(releaseClient.getReleasesByExternalIds(new HashMap<>()));
+        assertThat(releases).isEmpty();
     }
 
     @Test
