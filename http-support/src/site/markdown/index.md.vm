@@ -50,19 +50,43 @@ questions. This document provides a short user's guide.
 
 #[[##]]# Obtaining the HTTP client
 
-The HTTP client can be easily obtained from the _AntennaContext_, which is
-available to all workflow step objects. The context offers the
-_getHttpClient()_ method for this purpose. This method creates a new client
-object and initializes it on first access. It is then cached, so that all
-${docNameCap} components asking for the HTTP client are handed out a reference 
-to the same object. The client can then be used directly for HTTP calls without 
-further configuration.
+The _HttpClientFactory_ interface and its default implementation 
+_HttpClientFactoryImpl_ are responsible for creating and setting
+up new instances of _HttpClient_. The factory interface defines a
+_newHttpClient()_ method, which expects an _HttpClientConfig_ object as its
+single argument.
 
-Behind the scenes, the _HttpClientFactory_ interface and its default
-implementation _HttpClientFactoryImpl_ are responsible for creating and setting
-up the client. However, these factories should only be used for obtaining an
-HTTP client outside the context of an ${docNameCap} execution. When using a factory
-the client code is responsible itself of passing in the correct configuration.
+_HttpClientConfig_ allows setting a number of properties that impact the 
+behavior of the client instance. An instance with default settings is available
+via the static _basicConfig()_ method. Using this as a starting point, other
+properties can be set using methods starting with the prefix `with`. Such 
+methods return a modified copy of the current configuration; _HttpClientConfig_
+itself is immutable, and thus instances can be safely shared between different
+components.
+
+The properties that can be changed in a client configuration are the following:
+* A JSON object mapper: This object is used to serialize Java objects to 
+  generate the payload for JSON requests.
+* Proxy settings: Requests can be routed through an HTTP proxy. For this 
+  purpose, the _ProxySettings_ class exists that collects the properties of the
+  proxy server.
+  
+Below is a code fragment that shows the construction of an _HttpClientConfig_ 
+instance and the creation of a new HTTP client based on this configuration. For
+this example we use a very verbose configuration that sets all the properties
+supported:
+
+```
+ProxySettings proxy = ProxySettings.useProxy("my.proxy.host", 8080);
+ObjectMapper customMapper = new ObjectMapper()
+  .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+HttpClientConfig clientConfig = HttpClientConfig.basicConfig()
+  .withProxySettings(proxy)
+  .withObjectMapper(customMapper);
+
+HttpClientFactory clientFactory = new HttpClientFactoryImpl();
+HttpClient httpClient = clientFactory.newHttpClient(clientConfig);
+```
 
 #[[##]]# The HttpClient interface
 

@@ -89,7 +89,7 @@ output from the processed **Artifact**s.
 
 The sources and sinks can be chosen completely by the user. There are some
 fixed processors that will apply the configuration and add, delete or modify
-Artifacts. Also there is the possibility to add further processors to the
+Artifacts. Also, there is the possibility to add further processors to the
 workflow.
 
 In order to implement those WorkflowItems your class needs to extend the
@@ -103,3 +103,9 @@ Common to all three components is the way how they should be instantiated.
 There needs to be a default constructor and a configure method.
 Since the components are instantiated via reflection the default constructor is used. Followed by a call to the configure method with a Map<String, String> containing the configuration.
 See how to configure ${docNameCap} to see how the configuration is passed.
+
+Implementations of custom workflow items have access to a central 
+_AntennaContext_ object. This object provides information about the current
+${docNameCap} execution; it can be queried for the current configuration,
+or manages some shared service objects, such as a preconfigured JSON object
+mapper or an HTTP client.
