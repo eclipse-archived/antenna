@@ -21,7 +21,7 @@ Add the following step into the `<analyzers>` section of your workflow.xml
 ```xml
 <step>
     <name>CSV Analyzer</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.analyzer.CsvAnalyzer</classHint>
+    <classHint>org.eclipse.sw360.antenna.workflow.analyzers.CsvAnalyzer</classHint>
     <configuration>
         <entry key="file.path" value="${basedir}/reportdata.csv" />
         <entry key="base.dir" value="${project.build.directory}/sources" />
