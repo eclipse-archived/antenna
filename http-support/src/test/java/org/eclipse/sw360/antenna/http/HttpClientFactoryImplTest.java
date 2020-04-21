@@ -74,4 +74,19 @@ public class HttpClientFactoryImplTest {
         assertThat(address.getPort()).isEqualTo(port);
         assertThat(proxy.type()).isEqualTo(Proxy.Type.HTTP);
     }
+
+    @Test
+    public void testNewClientWithoutCertificateCheck() {
+        try {
+            System.setProperty(HttpClientFactoryImpl.CLIENT_ACCESS_UNVERIFIED_PROPERTY, "true");
+            ObjectMapper mapper = mock(ObjectMapper.class);
+            HttpClientConfig config = HttpClientConfig.basicConfig()
+                    .withObjectMapper(mapper);
+
+            HttpClientImpl client = createClient(config);
+            assertThat(client.getClient().hostnameVerifier().verify("", null)).isTrue();
+        } finally {
+            System.clearProperty(HttpClientFactoryImpl.CLIENT_ACCESS_UNVERIFIED_PROPERTY);
+        }
+    }
 }

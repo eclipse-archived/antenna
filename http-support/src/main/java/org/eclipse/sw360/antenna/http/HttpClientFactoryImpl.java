@@ -24,6 +24,12 @@ import java.net.Proxy;
  * </p>
  */
 public class HttpClientFactoryImpl implements HttpClientFactory {
+
+    /**
+     * Property to switch access to not verify the certificates
+     */
+    static final String CLIENT_ACCESS_UNVERIFIED_PROPERTY = "client.access.unverified";
+
     @Override
     public HttpClient newHttpClient(HttpClientConfig config) {
         return new HttpClientImpl(createClient(config), config.getOrCreateObjectMapper());
@@ -48,13 +54,13 @@ public class HttpClientFactoryImpl implements HttpClientFactory {
     }
 
     /**
-     * Using the Property "sw360.client.access.unverified", the connection to
-     * SW360 can be done without verification of the ssl certificate
+     * Using the Property CLIENT_ACCESS_UNVERIFIED_PROPERTY, the connection to
+     * the client can be done without verification of the ssl certificate
      *
-     * @return True, if the client access to SW360 should be done with a self-certified call
+     * @return True, if the client access should be done with a self-certified call
      */
     private static boolean unverifiedSSLCertificate() {
-        return "true".equalsIgnoreCase(System.getProperty("sw360.client.access.unverified", "false"));
+        return Boolean.parseBoolean(System.getProperty(CLIENT_ACCESS_UNVERIFIED_PROPERTY));
     }
 
     /**
