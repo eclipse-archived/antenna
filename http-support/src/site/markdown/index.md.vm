@@ -70,7 +70,9 @@ The properties that can be changed in a client configuration are the following:
 * Proxy settings: Requests can be routed through an HTTP proxy. For this 
   purpose, the _ProxySettings_ class exists that collects the properties of the
   proxy server.
-  
+* SSL Certificate Verification: Dynmically, ssl certificate verification can be
+  disabled by setting the system property _client.access.unverified_ to true.
+
 Below is a code fragment that shows the construction of an _HttpClientConfig_ 
 instance and the creation of a new HTTP client based on this configuration. For
 this example we use a very verbose configuration that sets all the properties
