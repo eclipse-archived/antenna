@@ -23,9 +23,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -83,7 +83,7 @@ public final class HttpUtils {
      * @return the result produced by the future
      * @throws IOException if the future failed or waiting was interrupted
      */
-    public static <T> T waitFor(CompletableFuture<? extends T> future) throws IOException {
+    public static <T> T waitFor(Future<? extends T> future) throws IOException {
         try {
             return future.get();
         } catch (InterruptedException e) {

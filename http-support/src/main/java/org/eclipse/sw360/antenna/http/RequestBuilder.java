@@ -53,6 +53,16 @@ public interface RequestBuilder {
      */
     RequestBuilder header(String name, String value);
 
+    /**
+     * Adds a request body to this builder. The consumer passed to this method
+     * is invoked with a {@code RequestBodyBuilder} which can be used to define
+     * the request body. Use this method to define request bodies for simple
+     * requests; for multi-part requests, {@link #multiPart(String, Consumer)}
+     * has to be used instead.
+     *
+     * @param bodyProducer the producer for the request body
+     * @return this request builder
+     */
     RequestBuilder body(Consumer<RequestBodyBuilder> bodyProducer);
 
     /**
