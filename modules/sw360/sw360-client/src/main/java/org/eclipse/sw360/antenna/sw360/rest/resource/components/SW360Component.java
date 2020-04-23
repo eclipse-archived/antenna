@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018-2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -18,12 +19,15 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 public class SW360Component extends SW360HalResource<LinkObjects, SW360ComponentEmbedded> {
     private String name;
     private SW360ComponentType componentType;
     private String createdOn;
     private String homepage;
+
+    private Set<String> categories;
 
     @JsonIgnore
     public String getComponentId() {
@@ -70,6 +74,16 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
 
     public SW360Component setHomepage(String homepage) {
         this.homepage = homepage;
+        return this;
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Set<String> getCategories() {
+        return categories;
+    }
+
+    public SW360Component setCategories(Set<String> categories) {
+        this.categories = categories;
         return this;
     }
 

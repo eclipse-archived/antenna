@@ -84,6 +84,7 @@ public class SW360ComponentClientAdapterTest {
         SW360Component componentFromRelease = mock(SW360Component.class);
         when(componentFromRelease.getComponentId()).thenReturn(null);
         when(componentFromRelease.getName()).thenReturn(COMPONENT_NAME);
+        when(componentFromRelease.getCategories()).thenReturn(Collections.singleton("Antenna"));
         when(componentClient.searchByName(COMPONENT_NAME))
                 .thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
         when(componentClient.createComponent(componentFromRelease))
@@ -96,6 +97,7 @@ public class SW360ComponentClientAdapterTest {
     @Test
     public void testCreateComponent() {
         component.setName(COMPONENT_NAME);
+        component.setCategories(Collections.singleton("Antenna"));
         when(componentClient.createComponent(component))
                 .thenReturn(CompletableFuture.completedFuture(component));
 
