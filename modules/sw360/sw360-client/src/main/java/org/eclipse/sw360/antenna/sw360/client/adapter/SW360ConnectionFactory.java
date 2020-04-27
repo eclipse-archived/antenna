@@ -11,7 +11,6 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
-import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
@@ -51,8 +50,13 @@ public class SW360ConnectionFactory {
         org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter componentAdapter = new SW360ComponentClientAdapter(componentClient);
         SW360ReleaseClient releaseClient = new SW360ReleaseClient(config, tokenProvider);
         SW360ReleaseClientAdapter releaseAdapter = new SW360ReleaseClientAdapter(releaseClient, componentAdapter);
+
         SW360LicenseClient licenseClient = new SW360LicenseClient(config, tokenProvider);
-        org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter licenseAdapter = new SW360LicenseClientAdapter(licenseClient);
+        SW360LicenseClientAdapterAsync licenseAdapterAsync = new SW360LicenseClientAdapterAsyncImpl(licenseClient);
+        SW360LicenseClientAdapter licenseAdapterSync =
+                SyncClientAdapterHandler.newHandler(SW360LicenseClientAdapter.class,
+                        SW360LicenseClientAdapterAsync.class, licenseAdapterAsync);
+
         SW360ProjectClient projectClient = new SW360ProjectClient(config, tokenProvider);
         org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter projectAdapter = new SW360ProjectClientAdapter(projectClient);
 
@@ -68,8 +72,13 @@ public class SW360ConnectionFactory {
             }
 
             @Override
-            public org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter getLicenseAdapter() {
-                return licenseAdapter;
+            public SW360LicenseClientAdapter getLicenseAdapter() {
+                return licenseAdapterSync;
+            }
+
+            @Override
+            public SW360LicenseClientAdapterAsync getLicenseAdapterAsync() {
+                return licenseAdapterAsync;
             }
 
             @Override

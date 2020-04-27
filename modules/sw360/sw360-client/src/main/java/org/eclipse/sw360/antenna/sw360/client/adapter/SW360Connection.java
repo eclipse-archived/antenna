@@ -20,6 +20,11 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
  * deal with specific SW360 endpoints. Via these adapter objects information
  * can be queried from and updated in SW360.
  * </p>
+ * <p>
+ * Adapters are available for both synchronous and asynchronous interactions.
+ * Thus a client can choose the programming model that fits best to its use
+ * cases.
+ * </p>
  */
 public interface SW360Connection {
     /**
@@ -42,13 +47,22 @@ public interface SW360Connection {
     SW360ReleaseClientAdapter getReleaseAdapter();
 
     /**
-     * Returns an adapter object for the interaction with the
+     * Returns an adapter object for the synchronous interaction with the
      * <em>licenses</em> endpoint of SW360. This adapter allows querying the
      * licenses known to SW360.
      *
-     * @return the adapter for licenses
+     * @return the synchronous adapter for licenses
      */
     SW360LicenseClientAdapter getLicenseAdapter();
+
+    /**
+     * Returns an adapter object for the asynchronous interaction with the
+     * <em>licenses</em> endpoint of SW360. This adapter allows querying the
+     * licenses known to SW360.
+     *
+     * @return the asynchronous adapter for licenses
+     */
+    SW360LicenseClientAdapterAsync getLicenseAdapterAsync();
 
     /**
      * Returns an adapter object for the interaction with the
