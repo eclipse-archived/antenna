@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.sw360.antenna.api.Attachable;
 import org.eclipse.sw360.antenna.api.IAttachable;
-import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.workflow.AbstractGenerator;
 import org.eclipse.sw360.antenna.api.workflow.ProcessingState;
 import org.eclipse.sw360.antenna.attribution.document.core.AttributionDocumentGeneratorImpl;
@@ -110,7 +109,7 @@ public class AttributionDocumentGenerator extends AbstractGenerator {
    private File createWorkDir(Path antennaDir) {
       File workDir = new File(antennaDir.toFile(), WORKING_DIR_NAME);
       if (!workDir.mkdirs()) {
-         throw new ConfigurationException("Unable to create working directory in path " + workDir);
+         LOG.debug("The working directory {} already exists. The existing files will be overwritten.", workDir);
       }
       return workDir;
    }
