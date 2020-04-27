@@ -15,6 +15,7 @@ import org.eclipse.sw360.antenna.http.HttpClient;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ConnectionFactory;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;

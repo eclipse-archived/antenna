@@ -8,13 +8,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.client;
+package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
-import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
