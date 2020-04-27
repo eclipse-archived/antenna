@@ -11,7 +11,6 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
-import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;
@@ -58,7 +57,10 @@ public class SW360ConnectionFactory {
                         SW360LicenseClientAdapterAsync.class, licenseAdapterAsync);
 
         SW360ProjectClient projectClient = new SW360ProjectClient(config, tokenProvider);
-        org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter projectAdapter = new SW360ProjectClientAdapter(projectClient);
+        SW360ProjectClientAdapterAsync projectAdapterAsync = new SW360ProjectClientAdapterAsyncImpl(projectClient);
+        SW360ProjectClientAdapter projectAdapterSync =
+                SyncClientAdapterHandler.newHandler(SW360ProjectClientAdapter.class,
+                        SW360ProjectClientAdapterAsync.class, projectAdapterAsync);
 
         return new SW360Connection() {
             @Override
@@ -82,8 +84,13 @@ public class SW360ConnectionFactory {
             }
 
             @Override
-            public org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter getProjectAdapter() {
-                return projectAdapter;
+            public SW360ProjectClientAdapter getProjectAdapter() {
+                return projectAdapterSync;
+            }
+
+            @Override
+            public SW360ProjectClientAdapterAsync getProjectAdapterAsync() {
+                return projectAdapterAsync;
             }
         };
     }

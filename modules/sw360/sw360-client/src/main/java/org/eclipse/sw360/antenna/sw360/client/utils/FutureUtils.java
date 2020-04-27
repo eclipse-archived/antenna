@@ -117,6 +117,22 @@ public class FutureUtils {
     }
 
     /**
+     * Returns a future of the given type that fails with the exception
+     * specified. Note that this method may become obsolete with later Java
+     * versions, but in JDK8, there is not straight-forward way to create such
+     * a future.
+     *
+     * @param ex  the exception causing the future to fail
+     * @param <T> the result type of the future
+     * @return the future failing with the given exception
+     */
+    public static <T> CompletableFuture<T> failedFuture(Throwable ex) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        future.completeExceptionally(ex);
+        return future;
+    }
+
+    /**
      * Checks whether the passed in exception fulfills the given predicate. If
      * the exception is not <strong>null</strong>, it is unwrapped and passed
      * to the predicate.

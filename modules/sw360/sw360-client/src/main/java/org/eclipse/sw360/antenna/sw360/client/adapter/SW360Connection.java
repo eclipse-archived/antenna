@@ -65,11 +65,20 @@ public interface SW360Connection {
     SW360LicenseClientAdapterAsync getLicenseAdapterAsync();
 
     /**
-     * Returns an adapter object for the interaction with the
+     * Returns an adapter object for the synchronous interaction with the
      * <em>projects</em> endpoint of SW360. With this adapter projects can be
      * created and assigned to the software components they are using.
      *
-     * @return the adapter for projects
+     * @return the synchronous adapter for projects
      */
     SW360ProjectClientAdapter getProjectAdapter();
+
+    /**
+     * Returns an adapter object for the asynchronous interaction with the
+     * <em>projects</em> endpoint of SW360. With this adapter projects can be
+     * created and assigned to the software components they are using.
+     *
+     * @return the asynchronous adapter for projects
+     */
+    SW360ProjectClientAdapterAsync getProjectAdapterAsync();
 }

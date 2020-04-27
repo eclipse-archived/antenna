@@ -110,8 +110,12 @@ public class SW360ConnectionFactoryTest {
 
     @Test
     public void testProjectAdapter() {
-        SW360ProjectClientAdapter projectAdapter = newConnection().getProjectAdapter();
+        SW360Connection sw360Connection = newConnection();
+        SW360ProjectClientAdapterAsync projectAdapterAsync = sw360Connection.getProjectAdapterAsync();
+        SW360ProjectClientAdapter projectAdapterSync = sw360Connection.getProjectAdapter();
 
-        checkClient(projectAdapter.getProjectClient());
+        checkClient(projectAdapterAsync.getProjectClient());
+        checkClient(projectAdapterSync.getProjectClient());
+        checkSyncAdapter(projectAdapterSync, projectAdapterAsync);
     }
 }

@@ -8,9 +8,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.adapter;
+package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ProjectClient;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
@@ -24,8 +25,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.eq;
@@ -33,21 +36,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SW360ProjectClientAdapterTest {
+public class SW360ProjectClientAdapterAsyncImplTest {
     private static final String PROJECT_VERSION = "1.0-projectVersion";
     private static final String PROJECT_NAME = "projectName";
     private final String PROJECT_LAST_INDEX = "12345";
 
-    private org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter projectClientAdapter;
+    private SW360ProjectClientAdapterAsync projectClientAdapter;
 
-    private SW360ProjectClient projectClient = mock(SW360ProjectClient.class);
+    private SW360ProjectClient projectClient;
 
     private SW360Project projectWithLink;
     private LinkObjects linkObjects;
 
     @Before
     public void setUp() {
-        projectClientAdapter = new SW360ProjectClientAdapter(projectClient);
+        projectClient = mock(SW360ProjectClient.class);
+        projectClientAdapter = new SW360ProjectClientAdapterAsyncImpl(projectClient);
 
         String projectHref = "url/" + PROJECT_LAST_INDEX;
         Self projectSelf = new Self().setHref(projectHref);
@@ -64,7 +68,8 @@ public class SW360ProjectClientAdapterTest {
         when(projectClient.searchByName(PROJECT_NAME))
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(projectWithLink)));
 
-        Optional<String> projectIdByNameAndVersion = projectClientAdapter.getProjectIdByNameAndVersion(PROJECT_NAME, PROJECT_VERSION);
+        Optional<String> projectIdByNameAndVersion =
+                block(projectClientAdapter.getProjectIdByNameAndVersion(PROJECT_NAME, PROJECT_VERSION));
 
         assertThat(projectIdByNameAndVersion).isPresent();
         assertThat(projectIdByNameAndVersion).hasValue(PROJECT_LAST_INDEX);
@@ -75,9 +80,21 @@ public class SW360ProjectClientAdapterTest {
         when(projectClient.createProject(any()))
                 .thenReturn(CompletableFuture.completedFuture(projectWithLink));
 
-        String indexOfSelfLink = projectClientAdapter.addProject(PROJECT_NAME, PROJECT_VERSION);
+        String indexOfSelfLink = block(projectClientAdapter.addProject(PROJECT_NAME, PROJECT_VERSION));
 
         assertThat(indexOfSelfLink).isEqualTo(PROJECT_LAST_INDEX);
+    }
+
+    @Test
+    public void testAddProjectInvalidName() throws InterruptedException {
+        CompletableFuture<String> future = projectClientAdapter.addProject("", PROJECT_VERSION);
+
+        try {
+            future.get();
+        } catch (ExecutionException e) {
+            assertThat(e.getCause()).isInstanceOf(SW360ClientException.class);
+            assertThat(e.getCause().getMessage()).contains("invalid project");
+        }
     }
 
     @Test
@@ -86,11 +103,12 @@ public class SW360ProjectClientAdapterTest {
         releaseLinkObjects.setSelf(linkObjects.getSelf());
         SW360Release release = new SW360Release();
         release.set_Links(releaseLinkObjects);
-
+        when(projectClient.addReleasesToProject(eq(PROJECT_LAST_INDEX), any()))
+                .thenReturn(CompletableFuture.completedFuture(null));
 
         Collection<SW360Release> releases = Collections.singletonList(release);
 
-        projectClientAdapter.addSW360ReleasesToSW360Project(PROJECT_LAST_INDEX, releases);
+        block(projectClientAdapter.addSW360ReleasesToSW360Project(PROJECT_LAST_INDEX, releases));
 
         verify(projectClient, atLeastOnce()).addReleasesToProject(eq(PROJECT_LAST_INDEX), any());
     }
