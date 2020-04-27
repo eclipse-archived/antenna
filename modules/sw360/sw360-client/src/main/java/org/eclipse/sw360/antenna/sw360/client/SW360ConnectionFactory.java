@@ -14,7 +14,7 @@ import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
-import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
@@ -49,17 +49,17 @@ public class SW360ConnectionFactory {
         AccessTokenProvider tokenProvider = new AccessTokenProvider(authClient);
 
         SW360ComponentClient componentClient = new SW360ComponentClient(config, tokenProvider);
-        SW360ComponentClientAdapter componentAdapter = new SW360ComponentClientAdapter(componentClient);
+        org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter componentAdapter = new SW360ComponentClientAdapter(componentClient);
         SW360ReleaseClient releaseClient = new SW360ReleaseClient(config, tokenProvider);
         SW360ReleaseClientAdapter releaseAdapter = new SW360ReleaseClientAdapter(releaseClient, componentAdapter);
         SW360LicenseClient licenseClient = new SW360LicenseClient(config, tokenProvider);
-        SW360LicenseClientAdapter licenseAdapter = new SW360LicenseClientAdapter(licenseClient);
+        org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter licenseAdapter = new SW360LicenseClientAdapter(licenseClient);
         SW360ProjectClient projectClient = new SW360ProjectClient(config, tokenProvider);
-        SW360ProjectClientAdapter projectAdapter = new SW360ProjectClientAdapter(projectClient);
+        org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter projectAdapter = new SW360ProjectClientAdapter(projectClient);
 
         return new SW360Connection() {
             @Override
-            public SW360ComponentClientAdapter getComponentAdapter() {
+            public org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter getComponentAdapter() {
                 return componentAdapter;
             }
 
@@ -69,12 +69,12 @@ public class SW360ConnectionFactory {
             }
 
             @Override
-            public SW360LicenseClientAdapter getLicenseAdapter() {
+            public org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter getLicenseAdapter() {
                 return licenseAdapter;
             }
 
             @Override
-            public SW360ProjectClientAdapter getProjectAdapter() {
+            public org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter getProjectAdapter() {
                 return projectAdapter;
             }
         };

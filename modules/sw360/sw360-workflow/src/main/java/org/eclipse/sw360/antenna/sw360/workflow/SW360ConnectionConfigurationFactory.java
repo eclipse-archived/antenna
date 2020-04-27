@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.sw360.workflow;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.http.HttpClient;
 import org.eclipse.sw360.antenna.sw360.client.SW360ConnectionFactory;
-import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 
 /**

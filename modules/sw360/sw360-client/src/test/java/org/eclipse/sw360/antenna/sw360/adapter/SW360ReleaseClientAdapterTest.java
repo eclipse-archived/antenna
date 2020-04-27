@@ -50,10 +50,10 @@ public class SW360ReleaseClientAdapterTest {
     private static final String ID = "12345";
     private static final String RELEASE_VERSION1 = "1.0.0";
 
-    private SW360ReleaseClientAdapter releaseClientAdapter;
+    private org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter releaseClientAdapter;
 
     private SW360ReleaseClient releaseClient = mock(SW360ReleaseClient.class);
-    private SW360ComponentClientAdapter componentClientAdapter = mock(SW360ComponentClientAdapter.class);
+    private org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter componentClientAdapter = mock(SW360ComponentClientAdapter.class);
     private SW360Release release;
 
     @Before

@@ -12,11 +12,11 @@ package org.eclipse.sw360.antenna.sw360.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.http.HttpClient;
-import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
-import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
-import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
-import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360Client;
@@ -76,7 +76,7 @@ public class SW360ConnectionFactoryTest {
     @Test
     public void testReleaseAdapter() {
         SW360Connection connection = newConnection();
-        SW360ReleaseClientAdapter releaseAdapter = connection.getReleaseAdapter();
+        SW360ReleaseClientAdapter releaseAdapter = (SW360ReleaseClientAdapter) connection.getReleaseAdapter();
 
         checkClient(releaseAdapter.getReleaseClient());
         assertThat(releaseAdapter.getComponentAdapter()).isEqualTo(connection.getComponentAdapter());

@@ -14,7 +14,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.sw360.antenna.api.service.ServiceFactory;
 import org.eclipse.sw360.antenna.api.workflow.ConfigurableWorkflowItem;
-import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
 
 import java.io.File;

@@ -21,17 +21,19 @@ import java.util.Optional;
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.optionalFuture;
 
-public class SW360LicenseClientAdapter {
+public class SW360LicenseClientAdapter implements org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter {
     private final SW360LicenseClient licenseClient;
 
     public SW360LicenseClientAdapter(SW360LicenseClient client) {
         licenseClient = client;
     }
 
+    @Override
     public SW360LicenseClient getLicenseClient() {
         return licenseClient;
     }
 
+    @Override
     public boolean isLicenseOfArtifactAvailable(String license) {
         List<SW360SparseLicense> sw360Licenses = block(getLicenseClient().getLicenses());
 
@@ -40,10 +42,12 @@ public class SW360LicenseClientAdapter {
                 .anyMatch(n -> n.equals(license));
     }
 
+    @Override
     public Optional<SW360License> getSW360LicenseByAntennaLicense(String license) {
         return block(optionalFuture(getLicenseClient().getLicenseByName(license)));
     }
 
+    @Override
     public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense) {
         return block(optionalFuture(getLicenseClient().getLicenseByName(sparseLicense.getShortName())));
     }

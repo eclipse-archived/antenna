@@ -24,17 +24,19 @@ import java.util.Optional;
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.optionalFuture;
 
-public class SW360ComponentClientAdapter {
+public class SW360ComponentClientAdapter implements org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter {
     private final SW360ComponentClient componentClient;
 
     public SW360ComponentClientAdapter(SW360ComponentClient client) {
         componentClient = client;
     }
 
+    @Override
     public SW360ComponentClient getComponentClient() {
         return componentClient;
     }
 
+    @Override
     public Optional<SW360Component> getOrCreateComponent(SW360Component componentFromRelease) {
         if(componentFromRelease.getComponentId() != null) {
             return getComponentById(componentFromRelease.getComponentId());
@@ -43,6 +45,7 @@ public class SW360ComponentClientAdapter {
                 .orElseGet(() -> createComponent(componentFromRelease)));
     }
 
+    @Override
     public SW360Component createComponent(SW360Component component) {
         if(!SW360ComponentAdapterUtils.isValidComponent(component)) {
             throw new SW360ClientException("Can not write invalid component for " + component.getName());
@@ -50,10 +53,12 @@ public class SW360ComponentClientAdapter {
         return block(getComponentClient().createComponent(component));
     }
 
+    @Override
     public Optional<SW360Component> getComponentById(String componentId) {
         return block(optionalFuture(getComponentClient().getComponent(componentId)));
     }
 
+    @Override
     public Optional<SW360Component> getComponentByName(String componentName) {
         List<SW360SparseComponent> components = block(getComponentClient().searchByName(componentName));
 
@@ -67,6 +72,7 @@ public class SW360ComponentClientAdapter {
                 .findFirst();
     }
 
+    @Override
     public List<SW360SparseComponent> getComponents() {
         return block(getComponentClient().getComponents());
     }

@@ -35,7 +35,7 @@ public class SW360ComponentClientAdapterTest {
     private final static String COMPONENT_ID = "12345";
     private final static String COMPONENT_NAME = "componentName";
 
-    private SW360ComponentClientAdapter componentClientAdapter;
+    private org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter componentClientAdapter;
 
     private SW360ComponentClient componentClient = mock(SW360ComponentClient.class);
 

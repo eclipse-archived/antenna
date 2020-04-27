@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 public class SW360LicenseClientAdapterTest {
     private static final String LICENSE_NAME = "licenseName";
 
-    private SW360LicenseClientAdapter licenseClientAdapter;
+    private org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter licenseClientAdapter;
 
     private SW360LicenseClient licenseClient = mock(SW360LicenseClient.class);
 

@@ -13,10 +13,10 @@
 package org.eclipse.sw360.antenna.sw360;
 
 import org.eclipse.sw360.antenna.model.license.License;
-import org.eclipse.sw360.antenna.sw360.adapter.SW360LicenseClientAdapter;
-import org.eclipse.sw360.antenna.sw360.adapter.SW360ProjectClientAdapter;
-import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
-import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;

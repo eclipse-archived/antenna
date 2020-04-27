@@ -34,25 +34,27 @@ import java.util.Set;
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.optionalFuture;
 
-public class SW360ReleaseClientAdapter {
+public class SW360ReleaseClientAdapter implements org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360ReleaseClientAdapter.class);
 
     private final SW360ReleaseClient releaseClient;
-    private final SW360ComponentClientAdapter sw360ComponentClientAdapter;
+    private final org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter sw360ComponentClientAdapter;
 
-    public SW360ReleaseClientAdapter(SW360ReleaseClient client, SW360ComponentClientAdapter componentClientAdapter) {
+    public SW360ReleaseClientAdapter(SW360ReleaseClient client, org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter componentClientAdapter) {
         releaseClient = client;
         sw360ComponentClientAdapter = componentClientAdapter;
     }
 
+    @Override
     public SW360ReleaseClient getReleaseClient() {
         return releaseClient;
     }
 
-    public SW360ComponentClientAdapter getComponentAdapter() {
+    public org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter getComponentAdapter() {
         return sw360ComponentClientAdapter;
     }
 
+    @Override
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateReleases) {
         // NOTE: this code does now always merge with the SW360Release used for querying
         return getRelease(sw360ReleaseFromArtifact)
@@ -70,6 +72,7 @@ public class SW360ReleaseClientAdapter {
     /*
      * Create a release in SW360
      */
+    @Override
     public SW360Release createRelease(SW360Release releaseFromArtifact) {
         if (! SW360ReleaseAdapterUtils.isValidRelease(releaseFromArtifact)) {
             throw new SW360ClientException("Can not write invalid release for " + releaseFromArtifact.getName() + "-" + releaseFromArtifact.getVersion());
@@ -94,6 +97,7 @@ public class SW360ReleaseClientAdapter {
         return block(getReleaseClient().createRelease(releaseFromArtifact));
     }
 
+    @Override
     public SW360Release uploadAttachments(SW360Release sw360item, Map<Path, SW360AttachmentType> attachments) {
         for(Map.Entry<Path, SW360AttachmentType> attachment : attachments.entrySet()) {
             if (!attachmentIsPotentialDuplicate(attachment.getKey(), sw360item.get_Embedded().getAttachments())) {
@@ -108,14 +112,17 @@ public class SW360ReleaseClientAdapter {
                 .anyMatch(attachment1 -> attachment1.getFilename().equals(attachment.getFileName().toString()));
     }
 
+    @Override
     public Optional<SW360Release> getReleaseById(String releaseId) {
         return block(optionalFuture(getReleaseClient().getRelease(releaseId)));
     }
 
+    @Override
     public Optional<SW360Release> enrichSparseRelease(SW360SparseRelease sparseRelease) {
         return getReleaseById(sparseRelease.getReleaseId());
     }
 
+    @Override
     public Optional<SW360SparseRelease> getSparseRelease(SW360Release sw360ReleaseFromArtifact) {
         final Optional<SW360SparseRelease> releaseByExternalId = getReleaseByExternalIds(sw360ReleaseFromArtifact.getExternalIds());
         if (releaseByExternalId.isPresent()) {
@@ -124,6 +131,7 @@ public class SW360ReleaseClientAdapter {
         return getReleaseByNameAndVersion(sw360ReleaseFromArtifact);
     }
 
+    @Override
     public Optional<SW360Release> getRelease(SW360Release sw360ReleaseFromArtifact) {
         return getSparseRelease(sw360ReleaseFromArtifact)
                 .map(this::enrichSparseRelease)
@@ -131,6 +139,7 @@ public class SW360ReleaseClientAdapter {
                 .map(Optional::get);
     }
 
+    @Override
     public Optional<SW360SparseRelease> getReleaseByExternalIds(Map<String, ?> externalIds) {
         final List<SW360SparseRelease> releasesByExternalIds =
                 block(getReleaseClient().getReleasesByExternalIds(externalIds));
@@ -144,6 +153,7 @@ public class SW360ReleaseClientAdapter {
         }
     }
 
+    @Override
     public Optional<SW360SparseRelease> getReleaseByNameAndVersion(SW360Release sw360ReleaseFromArtifact) {
         return getComponentAdapter().getComponentByName(sw360ReleaseFromArtifact.getName())
                 .map(SW360Component::get_Embedded)
@@ -153,6 +163,7 @@ public class SW360ReleaseClientAdapter {
                         .findFirst());
     }
 
+    @Override
     public Optional<SW360Release> getReleaseByVersion(SW360Component component, String releaseVersion) {
         if (component != null &&
                 component.get_Embedded() != null &&
@@ -170,6 +181,7 @@ public class SW360ReleaseClientAdapter {
         return Optional.empty();
     }
 
+    @Override
     public Optional<Path> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath) {
         return Optional.ofNullable(release.get_Links().getSelf())
                 .flatMap(self -> block(optionalFuture(getReleaseClient().downloadAttachment(self.getHref(), attachment, downloadPath))));

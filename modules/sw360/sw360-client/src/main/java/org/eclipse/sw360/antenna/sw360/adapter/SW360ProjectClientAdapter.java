@@ -30,17 +30,19 @@ import java.util.stream.Collectors;
 
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
 
-public class SW360ProjectClientAdapter {
+public class SW360ProjectClientAdapter implements org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter {
     private final SW360ProjectClient projectClient;
 
     public SW360ProjectClientAdapter(SW360ProjectClient client) {
         projectClient = client;
     }
 
+    @Override
     public SW360ProjectClient getProjectClient() {
         return projectClient;
     }
 
+    @Override
     public Optional<String> getProjectIdByNameAndVersion(String projectName, String projectVersion) {
         List<SW360Project> projects = block(getProjectClient().searchByName(projectName));
 
@@ -51,6 +53,7 @@ public class SW360ProjectClientAdapter {
                 .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink);
     }
 
+    @Override
     public String addProject(String projectName, String projectVersion) {
         SW360Project sw360Project = new SW360Project();
         SW360ProjectAdapterUtils.prepareProject(sw360Project, projectName, projectVersion);
@@ -64,6 +67,7 @@ public class SW360ProjectClientAdapter {
         return SW360HalResourceUtility.getLastIndexOfSelfLink(responseProject.get_Links()).orElse("");
     }
 
+    @Override
     public void addSW360ReleasesToSW360Project(String id, Collection<SW360Release> releases) {
         List<String> releaseLinks = releases.stream()
                 .map(SW360Release::get_Links)
@@ -75,6 +79,7 @@ public class SW360ProjectClientAdapter {
         getProjectClient().addReleasesToProject(id, releaseLinks);
     }
 
+    @Override
     public List<SW360SparseRelease> getLinkedReleases(String projectId) {
         return block(getProjectClient().getLinkedReleases(projectId, true));
     }

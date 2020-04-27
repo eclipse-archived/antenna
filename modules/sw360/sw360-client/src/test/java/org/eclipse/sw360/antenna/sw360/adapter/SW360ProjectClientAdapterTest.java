@@ -38,7 +38,7 @@ public class SW360ProjectClientAdapterTest {
     private static final String PROJECT_NAME = "projectName";
     private final String PROJECT_LAST_INDEX = "12345";
 
-    private SW360ProjectClientAdapter projectClientAdapter;
+    private org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter projectClientAdapter;
 
     private SW360ProjectClient projectClient = mock(SW360ProjectClient.class);
 
