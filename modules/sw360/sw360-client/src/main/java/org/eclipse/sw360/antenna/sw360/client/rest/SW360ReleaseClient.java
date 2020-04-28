@@ -72,7 +72,7 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
     }
 
     /**
-     * Returns a< future with detail information about the release with the
+     * Returns a future with detail information about the release with the
      * given ID. If the release cannot be found, the future fails with a
      * {@link org.eclipse.sw360.antenna.http.utils.FailedRequestException} with
      * status code 404.

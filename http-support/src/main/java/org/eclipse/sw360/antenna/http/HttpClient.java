@@ -26,11 +26,12 @@ import java.util.function.Consumer;
  * allows for a declarative approach when specifying the properties of requests
  * as shown in the following example:
  * </p>
- * <pre>
+ * <pre>{@code
  * httpClient.execute(builder -> builder.method(RequestBuilder.Method.POST)
  *                                 .uri(endpointUri())
  *                                 .body(body -> body.string(CONTENT, CONTENT_TEXT_PLAIN)),
  *                                 ...);
+ * }
  * </pre>
  * <p>
  * When the response arrives it is passed to a {@link ResponseProcessor}, which

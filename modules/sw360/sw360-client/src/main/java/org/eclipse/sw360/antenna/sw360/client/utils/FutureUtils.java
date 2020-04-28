@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -37,7 +38,7 @@ public class FutureUtils {
      * Blocks until the future specified has completed and returns the result.
      * This method is used by the adapter classes to map asynchronous client
      * methods to blocking calls. It works like the
-     * {@link HttpUtils#waitFor(CompletableFuture)} method, but also wraps
+     * {@link HttpUtils#waitFor(Future)} method, but also wraps
      * checked {@code IOException} exceptions into runtime exceptions.
      *
      * @param future the future to block for
