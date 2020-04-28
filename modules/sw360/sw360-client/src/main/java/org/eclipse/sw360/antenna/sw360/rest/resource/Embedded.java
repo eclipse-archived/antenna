@@ -12,7 +12,7 @@
 package org.eclipse.sw360.antenna.sw360.rest.resource;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.eclipse.sw360.antenna.sw360.rest.deserializer.SW360ResourceDeserializer;
+import org.eclipse.sw360.antenna.sw360.client.rest.deserializer.SW360ResourceDeserializer;
 
 @JsonDeserialize(using = SW360ResourceDeserializer.class)
 public interface Embedded {

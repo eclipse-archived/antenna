@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.rest.deserializer;
+package org.eclipse.sw360.antenna.sw360.client.rest.deserializer;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
