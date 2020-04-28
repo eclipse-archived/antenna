@@ -28,13 +28,22 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
  */
 public interface SW360Connection {
     /**
-     * Returns an adapter object for the interaction with the
+     * Returns an adapter object for the synchronous interaction with the
      * <em>components</em> endpoint of SW360. Using this adapter, information
      * about all known software components can be queried.
      *
-     * @return the adapter for components
+     * @return the synchronous adapter for components
      */
     SW360ComponentClientAdapter getComponentAdapter();
+
+    /**
+     * Returns an adapter object for the asynchronous interaction with the
+     * <em>components</em> endpoint of SW360. Using this adapter, information
+     * about all known software components can be queried.
+     *
+     * @return the asynchronous adapter for components
+     */
+    SW360ComponentClientAdapterAsync getComponentAdapterAsync();
 
     /**
      * Returns an adapter object for the interaction with the

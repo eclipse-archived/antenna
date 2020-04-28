@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
-import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;
@@ -46,9 +45,13 @@ public class SW360ConnectionFactory {
         AccessTokenProvider tokenProvider = new AccessTokenProvider(authClient);
 
         SW360ComponentClient componentClient = new SW360ComponentClient(config, tokenProvider);
-        org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter componentAdapter = new SW360ComponentClientAdapter(componentClient);
+        SW360ComponentClientAdapterAsync componentAdapterAsync = new SW360ComponentClientAdapterAsyncImpl(componentClient);
+        SW360ComponentClientAdapter componentAdapterSync =
+                SyncClientAdapterHandler.newHandler(SW360ComponentClientAdapter.class,
+                        SW360ComponentClientAdapterAsync.class, componentAdapterAsync);
+
         SW360ReleaseClient releaseClient = new SW360ReleaseClient(config, tokenProvider);
-        SW360ReleaseClientAdapter releaseAdapter = new SW360ReleaseClientAdapter(releaseClient, componentAdapter);
+        SW360ReleaseClientAdapter releaseAdapter = new SW360ReleaseClientAdapter(releaseClient, componentAdapterSync);
 
         SW360LicenseClient licenseClient = new SW360LicenseClient(config, tokenProvider);
         SW360LicenseClientAdapterAsync licenseAdapterAsync = new SW360LicenseClientAdapterAsyncImpl(licenseClient);
@@ -64,8 +67,13 @@ public class SW360ConnectionFactory {
 
         return new SW360Connection() {
             @Override
-            public org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter getComponentAdapter() {
-                return componentAdapter;
+            public SW360ComponentClientAdapter getComponentAdapter() {
+                return componentAdapterSync;
+            }
+
+            @Override
+            public SW360ComponentClientAdapterAsync getComponentAdapterAsync() {
+                return componentAdapterAsync;
             }
 
             @Override

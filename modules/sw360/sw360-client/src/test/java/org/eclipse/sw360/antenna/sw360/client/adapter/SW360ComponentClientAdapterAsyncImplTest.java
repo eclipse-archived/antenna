@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.adapter;
+package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
@@ -27,24 +27,27 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SW360ComponentClientAdapterTest {
+public class SW360ComponentClientAdapterAsyncImplTest {
     private final static String COMPONENT_ID = "12345";
     private final static String COMPONENT_NAME = "componentName";
 
-    private org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter componentClientAdapter;
+    private SW360ComponentClientAdapterAsync componentClientAdapter;
 
-    private SW360ComponentClient componentClient = mock(SW360ComponentClient.class);
+    private SW360ComponentClient componentClient;
 
     private SW360SparseComponent sparseComponent;
     private SW360Component component;
 
     @Before
     public void setUp() {
-        componentClientAdapter = new SW360ComponentClientAdapter(componentClient);
+        componentClient = mock(SW360ComponentClient.class);
+        componentClientAdapter = new SW360ComponentClientAdapterAsyncImpl(componentClient);
         sparseComponent = new SW360SparseComponent();
         component = new SW360Component();
     }
@@ -56,7 +59,7 @@ public class SW360ComponentClientAdapterTest {
         when(componentClient.getComponent(COMPONENT_ID))
                 .thenReturn(CompletableFuture.completedFuture(component));
 
-        Optional<SW360Component> optResult = componentClientAdapter.getOrCreateComponent(componentFromRelease);
+        Optional<SW360Component> optResult = block(componentClientAdapter.getOrCreateComponent(componentFromRelease));
         assertThat(optResult).contains(component);
     }
 
@@ -75,7 +78,7 @@ public class SW360ComponentClientAdapterTest {
         when(componentClient.searchByName(COMPONENT_NAME))
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseComponent)));
 
-        Optional<SW360Component> optResult = componentClientAdapter.getOrCreateComponent(componentFromRelease);
+        Optional<SW360Component> optResult = block(componentClientAdapter.getOrCreateComponent(componentFromRelease));
         assertThat(optResult).contains(component);
     }
 
@@ -90,7 +93,7 @@ public class SW360ComponentClientAdapterTest {
         when(componentClient.createComponent(componentFromRelease))
                 .thenReturn(CompletableFuture.completedFuture(component));
 
-        Optional<SW360Component> optResult = componentClientAdapter.getOrCreateComponent(componentFromRelease);
+        Optional<SW360Component> optResult = block(componentClientAdapter.getOrCreateComponent(componentFromRelease));
         assertThat(optResult).contains(component);
     }
 
@@ -101,7 +104,7 @@ public class SW360ComponentClientAdapterTest {
         when(componentClient.createComponent(component))
                 .thenReturn(CompletableFuture.completedFuture(component));
 
-        SW360Component createdComponent = componentClientAdapter.createComponent(this.component);
+        SW360Component createdComponent = block(componentClientAdapter.createComponent(this.component));
 
         assertThat(createdComponent).isEqualTo(component);
         verify(componentClient).createComponent(component);
@@ -109,7 +112,20 @@ public class SW360ComponentClientAdapterTest {
 
     @Test (expected = SW360ClientException.class)
     public void testCreateComponentNull() {
-        componentClientAdapter.createComponent(this.component);
+        block(componentClientAdapter.createComponent(this.component));
+    }
+
+    @Test
+    public void testCreateComponentInvalid() {
+        component.setName("");
+
+        CompletableFuture<SW360Component> futComponent = componentClientAdapter.createComponent(this.component);
+        try {
+            block(futComponent);
+            fail("Invalid component not detected.");
+        } catch (SW360ClientException e) {
+            assertThat(e.getMessage()).contains("invalid component");
+        }
     }
 
     @Test
@@ -117,7 +133,7 @@ public class SW360ComponentClientAdapterTest {
         when(componentClient.getComponent(COMPONENT_ID))
                 .thenReturn(CompletableFuture.completedFuture(component));
 
-        Optional<SW360Component> componentById = componentClientAdapter.getComponentById(COMPONENT_ID);
+        Optional<SW360Component> componentById = block(componentClientAdapter.getComponentById(COMPONENT_ID));
 
         assertThat(componentById).isPresent();
         assertThat(componentById).hasValue(component);
@@ -130,7 +146,7 @@ public class SW360ComponentClientAdapterTest {
         failedFuture.completeExceptionally(new FailedRequestException("tag", HttpConstants.STATUS_ERR_NOT_FOUND));
         when(componentClient.getComponent(COMPONENT_ID)).thenReturn(failedFuture);
 
-        Optional<SW360Component> componentById = componentClientAdapter.getComponentById(COMPONENT_ID);
+        Optional<SW360Component> componentById = block(componentClientAdapter.getComponentById(COMPONENT_ID));
         assertThat(componentById).isNotPresent();
     }
 
@@ -147,7 +163,7 @@ public class SW360ComponentClientAdapterTest {
         when(componentClient.searchByName(COMPONENT_NAME))
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseComponent)));
 
-        Optional<SW360Component> componentByName = componentClientAdapter.getComponentByName(COMPONENT_NAME);
+        Optional<SW360Component> componentByName = block(componentClientAdapter.getComponentByName(COMPONENT_NAME));
 
         assertThat(componentByName).isPresent();
         assertThat(componentByName).hasValue(component);
@@ -160,7 +176,7 @@ public class SW360ComponentClientAdapterTest {
         when(componentClient.getComponents())
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseComponent)));
 
-        List<SW360SparseComponent> components = componentClientAdapter.getComponents();
+        List<SW360SparseComponent> components = block(componentClientAdapter.getComponents());
 
         assertThat(components).hasSize(1);
         assertThat(components).containsExactly(sparseComponent);

@@ -83,9 +83,13 @@ public class SW360ConnectionFactoryTest {
 
     @Test
     public void testComponentAdapter() {
-        SW360ComponentClientAdapter componentAdapter = newConnection().getComponentAdapter();
+        SW360Connection sw360Connection = newConnection();
+        SW360ComponentClientAdapterAsync componentAdapterAsync = sw360Connection.getComponentAdapterAsync();
+        SW360ComponentClientAdapter componentAdapterSync = sw360Connection.getComponentAdapter();
 
-        checkClient(componentAdapter.getComponentClient());
+        checkClient(componentAdapterAsync.getComponentClient());
+        checkClient(componentAdapterSync.getComponentClient());
+        checkSyncAdapter(componentAdapterSync, componentAdapterAsync);
     }
 
     @Test
