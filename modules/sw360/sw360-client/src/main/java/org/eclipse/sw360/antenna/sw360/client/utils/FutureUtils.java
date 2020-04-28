@@ -51,6 +51,9 @@ public class FutureUtils {
         try {
             return HttpUtils.waitFor(future);
         } catch (IOException e) {
+            if (e.getCause() instanceof SW360ClientException) {
+                throw (SW360ClientException) e.getCause();
+            }
             throw new SW360ClientException("Asynchronous call failed.", e);
         }
     }
