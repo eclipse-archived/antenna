@@ -8,12 +8,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.adapter;
+package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
-import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,9 +37,15 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.fail;
+import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class SW360ReleaseClientAdapterTest {
+public class SW360ReleaseClientAdapterAsyncImplTest {
     private static final String RELEASE_DOWNLOAD_URL = "https://organisation-test.org/";
     private static final String RELEASE_CLEARING_STATE = "PROJECT_APPROVED";
     private static final String RELEASE_DECLEARED_LICENSE = "The-Test-License";
@@ -51,15 +58,18 @@ public class SW360ReleaseClientAdapterTest {
     private static final String ID = "12345";
     private static final String RELEASE_VERSION1 = "1.0.0";
 
-    private org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter releaseClientAdapter;
+    private SW360ReleaseClientAdapterAsync releaseClientAdapter;
 
-    private SW360ReleaseClient releaseClient = mock(SW360ReleaseClient.class);
-    private org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter componentClientAdapter = mock(SW360ComponentClientAdapter.class);
+    private SW360ReleaseClient releaseClient;
+    private SW360ComponentClientAdapterAsync componentClientAdapter;
     private SW360Release release;
 
     @Before
     public void setUp() throws MalformedPackageURLException {
+        releaseClient = mock(SW360ReleaseClient.class);
+        componentClientAdapter = mock(SW360ComponentClientAdapterAsync.class);
         release = mkSW360Release("releaseName");
+        releaseClientAdapter = new SW360ReleaseClientAdapterAsyncImpl(releaseClient, componentClientAdapter);
     }
 
     @Test
@@ -75,9 +85,8 @@ public class SW360ReleaseClientAdapterTest {
 
         when(releaseClient.patchRelease(release))
                 .thenReturn(CompletableFuture.completedFuture(release));
-        releaseClientAdapter = new SW360ReleaseClientAdapter(releaseClient, componentClientAdapter);
 
-        SW360Release patchedRelease = releaseClientAdapter.getOrCreateRelease(release, true);
+        SW360Release patchedRelease = block(releaseClientAdapter.getOrCreateRelease(release, true));
 
         assertThat(patchedRelease).isEqualTo(release);
         verify(releaseClient).getRelease(ID);
@@ -104,17 +113,60 @@ public class SW360ReleaseClientAdapterTest {
         component.set_Links(links);
 
         when(componentClientAdapter.getOrCreateComponent(any()))
-                .thenReturn(Optional.of(component));
+                .thenReturn(CompletableFuture.completedFuture(Optional.of(component)));
         when(releaseClient.createRelease(release))
                 .thenReturn(CompletableFuture.completedFuture(release));
 
-        releaseClientAdapter = new SW360ReleaseClientAdapter(releaseClient, componentClientAdapter);
-
-        SW360Release createdRelease = releaseClientAdapter.createRelease(this.release);
+        SW360Release createdRelease = block(releaseClientAdapter.createRelease(this.release));
 
         assertThat(createdRelease).isEqualTo(release);
         verify(releaseClient).createRelease(release);
         verify(componentClientAdapter).getOrCreateComponent(any());
+    }
+
+    @Test
+    public void testCreateReleaseInvalid() {
+        release.setName("");
+
+        try {
+            block(releaseClientAdapter.createRelease(release));
+            fail("Invalid release not detected");
+        } catch (SW360ClientException e) {
+            assertThat(e.getMessage()).contains("invalid release");
+        }
+    }
+
+    @Test
+    public void testCreateReleaseWithID() {
+        release.setReleaseId("R11");
+
+        try {
+            block(releaseClientAdapter.createRelease(release));
+            fail("Release ID not detected");
+        } catch (SW360ClientException e) {
+            assertThat(e.getMessage()).contains("already has the id");
+        }
+    }
+
+    @Test
+    public void testCreateReleaseAlreadyPresent() {
+        SW360SparseRelease sparseRelease = new SW360SparseRelease()
+                .setVersion(release.getVersion());
+        String componentHref = "url/" + ID;
+        Self componentSelf = new Self().setHref(componentHref);
+        LinkObjects links = new LinkObjects()
+                .setSelf(componentSelf);
+        SW360Component component = getSw360Component(sparseRelease, "componentName");
+        component.set_Links(links);
+        when(componentClientAdapter.getOrCreateComponent(any()))
+                .thenReturn(CompletableFuture.completedFuture(Optional.of(component)));
+
+        try {
+            block(releaseClientAdapter.createRelease(release));
+            fail("Existing release not detected");
+        } catch (SW360ClientException e) {
+            assertThat(e.getMessage()).contains("release already exists");
+        }
     }
 
     @Test
@@ -129,12 +181,10 @@ public class SW360ReleaseClientAdapterTest {
         when(releaseClient.uploadAndAttachAttachment(release, path, attachmentType))
                 .thenReturn(CompletableFuture.completedFuture(release));
 
-        releaseClientAdapter = new SW360ReleaseClientAdapter(releaseClient, componentClientAdapter);
-
         Map<Path, SW360AttachmentType> attachmentMap = new HashMap<>();
         attachmentMap.put(path, attachmentType);
 
-        SW360Release releaseWithAttachment = releaseClientAdapter.uploadAttachments(this.release, attachmentMap);
+        SW360Release releaseWithAttachment = block(releaseClientAdapter.uploadAttachments(this.release, attachmentMap));
 
         assertThat(releaseWithAttachment).isEqualTo(release);
         verify(releaseClient).uploadAndAttachAttachment(release, path, attachmentType);
@@ -147,13 +197,39 @@ public class SW360ReleaseClientAdapterTest {
 
         when(releaseClient.getReleasesByExternalIds(externalIds))
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseRelease)));
-        releaseClientAdapter = new SW360ReleaseClientAdapter(releaseClient, componentClientAdapter);
 
-        Optional<SW360SparseRelease> releaseByExternalIds = releaseClientAdapter.getReleaseByExternalIds(externalIds);
+        Optional<SW360SparseRelease> releaseByExternalIds =
+                block(releaseClientAdapter.getReleaseByExternalIds(externalIds));
 
         assertThat(releaseByExternalIds).isPresent();
         assertThat(releaseByExternalIds).hasValue(sparseRelease);
         verify(releaseClient).getReleasesByExternalIds(externalIds);
+    }
+
+    @Test
+    public void testGetReleaseByExternalIdsNotFound() {
+        Map<String, String> externalIds = new HashMap<>();
+        when(releaseClient.getReleasesByExternalIds(externalIds))
+                .thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
+
+        Optional<SW360SparseRelease> releaseByExternalIds =
+                block(releaseClientAdapter.getReleaseByExternalIds(externalIds));
+        assertThat(releaseByExternalIds).isEmpty();
+    }
+
+    @Test
+    public void testGetReleaseByExternalIdsMultiple() {
+        Map<String, String> externalIds = new HashMap<>();
+        when(releaseClient.getReleasesByExternalIds(externalIds))
+                .thenReturn(CompletableFuture.completedFuture(Arrays.asList(
+                        new SW360SparseRelease(), new SW360SparseRelease())));
+
+        try {
+            block(releaseClientAdapter.getReleaseByExternalIds(externalIds));
+            fail("Multiple results not detected");
+        } catch (SW360ClientException e) {
+            assertThat(e.getMessage()).contains("Multiple releases");
+        }
     }
 
     @Test
@@ -163,11 +239,10 @@ public class SW360ReleaseClientAdapterTest {
         String componentName = "componentName";
         SW360Component component = getSw360Component(sparseRelease, componentName);
         when(componentClientAdapter.getComponentByName(release.getName()))
-                .thenReturn(Optional.of(component));
+                .thenReturn(CompletableFuture.completedFuture(Optional.of(component)));
 
-        releaseClientAdapter = new SW360ReleaseClientAdapter(releaseClient, componentClientAdapter);
-
-        Optional<SW360SparseRelease> releaseByNameAndVersion = releaseClientAdapter.getReleaseByNameAndVersion(release);
+        Optional<SW360SparseRelease> releaseByNameAndVersion =
+                block(releaseClientAdapter.getReleaseByNameAndVersion(release));
 
         assertThat(releaseByNameAndVersion).isPresent();
         assertThat(releaseByNameAndVersion).hasValue(sparseRelease);
@@ -196,13 +271,19 @@ public class SW360ReleaseClientAdapterTest {
         when(releaseClient.getRelease(ID))
                 .thenReturn(CompletableFuture.completedFuture(release));
 
-        releaseClientAdapter = new SW360ReleaseClientAdapter(releaseClient, componentClientAdapter);
-
-        final Optional<SW360Release> releaseByVersion = releaseClientAdapter.getReleaseByVersion(component, release.getVersion());
+        final Optional<SW360Release> releaseByVersion =
+                block(releaseClientAdapter.getReleaseByVersion(component, release.getVersion()));
 
         assertThat(releaseByVersion).isPresent();
         assertThat(releaseByVersion).hasValue(release);
         verify(releaseClient, times(1)).getRelease(ID);
+    }
+
+    @Test
+    public void testGetReleaseByVersionNoComponent() {
+        Optional<SW360Release> optRelease = block(releaseClientAdapter.getReleaseByVersion(null, RELEASE_VERSION1));
+
+        assertThat(optRelease).isEmpty();
     }
 
     @Test
@@ -220,14 +301,11 @@ public class SW360ReleaseClientAdapterTest {
         when(releaseClient.downloadAttachment(releaseHref, sparseAttachment, path))
                 .thenReturn(CompletableFuture.completedFuture(path));
 
-        releaseClientAdapter = new SW360ReleaseClientAdapter(releaseClient, componentClientAdapter);
-
-        Optional<Path> downloadPath = releaseClientAdapter.downloadAttachment(release, sparseAttachment, path);
+        Optional<Path> downloadPath = block(releaseClientAdapter.downloadAttachment(release, sparseAttachment, path));
 
         assertThat(downloadPath).isPresent();
         assertThat(downloadPath).hasValue(path);
     }
-
 
     public static SW360Release mkSW360Release(String name) throws MalformedPackageURLException {
         SW360Release sw360Release = new SW360Release();

@@ -10,7 +10,6 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
-import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
@@ -45,13 +44,18 @@ public class SW360ConnectionFactory {
         AccessTokenProvider tokenProvider = new AccessTokenProvider(authClient);
 
         SW360ComponentClient componentClient = new SW360ComponentClient(config, tokenProvider);
-        SW360ComponentClientAdapterAsync componentAdapterAsync = new SW360ComponentClientAdapterAsyncImpl(componentClient);
+        SW360ComponentClientAdapterAsync componentAdapterAsync =
+                new SW360ComponentClientAdapterAsyncImpl(componentClient);
         SW360ComponentClientAdapter componentAdapterSync =
                 SyncClientAdapterHandler.newHandler(SW360ComponentClientAdapter.class,
                         SW360ComponentClientAdapterAsync.class, componentAdapterAsync);
 
         SW360ReleaseClient releaseClient = new SW360ReleaseClient(config, tokenProvider);
-        SW360ReleaseClientAdapter releaseAdapter = new SW360ReleaseClientAdapter(releaseClient, componentAdapterSync);
+        SW360ReleaseClientAdapterAsyncImpl releaseAdapterAsync =
+                new SW360ReleaseClientAdapterAsyncImpl(releaseClient, componentAdapterAsync);
+        SW360ReleaseClientAdapter releaseAdapterSync =
+                SyncClientAdapterHandler.newHandler(SW360ReleaseClientAdapter.class,
+                        SW360ReleaseClientAdapterAsync.class, releaseAdapterAsync);
 
         SW360LicenseClient licenseClient = new SW360LicenseClient(config, tokenProvider);
         SW360LicenseClientAdapterAsync licenseAdapterAsync = new SW360LicenseClientAdapterAsyncImpl(licenseClient);
@@ -78,7 +82,12 @@ public class SW360ConnectionFactory {
 
             @Override
             public SW360ReleaseClientAdapter getReleaseAdapter() {
-                return releaseAdapter;
+                return releaseAdapterSync;
+            }
+
+            @Override
+            public SW360ReleaseClientAdapterAsync getReleaseAdapterAsync() {
+                return releaseAdapterAsync;
             }
 
             @Override

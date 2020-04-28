@@ -12,7 +12,6 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.http.HttpClient;
-import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360Client;
@@ -95,10 +94,14 @@ public class SW360ConnectionFactoryTest {
     @Test
     public void testReleaseAdapter() {
         SW360Connection connection = newConnection();
-        SW360ReleaseClientAdapter releaseAdapter = (SW360ReleaseClientAdapter) connection.getReleaseAdapter();
+        SW360ReleaseClientAdapterAsyncImpl releaseAdapterAsync =
+                (SW360ReleaseClientAdapterAsyncImpl) connection.getReleaseAdapterAsync();
+        SW360ReleaseClientAdapter releaseAdapterSync = connection.getReleaseAdapter();
 
-        checkClient(releaseAdapter.getReleaseClient());
-        assertThat(releaseAdapter.getComponentAdapter()).isEqualTo(connection.getComponentAdapter());
+        checkClient(releaseAdapterAsync.getReleaseClient());
+        checkClient(releaseAdapterSync.getReleaseClient());
+        checkSyncAdapter(releaseAdapterSync, releaseAdapterAsync);
+        assertThat(releaseAdapterAsync.getComponentAdapter()).isEqualTo(connection.getComponentAdapterAsync());
     }
 
     @Test

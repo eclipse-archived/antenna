@@ -46,14 +46,24 @@ public interface SW360Connection {
     SW360ComponentClientAdapterAsync getComponentAdapterAsync();
 
     /**
-     * Returns an adapter object for the interaction with the
+     * Returns an adapter object for the synchronous interaction with the
      * <em>releases</em> endpoint of SW360. Each software component can have
      * multiple releases. Using this adapter, the releases for the known
      * components can be queried and managed.
      *
-     * @return the adapter for releases
+     * @return the synchronous adapter for releases
      */
     SW360ReleaseClientAdapter getReleaseAdapter();
+
+    /**
+     * Returns an adapter object for the asynchronous interaction with the
+     * <em>releases</em> endpoint of SW360. Each software component can have
+     * multiple releases. Using this adapter, the releases for the known
+     * components can be queried and managed.
+     *
+     * @return the asynchronous adapter for releases
+     */
+    SW360ReleaseClientAdapterAsync getReleaseAdapterAsync();
 
     /**
      * Returns an adapter object for the synchronous interaction with the
