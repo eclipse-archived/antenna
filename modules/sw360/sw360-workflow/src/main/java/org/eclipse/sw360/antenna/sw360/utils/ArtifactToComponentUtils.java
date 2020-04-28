@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename.ArtifactFilenameEntry;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentAdapterUtils;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 
 public class ArtifactToComponentUtils {

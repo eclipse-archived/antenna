@@ -8,8 +8,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.utils;
+package org.eclipse.sw360.antenna.sw360.client.adapter;
 
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectAdapterUtils;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360Visibility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectType;

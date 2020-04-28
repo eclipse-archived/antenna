@@ -9,7 +9,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.utils;
+package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentType;
@@ -29,7 +29,7 @@ public class SW360ComponentAdapterUtils {
         }
     }
 
-    public static SW360Component createFromRelease(SW360Release release) {
+    static SW360Component createFromRelease(SW360Release release) {
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName(release.getName());
         setComponentType(sw360Component, release.isProprietary());
@@ -37,7 +37,7 @@ public class SW360ComponentAdapterUtils {
         return sw360Component;
     }
 
-    public static boolean isValidComponent(SW360Component component) {
+    static boolean isValidComponent(SW360Component component) {
         return component.getName() != null &&
                 !component.getName().isEmpty() &&
                 component.getCategories() != null &&
