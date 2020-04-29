@@ -108,9 +108,6 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
         SW360Release sw360Release1 = new SW360Release();
         SW360Release sw360Release2 = new SW360Release();
 
-        sw360Release1.createEmptyEmbedded();
-        sw360Release2.createEmptyEmbedded();
-
         final SW360SparseAttachment sw360SparseAttachment = makeSparseAttachment("test");
 
         sw360Release2.get_Embedded().setAttachments(
@@ -126,9 +123,6 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
     public void testReleaseMergeWithPrecedenceHasNoAttachment() {
         SW360Release sw360Release1 = new SW360Release();
         SW360Release sw360Release2 = new SW360Release();
-
-        sw360Release1.createEmptyEmbedded();
-        sw360Release2.createEmptyEmbedded();
 
         final SW360SparseAttachment sw360SparseAttachment = makeSparseAttachment("test");
 
@@ -146,9 +140,6 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
     public void testReleaseMergeWithBothHaveSameAttachment() {
         SW360Release sw360Release1 = new SW360Release();
         SW360Release sw360Release2 = new SW360Release();
-
-        sw360Release1.createEmptyEmbedded();
-        sw360Release2.createEmptyEmbedded();
 
         SW360SparseAttachment sw360SparseAttachment = makeSparseAttachment("test");
 
@@ -169,9 +160,6 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
     public void testReleaseMergeWithBothHaveSameAttachmentButOneHasHref() {
         SW360Release sw360Release1 = new SW360Release();
         SW360Release sw360Release2 = new SW360Release();
-
-        sw360Release1.createEmptyEmbedded();
-        sw360Release2.createEmptyEmbedded();
 
         SW360SparseAttachment sw360SparseAttachment = makeSparseAttachment("test");
 
@@ -196,9 +184,6 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
     public void testReleaseMergeWithBothHaveDifferentAttachment() {
         SW360Release sw360Release1 = new SW360Release();
         SW360Release sw360Release2 = new SW360Release();
-
-        sw360Release1.createEmptyEmbedded();
-        sw360Release2.createEmptyEmbedded();
 
         final SW360SparseAttachment sw360SparseAttachment1 = makeSparseAttachment("test_1");
 

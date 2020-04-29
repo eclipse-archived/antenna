@@ -341,8 +341,8 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
             get_Links().setSelfComponent(componentIdWithPrecedence);
         }
         final List<SW360SparseAttachment> releaseWithPrecedenceAttachments = releaseWithPrecedence.get_Embedded().getAttachments();
-        if (releaseWithPrecedenceAttachments != null && !releaseWithPrecedenceAttachments.isEmpty()) {
-            if (get_Embedded().getAttachments() == null || get_Embedded().getAttachments().isEmpty()) {
+        if (!releaseWithPrecedenceAttachments.isEmpty()) {
+            if (get_Embedded().getAttachments().isEmpty()) {
                 get_Embedded().setAttachments(releaseWithPrecedenceAttachments);
             } else {
                 get_Embedded().setAttachments(mergeAttachments(get_Embedded().getAttachments(), releaseWithPrecedenceAttachments));
