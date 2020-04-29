@@ -83,7 +83,7 @@ public class SW360Exporter {
     }
 
     private Set<SW360SparseAttachment> getSparseAttachmentsSource(SW360Release release) {
-        List<SW360SparseAttachment> attachments = release.get_Embedded().getAttachments();
+        Set<SW360SparseAttachment> attachments = release.get_Embedded().getAttachments();
 
         return attachments.stream()
                 .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)

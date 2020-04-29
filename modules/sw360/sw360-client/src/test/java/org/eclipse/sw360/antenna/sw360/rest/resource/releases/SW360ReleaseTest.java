@@ -19,6 +19,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,9 +39,9 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
         release.setReleaseId("RELEASE_ID");
         release.setComponentId("COMPONENT_ID");
         release.setMainLicenseIds(Stream.of("MIT","BSD-3-Clause").collect(Collectors.toSet()));
-        ArrayList<SW360SparseAttachment> sparseAttachmentList = new ArrayList<>();
-        sparseAttachmentList.add(new SW360SparseAttachment().setFilename("").setAttachmentType(SW360AttachmentType.SOURCE));
-        release.get_Embedded().setAttachments(sparseAttachmentList);
+        Set<SW360SparseAttachment> sparseAttachmentSet = new HashSet<>();
+        sparseAttachmentSet.add(new SW360SparseAttachment().setFilename("").setAttachmentType(SW360AttachmentType.SOURCE));
+        release.get_Embedded().setAttachments(sparseAttachmentSet);
         release.setSw360ClearingState(SW360ClearingState.NEW_CLEARING);
         release.setClearingState("INITIAL");
         return release;
@@ -111,7 +113,7 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
         final SW360SparseAttachment sw360SparseAttachment = makeSparseAttachment("test");
 
         sw360Release2.get_Embedded().setAttachments(
-                Collections.singletonList(
+                Collections.singleton(
                         sw360SparseAttachment));
 
         sw360Release1.mergeWith(sw360Release2);
@@ -127,7 +129,7 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
         final SW360SparseAttachment sw360SparseAttachment = makeSparseAttachment("test");
 
         sw360Release1.get_Embedded().setAttachments(
-                Collections.singletonList(
+                Collections.singleton(
                         sw360SparseAttachment));
 
         sw360Release1.mergeWith(sw360Release2);
@@ -144,11 +146,11 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
         SW360SparseAttachment sw360SparseAttachment = makeSparseAttachment("test");
 
         sw360Release1.get_Embedded().setAttachments(
-                Collections.singletonList(
+                Collections.singleton(
                         sw360SparseAttachment));
 
         sw360Release2.get_Embedded().setAttachments(
-                Collections.singletonList(
+                Collections.singleton(
                         sw360SparseAttachment));
 
         sw360Release1.mergeWith(sw360Release2);
@@ -164,13 +166,13 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
         SW360SparseAttachment sw360SparseAttachment = makeSparseAttachment("test");
 
         sw360Release1.get_Embedded().setAttachments(
-                Collections.singletonList(
+                Collections.singleton(
                         sw360SparseAttachment));
 
         sw360SparseAttachment.set_Links(mock(LinkObjects.class));
 
         sw360Release2.get_Embedded().setAttachments(
-                Collections.singletonList(
+                Collections.singleton(
                         sw360SparseAttachment));
 
         sw360SparseAttachment.set_Links(null);
@@ -188,13 +190,13 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
         final SW360SparseAttachment sw360SparseAttachment1 = makeSparseAttachment("test_1");
 
         sw360Release1.get_Embedded().setAttachments(
-                Collections.singletonList(
+                Collections.singleton(
                         sw360SparseAttachment1));
 
         final SW360SparseAttachment sw360SparseAttachment2 = makeSparseAttachment("test_2");
 
         sw360Release2.get_Embedded().setAttachments(
-                Collections.singletonList(
+                Collections.singleton(
                         sw360SparseAttachment2));
 
         sw360Release1.mergeWith(sw360Release2);

@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.optionalFuture;
@@ -102,7 +103,7 @@ public class SW360ReleaseClientAdapter {
         return sw360item;
     }
 
-    private boolean attachmentIsPotentialDuplicate(Path attachment, List<SW360SparseAttachment> attachments) {
+    private boolean attachmentIsPotentialDuplicate(Path attachment, Set<SW360SparseAttachment> attachments) {
         return attachments.stream()
                 .anyMatch(attachment1 -> attachment1.getFilename().equals(attachment.getFileName().toString()));
     }

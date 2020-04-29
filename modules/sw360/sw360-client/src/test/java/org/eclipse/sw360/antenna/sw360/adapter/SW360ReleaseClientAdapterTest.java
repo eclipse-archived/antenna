@@ -35,11 +35,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class SW360ReleaseClientAdapterTest {
     private static final String RELEASE_DOWNLOAD_URL = "https://organisation-test.org/";
@@ -123,7 +119,7 @@ public class SW360ReleaseClientAdapterTest {
     @Test
     public void testUploadAttachments() {
         SW360ReleaseEmbedded sw360ReleaseEmbedded = new SW360ReleaseEmbedded();
-        sw360ReleaseEmbedded.setAttachments(Collections.emptyList());
+        sw360ReleaseEmbedded.setAttachments(Collections.emptySet());
         release.set_Embedded(sw360ReleaseEmbedded);
 
         SW360AttachmentType attachmentType = SW360AttachmentType.SOURCE;

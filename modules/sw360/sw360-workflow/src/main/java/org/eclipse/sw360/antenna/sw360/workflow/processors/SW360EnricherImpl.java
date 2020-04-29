@@ -30,10 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SW360EnricherImpl {
@@ -74,7 +71,7 @@ public class SW360EnricherImpl {
     }
 
     private void downloadAttachments(SW360Release sw360Release, Artifact artifact) {
-        List<SW360SparseAttachment> attachments = sw360Release.get_Embedded().getAttachments();
+        Set<SW360SparseAttachment> attachments = sw360Release.get_Embedded().getAttachments();
 
         attachments.stream()
                 .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)

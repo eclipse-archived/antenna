@@ -68,11 +68,11 @@ public class SW360UpdaterImplTest {
 
         Map<Path, SW360AttachmentType> attachmentsFromArtifact = ArtifactToAttachmentUtils.getAttachmentsFromArtifact(artifact);
 
-        List<SW360SparseAttachment> sparseAttachments = attachmentsFromArtifact.entrySet().stream()
+        Set<SW360SparseAttachment> sparseAttachments = attachmentsFromArtifact.entrySet().stream()
                 .map(entry -> new SW360SparseAttachment()
                         .setAttachmentType(entry.getValue())
                         .setFilename(entry.getKey().toString()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
         SW360ReleaseEmbedded sw360ReleaseEmbedded = new SW360ReleaseEmbedded();
         sw360ReleaseEmbedded.setAttachments(sparseAttachments);
