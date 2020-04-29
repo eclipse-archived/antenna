@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -15,24 +16,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
-@JsonDeserialize(as = SW360AttachmentListEmbedded.class)
-public class SW360AttachmentListEmbedded implements Embedded {
+@JsonDeserialize(as = SW360AttachmentSetEmbedded.class)
+public class SW360AttachmentSetEmbedded implements Embedded {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("sw360:attachments")
-    private List<SW360SparseAttachment> attachments;
+    private Set<SW360SparseAttachment> attachments;
 
-    public List<SW360SparseAttachment> getAttachments() {
+    public Set<SW360SparseAttachment> getAttachments() {
         return Optional.ofNullable(attachments)
-                .map(ArrayList::new)
-                .orElse(new ArrayList<>());
+                .map(HashSet::new)
+                .orElse(new HashSet<>());
     }
 
-    public SW360AttachmentListEmbedded setAttachments(List<SW360SparseAttachment> attachments) {
+    public SW360AttachmentSetEmbedded setAttachments(Set<SW360SparseAttachment> attachments) {
         this.attachments = attachments;
         return this;
     }
@@ -41,7 +42,7 @@ public class SW360AttachmentListEmbedded implements Embedded {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SW360AttachmentListEmbedded that = (SW360AttachmentListEmbedded) o;
+        SW360AttachmentSetEmbedded that = (SW360AttachmentSetEmbedded) o;
         return Objects.equals(attachments, that.attachments);
     }
 

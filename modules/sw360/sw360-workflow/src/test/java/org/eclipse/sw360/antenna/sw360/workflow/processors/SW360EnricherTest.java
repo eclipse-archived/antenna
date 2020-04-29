@@ -154,7 +154,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
                 .setAttachmentType(SW360AttachmentType.SOURCE)
                 .setFilename(downloadFilename);
         SW360ReleaseEmbedded releaseEmbedded = new SW360ReleaseEmbedded();
-        releaseEmbedded.setAttachments(Collections.singletonList(sparseAttachment));
+        releaseEmbedded.setAttachments(Collections.singleton(sparseAttachment));
         SW360Release release0 = new SW360Release();
         release0.set_Embedded(releaseEmbedded);
 

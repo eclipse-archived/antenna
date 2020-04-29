@@ -20,6 +20,7 @@ import com.github.packageurl.PackageURL;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
+import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
 
 import java.util.*;
@@ -338,10 +339,23 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
         if (componentIdWithPrecedence != null && !componentIdWithPrecedence.getHref().isEmpty()) {
             get_Links().setSelfComponent(componentIdWithPrecedence);
         }
+        final Set<SW360SparseAttachment> releaseWithPrecedenceAttachments = releaseWithPrecedence.get_Embedded().getAttachments();
+        if (!releaseWithPrecedenceAttachments.isEmpty()) {
+            if (get_Embedded().getAttachments().isEmpty()) {
+                get_Embedded().setAttachments(releaseWithPrecedenceAttachments);
+            } else {
+                get_Embedded().setAttachments(mergeAttachments(get_Embedded().getAttachments(), releaseWithPrecedenceAttachments));
+            }
+        }
         externalIds.putAll(releaseWithPrecedence.externalIds);
         additionalData.putAll(releaseWithPrecedence.additionalData);
 
         return this;
+    }
+
+    private Set<SW360SparseAttachment> mergeAttachments(Set<SW360SparseAttachment> attachments, Set<SW360SparseAttachment> releaseWithPrecedenceAttachments) {
+        attachments.addAll(releaseWithPrecedenceAttachments);
+        return attachments;
     }
 
     private <T> T getDominantGetterFromVariableMergeOrNull(SW360Release release, Function<SW360Release, T> getter) {
