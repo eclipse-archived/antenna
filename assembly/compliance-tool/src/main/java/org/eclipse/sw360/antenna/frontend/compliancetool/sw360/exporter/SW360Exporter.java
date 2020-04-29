@@ -40,11 +40,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SW360Exporter {
-    private SW360Configuration configuration;
+    private final SW360Configuration configuration;
     private SW360Connection connection;
 
-    public void setConfiguration(SW360Configuration configuration) {
-        this.configuration = configuration;
+    public SW360Exporter(SW360Configuration configuration) {
+        this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
     }
 
     public void execute() {

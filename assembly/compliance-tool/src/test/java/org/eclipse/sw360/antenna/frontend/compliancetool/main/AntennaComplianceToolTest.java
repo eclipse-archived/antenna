@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter.SW360Exporter;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater.SW360Updater;
+import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
@@ -36,61 +37,45 @@ public class AntennaComplianceToolTest {
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
+    private static Object readField(Object source, String fieldName) throws NoSuchFieldException, IllegalAccessException {
+        Field field = source.getClass().getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(source);
+    }
+
     @Test
     public void testMainInitWithExporter() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, URISyntaxException {
         Path propertiesFile = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).toURI());
 
-        Object[] obj = {new SW360Exporter(), propertiesFile};
-        Class<?>[] params = new Class[obj.length];
-        for (int i = 0; i < obj.length; i++) {
-            if (obj[i] instanceof SW360Exporter) {
-                params[i] = SW360Exporter.class;
-            } else if (obj[i] != null) {
-                params[i] = Path.class;
-            }
-        }
-
-        String methodName = "init";
+        String methodName = "createExporter";
 
         AntennaComplianceTool antennaComplianceTool = new AntennaComplianceTool();
-        Method initMethod = antennaComplianceTool.getClass().getDeclaredMethod(methodName, params);
+        Method initMethod = antennaComplianceTool.getClass().getDeclaredMethod(methodName, Path.class);
         initMethod.setAccessible(true);
-        SW360Exporter exporter = (SW360Exporter) initMethod.invoke(antennaComplianceTool, obj);
+        SW360Exporter exporter = (SW360Exporter) initMethod.invoke(antennaComplianceTool, propertiesFile);
 
-        Field configuration = exporter.getClass().getDeclaredField("configuration");
-        configuration.setAccessible(true);
-        assertThat(((SW360Configuration) configuration.get(exporter)).getConnection()).isNotNull();
-        assertThat(((SW360Configuration) configuration.get(exporter)).getProperties()).isNotNull();
+        SW360Configuration configuration = (SW360Configuration) readField(exporter, "configuration");
+        assertThat(configuration.getConnection()).isNotNull();
+        assertThat(configuration.getProperties()).isNotNull();
     }
 
     @Test
     public void testMainInitWithUpdater() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, URISyntaxException {
         Path propertiesFile = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).toURI());
 
-        Object[] obj = {new SW360Updater(), propertiesFile};
-        Class<?>[] params = new Class[obj.length];
-        for (int i = 0; i < obj.length; i++) {
-            if (obj[i] instanceof SW360Updater) {
-                params[i] = SW360Updater.class;
-            } else if (obj[i] != null) {
-                params[i] = Path.class;
-            }
-        }
-
-        String methodName = "init";
+        String methodName = "createUpdater";
 
         AntennaComplianceTool antennaComplianceTool = new AntennaComplianceTool();
-        Method initMethod = antennaComplianceTool.getClass().getDeclaredMethod(methodName, params);
+        Method initMethod = antennaComplianceTool.getClass().getDeclaredMethod(methodName, Path.class);
         initMethod.setAccessible(true);
-        SW360Updater updater = (SW360Updater) initMethod.invoke(antennaComplianceTool, obj);
+        SW360Updater updater = (SW360Updater) initMethod.invoke(antennaComplianceTool, propertiesFile);
 
-        Field configuration = updater.getClass().getDeclaredField("configuration");
-        configuration.setAccessible(true);
-        assertThat(((SW360Configuration) configuration.get(updater)).getProperties()).isNotNull();
+        assertThat(((SW360Configuration) readField(updater, "configuration")).getProperties()).isNotNull();
 
-        Field sw360updater = updater.getClass().getDeclaredField("updater");
-        sw360updater.setAccessible(true);
-        assertThat(sw360updater.get(updater).getClass().getDeclaredField("sw360MetaDataUpdater")).isNotNull();
+        SW360UpdaterImpl sw360updater = (SW360UpdaterImpl) readField(updater, "updater");
+        assertThat(readField(sw360updater, "sw360MetaDataUpdater")).isNotNull();
+
+        assertThat(readField(updater, "generator")).isNotNull();
     }
 
     @Test

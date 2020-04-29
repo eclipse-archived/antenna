@@ -158,10 +158,14 @@ public class SW360ExporterTest {
                 thenReturn(propertiesMap);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void testConfigurationMustNotBeNull() {
+        new SW360Exporter(null);
+    }
+
     @Test
     public void testExporter() throws IOException {
-        SW360Exporter sw360Exporter = new SW360Exporter();
-        sw360Exporter.setConfiguration(configurationMock);
+        SW360Exporter sw360Exporter = new SW360Exporter(configurationMock);
         sw360Exporter.execute();
 
         assertThat(csvFile).exists();

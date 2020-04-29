@@ -23,24 +23,20 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils.getArtifactsFromCsvFile;
 
 public class SW360Updater {
-    private SW360UpdaterImpl updater;
-    private SW360Configuration configuration;
-    private ClearingReportGenerator generator;
+    private final SW360UpdaterImpl updater;
+    private final SW360Configuration configuration;
+    private final ClearingReportGenerator generator;
 
-    public void setUpdater(SW360UpdaterImpl updater) {
-        this.updater = updater;
-    }
-
-    public void setConfiguration(SW360Configuration configuration) {
-        this.configuration = configuration;
-    }
-
-    public void setClearingReportGenerator(ClearingReportGenerator generator) {
-        this.generator = generator;
+    public SW360Updater(SW360UpdaterImpl updater, SW360Configuration configuration,
+                        ClearingReportGenerator generator) {
+        this.updater = Objects.requireNonNull(updater, "UpdaterImpl must not be null");
+        this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
+        this.generator = Objects.requireNonNull(generator, "Clearing report generator must not be null");
     }
 
     public void execute() {

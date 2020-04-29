@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter.SW360Exporter;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater.ClearingReportGenerator;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater.SW360Updater;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
@@ -42,10 +43,10 @@ public class AntennaComplianceTool {
     private int execute(String mode, Path propertiesFile) {
         switch (mode) {
             case "exporter":
-                init(new SW360Exporter(), propertiesFile).execute();
+                createExporter(propertiesFile).execute();
                 return 0;
             case "updater":
-                init(new SW360Updater(), propertiesFile).execute();
+                createUpdater(propertiesFile).execute();
                 return 0;
             default:
                 LOGGER.error("You did not supply any compliance task.");
@@ -53,25 +54,23 @@ public class AntennaComplianceTool {
         }
     }
 
-    private SW360Exporter init(SW360Exporter executor, Path propertiesFile) {
+    private SW360Exporter createExporter(Path propertiesFile) {
         SW360Configuration configuration = new SW360Configuration(propertiesFile.toFile());
-        executor.setConfiguration(configuration);
-        return executor;
+        return new SW360Exporter(configuration);
     }
 
-    private SW360Updater init(SW360Updater executor, Path propertiesFile) {
+    private SW360Updater createUpdater(Path propertiesFile) {
         SW360Configuration configuration = new SW360Configuration(propertiesFile.toFile());
-        executor.setConfiguration(configuration);
 
-        executor.setUpdater(new SW360UpdaterImpl(new SW360MetaDataUpdater(
+        SW360UpdaterImpl updaterImpl = new SW360UpdaterImpl(new SW360MetaDataUpdater(
                 configuration.getConnection(),
                 configuration.getBooleanConfigValue("sw360updateReleases"),
                 configuration.getBooleanConfigValue("sw360uploadSources")),
                 "redundant project name",
-                "redundant project version"));
+                "redundant project version");
         // since we only use the updaters functionality to handle individual releases,
         // we do not need to give a project name or version.
 
-        return executor;
+        return new SW360Updater(updaterImpl, configuration, new ClearingReportGenerator());
     }
 }

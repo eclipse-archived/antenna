@@ -111,6 +111,21 @@ public class SW360UpdaterTest {
         return folder.getRoot().toPath();
     }
 
+    @Test(expected = NullPointerException.class)
+    public void testUpdaterImplMustNotBeNull() {
+        new SW360Updater(null, configurationMock, mock(ClearingReportGenerator.class));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testConfigurationMustNotBeNull() {
+        new SW360Updater(mock(SW360UpdaterImpl.class), null, mock(ClearingReportGenerator.class));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testClearingReportGeneratorMustNotBeNull() {
+        new SW360Updater(mock(SW360UpdaterImpl.class), configurationMock, null);
+    }
+
     @Test
     public void testExecute() throws IOException {
         initBasicConfiguration();
@@ -129,10 +144,7 @@ public class SW360UpdaterTest {
         when(generator.createClearingDocument(any(), any()))
                 .thenReturn(getTargetDir().resolve(CLEARING_DOC));
 
-        SW360Updater sw360Updater = new SW360Updater();
-        sw360Updater.setUpdater(updater);
-        sw360Updater.setConfiguration(configurationMock);
-        sw360Updater.setClearingReportGenerator(generator);
+        SW360Updater sw360Updater = new SW360Updater(updater, configurationMock, generator);
 
         sw360Updater.execute();
 
