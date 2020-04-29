@@ -12,12 +12,12 @@ package org.eclipse.sw360.antenna.sw360.client.rest;
 
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
-import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360Attachment;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

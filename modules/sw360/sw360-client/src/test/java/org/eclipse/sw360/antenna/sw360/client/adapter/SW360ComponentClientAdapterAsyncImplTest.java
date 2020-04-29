@@ -14,10 +14,10 @@ import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ComponentClient;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
-import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.junit.Before;
 import org.junit.Test;
 

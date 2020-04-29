@@ -13,13 +13,13 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentEmbedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 
 import java.nio.file.Path;
 import java.util.List;

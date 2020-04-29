@@ -15,7 +15,7 @@ import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.junit.Before;
 import org.junit.Test;
 

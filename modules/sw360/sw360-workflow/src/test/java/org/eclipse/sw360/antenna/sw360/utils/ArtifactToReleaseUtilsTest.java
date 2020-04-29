@@ -19,8 +19,8 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSoftwareHeritageID
 import org.eclipse.sw360.antenna.model.artifact.facts.DeclaredLicenseInformation;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.license.LicenseStatement;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

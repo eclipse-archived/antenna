@@ -14,7 +14,7 @@ package org.eclipse.sw360.antenna.sw360.client.rest.deserializer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.Embedded;
 
 /**
  * <p>

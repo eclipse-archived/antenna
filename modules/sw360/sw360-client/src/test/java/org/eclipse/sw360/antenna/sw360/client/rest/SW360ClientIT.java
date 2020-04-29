@@ -15,8 +15,8 @@ import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessToken;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectList;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectList;
 import org.junit.Before;
 import org.junit.Test;
 

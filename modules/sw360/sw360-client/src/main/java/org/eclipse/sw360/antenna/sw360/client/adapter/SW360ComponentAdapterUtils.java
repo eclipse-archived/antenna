@@ -11,9 +11,9 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentType;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 
 import java.util.Collections;
 

@@ -16,9 +16,9 @@ import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ResourceUtils;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseList;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360LicenseList;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

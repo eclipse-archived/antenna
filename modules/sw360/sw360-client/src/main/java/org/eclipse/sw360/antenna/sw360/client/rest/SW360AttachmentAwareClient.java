@@ -15,10 +15,10 @@ import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360Attachment;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360Attachment;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

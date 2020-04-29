@@ -17,11 +17,11 @@ import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapte
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToComponentUtils;
 import org.junit.Test;
 

@@ -15,8 +15,8 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingDocument;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 
 import java.nio.file.Path;

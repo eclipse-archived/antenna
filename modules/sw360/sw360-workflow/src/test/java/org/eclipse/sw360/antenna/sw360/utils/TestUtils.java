@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.sw360.utils;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.*;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 
 import java.util.Collections;
 import java.util.Optional;

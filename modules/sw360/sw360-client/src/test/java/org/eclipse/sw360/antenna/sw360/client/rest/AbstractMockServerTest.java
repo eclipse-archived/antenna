@@ -26,7 +26,7 @@ import org.eclipse.sw360.antenna.sw360.client.auth.AccessToken;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 

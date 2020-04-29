@@ -13,9 +13,9 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ComponentClient;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 
 import java.util.List;
 import java.util.Optional;

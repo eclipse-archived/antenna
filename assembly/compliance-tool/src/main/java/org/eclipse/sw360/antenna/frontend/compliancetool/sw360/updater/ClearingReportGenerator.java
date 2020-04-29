@@ -12,7 +12,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 
 import java.io.IOException;
 import java.nio.file.Files;

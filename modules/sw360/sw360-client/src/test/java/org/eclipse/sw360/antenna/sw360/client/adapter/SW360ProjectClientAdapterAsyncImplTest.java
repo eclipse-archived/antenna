@@ -12,11 +12,11 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ProjectClient;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
-import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseLinkObjects;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseLinkObjects;
 import org.junit.Before;
 import org.junit.Test;
 

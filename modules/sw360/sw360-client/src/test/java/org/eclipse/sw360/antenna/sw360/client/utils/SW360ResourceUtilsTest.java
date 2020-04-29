@@ -10,8 +10,8 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.utils;
 
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseList;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360LicenseList;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
 import org.junit.Test;
 
 import java.util.List;

@@ -10,8 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
-import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseAdapterUtils;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

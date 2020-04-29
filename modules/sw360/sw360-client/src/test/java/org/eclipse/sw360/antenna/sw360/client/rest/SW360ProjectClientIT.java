@@ -12,8 +12,8 @@ package org.eclipse.sw360.antenna.sw360.client.rest;
 
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.junit.Before;
 import org.junit.Test;
 
