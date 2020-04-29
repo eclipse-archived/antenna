@@ -15,6 +15,8 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentType;
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 
+import java.util.Collections;
+
 public class SW360ComponentAdapterUtils {
 
     private SW360ComponentAdapterUtils() {}
@@ -31,10 +33,14 @@ public class SW360ComponentAdapterUtils {
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName(release.getName());
         setComponentType(sw360Component, release.isProprietary());
+        sw360Component.setCategories(Collections.singleton("Antenna"));
         return sw360Component;
     }
 
     public static boolean isValidComponent(SW360Component component) {
-        return component.getName() != null && !component.getName().isEmpty();
+        return component.getName() != null &&
+                !component.getName().isEmpty() &&
+                component.getCategories() != null &&
+                !component.getCategories().isEmpty();
     }
 }

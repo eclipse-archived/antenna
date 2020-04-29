@@ -16,6 +16,8 @@ import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentTy
 import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SW360ComponentAdapterUtilsTest {
@@ -56,6 +58,7 @@ public class SW360ComponentAdapterUtilsTest {
     public void testIsValidComponentWithValidComponent() {
         SW360Component component = new SW360Component();
         component.setName("test");
+        component.setCategories(Collections.singleton("Antenna"));
 
         boolean validComponent = SW360ComponentAdapterUtils.isValidComponent(component);
 
