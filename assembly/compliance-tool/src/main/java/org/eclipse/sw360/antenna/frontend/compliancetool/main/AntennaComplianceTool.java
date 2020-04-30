@@ -10,6 +10,8 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter.SW360Exporter;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater.ClearingReportGenerator;
@@ -21,23 +23,33 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 public class AntennaComplianceTool {
     private static final Logger LOGGER = LoggerFactory.getLogger(AntennaComplianceTool.class);
 
     public static void main(String[] args) {
-        if (args.length != 2) {
-            LOGGER.warn("Number of arguments: {}", args.length);
-            Arrays.asList(args).forEach(LOGGER::warn);
-            LOGGER.warn("Usage: java -jar compliancetool.jar <complianceMode> <propertiesFilePath>");
+        AntennaComplianceToolOptions options = AntennaComplianceToolOptions.parse(args);
+        if (options.isShowHelp()) {
+            printUsage();
             System.exit(1);
         }
 
-        String mode = args[0];
-        Path propertiesFile = Paths.get(args[1]).toAbsolutePath();
+        if (options.isDebugLog()) {
+            enableDebugLogging();
+        }
+        try {
+            Path propertiesFile = Paths.get(options.getPropertiesFilePath()).toAbsolutePath();
 
-        System.exit(new AntennaComplianceTool().execute(mode, propertiesFile));
+            if (!propertiesFile.toFile().exists()) {
+                throw new IllegalArgumentException("Cannot find " + propertiesFile.toString());
+            }
+
+            System.exit(new AntennaComplianceTool().execute(options.getComplianceMode(), propertiesFile));
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error:" + e.getMessage());
+            System.exit(1);
+        }
     }
 
     private int execute(String mode, Path propertiesFile) {
@@ -72,5 +84,14 @@ public class AntennaComplianceTool {
         // we do not need to give a project name or version.
 
         return new SW360Updater(updaterImpl, configuration, new ClearingReportGenerator());
+    }
+
+    private static void enableDebugLogging() {
+        Configurator.setRootLevel(Level.DEBUG);
+        Configurator.setLevel("org.eclipse.sw360.antenna", Level.DEBUG);
+    }
+
+    private static void printUsage() {
+        System.out.println(AntennaComplianceToolOptions.helpMessage());
     }
 }
