@@ -21,13 +21,16 @@ The csv file used adheres to the ${docNameCap} [SW360 data model](../sw360-data-
 The Compliance Tool is executed from the command line with this simple line:
 
 ```
-java -jar path\to\complianceTool.jar <complianceMode> path\to\configuration.properties
+java -jar path\to\complianceTool.jar --<complianceMode> path\to\configuration.properties
 ```
 
-- Jar file: This is the actual compliance tool jar. Execute it with a `java -jar` command.
-- The `complianceMode` can be one of two modes: `exporter` for the [SW360 Exporter](#SW360Exporter)
-or `updater` for the [SW360 Updater](#SW360Updater).
-- Properties file: both modes require a file containing properties like paths and credentials.
+* Jar file: This is the actual compliance tool jar. Execute it with a `java -jar` command.
+* The `complianceMode` can be one of two modes that can be given by using switches: 
+`--exporter` for the [SW360 Exporter](#SW360Exporter)
+or `--updater` for the [SW360 Updater](#SW360Updater). 
+    * There is also a short version with `-e` for the exporter and `-u` for the updater.
+    * If no or more than one switch-mode is given, the compliance tool will not run.
+* Properties file: both modes require a file containing properties like paths and credentials.
 
 #[[##]]# <a name="SW360Exporter">SW360 Exporter</a>
 
@@ -94,3 +97,13 @@ additionally to the variable name being written in upper case letters:
 #[[####]]# Note
 1. It is possible to have only one properties file containing all variables. 
 When run all superfluous variables will just be ignored.
+
+#[[##]]# Enabling debug logging
+
+To diagnose problems during the tool execution, more detailed log output is
+certainly helpful. This can be achieved by adding one of the switches `-X` or
+`--debug` to the command line. The log level is then increased to _DEBUG_, so
+much more information is printed to the console. 
+
+In order to see all valid switches and a help statement use the switch `--help` 
+or `-h`.  
