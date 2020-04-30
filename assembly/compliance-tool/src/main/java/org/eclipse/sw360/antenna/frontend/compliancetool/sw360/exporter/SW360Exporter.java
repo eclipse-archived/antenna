@@ -26,20 +26,19 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Cleari
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToReleaseUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SW360Exporter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SW360Exporter.class);
+
     private final SW360Configuration configuration;
     private SW360Connection connection;
 
@@ -70,6 +69,14 @@ public class SW360Exporter {
                 Paths.get(configuration.getProperties().get("basedir")));
 
         csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
+
+        LOGGER.info("The SW360Exporter was executed from the base directory: {} " +
+                        "with the csv file written to the path: {}/{} " +
+                        "and the source files written to the folder: {}. ",
+                configuration.getBaseDir().toAbsolutePath(),
+                configuration.getBaseDir().toAbsolutePath(),
+                configuration.getCsvFileName(),
+                configuration.getTargetDir().toAbsolutePath());
     }
 
     private Artifact releaseAsArtifact(SW360Release release) {
