@@ -17,47 +17,47 @@ public class AntennaComplianceToolOptions {
     /**
      * The prefix to identify command line switches.
      */
-    private static final String SWITCH_PREFIX = "-";
+    static final String SWITCH_PREFIX = "-";
 
     /**
      * The short command line switch to enable debug logging.
      */
-    private static final String SWITCH_DEBUG_SHORT = SWITCH_PREFIX + "X";
+    static final String SWITCH_DEBUG_SHORT = SWITCH_PREFIX + "X";
 
     /**
      * The long command line switch to enable debug logging.
      */
-    private static final String SWITCH_DEBUG_LONG = SWITCH_PREFIX + "-debug";
+    static final String SWITCH_DEBUG_LONG = SWITCH_PREFIX + "-debug";
 
     /**
      * The short command line switch to display a help message.
      */
-    private static final String SWITCH_HELP_SHORT = SWITCH_PREFIX + "h";
+    static final String SWITCH_HELP_SHORT = SWITCH_PREFIX + "h";
 
     /**
      * The long command line switch to display a help message.
      */
-    private static final String SWITCH_HELP_LONG = SWITCH_PREFIX + "-help";
+    static final String SWITCH_HELP_LONG = SWITCH_PREFIX + "-help";
 
     /**
      * The short command line switch to execute the updater
      */
-    private static final String SWITCH_UPDATER_SHORT = SWITCH_PREFIX + "u";
+    static final String SWITCH_UPDATER_SHORT = SWITCH_PREFIX + "u";
 
     /**
      * The long command line switch to execute the updater
      */
-    private static final String SWITCH_UPDATER_LONG = SWITCH_PREFIX + "-updater";
+    static final String SWITCH_UPDATER_LONG = SWITCH_PREFIX + "-updater";
 
     /**
      * The short command line switch to execute the exporter
      */
-    private static final String SWITCH_EXPORTER_SHORT = SWITCH_PREFIX + "e";
+    static final String SWITCH_EXPORTER_SHORT = SWITCH_PREFIX + "e";
 
     /**
      * The long command line switch to execute the exporter
      */
-    private static final String SWITCH_EXPORTER_LONG = SWITCH_PREFIX + "-exporter";
+    static final String SWITCH_EXPORTER_LONG = SWITCH_PREFIX + "-exporter";
 
     /**
      * Constant for an options instance representing an invalid command line.
@@ -101,7 +101,7 @@ public class AntennaComplianceToolOptions {
      * @param showHelp           flag whether the help message should be printed
      * @param valid              flag whether the command line is valid
      */
-    private AntennaComplianceToolOptions(String propertiesFilePath, String complianceMode, boolean debugLog, boolean showHelp, boolean valid) {
+    AntennaComplianceToolOptions(String propertiesFilePath, String complianceMode, boolean debugLog, boolean showHelp, boolean valid) {
         this.propertiesFilePath = propertiesFilePath;
         this.complianceMode = complianceMode;
         this.debugLog = debugLog;
@@ -187,7 +187,7 @@ public class AntennaComplianceToolOptions {
      *
      * @return a flag whether the command line is valid
      */
-    private boolean isValid() {
+    boolean isValid() {
         return valid;
     }
 
@@ -209,13 +209,14 @@ public class AntennaComplianceToolOptions {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getPropertiesFilePath(), isDebugLog(), isShowHelp(), isValid());
+        return Objects.hash(getPropertiesFilePath(), getComplianceMode(), isDebugLog(), isShowHelp(), isValid());
     }
 
     @Override
     public String toString() {
         return "AntennaComplianceToolOptions{" +
                 "propertiesFilePath='" + propertiesFilePath + '\'' +
+                ", complianceMode=" + complianceMode +
                 ", debugLog=" + debugLog +
                 ", showHelp=" + showHelp +
                 ", valid=" + valid +
@@ -237,7 +238,7 @@ public class AntennaComplianceToolOptions {
                 ":   Sets log level to DEBUG for diagnostic purposes." + cr + cr +
                 "Compliance Tool modes: (only one can be set)" + cr +
                 SWITCH_EXPORTER_SHORT + ", " + SWITCH_EXPORTER_LONG + ":    Sets the compliance tool execute the SW360Exporter" + cr +
-                SWITCH_EXPORTER_SHORT + ", " + SWITCH_EXPORTER_LONG + ":    Sets the compliance tool execute the SW360Updater" + cr;
+                SWITCH_UPDATER_SHORT + ", " + SWITCH_UPDATER_LONG + ":    Sets the compliance tool execute the SW360Updater" + cr;
     }
 
     /**
