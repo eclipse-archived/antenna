@@ -45,6 +45,7 @@ public class SW360Updater {
     }
 
     public void execute() {
+        LOGGER.debug("{} has started.", SW360Updater.class.getName());
         Collection<Artifact> artifacts = getArtifactsFromCsvFile(configuration.getProperties());
 
         artifacts.forEach(this::uploadReleaseWithClearingDocumentFromArtifact);

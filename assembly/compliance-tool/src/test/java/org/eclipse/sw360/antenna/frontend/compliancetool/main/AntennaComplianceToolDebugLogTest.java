@@ -67,17 +67,17 @@ public class AntennaComplianceToolDebugLogTest {
     /**
      * String always contained when a info message is executed.
      */
-    private static final String INFO_MESSAGE = "Starting Compliance Tool with mode 'exporter'";
+    private static final String INFO_MESSAGE = "Starting Compliance Tool with mode 'updater'";
 
     /**
      * String always contained when a debug message is executed.
      */
-    private static final String DEBUG_MESSAGE = "Executing request 'get_components'";
+    private static final String DEBUG_MESSAGE = "has started";
 
     /**
      * String representing a mode of the compliance tool.
      */
-    private static final String COMPLIANCE_TOOL_MODE = AntennaComplianceToolOptions.SWITCH_EXPORTER_LONG;
+    private static final String COMPLIANCE_TOOL_MODE = AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT;
 
 
     /**
@@ -177,7 +177,7 @@ public class AntennaComplianceToolDebugLogTest {
      * @param args the command line arguments
      * @return a string with the log output that was captured
      */
-    private static String runComplianceToolAndCaptureLogOutputWithExcpectedFailure(String... args) {
+    private static String runComplianceToolAndCaptureLogOutputWithExpectedFailure(String... args) {
         StringWriter logWriter = captureLogOutput();
 
         try {
@@ -191,56 +191,33 @@ public class AntennaComplianceToolDebugLogTest {
         return logWriter.toString();
     }
 
-    /**
-     * Executes a test the compliance tool run with the given command line
-     * arguments, which is expected to fail. The message printed to the
-     * console is returned.
-     *
-     * @param args the command line arguments
-     * @return the output written to System.out
-     */
-    private static String runComplianceToolAndExpectFailure(String... args) throws UnsupportedEncodingException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        PrintStream out = new PrintStream(bos);
-        System.setOut(out);
-
-        try {
-            AntennaComplianceTool.main(args);
-            fail("Compliance tool run did not fail.");
-        } catch (SecurityException e) {
-            //expected
-        }
-
-        return bos.toString(StandardCharsets.UTF_8.name());
-    }
-
     @Test
-    public void testLogLevelIsInfoByDefault() throws UnsupportedEncodingException {
-        String output = runComplianceToolAndCaptureLogOutputWithExcpectedFailure(propertiesFilePath, COMPLIANCE_TOOL_MODE);
+    public void testLogLevelIsInfoByDefault() {
+        String output = runComplianceToolAndCaptureLogOutputWithExpectedFailure(propertiesFilePath, COMPLIANCE_TOOL_MODE);
 
         assertThat(output).contains(INFO_MESSAGE);
         assertThat(output).doesNotContain(DEBUG_MESSAGE);
     }
 
     @Test
-    public void testLogLevelCanBeSwitchedToDebug() throws UnsupportedEncodingException {
-        String output = runComplianceToolAndCaptureLogOutputWithExcpectedFailure(AntennaComplianceToolOptions.SWITCH_DEBUG_SHORT, propertiesFilePath, COMPLIANCE_TOOL_MODE);
+    public void testLogLevelCanBeSwitchedToDebug() {
+        String output = runComplianceToolAndCaptureLogOutputWithExpectedFailure(AntennaComplianceToolOptions.SWITCH_DEBUG_SHORT, propertiesFilePath, COMPLIANCE_TOOL_MODE);
 
         assertThat(output).contains(INFO_MESSAGE);
         assertThat(output).contains(DEBUG_MESSAGE);
     }
 
     @Test
-    public void testCommandLineIsValidated() throws UnsupportedEncodingException {
-        String output = runComplianceToolAndExpectFailure(propertiesFilePath, "--unsupported-argument");
+    public void testCommandLineIsValidated() {
+        String output = runComplianceToolAndCaptureLogOutputWithExpectedFailure(propertiesFilePath, "--unsupported-argument");
 
         assertThat(output).contains(AntennaComplianceToolOptions.helpMessage());
     }
 
     @Test
-    public void testNonExistingConfigFileIsHandled() throws UnsupportedEncodingException {
+    public void testNonExistingConfigFileIsHandled() {
         Path nonExistingPath = Paths.get("non", "existing", "config.xml");
-        String output = runComplianceToolAndExpectFailure(nonExistingPath.toString(), COMPLIANCE_TOOL_MODE);
+        String output = runComplianceToolAndCaptureLogOutputWithExpectedFailure(nonExistingPath.toString(), COMPLIANCE_TOOL_MODE);
 
         assertThat(output).contains(Arrays.asList("Cannot find ", nonExistingPath.toString()));
     }

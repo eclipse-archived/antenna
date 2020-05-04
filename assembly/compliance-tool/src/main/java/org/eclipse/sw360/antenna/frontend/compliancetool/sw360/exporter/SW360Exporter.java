@@ -47,6 +47,7 @@ public class SW360Exporter {
     }
 
     public void execute() {
+        LOGGER.debug("{} has started.", SW360Exporter.class.getName());
         connection = configuration.getConnection();
 
         Collection<SW360SparseComponent> components = connection.getComponentAdapter().getComponents();
