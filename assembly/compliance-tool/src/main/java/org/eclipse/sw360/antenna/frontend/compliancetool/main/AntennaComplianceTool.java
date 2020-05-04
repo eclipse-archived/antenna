@@ -42,15 +42,14 @@ public class AntennaComplianceTool {
 
             if (!propertiesFile.toFile().exists()) {
                 LOGGER.error("Cannot find {}", propertiesFile.toString());
-                throw new IllegalArgumentException("Cannot find " + propertiesFile.toString());
+                throw new IllegalArgumentException("Cannot find " + propertiesFile);
             }
 
             LOGGER.info("Starting Compliance Tool with mode '{}'", options.getComplianceMode());
 
             System.exit(new AntennaComplianceTool().execute(options.getComplianceMode(), propertiesFile));
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error:" + e.getMessage());
+            LOGGER.error("Error:", e);
             System.exit(1);
         }
     }
@@ -95,6 +94,6 @@ public class AntennaComplianceTool {
     }
 
     private static void printUsage() {
-        System.out.println(AntennaComplianceToolOptions.helpMessage());
+        LOGGER.info(AntennaComplianceToolOptions.helpMessage());
     }
 }
