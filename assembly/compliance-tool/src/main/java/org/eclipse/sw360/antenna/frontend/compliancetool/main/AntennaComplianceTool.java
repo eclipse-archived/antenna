@@ -41,8 +41,11 @@ public class AntennaComplianceTool {
             Path propertiesFile = Paths.get(options.getPropertiesFilePath()).toAbsolutePath();
 
             if (!propertiesFile.toFile().exists()) {
+                LOGGER.error("Cannot find {}", propertiesFile.toString());
                 throw new IllegalArgumentException("Cannot find " + propertiesFile.toString());
             }
+
+            LOGGER.info("Starting Compliance Tool with mode '{}'", options.getComplianceMode());
 
             System.exit(new AntennaComplianceTool().execute(options.getComplianceMode(), propertiesFile));
         } catch (Exception e) {
