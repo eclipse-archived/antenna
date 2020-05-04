@@ -73,8 +73,8 @@ public class SW360UpdaterImpl {
 
     public SW360Release handleSources(SW360Release release, Artifact artifact) {
         if (sw360MetaDataUpdater.isUploadSources()
-                && release.get_Links().getSelf() != null
-                && !release.get_Links().getSelf().getHref().isEmpty()) {
+                && release.getLinks().getSelf() != null
+                && !release.getLinks().getSelf().getHref().isEmpty()) {
             Map<Path, SW360AttachmentType> attachments = ArtifactToAttachmentUtils.getAttachmentsFromArtifact(artifact);
             if (!attachments.isEmpty()) {
                 release = sw360MetaDataUpdater.uploadAttachments(release, attachments);

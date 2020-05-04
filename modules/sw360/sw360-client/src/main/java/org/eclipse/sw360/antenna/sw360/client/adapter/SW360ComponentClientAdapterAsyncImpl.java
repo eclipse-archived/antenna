@@ -67,7 +67,7 @@ class SW360ComponentClientAdapterAsyncImpl implements SW360ComponentClientAdapte
                 .thenCompose(components ->
                         components.stream()
                                 .filter(c -> c.getName().equals(componentName))
-                                .map(c -> SW360HalResourceUtility.getLastIndexOfSelfLink(c.get_Links()).orElse(""))
+                                .map(c -> SW360HalResourceUtility.getLastIndexOfSelfLink(c.getLinks()).orElse(""))
                                 .map(this::getComponentById)
                                 .findFirst()
                                 .orElse(CompletableFuture.completedFuture(Optional.empty()))

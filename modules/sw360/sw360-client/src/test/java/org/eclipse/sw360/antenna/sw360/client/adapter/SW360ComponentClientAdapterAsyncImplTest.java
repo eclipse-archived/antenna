@@ -70,7 +70,7 @@ public class SW360ComponentClientAdapterAsyncImplTest {
         when(componentFromRelease.getName()).thenReturn(COMPONENT_NAME);
         LinkObjects linkObjects = makeLinkObjects();
         sparseComponent.setName(COMPONENT_NAME)
-                .set_Links(linkObjects);
+                .setLinks(linkObjects);
         component.setName(COMPONENT_NAME);
 
         when(componentClient.getComponent(COMPONENT_ID))
@@ -154,7 +154,7 @@ public class SW360ComponentClientAdapterAsyncImplTest {
     public void testGetComponentByName() {
         LinkObjects linkObjects = makeLinkObjects();
         sparseComponent.setName(COMPONENT_NAME)
-                .set_Links(linkObjects);
+                .setLinks(linkObjects);
 
         component.setName(COMPONENT_NAME);
 

@@ -71,7 +71,7 @@ public class SW360EnricherImpl {
     }
 
     private void downloadAttachments(SW360Release sw360Release, Artifact artifact) {
-        Set<SW360SparseAttachment> attachments = sw360Release.get_Embedded().getAttachments();
+        Set<SW360SparseAttachment> attachments = sw360Release.getEmbedded().getAttachments();
 
         attachments.stream()
                 .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)
@@ -92,7 +92,7 @@ public class SW360EnricherImpl {
                 .distinct()
                 .collect(Collectors.toList());
 
-        final SW360ReleaseEmbedded embedded = release.get_Embedded();
+        final SW360ReleaseEmbedded embedded = release.getEmbedded();
         if (embedded == null) {
             LOGGER.debug("No license information available in SW360.");
             return;

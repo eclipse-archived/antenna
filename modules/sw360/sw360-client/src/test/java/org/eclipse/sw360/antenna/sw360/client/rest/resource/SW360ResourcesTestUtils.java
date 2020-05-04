@@ -44,8 +44,8 @@ public abstract class SW360ResourcesTestUtils<T extends SW360HalResource<?,?>> {
         final String jsonBody = objectMapper.writeValueAsString(item);
         final T deserialized = objectMapper.readValue(jsonBody, getHandledClassType());
 
-        assertThat(deserialized.get_Embedded())
-                .isEqualTo(item.get_Embedded());
+        assertThat(deserialized.getEmbedded())
+                .isEqualTo(item.getEmbedded());
         assertThat(deserialized)
                 .isEqualTo(item);
     }

@@ -43,7 +43,7 @@ public class SW360SparseAttachment extends SW360SimpleHalResource {
 
     @JsonIgnore
     public String getAttachmentId() {
-        return Optional.ofNullable(get_Links())
+        return Optional.ofNullable(getLinks())
                 .map(LinkObjects::getSelf)
                 .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink)
                 .orElse("");

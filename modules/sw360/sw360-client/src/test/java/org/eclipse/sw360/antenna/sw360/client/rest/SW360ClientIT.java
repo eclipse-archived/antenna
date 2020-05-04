@@ -124,7 +124,7 @@ public class SW360ClientIT extends AbstractMockServerTest {
      * @param projectList the project list returned by a request
      */
     private void thenCorrectResultsShouldHaveBeenRetrieved(SW360ProjectList projectList) {
-        List<SW360Project> projects = projectList.get_Embedded().getProjects();
+        List<SW360Project> projects = projectList.getEmbedded().getProjects();
         checkTestProjects(projects);
     }
 

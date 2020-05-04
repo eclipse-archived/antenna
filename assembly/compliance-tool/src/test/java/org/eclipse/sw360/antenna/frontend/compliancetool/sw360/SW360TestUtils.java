@@ -70,7 +70,7 @@ public class SW360TestUtils {
         sw360Release.setChangeStatus(RELEASE_CHANGESTATUS);
         sw360Release.setCopyrights(RELEASE_COPYRIGHT);
 
-        sw360Release.set_Embedded(mkReleaseEmbedded());
+        sw360Release.setEmbedded(mkReleaseEmbedded());
 
         return sw360Release;
     }
@@ -89,7 +89,7 @@ public class SW360TestUtils {
         Self self = new Self(RELEADE_SELF);
         LinkObjects linkObjectsWithSelf = new LinkObjects()
                 .setSelf(self);
-        sparseRelease.set_Links(linkObjectsWithSelf);
+        sparseRelease.setLinks(linkObjectsWithSelf);
         return sparseRelease;
     }
 
@@ -99,7 +99,7 @@ public class SW360TestUtils {
         component.setComponentType(COMPONENT_TYPE);
         SW360ComponentEmbedded componentEmbedded = new SW360ComponentEmbedded();
         componentEmbedded.setReleases(Arrays.asList(mkSW3SparseRelease(name), mkSW3SparseRelease(name)));
-        component.set_Embedded(componentEmbedded);
+        component.setEmbedded(componentEmbedded);
         return component;
     }
 
@@ -110,7 +110,7 @@ public class SW360TestUtils {
         Self self = new Self(COMPONENT_SELF);
         LinkObjects linkObjectsWithSelf = new LinkObjects()
                 .setSelf(self);
-        sparseComponent.set_Links(linkObjectsWithSelf);
+        sparseComponent.setLinks(linkObjectsWithSelf);
         return sparseComponent;
     }
 

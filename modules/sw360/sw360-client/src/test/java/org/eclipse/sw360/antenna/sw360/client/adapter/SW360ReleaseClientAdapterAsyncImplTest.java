@@ -76,7 +76,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
     public void testGetOrCreateReleaseWithPatchRelease() {
         SW360ReleaseLinkObjects links = getSw360ReleaseLinkObjects();
         SW360SparseRelease sparseRelease = new SW360SparseRelease();
-        sparseRelease.set_Links(links);
+        sparseRelease.setLinks(links);
 
         when(releaseClient.getReleasesByExternalIds(release.getExternalIds()))
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseRelease)));
@@ -110,7 +110,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         LinkObjects links = new LinkObjects()
                 .setSelf(componentSelf);
         SW360Component component = getSw360Component(sparseRelease, "componentName");
-        component.set_Links(links);
+        component.setLinks(links);
 
         when(componentClientAdapter.getOrCreateComponent(any()))
                 .thenReturn(CompletableFuture.completedFuture(Optional.of(component)));
@@ -157,7 +157,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         LinkObjects links = new LinkObjects()
                 .setSelf(componentSelf);
         SW360Component component = getSw360Component(sparseRelease, "componentName");
-        component.set_Links(links);
+        component.setLinks(links);
         when(componentClientAdapter.getOrCreateComponent(any()))
                 .thenReturn(CompletableFuture.completedFuture(Optional.of(component)));
 
@@ -173,7 +173,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
     public void testUploadAttachments() {
         SW360ReleaseEmbedded sw360ReleaseEmbedded = new SW360ReleaseEmbedded();
         sw360ReleaseEmbedded.setAttachments(Collections.emptySet());
-        release.set_Embedded(sw360ReleaseEmbedded);
+        release.setEmbedded(sw360ReleaseEmbedded);
 
         SW360AttachmentType attachmentType = SW360AttachmentType.SOURCE;
         Path path = Paths.get("");
@@ -253,7 +253,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         embedded.setReleases(Collections.singletonList(sparseRelease));
         SW360Component component = new SW360Component()
                 .setName(componentName);
-        component.set_Embedded(embedded);
+        component.setEmbedded(embedded);
         return component;
     }
 
@@ -265,7 +265,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         Self releaseSelf = new Self().setHref(releaseHref);
         LinkObjects links = new LinkObjects();
         links.setSelf(releaseSelf);
-        sparseRelease.set_Links(links);
+        sparseRelease.setLinks(links);
         String componentName = "componentName";
         SW360Component component = getSw360Component(sparseRelease, componentName);
         when(releaseClient.getRelease(ID))
@@ -292,7 +292,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         Self releaseSelf = new Self().setHref(releaseHref);
         SW360ReleaseLinkObjects links = new SW360ReleaseLinkObjects();
         links.setSelf(releaseSelf);
-        release.set_Links(links);
+        release.setLinks(links);
 
         SW360SparseAttachment sparseAttachment = new SW360SparseAttachment();
 

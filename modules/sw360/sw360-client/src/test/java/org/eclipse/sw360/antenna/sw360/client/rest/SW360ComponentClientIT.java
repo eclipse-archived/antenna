@@ -150,7 +150,7 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
 
         SW360Component component = waitFor(componentClient.getComponent(componentId));
         assertThat(component.getName()).isEqualTo("jackson-annotations");
-        SW360ComponentEmbedded embedded = component.get_Embedded();
+        SW360ComponentEmbedded embedded = component.getEmbedded();
         assertThat(embedded.getCreatedBy().getEmail()).isEqualTo("osi9be@bosch.com");
         List<SW360SparseRelease> releases = embedded.getReleases();
         assertThat(releases).hasSize(10);

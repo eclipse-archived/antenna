@@ -53,27 +53,27 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
 
     @JsonIgnore
     public String getReleaseId() {
-        return Optional.ofNullable(get_Links())
+        return Optional.ofNullable(getLinks())
                 .map(SW360ReleaseLinkObjects::getSelf)
                 .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink)
                 .orElse(null);
     }
 
     public SW360Release setReleaseId(String releaseId) {
-        get_Links().setSelf(new Self(releaseId));
+        getLinks().setSelf(new Self(releaseId));
         return this;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getComponentId() {
-        return Optional.ofNullable(get_Links())
+        return Optional.ofNullable(getLinks())
                 .map(SW360ReleaseLinkObjects::getSelfComponent)
                 .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink)
                 .orElse(null);
     }
 
     public SW360Release setComponentId(String componentId) {
-        get_Links().setSelfComponent(new Self(componentId));
+        getLinks().setSelfComponent(new Self(componentId));
         return this;
     }
 
@@ -119,12 +119,12 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
 
     @JsonIgnore
     public boolean isSetMainLicenseIds() {
-        return !get_Embedded().getLicenses().isEmpty();
+        return !getEmbedded().getLicenses().isEmpty();
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public Set<String> getMainLicenseIds() {
-        return Optional.ofNullable(get_Embedded().getLicenses())
+        return Optional.ofNullable(getEmbedded().getLicenses())
                 .map(lics -> lics
                         .stream()
                         .map(SW360SparseLicense::getShortName)
@@ -138,7 +138,7 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
                     .map(licenseId -> new SW360SparseLicense()
                             .setShortName(licenseId))
                     .collect(Collectors.toList());
-            get_Embedded().setLicenses(licenses);
+            getEmbedded().setLicenses(licenses);
         }
         return this;
     }
@@ -331,20 +331,20 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
         if (releaseWithPrecedence.isSetMainLicenseIds()) {
             setMainLicenseIds(releaseWithPrecedence.getMainLicenseIds());
         }
-        Self releaseIdWithPrecedence = releaseWithPrecedence.get_Links().getSelf();
+        Self releaseIdWithPrecedence = releaseWithPrecedence.getLinks().getSelf();
         if (releaseIdWithPrecedence != null && !releaseIdWithPrecedence.getHref().isEmpty()) {
-            get_Links().setSelf(releaseIdWithPrecedence);
+            getLinks().setSelf(releaseIdWithPrecedence);
         }
-        Self componentIdWithPrecedence = releaseWithPrecedence.get_Links().getSelfComponent();
+        Self componentIdWithPrecedence = releaseWithPrecedence.getLinks().getSelfComponent();
         if (componentIdWithPrecedence != null && !componentIdWithPrecedence.getHref().isEmpty()) {
-            get_Links().setSelfComponent(componentIdWithPrecedence);
+            getLinks().setSelfComponent(componentIdWithPrecedence);
         }
-        final Set<SW360SparseAttachment> releaseWithPrecedenceAttachments = releaseWithPrecedence.get_Embedded().getAttachments();
+        final Set<SW360SparseAttachment> releaseWithPrecedenceAttachments = releaseWithPrecedence.getEmbedded().getAttachments();
         if (!releaseWithPrecedenceAttachments.isEmpty()) {
-            if (get_Embedded().getAttachments().isEmpty()) {
-                get_Embedded().setAttachments(releaseWithPrecedenceAttachments);
+            if (getEmbedded().getAttachments().isEmpty()) {
+                getEmbedded().setAttachments(releaseWithPrecedenceAttachments);
             } else {
-                get_Embedded().setAttachments(mergeAttachments(get_Embedded().getAttachments(), releaseWithPrecedenceAttachments));
+                getEmbedded().setAttachments(mergeAttachments(getEmbedded().getAttachments(), releaseWithPrecedenceAttachments));
             }
         }
         externalIds.putAll(releaseWithPrecedence.externalIds);

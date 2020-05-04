@@ -156,7 +156,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         SW360ReleaseEmbedded releaseEmbedded = new SW360ReleaseEmbedded();
         releaseEmbedded.setAttachments(Collections.singleton(sparseAttachment));
         SW360Release release0 = new SW360Release();
-        release0.set_Embedded(releaseEmbedded);
+        release0.setEmbedded(releaseEmbedded);
 
         when(connector.findReleaseForArtifact(any())).thenReturn(Optional.empty());
         when(connector.findReleaseForArtifact(artifacts.get(0))).thenReturn(Optional.of(release0));
@@ -176,8 +176,8 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     @Test
     public void releaseIsMappedToArtifactCorrectly() {
         SW360Release release0 = TestUtils.mkSW360Release("test1");
-        release0.set_Embedded(new SW360ReleaseEmbedded());
-        release0.get_Embedded().setLicenses(Collections.emptyList());
+        release0.setEmbedded(new SW360ReleaseEmbedded());
+        release0.getEmbedded().setLicenses(Collections.emptyList());
 
         when(connector.findReleaseForArtifact(artifacts.get(0))).thenReturn(Optional.of(release0));
 
@@ -246,8 +246,8 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         SW360License apache = createLicenseFromSparseLicense(apacheSparse, "Some text");
 
         SW360Release release0 = new SW360Release();
-        release0.set_Embedded(new SW360ReleaseEmbedded());
-        release0.get_Embedded().setLicenses(Collections.singletonList(apacheSparse));
+        release0.setEmbedded(new SW360ReleaseEmbedded());
+        release0.getEmbedded().setLicenses(Collections.singletonList(apacheSparse));
         release0.setObservedLicense("apache2");
 
         when(connector.findReleaseForArtifact(any())).thenReturn(Optional.empty());
@@ -272,8 +272,8 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         SW360License mit = createLicenseFromSparseLicense(mitSparse, "MIT license text");
 
         SW360Release release0 = new SW360Release();
-        release0.set_Embedded(new SW360ReleaseEmbedded());
-        release0.get_Embedded().setLicenses(Arrays.asList(apacheSparse, mitSparse));
+        release0.setEmbedded(new SW360ReleaseEmbedded());
+        release0.getEmbedded().setLicenses(Arrays.asList(apacheSparse, mitSparse));
         release0.setDeclaredLicense("apache2 AND mit");
 
         when(connector.findReleaseForArtifact(any())).thenReturn(Optional.empty());
@@ -303,8 +303,8 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         SW360License mit = createLicenseFromSparseLicense(mitSparse, "MIT license text");
 
         SW360Release release0 = new SW360Release();
-        release0.set_Embedded(new SW360ReleaseEmbedded());
-        release0.get_Embedded().setLicenses(Collections.singletonList(mitSparse));
+        release0.setEmbedded(new SW360ReleaseEmbedded());
+        release0.getEmbedded().setLicenses(Collections.singletonList(mitSparse));
         release0.setDeclaredLicense("mit");
 
         when(connector.findReleaseForArtifact(any())).thenReturn(Optional.empty());
@@ -321,9 +321,9 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
     private SW360SparseLicense createSparseLicense(String name, String fullName) {
         SW360SparseLicense sparseLicense = new SW360SparseLicense();
         sparseLicense.setFullName(fullName);
-        sparseLicense.set_Links(new LinkObjects());
-        sparseLicense.get_Links().setSelf(new Self());
-        sparseLicense.get_Links().getSelf().setHref("rest_url/" + name);
+        sparseLicense.setLinks(new LinkObjects());
+        sparseLicense.getLinks().setSelf(new Self());
+        sparseLicense.getLinks().getSelf().setHref("rest_url/" + name);
         return sparseLicense;
     }
 
@@ -332,7 +332,7 @@ public class SW360EnricherTest extends AntennaTestWithMockedContext {
         license.setFullName(sparseLicense.getFullName());
         license.setShortName(sparseLicense.getShortName());
         license.setText(text);
-        license.set_Links(sparseLicense.get_Links());
+        license.setLinks(sparseLicense.getLinks());
         return license;
     }
 }

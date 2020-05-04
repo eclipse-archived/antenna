@@ -29,7 +29,7 @@ public class SW360SparseRelease extends SW360SimpleHalResource {
 
     @JsonIgnore
     public String getReleaseId() {
-        return Optional.ofNullable(get_Links())
+        return Optional.ofNullable(getLinks())
                 .map(LinkObjects::getSelf)
                 .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink)
                 .orElse(null);

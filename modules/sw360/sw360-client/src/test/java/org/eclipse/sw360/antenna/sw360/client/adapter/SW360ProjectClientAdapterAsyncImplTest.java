@@ -59,7 +59,7 @@ public class SW360ProjectClientAdapterAsyncImplTest {
 
         projectWithLink = new SW360Project();
         SW360ProjectAdapterUtils.prepareProject(projectWithLink, PROJECT_NAME, PROJECT_VERSION);
-        projectWithLink.set_Links(linkObjects);
+        projectWithLink.setLinks(linkObjects);
     }
 
     @Test
@@ -101,7 +101,7 @@ public class SW360ProjectClientAdapterAsyncImplTest {
         SW360ReleaseLinkObjects releaseLinkObjects = new SW360ReleaseLinkObjects();
         releaseLinkObjects.setSelf(linkObjects.getSelf());
         SW360Release release = new SW360Release();
-        release.set_Links(releaseLinkObjects);
+        release.setLinks(releaseLinkObjects);
         when(projectClient.addReleasesToProject(eq(PROJECT_LAST_INDEX), any()))
                 .thenReturn(CompletableFuture.completedFuture(null));
 

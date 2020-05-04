@@ -207,7 +207,7 @@ public class AbstractMockServerTest {
      */
     protected static <T extends SW360HalResource<?, ?>> void assertHasLinks(Collection<T> data) {
         boolean hasLinks = data.stream()
-                .allMatch(comp -> comp.get_Links().getSelf() != null);
+                .allMatch(comp -> comp.getLinks().getSelf() != null);
         assertThat(hasLinks).isTrue();
     }
 

@@ -50,7 +50,7 @@ class SW360ProjectClientAdapterAsyncImpl implements SW360ProjectClientAdapterAsy
                 .thenApply(projects -> projects.stream()
                         .filter(pr -> SW360ProjectAdapterUtils.hasEqualCoordinates(pr, projectName, projectVersion))
                         .findAny()
-                        .map(SW360Project::get_Links)
+                        .map(SW360Project::getLinks)
                         .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink));
     }
 
@@ -67,13 +67,13 @@ class SW360ProjectClientAdapterAsyncImpl implements SW360ProjectClientAdapterAsy
 
         return getProjectClient().createProject(sw360Project)
                 .thenApply(responseProject ->
-                        SW360HalResourceUtility.getLastIndexOfSelfLink(responseProject.get_Links()).orElse(""));
+                        SW360HalResourceUtility.getLastIndexOfSelfLink(responseProject.getLinks()).orElse(""));
     }
 
     @Override
     public CompletableFuture<Void> addSW360ReleasesToSW360Project(String id, Collection<SW360Release> releases) {
         List<String> releaseLinks = releases.stream()
-                .map(SW360Release::get_Links)
+                .map(SW360Release::getLinks)
                 .filter(Objects::nonNull)
                 .map(LinkObjects::getSelf)
                 .filter(Objects::nonNull)

@@ -102,7 +102,7 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
         return getComponentAdapter().getOrCreateComponent(componentFromRelease)
                 .thenApply(componentFromSW360 -> {
                     componentFromSW360.ifPresent(cfs -> {
-                        if (cfs.get_Embedded().getReleases().stream()
+                        if (cfs.getEmbedded().getReleases().stream()
                                 .map(SW360SparseRelease::getVersion)
                                 .anyMatch(release.getVersion()::equals)) {
                             throw new SW360ClientException("The release already exists in the found component");
@@ -117,7 +117,7 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     public CompletableFuture<SW360Release> uploadAttachments(SW360Release sw360item, Map<Path, SW360AttachmentType> attachments) {
         CompletableFuture<SW360Release> futUpdatedRelease = CompletableFuture.completedFuture(sw360item);
         for(Map.Entry<Path, SW360AttachmentType> attachment : attachments.entrySet()) {
-            if (!attachmentIsPotentialDuplicate(attachment.getKey(), sw360item.get_Embedded().getAttachments())) {
+            if (!attachmentIsPotentialDuplicate(attachment.getKey(), sw360item.getEmbedded().getAttachments())) {
                 futUpdatedRelease = futUpdatedRelease.thenCompose(release ->
                         getReleaseClient().uploadAndAttachAttachment(sw360item, attachment.getKey(),
                                 attachment.getValue()));
@@ -177,7 +177,7 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     public CompletableFuture<Optional<SW360SparseRelease>> getReleaseByNameAndVersion(SW360Release release) {
         return getComponentAdapter().getComponentByName(release.getName())
                 .thenApply(optComponent ->
-                        optComponent.map(SW360Component::get_Embedded)
+                        optComponent.map(SW360Component::getEmbedded)
                                 .map(SW360ComponentEmbedded::getReleases)
                                 .flatMap(releases -> releases.stream()
                                         .filter(rel -> release.getVersion().equals(rel.getVersion()))
@@ -188,14 +188,14 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     @Override
     public CompletableFuture<Optional<SW360Release>> getReleaseByVersion(SW360Component component, String releaseVersion) {
         if (component != null &&
-                component.get_Embedded() != null &&
-                component.get_Embedded().getReleases() != null) {
+                component.getEmbedded() != null &&
+                component.getEmbedded().getReleases() != null) {
 
-            List<SW360SparseRelease> releases = component.get_Embedded().getReleases();
+            List<SW360SparseRelease> releases = component.getEmbedded().getReleases();
             Optional<String> releaseId = releases.stream()
                     .filter(release -> release.getVersion().equals(releaseVersion))
                     .findFirst()
-                    .flatMap(release -> SW360HalResourceUtility.getLastIndexOfSelfLink(release.get_Links()));
+                    .flatMap(release -> SW360HalResourceUtility.getLastIndexOfSelfLink(release.getLinks()));
             if (releaseId.isPresent()) {
                 return getReleaseById(releaseId.get());
             }
@@ -205,7 +205,7 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
 
     @Override
     public CompletableFuture<Optional<Path>> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath) {
-        return Optional.ofNullable(release.get_Links().getSelf())
+        return Optional.ofNullable(release.getLinks().getSelf())
                 .map(self ->
                         optionalFuture(getReleaseClient().downloadAttachment(self.getHref(), attachment, downloadPath)))
                 .orElseGet(() -> CompletableFuture.completedFuture(Optional.empty()));

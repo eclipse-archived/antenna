@@ -31,7 +31,7 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
 
     @JsonIgnore
     public String getComponentId() {
-        return Optional.ofNullable(get_Links())
+        return Optional.ofNullable(getLinks())
                 .map(LinkObjects::getSelf)
                 .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink)
                 .orElse(null);

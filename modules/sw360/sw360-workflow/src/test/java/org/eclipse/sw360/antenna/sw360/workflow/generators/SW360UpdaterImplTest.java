@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -64,7 +63,7 @@ public class SW360UpdaterImplTest {
         Self self = new Self("http://localhost:8080/releases/12345");
         SW360ReleaseLinkObjects linkObjectsWithSelf = new SW360ReleaseLinkObjects();
         linkObjectsWithSelf.setSelf(self);
-        release.set_Links(linkObjectsWithSelf);
+        release.setLinks(linkObjectsWithSelf);
 
         Map<Path, SW360AttachmentType> attachmentsFromArtifact = ArtifactToAttachmentUtils.getAttachmentsFromArtifact(artifact);
 
@@ -78,7 +77,7 @@ public class SW360UpdaterImplTest {
         sw360ReleaseEmbedded.setAttachments(sparseAttachments);
 
         SW360Release releaseWithAttachment = release;
-        releaseWithAttachment.set_Embedded(sw360ReleaseEmbedded);
+        releaseWithAttachment.setEmbedded(sw360ReleaseEmbedded);
 
         when(metaDataUpdater.isUploadSources())
                 .thenReturn(true);

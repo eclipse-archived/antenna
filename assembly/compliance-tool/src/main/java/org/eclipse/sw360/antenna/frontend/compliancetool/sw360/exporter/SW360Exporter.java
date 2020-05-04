@@ -83,7 +83,7 @@ public class SW360Exporter {
     }
 
     private Set<SW360SparseAttachment> getSparseAttachmentsSource(SW360Release release) {
-        Set<SW360SparseAttachment> attachments = release.get_Embedded().getAttachments();
+        Set<SW360SparseAttachment> attachments = release.getEmbedded().getAttachments();
 
         return attachments.stream()
                 .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)
@@ -97,7 +97,7 @@ public class SW360Exporter {
                 .map(id -> connection.getComponentAdapter().getComponentById(id))
                 .map(component -> component.orElse(null))
                 .filter(Objects::nonNull)
-                .flatMap(component -> component.get_Embedded().getReleases().stream())
+                .flatMap(component -> component.getEmbedded().getReleases().stream())
                 .collect(Collectors.toList());
     }
 
@@ -123,6 +123,6 @@ public class SW360Exporter {
     }
 
     private <T extends SW360HalResource<?, ?>> String getIdFromHalResource(T halResource) {
-        return SW360HalResourceUtility.getLastIndexOfSelfLink(halResource.get_Links().getSelf()).orElse("");
+        return SW360HalResourceUtility.getLastIndexOfSelfLink(halResource.getLinks().getSelf()).orElse("");
     }
 }

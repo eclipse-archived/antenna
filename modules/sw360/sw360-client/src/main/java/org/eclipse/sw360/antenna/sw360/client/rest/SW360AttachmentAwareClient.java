@@ -96,7 +96,7 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?, ?
         }
 
         SW360Attachment sw360Attachment = new SW360Attachment(fileToAttach, kindToAttach);
-        final String self = itemToModify.get_Links().getSelf().getHref();
+        final String self = itemToModify.getLinks().getSelf().getHref();
         return executeJsonRequest(builder -> builder.method(RequestBuilder.Method.POST)
                         .uri(self + ATTACHMENTS_ENDPOINT)
                         .multiPart("attachment", part ->

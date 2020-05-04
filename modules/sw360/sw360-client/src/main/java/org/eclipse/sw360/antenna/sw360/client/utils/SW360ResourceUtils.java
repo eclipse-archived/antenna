@@ -127,7 +127,7 @@ public class SW360ResourceUtils {
      */
     private static <E extends Embedded, T extends SW360HalResource<?, E>, U>
     List<U> extractEmbeddedList(T resource, Function<E, List<U>> extractor) {
-        return Optional.ofNullable(resource.get_Embedded())
+        return Optional.ofNullable(resource.getEmbedded())
                 .flatMap(embedded -> Optional.ofNullable(extractor.apply(embedded))
                         .map(ArrayList::new))
                 .orElseGet(ArrayList::new);

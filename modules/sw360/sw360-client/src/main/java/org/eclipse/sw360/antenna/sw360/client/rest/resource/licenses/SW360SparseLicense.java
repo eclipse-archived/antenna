@@ -33,11 +33,11 @@ public class SW360SparseLicense extends SW360SimpleHalResource {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getShortName() {
-        return SW360HalResourceUtility.getLastIndexOfSelfLink(get_Links()).orElse("");
+        return SW360HalResourceUtility.getLastIndexOfSelfLink(getLinks()).orElse("");
     }
 
     public SW360SparseLicense setShortName(String shortName) {
-        get_Links().setSelf(new Self(shortName));
+        getLinks().setSelf(new Self(shortName));
         return this;
     }
 
