@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-class ClearingReportGenerator {
+public class ClearingReportGenerator {
     private static final String CLEARING_DOC_SUFFIX = "_clearing.json";
 
     Path createClearingDocument(SW360Release release, Path targetDir) {
