@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 @JsonDeserialize(as = SW360ComponentListEmbedded.class)
-public class SW360ComponentListEmbedded implements Embedded {
+public final class SW360ComponentListEmbedded implements Embedded {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("sw360:components")
     private List<SW360SparseComponent> components;

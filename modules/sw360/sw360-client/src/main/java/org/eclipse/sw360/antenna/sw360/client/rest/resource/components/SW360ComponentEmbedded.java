@@ -23,7 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 @JsonDeserialize(as = SW360ComponentEmbedded.class)
-public class SW360ComponentEmbedded implements Embedded {
+public final class SW360ComponentEmbedded implements Embedded {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("sw360:releases")
     private List<SW360SparseRelease> releases;

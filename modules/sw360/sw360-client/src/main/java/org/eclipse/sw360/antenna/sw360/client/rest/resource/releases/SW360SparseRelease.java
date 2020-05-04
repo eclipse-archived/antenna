@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-public class SW360SparseRelease extends SW360SimpleHalResource {
+public final class SW360SparseRelease extends SW360SimpleHalResource {
     private String componentId;
     private String name;
     private String version;
@@ -83,8 +83,7 @@ public class SW360SparseRelease extends SW360SimpleHalResource {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (!(o instanceof SW360SparseRelease) || !super.equals(o)) return false;
         SW360SparseRelease that = (SW360SparseRelease) o;
         return Objects.equals(componentId, that.componentId) &&
                 Objects.equals(name, that.name) &&
@@ -96,5 +95,10 @@ public class SW360SparseRelease extends SW360SimpleHalResource {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), componentId, name, version, cpeid, mainLicenseIds);
+    }
+
+    @Override
+    public boolean canEqual(Object o) {
+        return o instanceof SW360SparseRelease;
     }
 }

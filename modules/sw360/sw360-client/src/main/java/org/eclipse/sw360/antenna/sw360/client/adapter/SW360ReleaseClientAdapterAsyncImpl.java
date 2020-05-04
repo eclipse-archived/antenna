@@ -81,8 +81,8 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
             return failedFuture(new SW360ClientException("Can not write invalid release for " +
                     releaseFromArtifact.getName() + "-" + releaseFromArtifact.getVersion()));
         }
-        if (releaseFromArtifact.getReleaseId() != null) {
-            throw new SW360ClientException("Can not write release which already has the id " + releaseFromArtifact.getReleaseId());
+        if (releaseFromArtifact.getId() != null) {
+            throw new SW360ClientException("Can not write release which already has the id " + releaseFromArtifact.getId());
         }
 
         return assignReleaseToComponent(releaseFromArtifact)
@@ -107,7 +107,7 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
                                 .anyMatch(release.getVersion()::equals)) {
                             throw new SW360ClientException("The release already exists in the found component");
                         }
-                        release.setComponentId(cfs.getComponentId());
+                        release.setComponentId(cfs.getId());
                     });
                     return release;
                 });

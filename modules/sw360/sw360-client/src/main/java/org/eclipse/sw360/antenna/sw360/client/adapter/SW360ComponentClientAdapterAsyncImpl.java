@@ -38,8 +38,8 @@ class SW360ComponentClientAdapterAsyncImpl implements SW360ComponentClientAdapte
 
     @Override
     public CompletableFuture<Optional<SW360Component>> getOrCreateComponent(SW360Component componentFromRelease) {
-        if (componentFromRelease.getComponentId() != null) {
-            return getComponentById(componentFromRelease.getComponentId());
+        if (componentFromRelease.getId() != null) {
+            return getComponentById(componentFromRelease.getId());
         }
         return getComponentByName(componentFromRelease.getName())
                 .thenCompose(optComponent -> optComponent.isPresent() ?

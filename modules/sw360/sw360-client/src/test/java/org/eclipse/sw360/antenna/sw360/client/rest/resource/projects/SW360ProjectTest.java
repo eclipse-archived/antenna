@@ -16,7 +16,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360ResourcesTestUt
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class SW360ProjectTests extends SW360ResourcesTestUtils<SW360Project> {
+public class SW360ProjectTest extends SW360ResourcesTestUtils<SW360Project> {
     @Override
     public SW360Project prepareItem() {
         SW360Project sw360Project = new SW360Project();

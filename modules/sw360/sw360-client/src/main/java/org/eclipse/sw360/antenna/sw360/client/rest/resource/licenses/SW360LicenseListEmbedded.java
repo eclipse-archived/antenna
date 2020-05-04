@@ -37,13 +37,18 @@ public class SW360LicenseListEmbedded implements Embedded {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if(!(o instanceof SW360LicenseListEmbedded)) return false;
         SW360LicenseListEmbedded that = (SW360LicenseListEmbedded) o;
-        return Objects.equals(licenses, that.licenses);
+        return that.canEqual(this) &&
+                Objects.equals(licenses, that.licenses);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(licenses);
+    }
+
+    public boolean canEqual(Object o) {
+        return o instanceof SW360LicenseListEmbedded;
     }
 }

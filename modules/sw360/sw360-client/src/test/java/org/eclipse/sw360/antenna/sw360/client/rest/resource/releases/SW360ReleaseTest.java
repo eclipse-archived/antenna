@@ -35,7 +35,6 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
         release.setCopyrights("Copyright 2019 SuperCorp");
         release.setHashes(Collections.singleton("UIADRETDNDUIAGFOEHNTR"));
         release.setChangeStatus("AS_IS");
-        release.setReleaseId("RELEASE_ID");
         release.setComponentId("COMPONENT_ID");
         release.setMainLicenseIds(Stream.of("MIT","BSD-3-Clause").collect(Collectors.toSet()));
         Set<SW360SparseAttachment> sparseAttachmentSet = new HashSet<>();

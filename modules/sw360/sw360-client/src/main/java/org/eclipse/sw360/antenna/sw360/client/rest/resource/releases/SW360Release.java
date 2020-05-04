@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW360ReleaseEmbedded> {
+public final class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW360ReleaseEmbedded> {
 
     private static final String OVERRIDDEN_LICENSES_KEY = "overridden_license";
     private static final String DECLARED_LICENSE_KEY = "declared_license";
@@ -50,19 +50,6 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     private final Map<String, String> externalIds = new HashMap<>();
     @JsonSerialize
     private final Map<String, String> additionalData = new HashMap<>();
-
-    @JsonIgnore
-    public String getReleaseId() {
-        return Optional.ofNullable(getLinks())
-                .map(SW360ReleaseLinkObjects::getSelf)
-                .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink)
-                .orElse(null);
-    }
-
-    public SW360Release setReleaseId(String releaseId) {
-        getLinks().setSelf(new Self(releaseId));
-        return this;
-    }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getComponentId() {
@@ -376,19 +363,27 @@ public class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects, SW36
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (!(o instanceof SW360Release) || !super.equals(o)) return false;
         SW360Release release = (SW360Release) o;
         return Objects.equals(name, release.name) &&
                 Objects.equals(version, release.version) &&
                 Objects.equals(cpeId, release.cpeId) &&
                 Objects.equals(downloadurl, release.downloadurl) &&
                 Objects.equals(externalIds, release.externalIds) &&
-                Objects.equals(additionalData, release.additionalData);
+                Objects.equals(additionalData, release.additionalData) &&
+                Objects.equals(createdOn, release.createdOn) &&
+                Objects.equals(sw360ClearingState, release.sw360ClearingState) &&
+                isProprietary == release.isProprietary;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), name, version, cpeId, downloadurl, externalIds, additionalData);
+        return Objects.hash(super.hashCode(), name, version, cpeId, downloadurl, externalIds, additionalData,
+                isProprietary, createdOn, sw360ClearingState);
+    }
+
+    @Override
+    public boolean canEqual(Object o) {
+        return o instanceof SW360Release;
     }
 }

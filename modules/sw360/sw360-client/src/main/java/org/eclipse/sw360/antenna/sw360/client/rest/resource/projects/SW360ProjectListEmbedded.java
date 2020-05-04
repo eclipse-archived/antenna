@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 @JsonDeserialize(as = SW360ProjectListEmbedded.class)
-public class SW360ProjectListEmbedded implements Embedded {
+public final class SW360ProjectListEmbedded implements Embedded {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("sw360:projects")
     private List<SW360Project> projects = new ArrayList<>();

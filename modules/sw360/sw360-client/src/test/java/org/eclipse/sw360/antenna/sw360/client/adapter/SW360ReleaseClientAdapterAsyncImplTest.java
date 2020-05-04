@@ -138,7 +138,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
 
     @Test
     public void testCreateReleaseWithID() {
-        release.setReleaseId("R11");
+        release.getLinks().setSelf(new Self("R11"));
 
         try {
             block(releaseClientAdapter.createRelease(release));

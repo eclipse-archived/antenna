@@ -22,7 +22,7 @@ public class ClearingReportGenerator {
     private static final String CLEARING_DOC_SUFFIX = "_clearing.json";
 
     Path createClearingDocument(SW360Release release, Path targetDir) {
-        Path clearingDocument = targetDir.resolve(release.getReleaseId() + CLEARING_DOC_SUFFIX);
+        Path clearingDocument = targetDir.resolve(release.getId() + CLEARING_DOC_SUFFIX);
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(Files.newBufferedWriter(clearingDocument), release);

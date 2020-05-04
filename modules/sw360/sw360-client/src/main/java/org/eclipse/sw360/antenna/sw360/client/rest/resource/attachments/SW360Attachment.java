@@ -18,7 +18,7 @@ import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public class SW360Attachment extends SW360SimpleHalResource {
+public final class SW360Attachment extends SW360SimpleHalResource {
     private String filename;
     private SW360AttachmentType attachmentType;
     private SW360AttachmentCheckStatus checkStatus;
@@ -72,10 +72,9 @@ public class SW360Attachment extends SW360SimpleHalResource {
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        if (!super.equals(object)) return false;
+        if (!(object instanceof SW360Attachment) || !super.equals(object)) return false;
         SW360Attachment that = (SW360Attachment) object;
-        return filename.equals(that.filename) &&
+        return java.util.Objects.equals(filename, that.filename) &&
                 java.util.Objects.equals(attachmentType, that.attachmentType) &&
                 java.util.Objects.equals(checkStatus, that.checkStatus);
     }
@@ -83,5 +82,10 @@ public class SW360Attachment extends SW360SimpleHalResource {
     @Override
     public int hashCode() {
         return java.util.Objects.hash(super.hashCode(), filename, attachmentType, checkStatus);
+    }
+
+    @Override
+    public boolean canEqual(Object o) {
+        return o instanceof SW360Attachment;
     }
 }

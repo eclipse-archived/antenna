@@ -46,7 +46,7 @@ public class ClearingReportGeneratorTest {
 
         Path clearingDocument = generator.createClearingDocument(release, targetFolder.toPath());
         assertThat(Files.exists(clearingDocument)).isTrue();
-        assertThat(clearingDocument.getFileName().toString()).isEqualTo(release.getReleaseId() + "_clearing.json");
+        assertThat(clearingDocument.getFileName().toString()).isEqualTo(release.getId() + "_clearing.json");
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.readValue(clearingDocument.toFile(), SW360Release.class);

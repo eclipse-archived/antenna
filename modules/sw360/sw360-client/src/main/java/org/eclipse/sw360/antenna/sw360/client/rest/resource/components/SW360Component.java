@@ -11,31 +11,20 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.rest.resource.components;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
-public class SW360Component extends SW360HalResource<LinkObjects, SW360ComponentEmbedded> {
+public final class SW360Component extends SW360HalResource<LinkObjects, SW360ComponentEmbedded> {
     private String name;
     private SW360ComponentType componentType;
     private String createdOn;
     private String homepage;
 
     private Set<String> categories;
-
-    @JsonIgnore
-    public String getComponentId() {
-        return Optional.ofNullable(getLinks())
-                .map(LinkObjects::getSelf)
-                .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink)
-                .orElse(null);
-    }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public String getName() {
@@ -100,17 +89,22 @@ public class SW360Component extends SW360HalResource<LinkObjects, SW360Component
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (!(o instanceof SW360Component) || !super.equals(o)) return false;
         SW360Component that = (SW360Component) o;
         return Objects.equals(name, that.name) &&
                 componentType == that.componentType &&
                 Objects.equals(createdOn, that.createdOn) &&
-                Objects.equals(homepage, that.homepage);
+                Objects.equals(homepage, that.homepage) &&
+                Objects.equals(categories, that.categories);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), name, componentType, createdOn, homepage);
+        return Objects.hash(super.hashCode(), name, componentType, createdOn, homepage, categories);
+    }
+
+    @Override
+    public boolean canEqual(Object o) {
+        return o instanceof SW360Component;
     }
 }

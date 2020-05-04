@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbedded> {
+public final class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbedded> {
     private String name;
     private String version;
     private SW360ProjectType projectType;
@@ -147,8 +147,7 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (!(o instanceof SW360Project) || !super.equals(o)) return false;
         SW360Project that = (SW360Project) o;
         return Objects.equals(name, that.name) &&
                 Objects.equals(version, that.version) &&
@@ -158,11 +157,18 @@ public class SW360Project extends SW360HalResource<LinkObjects, SW360ProjectEmbe
                 Objects.equals(createdOn, that.createdOn) &&
                 Objects.equals(businessUnit, that.businessUnit) &&
                 visibility == that.visibility &&
-                Objects.equals(releaseIdToUsage, that.releaseIdToUsage);
+                Objects.equals(releaseIdToUsage, that.releaseIdToUsage) &&
+                Objects.equals(clearingTeam, that.clearingTeam);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), name, version, projectType, description, externalIds, createdOn, businessUnit, visibility, releaseIdToUsage);
+        return Objects.hash(super.hashCode(), name, version, projectType, description, externalIds, createdOn,
+                businessUnit, visibility, releaseIdToUsage, clearingTeam);
+    }
+
+    @Override
+    public boolean canEqual(Object o) {
+        return o instanceof SW360Project;
     }
 }

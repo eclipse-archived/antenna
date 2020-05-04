@@ -164,7 +164,7 @@ public class SW360ReleaseClientIT extends AbstractMockServerTest {
     public void testPatchRelease() throws IOException {
         SW360Release release = readTestJsonFile(resolveTestFileURL("release.json"), SW360Release.class);
         String releaseJson = toJson(release);
-        wireMockRule.stubFor(patch(urlEqualTo("/releases/" + release.getReleaseId()))
+        wireMockRule.stubFor(patch(urlEqualTo("/releases/" + release.getId()))
                 .withRequestBody(equalToJson(releaseJson))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_ACCEPTED)
                         .withBody(releaseJson)));
@@ -176,7 +176,7 @@ public class SW360ReleaseClientIT extends AbstractMockServerTest {
     @Test
     public void testPatchReleaseError() throws IOException {
         SW360Release release = readTestJsonFile(resolveTestFileURL("release.json"), SW360Release.class);
-        wireMockRule.stubFor(patch(urlEqualTo("/releases/" + release.getReleaseId()))
+        wireMockRule.stubFor(patch(urlEqualTo("/releases/" + release.getId()))
                 .withRequestBody(equalToJson(toJson(release)))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_BAD_REQUEST)));
 

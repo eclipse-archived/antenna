@@ -16,7 +16,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360SimpleHalResour
 
 import java.util.Objects;
 
-public class SW360License extends SW360SimpleHalResource {
+public final class SW360License extends SW360SimpleHalResource {
     private String text;
     private String shortName;
     private String fullName;
@@ -54,8 +54,7 @@ public class SW360License extends SW360SimpleHalResource {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (!(o instanceof SW360License) || !super.equals(o)) return false;
         SW360License that = (SW360License) o;
         return Objects.equals(text, that.text) &&
                 Objects.equals(shortName, that.shortName) &&
@@ -65,5 +64,10 @@ public class SW360License extends SW360SimpleHalResource {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), text, shortName, fullName);
+    }
+
+    @Override
+    public boolean canEqual(Object o) {
+        return o instanceof SW360License;
     }
 }

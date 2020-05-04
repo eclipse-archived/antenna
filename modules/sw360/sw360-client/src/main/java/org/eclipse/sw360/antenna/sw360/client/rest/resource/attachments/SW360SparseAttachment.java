@@ -19,7 +19,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtil
 import java.util.Objects;
 import java.util.Optional;
 
-public class SW360SparseAttachment extends SW360SimpleHalResource {
+public final class SW360SparseAttachment extends SW360SimpleHalResource {
     private String filename;
     private SW360AttachmentType attachmentType;
 
@@ -52,8 +52,7 @@ public class SW360SparseAttachment extends SW360SimpleHalResource {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (!(o instanceof SW360SparseAttachment) || !super.equals(o)) return false;
         SW360SparseAttachment that = (SW360SparseAttachment) o;
         return Objects.equals(filename, that.filename) &&
                 Objects.equals(attachmentType, that.attachmentType);
@@ -62,5 +61,10 @@ public class SW360SparseAttachment extends SW360SimpleHalResource {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), filename, attachmentType);
+    }
+
+    @Override
+    public boolean canEqual(Object o) {
+        return o instanceof SW360SparseAttachment;
     }
 }

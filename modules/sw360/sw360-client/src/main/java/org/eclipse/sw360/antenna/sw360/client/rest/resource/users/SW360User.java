@@ -16,7 +16,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360SimpleHalResour
 
 import java.util.Objects;
 
-public class SW360User extends SW360SimpleHalResource {
+public final class SW360User extends SW360SimpleHalResource {
     private String email;
     private String type;
     private SW360UserGroup userGroup;
@@ -91,8 +91,7 @@ public class SW360User extends SW360SimpleHalResource {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (!(o instanceof SW360User) || !super.equals(o)) return false;
         SW360User sw360User = (SW360User) o;
         return Objects.equals(email, sw360User.email) &&
                 Objects.equals(type, sw360User.type) &&
@@ -106,5 +105,10 @@ public class SW360User extends SW360SimpleHalResource {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), email, type, userGroup, department, fullName, givenName, lastName);
+    }
+
+    @Override
+    public boolean canEqual(Object o) {
+        return o instanceof SW360User;
     }
 }

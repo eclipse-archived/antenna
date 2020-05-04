@@ -18,7 +18,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.users.SW360SparseUse
 import java.util.Objects;
 
 @JsonDeserialize(as = SW360ProjectEmbedded.class)
-public class SW360ProjectEmbedded implements Embedded {
+public final class SW360ProjectEmbedded implements Embedded {
     private SW360SparseUser createdBy;
 
     public SW360SparseUser getCreatedBy() {

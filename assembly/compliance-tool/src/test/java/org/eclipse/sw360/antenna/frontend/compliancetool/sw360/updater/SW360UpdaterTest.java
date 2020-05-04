@@ -135,8 +135,8 @@ public class SW360UpdaterTest {
         SW360UpdaterImpl updater = mock(SW360UpdaterImpl.class);
         when(updater.artifactToReleaseInSW360(any()))
                 .thenReturn(new SW360Release());
-        SW360Release release = mock(SW360Release.class);
-        when(release.getClearingState()).thenReturn(clearingState);
+        SW360Release release = new SW360Release();
+        release.setClearingState(clearingState);
         when(updater.artifactToReleaseInSW360(any()))
                 .thenReturn(release);
 

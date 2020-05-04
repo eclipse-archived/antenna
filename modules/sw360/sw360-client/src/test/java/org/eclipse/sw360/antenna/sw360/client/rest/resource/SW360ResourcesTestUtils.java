@@ -13,6 +13,8 @@ package org.eclipse.sw360.antenna.sw360.client.rest.resource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,13 +54,25 @@ public abstract class SW360ResourcesTestUtils<T extends SW360HalResource<?,?>> {
 
     @Test
     public void equalsTest() {
-        assertThat(prepareItem())
-                .isEqualTo(prepareItem());
+        EqualsVerifier.forClass(getHandledClassType())
+                .withRedefinedSuperclass()
+                .suppress(Warning.NONFINAL_FIELDS)
+                .verify();
     }
 
     @Test
     public void equalsTestWithoutOptionalInput() {
         assertThat(prepareItemWithoutOptionalInput())
                 .isEqualTo(prepareItemWithoutOptionalInput());
+    }
+
+    @Test
+    public void testSelfLinkUninitialized() {
+        assertThat(prepareItem().getSelfLink()).isNull();
+    }
+
+    @Test
+    public void testIdUninitialized() {
+        assertThat(prepareItem().getId()).isNull();
     }
 }

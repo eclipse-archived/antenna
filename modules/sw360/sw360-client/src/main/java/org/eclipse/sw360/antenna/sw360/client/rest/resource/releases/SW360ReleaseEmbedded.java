@@ -20,7 +20,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360Licens
 import java.util.*;
 
 @JsonDeserialize(as = SW360ReleaseEmbedded.class)
-public class SW360ReleaseEmbedded extends SW360LicenseListEmbedded {
+public final class SW360ReleaseEmbedded extends SW360LicenseListEmbedded {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @JsonProperty("sw360:attachments")
     private Set<SW360SparseAttachment> attachments;
@@ -39,8 +39,7 @@ public class SW360ReleaseEmbedded extends SW360LicenseListEmbedded {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (!(o instanceof SW360ReleaseEmbedded) || !super.equals(o)) return false;
         SW360ReleaseEmbedded that = (SW360ReleaseEmbedded) o;
         return Objects.equals(attachments, that.attachments);
     }
@@ -48,5 +47,10 @@ public class SW360ReleaseEmbedded extends SW360LicenseListEmbedded {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), attachments);
+    }
+
+    @Override
+    public boolean canEqual(Object o) {
+        return o instanceof SW360ReleaseEmbedded;
     }
 }

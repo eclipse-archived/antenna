@@ -14,7 +14,7 @@ package org.eclipse.sw360.antenna.sw360.client.rest.resource.projects;
 
 import java.util.Objects;
 
-public class SW360ProjectReleaseRelationship {
+public final class SW360ProjectReleaseRelationship {
     private SW360ReleaseRelationship releaseRelation;
     private SW360MainlineState mainlineState;
 

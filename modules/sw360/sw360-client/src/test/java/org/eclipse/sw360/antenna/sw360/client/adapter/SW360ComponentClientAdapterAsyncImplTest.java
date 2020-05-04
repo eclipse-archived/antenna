@@ -55,7 +55,7 @@ public class SW360ComponentClientAdapterAsyncImplTest {
     @Test
     public void testGetOrCreateComponentByID() {
         SW360Component componentFromRelease = mock(SW360Component.class);
-        when(componentFromRelease.getComponentId()).thenReturn(COMPONENT_ID);
+        when(componentFromRelease.getId()).thenReturn(COMPONENT_ID);
         when(componentClient.getComponent(COMPONENT_ID))
                 .thenReturn(CompletableFuture.completedFuture(component));
 
@@ -66,7 +66,7 @@ public class SW360ComponentClientAdapterAsyncImplTest {
     @Test
     public void testGetOrCreateComponentByName() {
         SW360Component componentFromRelease = mock(SW360Component.class);
-        when(componentFromRelease.getComponentId()).thenReturn(null);
+        when(componentFromRelease.getId()).thenReturn(null);
         when(componentFromRelease.getName()).thenReturn(COMPONENT_NAME);
         LinkObjects linkObjects = makeLinkObjects();
         sparseComponent.setName(COMPONENT_NAME)
@@ -85,7 +85,7 @@ public class SW360ComponentClientAdapterAsyncImplTest {
     @Test
     public void testGetOrCreateComponentCreateNew() {
         SW360Component componentFromRelease = mock(SW360Component.class);
-        when(componentFromRelease.getComponentId()).thenReturn(null);
+        when(componentFromRelease.getId()).thenReturn(null);
         when(componentFromRelease.getName()).thenReturn(COMPONENT_NAME);
         when(componentFromRelease.getCategories()).thenReturn(Collections.singleton("Antenna"));
         when(componentClient.searchByName(COMPONENT_NAME))

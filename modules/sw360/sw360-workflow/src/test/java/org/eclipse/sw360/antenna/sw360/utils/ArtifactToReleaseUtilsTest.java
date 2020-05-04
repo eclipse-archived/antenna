@@ -60,8 +60,8 @@ public class ArtifactToReleaseUtilsTest {
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName("artifactIdtest1");
         SW360Release release = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
-        release.setComponentId(sw360Component.getComponentId());
-        release.setMainLicenseIds(Collections.EMPTY_SET);
+        release.setComponentId(sw360Component.getId());
+        release.setMainLicenseIds(Collections.emptySet());
 
         assertThat(release.getClearingState()).isEqualTo(TestUtils.RELEASE_CLEARING_STATE);
         assertThat(release.getChangeStatus()).isEqualTo(TestUtils.RELEASE_CHANGESTATUS);
@@ -136,7 +136,7 @@ public class ArtifactToReleaseUtilsTest {
         SW360Component sw360Component = new SW360Component();
         sw360Component.setName("artifactIdTest");
         SW360Release release = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
-        release.setComponentId(sw360Component.getComponentId());
+        release.setComponentId(sw360Component.getId());
         release.setMainLicenseIds(Collections.EMPTY_SET);
 
         assertThat(release.getOverriddenLicense()).isNull();
