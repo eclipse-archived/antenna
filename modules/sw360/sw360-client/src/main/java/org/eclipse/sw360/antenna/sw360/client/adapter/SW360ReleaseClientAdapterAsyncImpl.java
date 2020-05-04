@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.failedFuture;
@@ -126,7 +127,7 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
         return futUpdatedRelease;
     }
 
-    private static boolean attachmentIsPotentialDuplicate(Path attachment, List<SW360SparseAttachment> attachments) {
+    private static boolean attachmentIsPotentialDuplicate(Path attachment, Set<SW360SparseAttachment> attachments) {
         return attachments.stream()
                 .anyMatch(attachment1 -> attachment1.getFilename().equals(attachment.getFileName().toString()));
     }

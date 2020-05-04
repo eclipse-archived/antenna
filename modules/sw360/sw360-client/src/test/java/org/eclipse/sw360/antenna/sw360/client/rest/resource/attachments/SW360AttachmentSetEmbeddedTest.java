@@ -8,8 +8,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.rest.resource.attachments;
+package org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments;
 
+import org.assertj.core.api.Assertions;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360AttachmentSetEmbedded;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,8 +37,8 @@ public class SW360AttachmentSetEmbeddedTest {
         SW360AttachmentSetEmbedded sw360AttachmentSetEmbedded = new SW360AttachmentSetEmbedded();
 
         final Set<SW360SparseAttachment> attachments = sw360AttachmentSetEmbedded.getAttachments();
-        assertThat(attachments).isNotNull();
-        assertThat(attachments).isEmpty();
+        Assertions.assertThat(attachments).isNotNull();
+        Assertions.assertThat(attachments).isEmpty();
     }
 
     @Test
@@ -45,7 +47,7 @@ public class SW360AttachmentSetEmbeddedTest {
                 .setAttachments(Collections.singleton(sparseAttachment));
 
         final Set<SW360SparseAttachment> attachments = sw360AttachmentSetEmbedded.getAttachments();
-        assertThat(attachments).containsExactly(sparseAttachment);
+        Assertions.assertThat(attachments).containsExactly(sparseAttachment);
     }
 
     @Test

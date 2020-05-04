@@ -11,12 +11,12 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.rest.resource.releases;
 
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360ResourcesTestUtils;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360ResourcesTestUtils;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;

@@ -14,7 +14,6 @@ package org.eclipse.sw360.antenna.sw360.client.rest.resource.releases;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentSetEmbedded;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360LicenseListEmbedded;
 

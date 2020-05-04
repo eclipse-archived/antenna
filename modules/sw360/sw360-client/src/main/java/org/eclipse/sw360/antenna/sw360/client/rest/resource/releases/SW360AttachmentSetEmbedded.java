@@ -9,12 +9,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.eclipse.sw360.antenna.sw360.rest.resource.attachments;
+package org.eclipse.sw360.antenna.sw360.client.rest.resource.releases;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.Embedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 
 import java.util.HashSet;
 import java.util.Objects;
