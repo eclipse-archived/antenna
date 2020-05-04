@@ -148,6 +148,8 @@ public class SW360ExporterTest {
         csvFile = folder.newFile("sample.csv");
         when(configurationMock.getCsvFileName())
                 .thenReturn(csvFile.getName());
+        when(configurationMock.getBaseDir())
+                .thenReturn(Paths.get(csvFile.getParent()));
         when(configurationMock.getTargetDir())
                 .thenReturn(folder.getRoot().toPath());
         String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).getPath();
