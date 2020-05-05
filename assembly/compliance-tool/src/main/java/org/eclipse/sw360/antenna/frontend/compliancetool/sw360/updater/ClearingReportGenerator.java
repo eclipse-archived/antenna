@@ -12,7 +12,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,7 +22,7 @@ public class ClearingReportGenerator {
     private static final String CLEARING_DOC_SUFFIX = "_clearing.json";
 
     Path createClearingDocument(SW360Release release, Path targetDir) {
-        Path clearingDocument = targetDir.resolve(release.getReleaseId() + CLEARING_DOC_SUFFIX);
+        Path clearingDocument = targetDir.resolve(release.getId() + CLEARING_DOC_SUFFIX);
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(Files.newBufferedWriter(clearingDocument), release);

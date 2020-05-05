@@ -13,17 +13,17 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
-import org.eclipse.sw360.antenna.sw360.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.rest.resource.Self;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentType;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentEmbedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseEmbedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -70,7 +70,7 @@ public class SW360TestUtils {
         sw360Release.setChangeStatus(RELEASE_CHANGESTATUS);
         sw360Release.setCopyrights(RELEASE_COPYRIGHT);
 
-        sw360Release.set_Embedded(mkReleaseEmbedded());
+        sw360Release.setEmbedded(mkReleaseEmbedded());
 
         return sw360Release;
     }
@@ -89,7 +89,7 @@ public class SW360TestUtils {
         Self self = new Self(RELEADE_SELF);
         LinkObjects linkObjectsWithSelf = new LinkObjects()
                 .setSelf(self);
-        sparseRelease.set_Links(linkObjectsWithSelf);
+        sparseRelease.setLinks(linkObjectsWithSelf);
         return sparseRelease;
     }
 
@@ -99,7 +99,7 @@ public class SW360TestUtils {
         component.setComponentType(COMPONENT_TYPE);
         SW360ComponentEmbedded componentEmbedded = new SW360ComponentEmbedded();
         componentEmbedded.setReleases(Arrays.asList(mkSW3SparseRelease(name), mkSW3SparseRelease(name)));
-        component.set_Embedded(componentEmbedded);
+        component.setEmbedded(componentEmbedded);
         return component;
     }
 
@@ -110,7 +110,7 @@ public class SW360TestUtils {
         Self self = new Self(COMPONENT_SELF);
         LinkObjects linkObjectsWithSelf = new LinkObjects()
                 .setSelf(self);
-        sparseComponent.set_Links(linkObjectsWithSelf);
+        sparseComponent.setLinks(linkObjectsWithSelf);
         return sparseComponent;
     }
 

@@ -51,6 +51,9 @@ public class FutureUtils {
         try {
             return HttpUtils.waitFor(future);
         } catch (IOException e) {
+            if (e.getCause() instanceof SW360ClientException) {
+                throw (SW360ClientException) e.getCause();
+            }
             throw new SW360ClientException("Asynchronous call failed.", e);
         }
     }
@@ -114,6 +117,22 @@ public class FutureUtils {
     public static boolean isFailedRequestWithStatus(Throwable exception, int statusCode) {
         return exception instanceof FailedRequestException &&
                 ((FailedRequestException) exception).getStatusCode() == statusCode;
+    }
+
+    /**
+     * Returns a future of the given type that fails with the exception
+     * specified. Note that this method may become obsolete with later Java
+     * versions, but in JDK8, there is not straight-forward way to create such
+     * a future.
+     *
+     * @param ex  the exception causing the future to fail
+     * @param <T> the result type of the future
+     * @return the future failing with the given exception
+     */
+    public static <T> CompletableFuture<T> failedFuture(Throwable ex) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        future.completeExceptionally(ex);
+        return future;
     }
 
     /**

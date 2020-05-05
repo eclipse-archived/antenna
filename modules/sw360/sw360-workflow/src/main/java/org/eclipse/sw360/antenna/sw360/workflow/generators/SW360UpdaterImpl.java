@@ -17,9 +17,9 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToAttachmentUtils;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToReleaseUtils;
 import org.slf4j.Logger;
@@ -73,8 +73,8 @@ public class SW360UpdaterImpl {
 
     public SW360Release handleSources(SW360Release release, Artifact artifact) {
         if (sw360MetaDataUpdater.isUploadSources()
-                && release.get_Links().getSelf() != null
-                && !release.get_Links().getSelf().getHref().isEmpty()) {
+                && release.getLinks().getSelf() != null
+                && !release.getLinks().getSelf().getHref().isEmpty()) {
             Map<Path, SW360AttachmentType> attachments = ArtifactToAttachmentUtils.getAttachmentsFromArtifact(artifact);
             if (!attachments.isEmpty()) {
                 release = sw360MetaDataUpdater.uploadAttachments(release, attachments);

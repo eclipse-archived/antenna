@@ -15,7 +15,7 @@ package org.eclipse.sw360.antenna.sw360.workflow.processors;
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
-import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
 
 import java.nio.file.Path;

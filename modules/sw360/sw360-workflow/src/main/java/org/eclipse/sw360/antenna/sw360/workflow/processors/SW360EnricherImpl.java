@@ -19,12 +19,12 @@ import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.eclipse.sw360.antenna.model.reporting.MessageType;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataReceiver;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360License;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseEmbedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseEmbedded;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToReleaseUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +71,7 @@ public class SW360EnricherImpl {
     }
 
     private void downloadAttachments(SW360Release sw360Release, Artifact artifact) {
-        Set<SW360SparseAttachment> attachments = sw360Release.get_Embedded().getAttachments();
+        Set<SW360SparseAttachment> attachments = sw360Release.getEmbedded().getAttachments();
 
         attachments.stream()
                 .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)
@@ -92,7 +92,7 @@ public class SW360EnricherImpl {
                 .distinct()
                 .collect(Collectors.toList());
 
-        final SW360ReleaseEmbedded embedded = release.get_Embedded();
+        final SW360ReleaseEmbedded embedded = release.getEmbedded();
         if (embedded == null) {
             LOGGER.debug("No license information available in SW360.");
             return;

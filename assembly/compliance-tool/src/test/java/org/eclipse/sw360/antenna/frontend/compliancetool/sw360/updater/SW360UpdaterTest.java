@@ -12,10 +12,10 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
-import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
-import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
@@ -135,8 +135,8 @@ public class SW360UpdaterTest {
         SW360UpdaterImpl updater = mock(SW360UpdaterImpl.class);
         when(updater.artifactToReleaseInSW360(any()))
                 .thenReturn(new SW360Release());
-        SW360Release release = mock(SW360Release.class);
-        when(release.getClearingState()).thenReturn(clearingState);
+        SW360Release release = new SW360Release();
+        release.setClearingState(clearingState);
         when(updater.artifactToReleaseInSW360(any()))
                 .thenReturn(release);
 

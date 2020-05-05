@@ -10,20 +10,20 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.utils;
 
-import org.eclipse.sw360.antenna.sw360.rest.resource.Embedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentList;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360ComponentListEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseList;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360LicenseListEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.licenses.SW360SparseLicense;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360Project;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectList;
-import org.eclipse.sw360.antenna.sw360.rest.resource.projects.SW360ProjectListEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseList;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ReleaseListEmbedded;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.Embedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentList;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentListEmbedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360LicenseList;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360LicenseListEmbedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectList;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectListEmbedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseList;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseListEmbedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,7 +127,7 @@ public class SW360ResourceUtils {
      */
     private static <E extends Embedded, T extends SW360HalResource<?, E>, U>
     List<U> extractEmbeddedList(T resource, Function<E, List<U>> extractor) {
-        return Optional.ofNullable(resource.get_Embedded())
+        return Optional.ofNullable(resource.getEmbedded())
                 .flatMap(embedded -> Optional.ofNullable(extractor.apply(embedded))
                         .map(ArrayList::new))
                 .orElseGet(ArrayList::new);

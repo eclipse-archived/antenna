@@ -16,15 +16,15 @@ import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuratio
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
-import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResource;
-import org.eclipse.sw360.antenna.sw360.rest.resource.SW360HalResourceUtility;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.rest.resource.attachments.SW360SparseAttachment;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ClearingState;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ClearingState;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToReleaseUtils;
 
 import java.io.File;
@@ -83,7 +83,7 @@ public class SW360Exporter {
     }
 
     private Set<SW360SparseAttachment> getSparseAttachmentsSource(SW360Release release) {
-        Set<SW360SparseAttachment> attachments = release.get_Embedded().getAttachments();
+        Set<SW360SparseAttachment> attachments = release.getEmbedded().getAttachments();
 
         return attachments.stream()
                 .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)
@@ -97,7 +97,7 @@ public class SW360Exporter {
                 .map(id -> connection.getComponentAdapter().getComponentById(id))
                 .map(component -> component.orElse(null))
                 .filter(Objects::nonNull)
-                .flatMap(component -> component.get_Embedded().getReleases().stream())
+                .flatMap(component -> component.getEmbedded().getReleases().stream())
                 .collect(Collectors.toList());
     }
 
@@ -123,6 +123,6 @@ public class SW360Exporter {
     }
 
     private <T extends SW360HalResource<?, ?>> String getIdFromHalResource(T halResource) {
-        return SW360HalResourceUtility.getLastIndexOfSelfLink(halResource.get_Links().getSelf()).orElse("");
+        return SW360HalResourceUtility.getLastIndexOfSelfLink(halResource.getLinks().getSelf()).orElse("");
     }
 }

@@ -15,13 +15,13 @@ import org.apache.commons.csv.CSVRecord;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
-import org.eclipse.sw360.antenna.sw360.adapter.SW360ComponentClientAdapter;
-import org.eclipse.sw360.antenna.sw360.adapter.SW360ReleaseClientAdapter;
-import org.eclipse.sw360.antenna.sw360.client.api.SW360Connection;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360Component;
-import org.eclipse.sw360.antenna.sw360.rest.resource.components.SW360SparseComponent;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360ClearingState;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ClearingState;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -103,10 +103,8 @@ public class SW360ExporterTest {
     private File csvFile;
     private SW360Release release;
 
-    @Mock
     SW360ComponentClientAdapter componentClientAdapterMock = mock(SW360ComponentClientAdapter.class);
 
-    @Mock
     SW360ReleaseClientAdapter releaseClientAdapterMock = mock(SW360ReleaseClientAdapter.class);
 
     @Mock

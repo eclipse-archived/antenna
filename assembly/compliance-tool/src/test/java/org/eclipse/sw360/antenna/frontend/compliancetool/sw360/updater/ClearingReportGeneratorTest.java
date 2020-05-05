@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
-import org.eclipse.sw360.antenna.sw360.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class ClearingReportGeneratorTest {
 
         Path clearingDocument = generator.createClearingDocument(release, targetFolder.toPath());
         assertThat(Files.exists(clearingDocument)).isTrue();
-        assertThat(clearingDocument.getFileName().toString()).isEqualTo(release.getReleaseId() + "_clearing.json");
+        assertThat(clearingDocument.getFileName().toString()).isEqualTo(release.getId() + "_clearing.json");
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.readValue(clearingDocument.toFile(), SW360Release.class);

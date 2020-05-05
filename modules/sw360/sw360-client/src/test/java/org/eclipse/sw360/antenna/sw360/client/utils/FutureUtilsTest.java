@@ -52,10 +52,23 @@ public class FutureUtilsTest {
     @Test
     public void testBlockFailedFuture() {
         IOException exception = new IOException("Failed future");
-        CompletableFuture<Integer> future = new CompletableFuture<>();
-        future.completeExceptionally(exception);
+        CompletableFuture<Integer> future = FutureUtils.failedFuture(exception);
 
         expectFailedFuture(future, exception);
+    }
+
+    @Test
+    public void testBlockFailedFutureSW360Exception() {
+        SW360ClientException sw360Ex = new SW360ClientException("Failed miserably...");
+        IOException ioEx = new IOException("Failed future", sw360Ex);
+        CompletableFuture<String> future = FutureUtils.failedFuture(ioEx);
+
+        try {
+            FutureUtils.block(future);
+            fail("No exception thrown!");
+        } catch (SW360ClientException e) {
+            assertThat(e).isEqualTo(sw360Ex);
+        }
     }
 
     @Test
