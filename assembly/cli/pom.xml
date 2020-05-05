@@ -140,6 +140,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>nl.jqno.equalsverifier</groupId>
+            <artifactId>equalsverifier</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- ################################ compliance dependency ########################### -->
         <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>

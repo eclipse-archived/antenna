@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.frontend.cli;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -20,55 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AntennaCLIOptionsTest {
     private static final String CONFIG_PATH = "path/to/config.xml";
 
-    /**
-     * Helper method to check whether the equals() method returns the expected
-     * result. Hash codes are checked as well.
-     *
-     * @param obj1      object 1
-     * @param obj2      object 2
-     * @param expResult the expected result of equals()
-     */
-    private static void checkEquals(Object obj1, Object obj2, boolean expResult) {
-        assertThat(obj1.equals(obj2)).isEqualTo(expResult);
-        if (obj2 != null) {
-            assertThat(obj2.equals(obj1)).isEqualTo(expResult);  // symmetry
-            if (expResult) {
-                assertThat(obj1.hashCode()).isEqualTo(obj2.hashCode());
-            }
-        }
-    }
-
     @Test
-    public void testEqualsTrue() {
-        AntennaCLIOptions options1 = new AntennaCLIOptions(CONFIG_PATH, true, false, true);
-        checkEquals(options1, options1, true);
-
-        AntennaCLIOptions options2 = new AntennaCLIOptions(CONFIG_PATH, true, false, true);
-        checkEquals(options1, options2, true);
-    }
-
-    @Test
-    public void testEqualsFalse() {
-        AntennaCLIOptions options1 = new AntennaCLIOptions(CONFIG_PATH, true, false, true);
-        AntennaCLIOptions options2 = new AntennaCLIOptions(CONFIG_PATH + "_other", true, false, true);
-        checkEquals(options1, options2, false);
-
-        options2 = new AntennaCLIOptions(options1.getConfigFilePath(), false, false, true);
-        checkEquals(options1, options2, false);
-
-        options2 = new AntennaCLIOptions(options1.getConfigFilePath(), true, false, false);
-        checkEquals(options1, options2, false);
-
-        options2 = new AntennaCLIOptions(options1.getConfigFilePath(), true, true, true);
-        checkEquals(options1, options2, false);
-    }
-
-    @Test
-    public void testEqualsCornerCases() {
-        AntennaCLIOptions options = new AntennaCLIOptions(CONFIG_PATH, false, false, true);
-
-        checkEquals(options, this, false);
-        checkEquals(options, null, false);
+    public void testEquals() {
+        EqualsVerifier.forClass(AntennaCLIOptions.class)
+                .usingGetClass()
+                .verify();
     }
 
     @Test

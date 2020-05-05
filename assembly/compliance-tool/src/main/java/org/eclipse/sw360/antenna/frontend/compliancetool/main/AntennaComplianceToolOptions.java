@@ -10,35 +10,12 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
+import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIOptions;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AntennaComplianceToolOptions {
-    /**
-     * The prefix to identify command line switches.
-     */
-    static final String SWITCH_PREFIX = "-";
-
-    /**
-     * The short command line switch to enable debug logging.
-     */
-    static final String SWITCH_DEBUG_SHORT = SWITCH_PREFIX + "X";
-
-    /**
-     * The long command line switch to enable debug logging.
-     */
-    static final String SWITCH_DEBUG_LONG = SWITCH_PREFIX + "-debug";
-
-    /**
-     * The short command line switch to display a help message.
-     */
-    static final String SWITCH_HELP_SHORT = SWITCH_PREFIX + "h";
-
-    /**
-     * The long command line switch to display a help message.
-     */
-    static final String SWITCH_HELP_LONG = SWITCH_PREFIX + "-help";
-
+public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
     /**
      * The short command line switch to execute the updater
      */
@@ -72,21 +49,6 @@ public class AntennaComplianceToolOptions {
     private final String propertiesFilePath;
 
     /**
-     * Flag whether debug logging should be enabled.
-     */
-    private final boolean debugLog;
-
-    /**
-     * Flag whether the help message should be printed.
-     */
-    private final boolean showHelp;
-
-    /**
-     * Flag whether the command line could be parsed successfully.
-     */
-    private final boolean valid;
-
-    /**
      * The mode the compliance tool will get executed with.
      */
     private final String complianceMode;
@@ -102,11 +64,29 @@ public class AntennaComplianceToolOptions {
      * @param valid              flag whether the command line is valid
      */
     AntennaComplianceToolOptions(String propertiesFilePath, String complianceMode, boolean debugLog, boolean showHelp, boolean valid) {
+        super(debugLog, showHelp, valid);
         this.propertiesFilePath = propertiesFilePath;
         this.complianceMode = complianceMode;
-        this.debugLog = debugLog;
-        this.showHelp = showHelp;
-        this.valid = valid;
+    }
+
+    /**
+     * Returns the path to the Antenna configuration file that has been
+     * specified on the command line.
+     *
+     * @return the path to the Antenna configuration file
+     */
+    String getPropertiesFilePath() {
+        return propertiesFilePath;
+    }
+
+    /**
+     * Returns the mode the compliance tool will be executed with that
+     * has been specified by the command line.
+     *
+     * @return the mode the compliance tool will be executed with.
+     */
+    String getComplianceMode() {
+        return complianceMode;
     }
 
     /**
@@ -141,89 +121,6 @@ public class AntennaComplianceToolOptions {
     }
 
     /**
-     * Returns the path to the Antenna configuration file that has been
-     * specified on the command line.
-     *
-     * @return the path to the Antenna configuration file
-     */
-    String getPropertiesFilePath() {
-        return propertiesFilePath;
-    }
-
-    /**
-     * Returns the mode the compliance tool will be executed with that
-     * has been specified by the command line.
-     *
-     * @return the mode the compliance tool will be executed with.
-     */
-    String getComplianceMode() {
-        return complianceMode;
-    }
-
-    /**
-     * Returns a flag whether debug log should be enabled.
-     *
-     * @return a flag whether debug log is desired
-     */
-    boolean isDebugLog() {
-        return debugLog;
-    }
-
-    /**
-     * Returns a flag whether the usage help message should be printed. This
-     * flag is set when a corresponding command line switch has been detected.
-     * In this case, typically no further processing is desired.
-     *
-     * @return a flag whether the help message is to be printed
-     */
-    boolean isShowHelp() {
-        return showHelp;
-    }
-
-    /**
-     * Returns a flag whether the command line options could be validated
-     * successfully. Only if this method returns <strong>true</strong>, the
-     * other get methods return meaningful values.
-     *
-     * @return a flag whether the command line is valid
-     */
-    boolean isValid() {
-        return valid;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        AntennaComplianceToolOptions options = (AntennaComplianceToolOptions) o;
-        return isDebugLog() == options.isDebugLog() &&
-                isShowHelp() == options.isShowHelp() &&
-                isValid() == options.isValid() &&
-                Objects.equals(getPropertiesFilePath(), options.getPropertiesFilePath()) &&
-                Objects.equals(getComplianceMode(), options.getComplianceMode());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getPropertiesFilePath(), getComplianceMode(), isDebugLog(), isShowHelp(), isValid());
-    }
-
-    @Override
-    public String toString() {
-        return "AntennaComplianceToolOptions{" +
-                "propertiesFilePath='" + propertiesFilePath + '\'' +
-                ", complianceMode=" + complianceMode +
-                ", debugLog=" + debugLog +
-                ", showHelp=" + showHelp +
-                ", valid=" + valid +
-                '}';
-    }
-
-    /**
      * Returns a help message that describes the command line options supported
      * by the Antenna CLI.
      *
@@ -242,20 +139,6 @@ public class AntennaComplianceToolOptions {
     }
 
     /**
-     * Returns a list with all command line arguments that are interpreted as
-     * paths. These are all the arguments that do not start with the prefix for
-     * switches.
-     *
-     * @param args the array with command line options
-     * @return a list with all found path arguments
-     */
-    private static List<String> readPathsFromArgs(String[] args) {
-        return Arrays.stream(args)
-                .filter(arg -> !isSwitch(arg))
-                .collect(Collectors.toList());
-    }
-
-    /**
      * Returns a set with all command line switches that have been provided on
      * the command line. Switches start with a prefix and control the behavior
      * of the Antenna tool.
@@ -263,7 +146,7 @@ public class AntennaComplianceToolOptions {
      * @param args the array with command line options
      * @return a set with all the switches found on the command line
      */
-    private static Set<String> readSwitchesFromArgs(String[] args) {
+    protected static Set<String> readSwitchesFromArgs(String[] args) {
         return Arrays.stream(args)
                 .filter(AntennaComplianceToolOptions::isSwitch)
                 .collect(Collectors.toSet());
@@ -292,38 +175,35 @@ public class AntennaComplianceToolOptions {
         }
     }
 
-    /**
-     * Checks whether a command line argument is a switch. Switches start with
-     * a specific prefix. All non-switch arguments are interpreted as paths.
-     *
-     * @param arg the argument to be checked
-     * @return <strong>true</strong> if this argument is a switch;
-     * <strong>false</strong> otherwise
-     */
-    private static boolean isSwitch(String arg) {
-        return arg.startsWith(SWITCH_PREFIX);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        AntennaComplianceToolOptions options = (AntennaComplianceToolOptions) o;
+        return Objects.equals(getPropertiesFilePath(), options.getPropertiesFilePath()) &&
+                Objects.equals(getComplianceMode(), options.getComplianceMode());
     }
 
-    /**
-     * Checks whether a specific switch has been provided on the command line.
-     * The switch is then removed to mark it as consumed.
-     *
-     * @param switches the set with command line switches
-     * @param name     the name of the switch in question
-     * @return a flag whether this switch was found
-     */
-    private static boolean hasSwitch(Set<String> switches, String name) {
-        return switches.remove(name);
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getPropertiesFilePath(), getComplianceMode());
     }
 
-    /**
-     * Checks whether there are still unconsumed switches that were not
-     * recognized.
-     *
-     * @param switches the set with remaining switches
-     * @return a flag whether there are unsupported switches left
-     */
-    private static boolean hasUnsupportedSwitches(Set<String> switches) {
-        return !switches.isEmpty();
+    @Override
+    public String toString() {
+        return "AntennaComplianceToolOptions{" +
+                "propertiesFilePath='" + propertiesFilePath + '\'' +
+                ", complianceMode=" + complianceMode +
+                ", debugLog=" + debugLog +
+                ", showHelp=" + showHelp +
+                ", valid=" + valid +
+                '}';
     }
 }
