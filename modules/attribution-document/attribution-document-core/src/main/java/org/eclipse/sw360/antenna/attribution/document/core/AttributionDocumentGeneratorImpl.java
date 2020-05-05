@@ -1,5 +1,6 @@
 /**
  * Copyright (c) Robert Bosch Manufacturing Solutions GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -72,15 +73,16 @@ public class AttributionDocumentGeneratorImpl {
      * @return (non - null) the file handle of the generated attribution document.
      */
     public File generate(List<ArtifactAndLicense> artifacts) {
-        Templates templates = TemplateLoaderUtil.load(templateKey);
+         try (Templates templates = TemplateLoaderUtil.load(templateKey)) {
 
-        File title = writeTitle(templates);
-        File copyright = writeCopyright(templates);
-        File backPage = writeBackPage(templates.getBackPage());
-        File artifactPages = writeArtifacts(templates, artifacts, templates.getContent());
-        File intermediateDoc = mergePages(title, copyright, artifactPages, backPage);
+            File title = writeTitle(templates);
+            File copyright = writeCopyright(templates);
+            File backPage = writeBackPage(templates.getBackPage());
+            File artifactPages = writeArtifacts(templates, artifacts, templates.getContent());
+            File intermediateDoc = mergePages(title, copyright, artifactPages, backPage);
 
-        return postProcess(templates, intermediateDoc, documentName);
+            return postProcess(templates, intermediateDoc, documentName);
+        }
     }
 
     private File postProcess(Templates templates, File intermediateDoc, String fileName) {
@@ -305,20 +307,22 @@ public class AttributionDocumentGeneratorImpl {
         }
     }
 
-    private File doOverlay(File file, PDDocument template, String newFileName) throws IOException {
-        PDDocument content = PDDocument.load(file);
+    private File doOverlay(File file, PDDocument template, String newFileName) {
+        try (PDDocument content = PDDocument.load(file))  {
+            Overlay overlay = new Overlay();
+            overlay.setInputPDF(content);
+            overlay.setAllPagesOverlayPDF(template);
+            overlay.setOverlayPosition(Overlay.Position.BACKGROUND);
+            overlay.overlay(Collections.emptyMap());
 
-        Overlay overlay = new Overlay();
-        overlay.setInputPDF(content);
-        overlay.setAllPagesOverlayPDF(template);
-        overlay.setOverlayPosition(Overlay.Position.BACKGROUND);
-        overlay.overlay(Collections.emptyMap());
-
-        File overlayed = new File(workingDir, newFileName);
-        try (FileOutputStream fos = new FileOutputStream(overlayed)) {
-            content.save(fos);
-            content.close();
-            return overlayed;
+            File overlayed = new File(workingDir, newFileName);
+            try (FileOutputStream fos = new FileOutputStream(overlayed)) {
+                content.save(fos);
+                content.close();
+                return overlayed;
+            }
+        } catch (IOException e) {
+            throw new ExecutionException("PDF overlay failed", e);
         }
     }
 
