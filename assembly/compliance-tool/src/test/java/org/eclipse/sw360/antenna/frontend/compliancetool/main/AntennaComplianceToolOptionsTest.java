@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -20,59 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AntennaComplianceToolOptionsTest {
     private static final String PROPERTIES_PATH = "path/to/compliancetool.properties";
 
-    /**
-     * Helper method to check whether the equals() method returns the expected
-     * result. Hash codes are checked as well.
-     *
-     * @param obj1      object 1
-     * @param obj2      object 2
-     * @param expResult the expected result of equals()
-     */
-    private static void checkEquals(Object obj1, Object obj2, boolean expResult) {
-        assertThat(obj1.equals(obj2)).isEqualTo(expResult);
-        if (obj2 != null) {
-            assertThat(obj2.equals(obj1)).isEqualTo(expResult);  // symmetry
-            if (expResult) {
-                assertThat(obj1.hashCode()).isEqualTo(obj2.hashCode());
-            }
-        }
-    }
-
     @Test
-    public void testEqualsTrue() {
-        AntennaComplianceToolOptions options1 = new AntennaComplianceToolOptions(PROPERTIES_PATH, "exporter", true, false, true);
-        checkEquals(options1, options1, true);
-
-        AntennaComplianceToolOptions options2 = new AntennaComplianceToolOptions(PROPERTIES_PATH, "exporter", true, false, true);
-        checkEquals(options1, options2, true);
-    }
-
-    @Test
-    public void testEqualsFalse() {
-        AntennaComplianceToolOptions options1 = new AntennaComplianceToolOptions(PROPERTIES_PATH, "exporter", true, false, true);
-        AntennaComplianceToolOptions options2 = new AntennaComplianceToolOptions(PROPERTIES_PATH, "exporter" + "_other", true, false, true);
-        checkEquals(options1, options2, false);
-
-        options2 = new AntennaComplianceToolOptions(options1.getPropertiesFilePath(), AntennaComplianceToolOptions.SWITCH_EXPORTER_SHORT, false, false, true);
-        checkEquals(options1, options2, false);
-
-        options2 = new AntennaComplianceToolOptions(options1.getPropertiesFilePath(), AntennaComplianceToolOptions.SWITCH_EXPORTER_SHORT, true, false, false);
-        checkEquals(options1, options2, false);
-
-        options2 = new AntennaComplianceToolOptions(options1.getPropertiesFilePath(), AntennaComplianceToolOptions.SWITCH_EXPORTER_SHORT, true, true, true);
-        checkEquals(options1, options2, false);
-
-        options1 = options2;
-        options1 = new AntennaComplianceToolOptions(options1.getPropertiesFilePath(), AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT, true, true, true);
-        checkEquals(options1, options2, false);
-    }
-
-    @Test
-    public void testEqualsCornerCases() {
-        AntennaComplianceToolOptions options = new AntennaComplianceToolOptions(PROPERTIES_PATH, "exporter", false, false, true);
-
-        checkEquals(options, this, false);
-        checkEquals(options, null, false);
+    public void testEquals() {
+        EqualsVerifier.forClass(AntennaComplianceToolOptions.class)
+                .usingGetClass()
+                .verify();
     }
 
     @Test
