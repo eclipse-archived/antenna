@@ -17,7 +17,10 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -28,6 +31,8 @@ import java.util.Objects;
 import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils.getArtifactsFromCsvFile;
 
 public class SW360Updater {
+    private static final Logger LOG = LoggerFactory.getLogger(SW360Updater.class);
+
     private final SW360UpdaterImpl updater;
     private final SW360Configuration configuration;
     private final ClearingReportGenerator generator;
@@ -46,16 +51,21 @@ public class SW360Updater {
     }
 
     private void uploadReleaseWithClearingDocumentFromArtifact(Artifact artifact) {
-        SW360Release release = updater.artifactToReleaseInSW360(artifact);
-        SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnection().getReleaseAdapter();
+        LOG.info("Processing {}.", artifact);
+        try {
+            SW360Release release = updater.artifactToReleaseInSW360(artifact);
+            SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnection().getReleaseAdapter();
 
-        if (release.getClearingState() != null &&
-                !release.getClearingState().isEmpty() &&
-                ArtifactClearingState.ClearingState.valueOf(release.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
-            Map<Path, SW360AttachmentType> attachmentPathMap =
-                    Collections.singletonMap(getOrGenerateClearingDocument(release, artifact),
-                            SW360AttachmentType.CLEARING_REPORT);
-            releaseClientAdapter.uploadAttachments(release, attachmentPathMap);
+            if (release.getClearingState() != null &&
+                    !release.getClearingState().isEmpty() &&
+                    ArtifactClearingState.ClearingState.valueOf(release.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
+                Map<Path, SW360AttachmentType> attachmentPathMap =
+                        Collections.singletonMap(getOrGenerateClearingDocument(release, artifact),
+                                SW360AttachmentType.CLEARING_REPORT);
+                releaseClientAdapter.uploadAttachments(release, attachmentPathMap);
+            }
+        } catch (SW360ClientException e) {
+            LOG.error("Failed to process artifact {}.", artifact, e);
         }
     }
 
