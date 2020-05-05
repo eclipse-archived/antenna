@@ -12,10 +12,11 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
-import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
@@ -50,8 +51,8 @@ public class SW360UpdaterTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    private SW360Configuration configurationMock = mock(SW360Configuration.class);
-    private SW360ReleaseClientAdapter releaseClientAdapter = mock(SW360ReleaseClientAdapter.class);
+    private final SW360Configuration configurationMock = mock(SW360Configuration.class);
+    private final SW360ReleaseClientAdapter releaseClientAdapter = mock(SW360ReleaseClientAdapter.class);
 
     private final String clearingState;
     private final boolean clearingDocAvailable;
@@ -133,12 +134,11 @@ public class SW360UpdaterTest {
         initConnectionConfiguration();
 
         SW360UpdaterImpl updater = mock(SW360UpdaterImpl.class);
-        when(updater.artifactToReleaseInSW360(any()))
-                .thenReturn(new SW360Release());
         SW360Release release = new SW360Release();
         release.setClearingState(clearingState);
         when(updater.artifactToReleaseInSW360(any()))
-                .thenReturn(release);
+                .thenReturn(release)
+                .thenThrow(new SW360ClientException("Boo"));
 
         ClearingReportGenerator generator = mock(ClearingReportGenerator.class);
         when(generator.createClearingDocument(any(), any()))
@@ -153,7 +153,7 @@ public class SW360UpdaterTest {
         if (expectUpload && !clearingDocAvailable) {
             verify(generator).createClearingDocument(release, getTargetDir());
         }
-        verify(updater).artifactToReleaseInSW360(any());
+        verify(updater, times(2)).artifactToReleaseInSW360(any());
         verify(releaseClientAdapter, times(expectUpload ? 1 : 0)).uploadAttachments(any(), eq(testAttachmentMap));
     }
 
@@ -177,7 +177,9 @@ public class SW360UpdaterTest {
             clearingDocPath = clearingDoc.getPath();
         }
         String csvContent = String.format("Artifact Id,Group Id,Version,Coordinate Type,Clearing State,Clearing Document%s" +
-                "test,test,x.x.x,mvn,%s,%s%s", System.lineSeparator(), clearingState, clearingDocPath, System.lineSeparator());
+                "test,test,x.x.x,mvn,%s,%s%s" +
+                "error,error,y.y.y,mvn,%s,%s%s", System.lineSeparator(), clearingState, clearingDocPath,
+                System.lineSeparator(), clearingState, clearingDocPath, System.lineSeparator());
         Files.write(tempCsvFile.toPath(), csvContent.getBytes(StandardCharsets.UTF_8));
         return tempCsvFile.toPath();
     }
