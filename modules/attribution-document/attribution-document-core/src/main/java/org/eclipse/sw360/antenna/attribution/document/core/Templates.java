@@ -1,5 +1,6 @@
 /**
  * Copyright (c) Robert Bosch Manufacturing Solutions GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -16,13 +17,18 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
-public class Templates {
+public class Templates implements Closeable {
+    private static final Logger LOG = LoggerFactory.getLogger(AttributionDocumentGeneratorImpl.class);
+
     private PDDocument title;
     private PDDocument copyright;
     private PDDocument backPage;
@@ -103,6 +109,34 @@ public class Templates {
             return PDType0Font.load(doc, is);
         } catch (IOException e) {
             throw new ExecutionException("Could not load font.", e);
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            title.close();
+        } catch (IOException e) {
+            LOG.warn("Failed to close the title PDDocument page.");
+            LOG.debug("Stacktrace: ", e);
+        }
+        try {
+            content.close();
+        } catch (IOException e) {
+            LOG.warn("Failed to close the content PDDocument page.");
+            LOG.debug("Stacktrace: ", e);
+        }
+        try {
+            copyright.close();
+        } catch (IOException e) {
+            LOG.warn("Failed to close the copyright PDDocument page.");
+            LOG.debug("Stacktrace: ", e);
+        }
+        try {
+            backPage.close();
+        } catch (IOException e) {
+            LOG.warn("Failed to close the back PDDocument page.");
+            LOG.debug("Stacktrace: ", e);
         }
     }
 }
