@@ -46,7 +46,7 @@
                 </item>
             </item>
             <item name="Development Guide" href="dev-guide.html"/>
-            <item name="HTTP Support Library" href="http-support/index.html"/>
+            <item name="HTTP Support Library" href="http-support/index_http.html"/>
         </menu>
     </body>
 </project>

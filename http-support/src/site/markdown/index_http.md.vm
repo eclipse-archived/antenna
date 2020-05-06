@@ -101,6 +101,7 @@ a very lean interface with only a single _execute()_ method:
 ```
 
 The method references the following components:
+
 * A _Consumer_ of the interface _RequestBuilder_ is passed in as the first
   parameter. This object defines the request to be executed. We will see a bit
   later how a request definition looks like with this approach.
