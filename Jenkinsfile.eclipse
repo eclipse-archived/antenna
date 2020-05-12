@@ -48,9 +48,6 @@ pipeline {
                     IS_SNAPSHOT_VERSION = (params.VERSION ==~ /.*-SNAPSHOT/)
                 }
                 sh "echo \"VERSION is: ${params.VERSION} with IS_SNAPSHOT_VERSION=${IS_SNAPSHOT_VERSION}\""
-
-                sh 'rm -rf localRepository'
-                sh 'mkdir -p localRepository'
             }
         }
 
@@ -60,6 +57,8 @@ pipeline {
             steps {
                 // build antenna and also deploy it to an output repository
                 sh """
+                    rm -rf localRepository
+                    mkdir -p localRepository
                     rm -rf repository
                     mkdir -p repository
                     mvn -Dmaven.repo.local=\$(readlink -f localRepository) \
