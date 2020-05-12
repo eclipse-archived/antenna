@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -12,6 +13,7 @@ package org.eclipse.sw360.antenna.model.coordinates;
 
 import com.github.packageurl.PackageURL;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -67,11 +69,11 @@ public final class Coordinate extends PackageURLFacade {
     public static class Types extends PackageURL.StandardTypes {
         public static final String P2 = "p2";
 
-        public static final Set<String> all = Stream.of(
+        public static final Set<String> all = Collections.unmodifiableSet(Stream.of(
                 // Standard Types:
                 BITBUCKET, COMPOSER, DEBIAN, DOCKER, GEM, GENERIC, GITHUB, GOLANG, MAVEN, NPM, NUGET, PYPI, RPM,
                 // Custom Types:
                 P2)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toSet()));
     }
 }

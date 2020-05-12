@@ -308,19 +308,17 @@ public class AttributionDocumentGeneratorImpl {
     }
 
     private File doOverlay(File file, PDDocument template, String newFileName) {
-        try (PDDocument content = PDDocument.load(file))  {
-            Overlay overlay = new Overlay();
+        File overlayed = new File(workingDir, newFileName);
+        try (PDDocument content = PDDocument.load(file);
+             Overlay overlay = new Overlay();
+             FileOutputStream fos = new FileOutputStream(overlayed))  {
             overlay.setInputPDF(content);
             overlay.setAllPagesOverlayPDF(template);
             overlay.setOverlayPosition(Overlay.Position.BACKGROUND);
             overlay.overlay(Collections.emptyMap());
 
-            File overlayed = new File(workingDir, newFileName);
-            try (FileOutputStream fos = new FileOutputStream(overlayed)) {
-                content.save(fos);
-                content.close();
-                return overlayed;
-            }
+            content.save(fos);
+            return overlayed;
         } catch (IOException e) {
             throw new ExecutionException("PDF overlay failed", e);
         }
