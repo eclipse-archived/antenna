@@ -1,5 +1,12 @@
-# HTML report generator
-This workflow step generates a file `./target/antenna/3rdparty-licenses.html` containing a description of the licensing situation.
+# HTML attribution document generator
+This generator generates a plain html attribution document listing all found component versions together with
+the available license and copyright data as well as the component id in the package-url format. The complete
+license texts of all found licenses are in the appendix and linked to the components using the corresponding license.
+
+The file is plain html with a parallelstyle sheet. The idea is that the file can easily be adapted to the needs
+of a project using the file, e.g., for the about open source page in an app. Therefore, the stylesheet is
+externalized in a `styles.css` file that is stored in parallel to the generated file
+`./target/antenna/3rdparty-licenses.html`.
 
 ### How to use
 Add this configuration to the workflow.xml

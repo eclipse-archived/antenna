@@ -25,8 +25,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,6 +41,9 @@ public class HTMLReportGeneratorTest extends AntennaTestWithMockedContext {
     private HTMLReportGenerator htmlReportGenerator;
     private Charset charset = StandardCharsets.UTF_8;
 
+    public final List<String> copyright = Arrays.asList("Copyright (c) A Name 2020", "Copyright (c) Another Name 2020");
+    public final String artifactName1 = "ArtifactName1";
+    public final String artifactName2 = "ArtifactName2";
     public final String licenseName1 = "LicenseName1";
     public final String licenseText1 = "Some Super Long LicenseText1";
     public final String licenseName2 = "LicenseName2";
@@ -67,15 +69,15 @@ public class HTMLReportGeneratorTest extends AntennaTestWithMockedContext {
         final License license1 = new License();
         license1.setId(licenseName1);
         license1.setText(licenseText1);
-        final ArtifactForHTMLReport artifact1 = new ArtifactForHTMLReport(artifactId1, license1);
+        final ArtifactForHTMLReport artifact1 = new ArtifactForHTMLReport(artifactId1, license1, copyright, artifactName1);
 
-        final ArtifactForHTMLReport artifact2 = new ArtifactForHTMLReport(artifactId2, null);
+        final ArtifactForHTMLReport artifact2 = new ArtifactForHTMLReport(artifactId2, null, copyright, artifactName2);
 
         final License license2 = new License();
         license2.setId(licenseName2);
         license2.setText(licenseText2);
         license2.setCommonName(licenseFullName2);
-        final ArtifactForHTMLReport artifact3 = new ArtifactForHTMLReport(artifactId3, license2);
+        final ArtifactForHTMLReport artifact3 = new ArtifactForHTMLReport(artifactId3, license2, Collections.emptyList(), "");
 
         final License license3 = new License();
         license3.setId(licenseName3);
@@ -83,7 +85,7 @@ public class HTMLReportGeneratorTest extends AntennaTestWithMockedContext {
         final LicenseStatement license4 = new LicenseStatement();
         license4.setLicenses(Stream.of(license1, license3).collect(Collectors.toList()));
         license4.setOp(LicenseOperator.AND);
-        final ArtifactForHTMLReport artifact4 = new ArtifactForHTMLReport(artifactId4, license4);
+        final ArtifactForHTMLReport artifact4 = new ArtifactForHTMLReport(artifactId4, license4, Collections.emptyList(), "");
 
         artifacts = Stream.of(artifact1, artifact2, artifact3, artifact4).collect(Collectors.toSet());
     }
@@ -114,7 +116,9 @@ public class HTMLReportGeneratorTest extends AntennaTestWithMockedContext {
         assertThat(contentOfFile).contains(artifactId2);
         assertThat(contentOfFile).contains(artifactId3);
         assertThat(contentOfFile).contains(artifactId4);
-
+        assertThat(contentOfFile).contains(copyright.get(0));
+        assertThat(contentOfFile).contains(copyright.get(1));
+        assertThat(contentOfFile).contains(artifactName1);
+        assertThat(contentOfFile).contains(artifactName2);
     }
-
 }
