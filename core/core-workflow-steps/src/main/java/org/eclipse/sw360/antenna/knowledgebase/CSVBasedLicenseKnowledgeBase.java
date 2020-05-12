@@ -188,7 +188,11 @@ public class CSVBasedLicenseKnowledgeBase implements ILicenseManagementKnowledge
      */
     @Override
     public String getLicenseNameForId(String licenseId) {
-        return this.idLicenseMap.get(licenseId);
+        return Optional.ofNullable(this.idLicenseMap.get(licenseId))
+                .orElseGet(() -> {
+                    reporter.add(licenseId, MessageType.MISSING_LICENSE_INFORMATION, "No license name found in " + getId() + ", fall back to license ID.");
+                    return licenseId;
+                });
     }
 
     @Override
