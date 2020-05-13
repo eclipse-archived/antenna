@@ -307,7 +307,15 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         assertThat(downloadPath).hasValue(path);
     }
 
-    public static SW360Release mkSW360Release(String name) throws MalformedPackageURLException {
+    @Test
+    public void testUpdateRelease() throws MalformedPackageURLException {
+        SW360Release updatedRelease = mkSW360Release("updatedRelease");
+        when(releaseClient.patchRelease(release)).thenReturn(CompletableFuture.completedFuture(updatedRelease));
+
+        assertThat(block(releaseClientAdapter.updateRelease(release))).isEqualTo(updatedRelease);
+    }
+
+    private static SW360Release mkSW360Release(String name) throws MalformedPackageURLException {
         SW360Release sw360Release = new SW360Release();
 
         sw360Release.setVersion(RELEASE_VERSION1);

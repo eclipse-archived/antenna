@@ -54,4 +54,13 @@ public interface SW360ReleaseClientAdapterAsync {
 
     CompletableFuture<Optional<Path>> downloadAttachment(SW360Release release, SW360SparseAttachment attachment,
                                                          Path downloadPath);
+
+    /**
+     * Updates a release. The release is updated in the database based on the
+     * properties of the passed in entity.
+     *
+     * @param release the release to be updated
+     * @return a future with the updated release
+     */
+    CompletableFuture<SW360Release> updateRelease(SW360Release release);
 }

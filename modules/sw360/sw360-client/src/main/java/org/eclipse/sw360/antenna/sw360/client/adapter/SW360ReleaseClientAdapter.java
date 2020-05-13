@@ -51,4 +51,13 @@ public interface SW360ReleaseClientAdapter {
     Optional<SW360Release> getReleaseByVersion(SW360Component component, String releaseVersion);
 
     Optional<Path> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath);
+
+    /**
+     * Updates a release. The release is updated in the database based on the
+     * properties of the passed in entity.
+     *
+     * @param release the release to be updated
+     * @return the updated release
+     */
+    SW360Release updateRelease(SW360Release release);
 }
