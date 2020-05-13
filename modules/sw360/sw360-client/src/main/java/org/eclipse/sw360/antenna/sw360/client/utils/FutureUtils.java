@@ -106,6 +106,47 @@ public class FutureUtils {
     }
 
     /**
+     * Maps a future that returns an optional value to one that always returns
+     * a value by applying a fallback if necessary. The resulting future checks
+     * whether the given future completes with a value or fails with an
+     * exception; if so, it is returned as is. If it completes with an empty
+     * {@code Optional}, the future provided by the fallback supplier is used
+     * instead. This function is useful in cases where different alternatives
+     * are possible. If one attempt does not yield a result, a retry with
+     * another strategy may be successful.
+     *
+     * @param future   the original future yielding an optional result
+     * @param fallback a supplier for a future yielding a fallback value
+     * @param <T>      the result type of the original future
+     * @return a future yielding a defined value
+     */
+    public static <T> CompletableFuture<T> orFallback(CompletableFuture<Optional<T>> future,
+                                                      Supplier<? extends CompletableFuture<T>> fallback) {
+        return future.thenCompose(optResult ->
+                optResult.map(CompletableFuture::completedFuture).orElseGet(fallback));
+    }
+
+    /**
+     * Retries a future that returns an optional value by applying a retry
+     * strategy if necessary. The original future is checked whether it
+     * completes with a value or fails with an exception; if so, it is returned
+     * as is. If it completes with an empty {@code Optional}, the future
+     * provided by the retry supplier is used instead. This function is similar
+     * to {@link #orFallback(CompletableFuture, Supplier)}, but the alternative
+     * future again yields an optional value.
+     *
+     * @param future the original future yielding an optional result
+     * @param retry  a supplier for a future to try an alternative
+     * @param <T>    the result type of the future
+     * @return a future that retries the operation if necessary
+     */
+    public static <T> CompletableFuture<Optional<T>> orRetry(CompletableFuture<Optional<T>> future,
+                                                             Supplier<? extends CompletableFuture<Optional<T>>> retry) {
+        return future.thenCompose(optResult -> optResult.isPresent() ?
+                CompletableFuture.completedFuture(optResult) : retry.get());
+    }
+
+    /**
      * Tests whether the given exception is a {@link FailedRequestException}
      * with the passed in status code.
      *
