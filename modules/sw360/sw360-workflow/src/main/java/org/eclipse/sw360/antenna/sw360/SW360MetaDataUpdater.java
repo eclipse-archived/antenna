@@ -24,6 +24,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360Licens
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +73,19 @@ public class SW360MetaDataUpdater {
     }
 
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact) {
-        return releaseClientAdapter.getOrCreateRelease(sw360ReleaseFromArtifact, updateReleases);
+        Optional<SW360SparseRelease> optSparseReleaseByIds =
+                releaseClientAdapter.getReleaseByExternalIds(sw360ReleaseFromArtifact.getExternalIds());
+        Optional<SW360SparseRelease> optSparseRelease = optSparseReleaseByIds.isPresent() ? optSparseReleaseByIds :
+                releaseClientAdapter.getReleaseByNameAndVersion(sw360ReleaseFromArtifact);
+        Optional<SW360Release> optRelease = optSparseRelease.flatMap(releaseClientAdapter::enrichSparseRelease)
+                .map(sw360ReleaseFromArtifact::mergeWith);
+
+        if (optRelease.isPresent()) {
+            SW360Release release = optRelease.get();
+            return updateReleases ?
+                    releaseClientAdapter.updateRelease(release) : release;
+        }
+        return releaseClientAdapter.createRelease(sw360ReleaseFromArtifact);
     }
 
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) {
