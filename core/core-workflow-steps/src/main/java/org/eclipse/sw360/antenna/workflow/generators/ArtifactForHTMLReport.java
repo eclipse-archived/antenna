@@ -60,15 +60,6 @@ public class ArtifactForHTMLReport {
                 .collect(Collectors.joining(", "));
     }
 
-    public ArtifactForHTMLReport(String identifier, LicenseInformation licenseInformation,
-            Collection<String> copyright, String artifactName) {
-        this.identifier = identifier;
-        this.license = licenseInformation;
-        this.ankerTag = UUID.randomUUID().toString();
-        this.copyright = copyright;
-        this.artifact = artifactName;
-    }
-
     public String getIdentifier() {
         return identifier;
     }

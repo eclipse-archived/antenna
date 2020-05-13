@@ -72,7 +72,7 @@ public class HTMLReportGenerator extends AbstractGenerator {
         return Collections.singletonMap(IDENTIFIER, new Attachable(TYPE, CLASSIFIER, reportFilePath.toFile()));
     }
 
-    protected void writeReportToFile(Set<ArtifactForHTMLReport> artifactsForHTMLReport, File reportFile) {
+    private void writeReportToFile(Set<ArtifactForHTMLReport> artifactsForHTMLReport, File reportFile) {
         final VelocityEngine velocityEngine = setupVelocityEngine();
         final VelocityContext velocityContext = setupVelocityContext(artifactsForHTMLReport);
 
