@@ -12,8 +12,10 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
 import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIOptions;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
     /**
@@ -136,20 +138,6 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
                 "Compliance Tool modes: (only one can be set)" + cr +
                 SWITCH_EXPORTER_SHORT + ", " + SWITCH_EXPORTER_LONG + ":    Sets the compliance tool execute the SW360Exporter" + cr +
                 SWITCH_UPDATER_SHORT + ", " + SWITCH_UPDATER_LONG + ":    Sets the compliance tool execute the SW360Updater" + cr;
-    }
-
-    /**
-     * Returns a set with all command line switches that have been provided on
-     * the command line. Switches start with a prefix and control the behavior
-     * of the Antenna tool.
-     *
-     * @param args the array with command line options
-     * @return a set with all the switches found on the command line
-     */
-    protected static Set<String> readSwitchesFromArgs(String[] args) {
-        return Arrays.stream(args)
-                .filter(AntennaComplianceToolOptions::isSwitch)
-                .collect(Collectors.toSet());
     }
 
     /**
