@@ -39,6 +39,26 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
     static final String SWITCH_EXPORTER_LONG = SWITCH_PREFIX + "-exporter";
 
     /**
+     * The command line switch to execute the status report creation
+     */
+    static final String SWITCH_REPORTER = SWITCH_PREFIX + "-reporter";
+
+    /**
+     * The name of the exporter mode in the compliance tool
+     */
+    static final String MODE_NAME_EXPORTER = "exporter";
+
+    /**
+     * The name of the updater mode in the compliance tool     *
+     */
+    static final String MODE_NAME_UPDATER = "updater";
+
+    /**
+     * The name of the status reporter mode in the compliance tool
+     */
+    static final String MODE_NAME_REPORTER = "reporter";
+
+    /**
      * Constant for an options instance representing an invalid command line.
      * This instance is returned by a failed parse operation.
      */
@@ -137,7 +157,8 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
                 ":   Sets log level to DEBUG for diagnostic purposes." + cr + cr +
                 "Compliance Tool modes: (only one can be set)" + cr +
                 SWITCH_EXPORTER_SHORT + ", " + SWITCH_EXPORTER_LONG + ":    Sets the compliance tool execute the SW360Exporter" + cr +
-                SWITCH_UPDATER_SHORT + ", " + SWITCH_UPDATER_LONG + ":    Sets the compliance tool execute the SW360Updater" + cr;
+                SWITCH_UPDATER_SHORT + ", " + SWITCH_UPDATER_LONG + ":    Sets the compliance tool execute the SW360Updater" + cr +
+                SWITCH_REPORTER + ":    Sets the compliance tool to produce a status report of chosen content in your sw360 instance" + cr;
     }
 
     /**
@@ -151,13 +172,16 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
     private static Optional<String> getComplianceModeFromSwitches(Set<String> switches) {
         boolean updater = hasSwitch(switches, SWITCH_UPDATER_SHORT) || hasSwitch(switches, SWITCH_UPDATER_LONG);
         boolean exporter = hasSwitch(switches, SWITCH_EXPORTER_SHORT) || hasSwitch(switches, SWITCH_EXPORTER_LONG);
+        boolean reporter = hasSwitch(switches, SWITCH_REPORTER);
 
         if (updater && exporter) {
             return Optional.empty();
         } else if (updater) {
-            return Optional.of("updater");
+            return Optional.of(MODE_NAME_UPDATER);
         } else if (exporter) {
-            return Optional.of("exporter");
+            return Optional.of(MODE_NAME_EXPORTER);
+        } else if (reporter) {
+            return Optional.of(MODE_NAME_REPORTER);
         } else {
             return Optional.empty();
         }

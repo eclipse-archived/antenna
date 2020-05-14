@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter.SW360Exporter;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.SW360StatusReporter;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater.ClearingReportGenerator;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater.SW360Updater;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
@@ -56,11 +57,14 @@ public class AntennaComplianceTool {
 
     private int execute(String mode, Path propertiesFile) {
         switch (mode) {
-            case "exporter":
+            case AntennaComplianceToolOptions.MODE_NAME_EXPORTER:
                 createExporter(propertiesFile).execute();
                 return 0;
-            case "updater":
+            case AntennaComplianceToolOptions.MODE_NAME_UPDATER:
                 createUpdater(propertiesFile).execute();
+                return 0;
+            case AntennaComplianceToolOptions.MODE_NAME_REPORTER:
+                createStatusReporter(propertiesFile).execute();
                 return 0;
             default:
                 LOGGER.error("You did not supply any compliance task.");
@@ -86,6 +90,11 @@ public class AntennaComplianceTool {
         // we do not need to give a project name or version.
 
         return new SW360Updater(updaterImpl, configuration, new ClearingReportGenerator());
+    }
+
+    private SW360StatusReporter createStatusReporter(Path propertiesFile) {
+        SW360Configuration configuration = new SW360Configuration(propertiesFile.toFile());
+        return new SW360StatusReporter(configuration);
     }
 
     private static void enableDebugLogging() {
