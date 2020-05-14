@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -71,8 +70,6 @@ public class CycloneDXGenerator extends AbstractGenerator {
         try {
             Document document = gen.generate();
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
             DOMSource source = new DOMSource(document);
             try (Writer writer = new OutputStreamWriter(new FileOutputStream(targetFile), UTF_8)) {
                 StreamResult result = new StreamResult(writer);
