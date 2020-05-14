@@ -11,32 +11,53 @@
  */
 package org.eclipse.sw360.antenna.workflow.generators;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactFilename;
+import org.eclipse.sw360.antenna.model.artifact.facts.CopyrightStatement;
+import org.eclipse.sw360.antenna.model.artifact.facts.java.ArtifactPathnames;
+import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ArtifactForHTMLReport {
     private final String identifier;
     private final LicenseInformation license;
     private final String ankerTag;
+    private final Collection<String> copyright;
+    private final String artifact;
 
     public ArtifactForHTMLReport(Artifact artifact) {
         this.identifier = artifact.askFor(ArtifactCoordinates.class)
                 .map(ArtifactCoordinates::getMainCoordinate)
-                .map(Object::toString)
+                .map(Coordinate::canonicalize)
                 .orElse("");
         this.ankerTag = UUID.randomUUID().toString();
         this.license = ArtifactLicenseUtils.getFinalLicenses(artifact);
+        this.copyright = Arrays.asList(artifact.askFor(CopyrightStatement.class)
+                .map(CopyrightStatement::get)
+                .map(s -> s.split("(\r\n|\n)"))
+                .orElse(new String[0]));
+        this.artifact = artifact.askFor(ArtifactFilename.class)
+                .map(ArtifactFilename::getFilenames)
+                .map(this::concatNames)
+                .orElse(artifact.askFor(ArtifactPathnames.class)
+                    .map(ArtifactPathnames::get)
+                    .map(this::concatNames)
+                    .orElse(""));
     }
 
-
-    public ArtifactForHTMLReport(String identifier, LicenseInformation licenseInformation) {
-        this.identifier = identifier;
-        this.license = licenseInformation;
-        this.ankerTag = UUID.randomUUID().toString();
+    private String concatNames(Collection<String> names) {
+        return names.stream()
+                .filter(StringUtils::isNotBlank)
+                .filter(s -> !s.equals("null"))
+                .map(FilenameUtils::getName)
+                .collect(Collectors.joining(", "));
     }
 
     public String getIdentifier() {
@@ -45,6 +66,14 @@ public class ArtifactForHTMLReport {
 
     public LicenseInformation getLicense() {
         return license;
+    }
+
+    public Collection<String> getCopyright() {
+        return copyright;
+    }
+
+    public String getArtifact() {
+        return artifact;
     }
 
     public String getAnkerTag() {

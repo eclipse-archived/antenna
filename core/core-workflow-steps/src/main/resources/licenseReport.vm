@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
-  ~ Copyright (c) Bosch Software Innovations GmbH 2016-2017.
+  ~ Copyright (c) Bosch Software Innovations GmbH 2016-2017
+  ~ Copyright (c) Bosch.IO GmbH 2020
   ~
   ~ All rights reserved. This program and the accompanying materials
   ~ are made available under the terms of the Eclipse Public License v2.0
@@ -14,41 +15,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <style>
-        * { font-family: Arial; font-size: 14px; }
-        h1 { font-size: 18px;}
-        h2 { font-size: 16px; }
-        h3 { font-size: 14px; }
-        p { font-weight: normal }
-        body { background: #ffffff;}
-        .top { text-decoration: none; color: blue; padding: 0px 1em;}
-        .inset {
-            margin: 0.7em;
-            padding: 0.7em;
-            background: white;
-            border-top: 1px solid silver;
-            xborder-right: 1px solid silver;
-        }
-        .inset p {
-            white-space: pre-wrap;
-        }
-        .inset .groupId {
-            color: black;
-            font-size: 12px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
     <title>
-        Open Source Software
+        Open Source Attribution Document
     </title>
 </head>
 <body>
-    <h1>Open Source Software</h1>
+    <h1>Open Source Attribution Document</h1>
     <h2>Artifacts</h2>
     <a name="artifacts"></a>
     <ul>
     #foreach($artifact in $artifacts)
         <li><a href="#$artifact.ankerTag">
-        #if ( $artifact.identifier )
+        #if ( $StringUtils.isNotBlank( $artifact.identifier ) )
             $artifact.identifier
         #else
             Artifact Identifier not provided
@@ -56,45 +35,56 @@
         </a></li>
     #end
     </ul>
-    <hr />
     #foreach($artifact in $artifacts)
     <div>
         <a name="$artifact.ankerTag"></a>
         <a class="top" href="#licenses">&#8679;</a>
-        <h2>
-            #if ( $artifact.identifier )
+        <h4>Artifact:
+            #if ( $StringUtils.isNotBlank( $artifact.artifact ) )
+                $artifact.artifact
+            #end
+        </h4>
+        <p>Artifact Id:
+            #if ( $StringUtils.isNotBlank( $artifact.identifier ) )
                 $artifact.identifier
             #else
                 Artifact Identifier not provided
             #end
-        </h2>
-        <p>License:<br />
-            <ul>
-                #foreach($license in $artifact.license.getLicenses())
-                    $HTMLReportUtils.getLicenseAsHtmlListItem($license)
-                #end
-            </ul>
         </p>
+        <p>License:</p>
+        <ul>
+            #foreach($license in $artifact.license.getLicenses())
+                $HTMLReportUtils.getLicenseAsHtmlListItem($license)
+            #end
+        </ul>
+        </p>
+        #if ( ! $artifact.copyright.isEmpty() )
+            <p>Copyright:<br />
+                <ul>
+                    #foreach($copyright in $artifact.copyright)
+                        <li>$copyright</li>
+                    #end
+                </ul>
+            </p>
+        #end
     </div>
-    <hr />
     #end
     <h2>License Texts</h2>
     #foreach($license in $licenses)
     <div>
-        <a name="$license.getName()"></a>
+        <a name="$license.getId()"></a>
         <a class="top" href="#artifacts">&#8679;</a>
-        #if($license.getLongName())
-            <h3>$license.getLongName()</h3>
-        #else
-            <h3>$license.getName()</h3>
+        <h3>$license.getId()
+        #if($license.getCommonName())
+            &nbsp;($license.getCommonName())
         #end
-        #if($license.getText())
+        </h3>
+        #if ( $StringUtils.isNotBlank( $license.getText() ) )
             <p>$license.getText().replaceAll("(\r\n|\n)", "<br />")</p>
         #else
             <p>No license text available</p>
         #end
     </div>
-    <hr />
     #end
 </body>
 </html>

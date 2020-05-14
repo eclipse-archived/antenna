@@ -12,6 +12,8 @@
 
 package org.eclipse.sw360.antenna.workflow.generators;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -26,6 +28,7 @@ import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.*;
@@ -41,6 +44,8 @@ public class HTMLReportGenerator extends AbstractGenerator {
 
     private static final String LICENSE_REPORT_TEMPLATE_FILE = "licenseReport.vm";
     private static final String LICENSE_REPORT_FILE = "3rdparty-licenses.html";
+    private static final String LICENSE_REPORT_STYLE_FILE = "styles.css";
+
     private Charset encoding;
 
     public HTMLReportGenerator() {
@@ -52,15 +57,22 @@ public class HTMLReportGenerator extends AbstractGenerator {
         // Get path to disclosure documents
         ToolConfiguration toolConfig = context.getToolConfiguration();
         Path reportFilePath = toolConfig.getAntennaTargetDirectory().resolve(LICENSE_REPORT_FILE);
+        URL styleSource = getClass().getResource(File.separator + LICENSE_REPORT_STYLE_FILE);
+        Path reportStyleFilePath = toolConfig.getAntennaTargetDirectory().resolve(LICENSE_REPORT_STYLE_FILE);
 
         Set<ArtifactForHTMLReport> artifactsForHTMLReport = extractRelevantArtifactInformation(artifacts);
 
         writeReportToFile(artifactsForHTMLReport, reportFilePath.toFile());
+        try {
+            FileUtils.copyURLToFile(styleSource, reportStyleFilePath.toFile());
+        } catch (IOException e) {
+            throw new ExecutionException("Cannot write HTML style file", e);
+        }
 
         return Collections.singletonMap(IDENTIFIER, new Attachable(TYPE, CLASSIFIER, reportFilePath.toFile()));
     }
 
-    protected void writeReportToFile(Set<ArtifactForHTMLReport> artifactsForHTMLReport, File reportFile) {
+    private void writeReportToFile(Set<ArtifactForHTMLReport> artifactsForHTMLReport, File reportFile) {
         final VelocityEngine velocityEngine = setupVelocityEngine();
         final VelocityContext velocityContext = setupVelocityContext(artifactsForHTMLReport);
 
@@ -69,7 +81,7 @@ public class HTMLReportGenerator extends AbstractGenerator {
             Template template = velocityEngine.getTemplate(LICENSE_REPORT_TEMPLATE_FILE, "utf-8");
             template.merge(velocityContext, writer);
         } catch (IOException e) {
-            throw new ExecutionException("Cannot write HTML report file: " + e.getMessage());
+            throw new ExecutionException("Cannot write HTML report file", e);
         }
     }
 
@@ -90,6 +102,7 @@ public class HTMLReportGenerator extends AbstractGenerator {
         velocityContext.put("artifacts", artifactsForHTMLReport);
         velocityContext.put("licenses", licensesForHtmlReport);
         velocityContext.put("HTMLReportUtils", HTMLReportUtils.class);
+        velocityContext.put("StringUtils", StringUtils.class);
 
         return velocityContext;
     }
