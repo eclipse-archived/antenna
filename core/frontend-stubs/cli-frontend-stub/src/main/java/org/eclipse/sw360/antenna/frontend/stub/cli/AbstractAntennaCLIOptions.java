@@ -57,7 +57,7 @@ public abstract class AbstractAntennaCLIOptions {
      */
     protected final boolean valid;
 
-    public AbstractAntennaCLIOptions(boolean debugLog, boolean showHelp, boolean valid) {
+    protected AbstractAntennaCLIOptions(boolean debugLog, boolean showHelp, boolean valid) {
         this.debugLog = debugLog;
         this.showHelp = showHelp;
         this.valid = valid;
