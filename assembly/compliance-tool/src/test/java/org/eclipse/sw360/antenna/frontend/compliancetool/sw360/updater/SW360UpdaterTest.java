@@ -99,12 +99,16 @@ public class SW360UpdaterTest {
         Path csvFile = writeCsvFile();
         propertiesMap.put("csvFilePath", csvFile.toString());
 
+        final File sources = folder.newFolder("sources");
+
         when(configurationMock.getProperties()).
                 thenReturn(propertiesMap);
         when(configurationMock.getBaseDir())
                 .thenReturn(Paths.get(propertiesMap.get("csvFilePath")).getParent());
         when(configurationMock.getTargetDir())
                 .thenReturn(getTargetDir());
+        when(configurationMock.getSourcesPath())
+                .thenReturn(sources.toPath());
     }
 
     @NotNull

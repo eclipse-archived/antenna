@@ -31,7 +31,7 @@ import java.util.Objects;
 import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils.getArtifactsFromCsvFile;
 
 public class SW360Updater {
-    private static final Logger LOG = LoggerFactory.getLogger(SW360Updater.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SW360Updater.class);
 
     private final SW360UpdaterImpl updater;
     private final SW360Configuration configuration;
@@ -45,13 +45,25 @@ public class SW360Updater {
     }
 
     public void execute() {
+        LOGGER.debug("{} has started.", SW360Updater.class.getName());
         Collection<Artifact> artifacts = getArtifactsFromCsvFile(configuration.getProperties());
 
         artifacts.forEach(this::uploadReleaseWithClearingDocumentFromArtifact);
+
+
+        LOGGER.info("The SW360Exporter was executed from the base directory: {} " +
+                        "with the csv file taken from the path: {}, " +
+                        "the clearing reports taken or temporarily created in: {}/{} " +
+                        "and the source files taken from the folder: {}.",
+                configuration.getBaseDir().toAbsolutePath(),
+                configuration.getBaseDir().toAbsolutePath(),
+                configuration.getCsvFileName(),
+                configuration.getTargetDir().toAbsolutePath(),
+                configuration.getSourcesPath().toAbsolutePath());
     }
 
     private void uploadReleaseWithClearingDocumentFromArtifact(Artifact artifact) {
-        LOG.info("Processing {}.", artifact);
+        LOGGER.info("Processing {}.", artifact);
         try {
             SW360Release release = updater.artifactToReleaseInSW360(artifact);
             SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnection().getReleaseAdapter();
@@ -65,7 +77,7 @@ public class SW360Updater {
                 releaseClientAdapter.uploadAttachments(release, attachmentPathMap);
             }
         } catch (SW360ClientException e) {
-            LOG.error("Failed to process artifact {}.", artifact, e);
+            LOGGER.error("Failed to process artifact {}.", artifact, e);
         }
     }
 
