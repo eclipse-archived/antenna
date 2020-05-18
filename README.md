@@ -1,7 +1,7 @@
 # <img src="antenna-documentation/src/site/resources/images/logo.png" alt="Eclipse SW360 Antenna" width="385" height="150"/>
 
 [![Eclipse Public License 2.0](https://img.shields.io/badge/license-EPL--2.0-green.svg "Eclipse Public License 2.0")](LICENSE)
-![Build Status Master](https://github.com/eclipse/antenna/workflows/Antenna%20Build/badge.svg?branch=master)
+[![Build Status Master](https://github.com/eclipse/antenna/workflows/Antenna%20Build/badge.svg?branch=master)](https://github.com/eclipse/antenna/actions?query=workflow%3A%22Antenna+Build%22)
 [![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=sw360antenna&metric=alert_status)](https://sonarcloud.io/dashboard?id=sw360antenna)
 
 [![Slack Channel](https://img.shields.io/badge/slack-sw360antenna--talk-blue.svg?longCache=true&logo=slack)](https://join.slack.com/t/sw360chat/shared_invite/enQtNzg5NDQxMTQyNjA5LThiMjBlNTRmOWI0ZjJhYjc0OTk3ODM4MjBmOGRhMWRmN2QzOGVmMzQwYzAzN2JkMmVkZTI1ZjRhNmJlNTY4ZGI)
