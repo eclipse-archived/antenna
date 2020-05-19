@@ -73,35 +73,6 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
     }
 
     @Test
-    public void testGetOrCreateReleaseWithPatchRelease() {
-        SW360ReleaseLinkObjects links = getSw360ReleaseLinkObjects();
-        SW360SparseRelease sparseRelease = new SW360SparseRelease();
-        sparseRelease.setLinks(links);
-
-        when(releaseClient.getReleasesByExternalIds(release.getExternalIds()))
-                .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseRelease)));
-        when(releaseClient.getRelease(sparseRelease.getReleaseId()))
-                .thenReturn(CompletableFuture.completedFuture(release));
-
-        when(releaseClient.patchRelease(release))
-                .thenReturn(CompletableFuture.completedFuture(release));
-
-        SW360Release patchedRelease = block(releaseClientAdapter.getOrCreateRelease(release, true));
-
-        assertThat(patchedRelease).isEqualTo(release);
-        verify(releaseClient).getRelease(ID);
-        verify(releaseClient).patchRelease(release);
-    }
-
-    private static SW360ReleaseLinkObjects getSw360ReleaseLinkObjects() {
-        String releaseHref = "url/" + ID;
-        Self releaseSelf = new Self().setHref(releaseHref);
-        SW360ReleaseLinkObjects links = new SW360ReleaseLinkObjects();
-        links.setSelf(releaseSelf);
-        return links;
-    }
-
-    @Test
     public void testCreateRelease() {
         SW360SparseRelease sparseRelease = new SW360SparseRelease()
                 .setVersion(release.getVersion() + "-noMatch");
@@ -199,7 +170,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseRelease)));
 
         Optional<SW360SparseRelease> releaseByExternalIds =
-                block(releaseClientAdapter.getReleaseByExternalIds(externalIds));
+                block(releaseClientAdapter.getSparseReleaseByExternalIds(externalIds));
 
         assertThat(releaseByExternalIds).isPresent();
         assertThat(releaseByExternalIds).hasValue(sparseRelease);
@@ -213,7 +184,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
                 .thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
 
         Optional<SW360SparseRelease> releaseByExternalIds =
-                block(releaseClientAdapter.getReleaseByExternalIds(externalIds));
+                block(releaseClientAdapter.getSparseReleaseByExternalIds(externalIds));
         assertThat(releaseByExternalIds).isEmpty();
     }
 
@@ -225,7 +196,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
                         new SW360SparseRelease(), new SW360SparseRelease())));
 
         try {
-            block(releaseClientAdapter.getReleaseByExternalIds(externalIds));
+            block(releaseClientAdapter.getSparseReleaseByExternalIds(externalIds));
             fail("Multiple results not detected");
         } catch (SW360ClientException e) {
             assertThat(e.getMessage()).contains("Multiple releases");
@@ -242,7 +213,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
                 .thenReturn(CompletableFuture.completedFuture(Optional.of(component)));
 
         Optional<SW360SparseRelease> releaseByNameAndVersion =
-                block(releaseClientAdapter.getReleaseByNameAndVersion(release));
+                block(releaseClientAdapter.getSparseReleaseByNameAndVersion(release.getName(), release.getVersion()));
 
         assertThat(releaseByNameAndVersion).isPresent();
         assertThat(releaseByNameAndVersion).hasValue(sparseRelease);

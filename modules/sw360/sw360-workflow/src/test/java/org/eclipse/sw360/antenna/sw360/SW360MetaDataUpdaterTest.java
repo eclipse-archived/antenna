@@ -101,9 +101,12 @@ public class SW360MetaDataUpdaterTest {
     @Test
     public void testGetOrCreateRelease() {
         final SW360Release release = new SW360Release();
+        release.setName("test-component");
+        release.setVersion("0.1-alpha");
         final SW360Release newRelease = new SW360Release();
-        when(releaseClientAdapter.getReleaseByExternalIds(any())).thenReturn(Optional.empty());
-        when(releaseClientAdapter.getReleaseByNameAndVersion(release)).thenReturn(Optional.empty());
+        when(releaseClientAdapter.getSparseReleaseByExternalIds(any())).thenReturn(Optional.empty());
+        when(releaseClientAdapter.getSparseReleaseByNameAndVersion(release.getName(), release.getVersion()))
+                .thenReturn(Optional.empty());
         when(releaseClientAdapter.createRelease(release)).thenReturn(newRelease);
         setUp(true, true);
 
@@ -121,7 +124,7 @@ public class SW360MetaDataUpdaterTest {
         final String copyright = "(C) Test copyright";
         queryRelease.setExternalIds(extIDs);
         foundRelease.setCopyrights(copyright);
-        when(releaseClientAdapter.getReleaseByExternalIds(extIDs)).thenReturn(Optional.of(sparseRelease));
+        when(releaseClientAdapter.getSparseReleaseByExternalIds(extIDs)).thenReturn(Optional.of(sparseRelease));
         when(releaseClientAdapter.enrichSparseRelease(sparseRelease)).thenReturn(Optional.of(foundRelease));
         when(releaseClientAdapter.updateRelease(any()))
                 .thenAnswer((Answer<SW360Release>) invocationOnMock -> {
@@ -142,8 +145,11 @@ public class SW360MetaDataUpdaterTest {
         SW360Release queryRelease = new SW360Release();
         queryRelease.setExternalIds(Collections.singletonMap("id", "42"));
         foundRelease.setExternalIds(Collections.singletonMap("id2", "47"));
-        when(releaseClientAdapter.getReleaseByExternalIds(queryRelease.getExternalIds())).thenReturn(Optional.empty());
-        when(releaseClientAdapter.getReleaseByNameAndVersion(queryRelease)).thenReturn(Optional.of(sparseRelease));
+        queryRelease.setName("theComponent");
+        queryRelease.setVersion("100.0");
+        when(releaseClientAdapter.getSparseReleaseByExternalIds(queryRelease.getExternalIds())).thenReturn(Optional.empty());
+        when(releaseClientAdapter.getSparseReleaseByNameAndVersion(queryRelease.getName(), queryRelease.getVersion()))
+                .thenReturn(Optional.of(sparseRelease));
         when(releaseClientAdapter.enrichSparseRelease(sparseRelease)).thenReturn(Optional.of(foundRelease));
         setUp(true, false);
 

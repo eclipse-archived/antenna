@@ -74,9 +74,10 @@ public class SW360MetaDataUpdater {
 
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact) {
         Optional<SW360SparseRelease> optSparseReleaseByIds =
-                releaseClientAdapter.getReleaseByExternalIds(sw360ReleaseFromArtifact.getExternalIds());
+                releaseClientAdapter.getSparseReleaseByExternalIds(sw360ReleaseFromArtifact.getExternalIds());
         Optional<SW360SparseRelease> optSparseRelease = optSparseReleaseByIds.isPresent() ? optSparseReleaseByIds :
-                releaseClientAdapter.getReleaseByNameAndVersion(sw360ReleaseFromArtifact);
+                releaseClientAdapter.getSparseReleaseByNameAndVersion(sw360ReleaseFromArtifact.getName(),
+                        sw360ReleaseFromArtifact.getVersion());
         Optional<SW360Release> optRelease = optSparseRelease.flatMap(releaseClientAdapter::enrichSparseRelease)
                 .map(sw360ReleaseFromArtifact::mergeWith);
 
