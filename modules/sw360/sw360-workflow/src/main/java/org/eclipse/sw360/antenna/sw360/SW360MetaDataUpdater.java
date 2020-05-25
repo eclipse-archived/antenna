@@ -13,6 +13,8 @@
 package org.eclipse.sw360.antenna.sw360;
 
 import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter;
@@ -104,7 +106,17 @@ public class SW360MetaDataUpdater {
     }
 
     public SW360Release uploadAttachments(SW360Release sw360Release, Map<Path, SW360AttachmentType> attachments) {
-        return releaseClientAdapter.uploadAttachments(sw360Release, attachments);
+        AttachmentUploadRequest.Builder builder = AttachmentUploadRequest.builder(sw360Release);
+        for (Map.Entry<Path, SW360AttachmentType> e : attachments.entrySet()) {
+            builder = builder.addAttachment(e.getKey(), e.getValue());
+        }
+
+        AttachmentUploadResult result = releaseClientAdapter.uploadAttachments(builder.build());
+        LOGGER.debug("Result of attachment upload operation: {}", result);
+        if (!result.isSuccess()) {
+            LOGGER.error("Failed to upload attachments: {}", result.failedUploads());
+        }
+        return result.getTarget();
     }
 
     /**

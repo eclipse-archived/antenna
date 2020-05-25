@@ -11,12 +11,15 @@
 package org.eclipse.sw360.antenna.sw360;
 
 import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Visibility;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectType;
@@ -26,6 +29,8 @@ import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import org.mockito.ArgumentCaptor;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -212,14 +217,21 @@ public class SW360MetaDataUpdaterTest {
     @Test
     public void testUploadAttachments() {
         final SW360Release release = new SW360Release();
-        when(releaseClientAdapter.uploadAttachments(release, Collections.emptyMap()))
-                .thenReturn(release);
+        Path uploadPath = Paths.get("upload.doc");
+        SW360AttachmentType attachmentType = SW360AttachmentType.SOURCE;
+        Map<Path, SW360AttachmentType> attachments = Collections.singletonMap(uploadPath, attachmentType);
+        AttachmentUploadRequest expRequest = AttachmentUploadRequest.builder(release)
+                .addAttachment(uploadPath, attachmentType)
+                .build();
+        AttachmentUploadResult result = new AttachmentUploadResult(release);
+        when(releaseClientAdapter.uploadAttachments(expRequest))
+                .thenReturn(result);
 
         setUp(true, false);
 
-        final SW360Release releaseWithAttachment = metaDataUpdater.uploadAttachments(release, Collections.emptyMap());
+        final SW360Release releaseWithAttachment = metaDataUpdater.uploadAttachments(release, attachments);
 
         assertThat(releaseWithAttachment).isEqualTo(release);
-        verify(releaseClientAdapter).uploadAttachments(release, Collections.emptyMap());
+        verify(releaseClientAdapter).uploadAttachments(expRequest);
     }
 }

@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
@@ -24,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.ArgumentCaptor;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,11 +36,13 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -158,7 +162,15 @@ public class SW360UpdaterTest {
             verify(generator).createClearingDocument(release, getTargetDir());
         }
         verify(updater, times(2)).artifactToReleaseInSW360(any());
-        verify(releaseClientAdapter, times(expectUpload ? 1 : 0)).uploadAttachments(any(), eq(testAttachmentMap));
+        ArgumentCaptor<AttachmentUploadRequest> captor = ArgumentCaptor.forClass(AttachmentUploadRequest.class);
+        verify(releaseClientAdapter, times(expectUpload ? 1 : 0)).uploadAttachments(captor.capture());
+        if (expectUpload) {
+            AttachmentUploadRequest uploadRequest = captor.getValue();
+            List<AttachmentUploadRequest.Item> expItems = testAttachmentMap.entrySet().stream()
+                    .map(entry -> new AttachmentUploadRequest.Item(entry.getKey(), entry.getValue()))
+                    .collect(Collectors.toList());
+            assertThat(uploadRequest.items()).containsAll(expItems);
+        }
     }
 
     private Map<Path, SW360AttachmentType> createExpectedAttachmentMap() {

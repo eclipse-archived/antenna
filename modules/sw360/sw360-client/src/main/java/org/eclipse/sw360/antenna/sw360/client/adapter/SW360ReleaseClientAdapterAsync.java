@@ -11,7 +11,6 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
@@ -116,12 +115,10 @@ public interface SW360ReleaseClientAdapterAsync {
     /**
      * Uploads an arbitrary number of attachments for a release.
      *
-     * @param sw360item   the release to upload attachments to
-     * @param attachments a map defining the attachments to be uploaded
-     * @return a future with the updated release entity
+     * @param uploadRequest the request with the attachments to be uploaded
+     * @return a future with the result of the upload operation
      */
-    CompletableFuture<SW360Release> uploadAttachments(SW360Release sw360item,
-                                                      Map<Path, SW360AttachmentType> attachments);
+    CompletableFuture<AttachmentUploadResult> uploadAttachments(AttachmentUploadRequest uploadRequest);
 
     /**
      * Tries to download an attachment from a release. If it can be resolved,

@@ -13,7 +13,6 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentEmbedded;
@@ -92,17 +91,27 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<SW360Release> uploadAttachments(SW360Release sw360item, Map<Path, SW360AttachmentType> attachments) {
-        CompletableFuture<SW360Release> futUpdatedRelease = CompletableFuture.completedFuture(sw360item);
-        for(Map.Entry<Path, SW360AttachmentType> attachment : attachments.entrySet()) {
-            if (!attachmentIsPotentialDuplicate(attachment.getKey(), sw360item.getEmbedded().getAttachments())) {
-                futUpdatedRelease = futUpdatedRelease.thenCompose(release ->
-                        getReleaseClient().uploadAndAttachAttachment(sw360item, attachment.getKey(),
-                                attachment.getValue()));
-            }
+    public CompletableFuture<AttachmentUploadResult> uploadAttachments(AttachmentUploadRequest uploadRequest) {
+        CompletableFuture<AttachmentUploadResult> futResult =
+                CompletableFuture.completedFuture(new AttachmentUploadResult(uploadRequest.getTarget()));
+
+        for (AttachmentUploadRequest.Item item : uploadRequest.items()) {
+            futResult = futResult.thenCompose(result -> {
+                if (attachmentIsPotentialDuplicate(item.getPath(), result.getTarget().getEmbedded().getAttachments())) {
+                    return CompletableFuture.completedFuture(result.addFailedUpload(item,
+                            new SW360ClientException("Duplicate attachment file name: " +
+                                    item.getPath().getFileName())));
+                }
+
+                return getReleaseClient()
+                        .uploadAndAttachAttachment(result.getTarget(), item.getPath(), item.getAttachmentType())
+                        .handle((updatedRelease, ex) -> (updatedRelease != null) ?
+                                result.addSuccessfulUpload(updatedRelease, item) :
+                                result.addFailedUpload(item, ex));
+            });
         }
 
-        return futUpdatedRelease;
+        return futResult;
     }
 
     private static boolean attachmentIsPotentialDuplicate(Path attachment, Set<SW360SparseAttachment> attachments) {
