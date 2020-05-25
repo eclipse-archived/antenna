@@ -41,7 +41,7 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
     /**
      * The command line switch to execute the status report creation
      */
-    static final String SWITCH_REPORTER = SWITCH_PREFIX + "-reporter";
+    public static final String SWITCH_REPORTER = SWITCH_PREFIX + "-reporter";
 
     /**
      * The name of the exporter mode in the compliance tool
@@ -63,7 +63,7 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
      * This instance is returned by a failed parse operation.
      */
     private static final AntennaComplianceToolOptions INVALID_OPTIONS =
-            new AntennaComplianceToolOptions(null, null, false, true, false);
+            new AntennaComplianceToolOptions(null, null, null, false, true, false);
 
     /**
      * The path to the file with the Antenna configuration.
@@ -76,19 +76,25 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
     private final String complianceMode;
 
     /**
+     * The parameters given in the command line.
+     */
+    private final Set<String> parameters;
+
+    /**
      * Creates a new instance of {@code AntennaComplianceToolOptions} with the properties
      * provided.
-     *
-     * @param propertiesFilePath the path to the Antenna config file
+     *  @param propertiesFilePath the path to the Antenna config file
      * @param complianceMode     the mode the compliance tool will get executed with
+     * @param parameters
      * @param debugLog           flag whether debug log should be active
      * @param showHelp           flag whether the help message should be printed
      * @param valid              flag whether the command line is valid
      */
-    AntennaComplianceToolOptions(String propertiesFilePath, String complianceMode, boolean debugLog, boolean showHelp, boolean valid) {
+    AntennaComplianceToolOptions(String propertiesFilePath, String complianceMode, Set<String> parameters, boolean debugLog, boolean showHelp, boolean valid) {
         super(debugLog, showHelp, valid);
         this.propertiesFilePath = propertiesFilePath;
         this.complianceMode = complianceMode;
+        this.parameters = parameters;
     }
 
     /**
@@ -109,6 +115,15 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
      */
     String getComplianceMode() {
         return complianceMode;
+    }
+
+    /**
+     * Returns all parameters that will be given to the mode the
+     * compliance tool will be executed with.
+     * @return the parameters of the mode of the compliance tool.
+     */
+    Set<String> getParameters() {
+        return parameters;
     }
 
     /**
@@ -139,7 +154,9 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
             return INVALID_OPTIONS;
         }
 
-        return new AntennaComplianceToolOptions(paths.get(0), complianceModeFromSwitches.get(), debug1 || debug2, help1 || help2, true);
+        Set<String> parameters = readParametersFromArgs(args);
+
+        return new AntennaComplianceToolOptions(paths.get(0), complianceModeFromSwitches.get(), parameters, debug1 || debug2, help1 || help2, true);
     }
 
     /**

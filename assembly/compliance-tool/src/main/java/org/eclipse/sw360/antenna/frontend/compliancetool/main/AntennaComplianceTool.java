@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 
 public class AntennaComplianceTool {
     private static final Logger LOGGER = LoggerFactory.getLogger(AntennaComplianceTool.class);
@@ -48,14 +49,14 @@ public class AntennaComplianceTool {
 
             LOGGER.info("Starting Compliance Tool with mode '{}'", options.getComplianceMode());
 
-            System.exit(new AntennaComplianceTool().execute(options.getComplianceMode(), propertiesFile));
+            System.exit(new AntennaComplianceTool().execute(options.getComplianceMode(), options.getParameters(), propertiesFile));
         } catch (Exception e) {
             LOGGER.error("Error:", e);
             System.exit(1);
         }
     }
 
-    private int execute(String mode, Path propertiesFile) {
+    private int execute(String mode, Set<String> parameters, Path propertiesFile) {
         switch (mode) {
             case AntennaComplianceToolOptions.MODE_NAME_EXPORTER:
                 createExporter(propertiesFile).execute();
@@ -64,7 +65,7 @@ public class AntennaComplianceTool {
                 createUpdater(propertiesFile).execute();
                 return 0;
             case AntennaComplianceToolOptions.MODE_NAME_REPORTER:
-                createStatusReporter(propertiesFile).execute();
+                createStatusReporter(propertiesFile, parameters).execute();
                 return 0;
             default:
                 LOGGER.error("You did not supply any compliance task.");
@@ -92,9 +93,9 @@ public class AntennaComplianceTool {
         return new SW360Updater(updaterImpl, configuration, new ClearingReportGenerator());
     }
 
-    private SW360StatusReporter createStatusReporter(Path propertiesFile) {
+    private SW360StatusReporter createStatusReporter(Path propertiesFile, Set<String> parameters) {
         SW360Configuration configuration = new SW360Configuration(propertiesFile.toFile());
-        return new SW360StatusReporter(configuration);
+        return new SW360StatusReporter(configuration, parameters);
     }
 
     private static void enableDebugLogging() {

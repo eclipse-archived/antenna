@@ -23,6 +23,11 @@ public abstract class AbstractAntennaCLIOptions {
     public static final String SWITCH_PREFIX = "-";
 
     /**
+     * The character to identify a command line parameter
+     */
+    private static final String PARAMETER_IDENTIFIER = "=";
+
+    /**
      * The short command line switch to enable debug logging.
      */
     public static final String SWITCH_DEBUG_SHORT = SWITCH_PREFIX + "X";
@@ -111,6 +116,19 @@ public abstract class AbstractAntennaCLIOptions {
     }
 
     /**
+     * Returns a set with all command line parameters that have been
+     * provided on the command line. Parameters start with a prefix
+     * and contain the {@code PARAMETER_IDENTIFIER}
+     * @param args the array with command line options
+     * @return a set with all the parameters found in the command line
+     */
+    protected static Set<String> readParametersFromArgs(String[] args) {
+        return Arrays.stream(args)
+                .filter(AbstractAntennaCLIOptions::isParameter)
+                .collect(Collectors.toSet());
+    }
+
+    /**
      * Returns a set with all command line switches that have been provided on
      * the command line. Switches start with a prefix and control the behavior
      * of the Antenna tool.
@@ -126,14 +144,28 @@ public abstract class AbstractAntennaCLIOptions {
 
     /**
      * Checks whether a command line argument is a switch. Switches start with
-     * a specific prefix. All non-switch arguments are interpreted as paths.
+     * a specific prefix. All non-switch arguments are interpreted as paths or
+     * parameters.
      *
      * @param arg the argument to be checked
      * @return <strong>true</strong> if this argument is a switch;
      * <strong>false</strong> otherwise
      */
     protected static boolean isSwitch(String arg) {
-        return arg.startsWith(SWITCH_PREFIX);
+        return arg.startsWith(SWITCH_PREFIX) && !arg.contains(PARAMETER_IDENTIFIER);
+    }
+
+    /**
+     * Checks whether a command line argument is a parameter. Parameters
+     * start with a specific prefix and contain a specific character.
+     * All non-parameter arguments are interpreted as paths or switches.
+     *
+     * @param arg the argument to be checked
+     * @return <strong>true</strong> if this argument is a parameter;
+     * <strong>false</strong> otherwise
+     */
+    protected static boolean isParameter(String arg) {
+        return arg.startsWith(SWITCH_PREFIX) && arg.contains(PARAMETER_IDENTIFIER);
     }
 
     /**

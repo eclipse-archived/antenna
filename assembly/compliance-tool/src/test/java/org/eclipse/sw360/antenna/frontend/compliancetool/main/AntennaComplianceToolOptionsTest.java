@@ -30,7 +30,7 @@ public class AntennaComplianceToolOptionsTest {
 
     @Test
     public void testToString() {
-        AntennaComplianceToolOptions options = new AntennaComplianceToolOptions(PROPERTIES_PATH, "exporter", true, false, true);
+        AntennaComplianceToolOptions options = new AntennaComplianceToolOptions(PROPERTIES_PATH, "exporter", null, true, false, true);
         String s = options.toString();
 
         assertThat(s).contains("propertiesFilePath='" + options.getPropertiesFilePath());
@@ -93,31 +93,31 @@ public class AntennaComplianceToolOptionsTest {
 
     @Test
     public void testParseWithXSwitch() {
-        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, "updater", true, false, true),
+        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, "updater", null, true, false, true),
                 PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT, "-X");
     }
 
     @Test
     public void testParseWithDebugSwitch() {
-        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, "updater", true, false, true),
+        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, "updater", null, true, false, true),
                 AntennaComplianceToolOptions.SWITCH_DEBUG_LONG, PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT);
     }
 
     @Test
     public void testParseWithMultipleDebugSwitches() {
-        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, "updater", true, false, true),
+        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, "updater", null, true, false, true),
                 AntennaComplianceToolOptions.SWITCH_DEBUG_LONG, AntennaComplianceToolOptions.SWITCH_DEBUG_SHORT, PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT);
     }
 
     @Test
     public void testParseWithShortHelpSwitch() {
-        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, "updater", false, true, true),
+        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, "updater", null, false, true, true),
                 PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT, "-h");
     }
 
     @Test
     public void testParseWithLongHelpSwitch() {
-        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, "updater",false, true, true),
+        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, "updater", null, false, true, true),
                 "--help", PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT);
     }
 
