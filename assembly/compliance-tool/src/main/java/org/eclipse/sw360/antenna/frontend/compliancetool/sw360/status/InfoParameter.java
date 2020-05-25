@@ -1,4 +1,13 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
 
-public class InfoParameter {
+import java.util.Set;
+
+abstract public class InfoParameter {
+    Set<String> parameters;
+    abstract String getInfoParameter();
+    abstract boolean hasAdditionalParameters();
+    abstract String helpMessage();
+    abstract boolean isValid();
+    abstract Set<String> getAdditionalParameters();
+    abstract void execute();
 }

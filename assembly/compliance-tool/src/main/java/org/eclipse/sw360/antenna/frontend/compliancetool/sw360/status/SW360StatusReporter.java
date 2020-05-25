@@ -22,20 +22,22 @@ public class SW360StatusReporter {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360StatusReporter.class);
 
     private final SW360Configuration configuration;
+    private final InfoParameter infoParameter;
 
     public SW360StatusReporter(SW360Configuration configuration, Set<String> parameters) {
         this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
 
-        String desiredInformation = getDesiredInformation(parameters);
+        infoParameter = getDesiredInformation(parameters);
     }
 
-    private String getDesiredInformation(Set<String> parameters) {
-        SW360StatusReporterParameters.getInfoRequestFromParameter(parameters);
-        return null;
+    private InfoParameter getDesiredInformation(Set<String> parameters) {
+        return new SW360StatusReporterParameters().getInfoRequestFromParameter(parameters);
     }
 
     public void execute() {
         LOGGER.debug("{} has started.", SW360StatusReporter.class.getName());
         final SW360Connection connection = configuration.getConnection();
+
+        infoParameter.execute();
     }
 }
