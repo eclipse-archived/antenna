@@ -16,6 +16,7 @@ import org.apache.commons.lang3.Validate;
 import org.eclipse.sw360.antenna.http.HttpClient;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 
+import java.net.URI;
 import java.util.Objects;
 
 /**
@@ -45,7 +46,7 @@ public final class SW360ClientConfig {
     /**
      * The base URL of the SW360 REST API.
      */
-    private final String restURL;
+    private final URI baseURI;
 
     /**
      * The URL of the token endpoint to query access tokens.
@@ -82,9 +83,9 @@ public final class SW360ClientConfig {
      */
     private final ObjectMapper objectMapper;
 
-    private SW360ClientConfig(String restURL, String authURL, String user, String password, String clientId,
+    private SW360ClientConfig(URI baseURI, String authURL, String user, String password, String clientId,
                               String clientPassword, HttpClient httpClient, ObjectMapper objectMapper) {
-        this.restURL = restURL;
+        this.baseURI = baseURI;
         this.authURL = authURL;
         this.user = user;
         this.password = password;
@@ -99,6 +100,7 @@ public final class SW360ClientConfig {
      * provided.
      *
      * @param restURL        the base URL for REST requests to the SW360 instance
+     *                       (must be a valid URL)
      * @param authURL        the URL to request access tokens
      * @param user           the SW360 user
      * @param password       the password of the user
@@ -109,12 +111,13 @@ public final class SW360ClientConfig {
      * @return the newly created instance
      * @throws NullPointerException     if a required parameter is missing
      * @throws IllegalArgumentException if a required string parameter is empty
+     *                                  or has an invalid value
      */
     public static SW360ClientConfig createConfig(String restURL, String authURL, String user,
                                                  String password, String clientId, String clientPassword,
                                                  HttpClient httpClient, ObjectMapper mapper) {
         return new SW360ClientConfig(
-                stripTrailingSeparator(Validate.notEmpty(restURL, "Undefined REST URL")),
+                URI.create(stripTrailingSeparator(Validate.notEmpty(restURL, "Undefined REST URL"))),
                 stripTrailingSeparator(Validate.notEmpty(authURL, "Undefined authentication URL")),
                 Validate.notEmpty(user, "Undefined user"),
                 Validate.notEmpty(password, "Undefined password"),
@@ -132,7 +135,19 @@ public final class SW360ClientConfig {
      * @return the SW360 base REST URL
      */
     public String getRestURL() {
-        return restURL;
+        return baseURI.toString();
+    }
+
+    /**
+     * Returns the base URI for sending REST requests to the configured SW360
+     * server. This method returns an equivalent URI as {@link #getRestURL()};
+     * however, the return type URI allows for more complex operations with the
+     * URL.
+     *
+     * @return the base URI for REST requests
+     */
+    public URI getBaseURI() {
+        return baseURI;
     }
 
     /**
