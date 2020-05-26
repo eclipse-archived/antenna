@@ -28,26 +28,29 @@ public class SW360StatusReporterParameters {
 
     private InfoParameter parse(Set<String> parameters) {
         final Optional<String> infoParameter = parameters.stream().filter(p -> p.contains(REPORTER_PARAMETER_PREFIX)).findFirst();
-        final InfoParameter infoParameter1 = infoParameter.map(this::getInfoParameterFromString).orElse(emptyInfoParameter());
+        final InfoParameter infoParameter1 = infoParameter.map(this::getInfoParameterFromString).orElse(InfoParameter.emptyInfoParameter());
 
-        if (infoParameter1 == emptyInfoParameter()) {
+        if (infoParameter1 == InfoParameter.emptyInfoParameter()) {
             throw new IllegalArgumentException(infoParameter.get() + ": " + infoParameter1.helpMessage());
+        }
+
+        if (infoParameter1.hasAdditionalParameters()) {
+            infoParameter1.parseAdditionalParameter(parameters);
+        } else if (parameters.size() < 1) {
+            LOGGER.warn("You have provided additional parameters that are not necessary for the information parameter {}.", infoParameter1.getInfoParameter());
         }
 
         return infoParameter1;
     }
 
     private InfoParameter getInfoParameterFromString(String infoParameter) {
-        InfoParameter infoParam;
         switch (infoParameter) {
-           /* case IPGetReleases.getInfoParameter():
+           case "--info=releases-cleared":
                 return new IPGetReleases();
-            case IPGetReleasesOfProjects.getInfoParameter():
-                return new IPGetReleasesOfProjects();*/
+            case "--info=releases-of-project":
+                return new IPGetReleasesOfProjects();
             default:
-                return emptyInfoParameter();
-
-
+                return InfoParameter.emptyInfoParameter();
         }
     }
 
@@ -67,39 +70,5 @@ public class SW360StatusReporterParameters {
                 "The reporter create a csv file for every run with the requested information statement. " + cr + cr +
                 "The reporter info statements: (only one can be set)" + cr +
                 new IPGetReleases().getInfoParameter() + ":   Gives a list of all releases in a given sw360 instances that are cleared." + cr;
-    }
-
-    InfoParameter emptyInfoParameter() {
-        return new InfoParameter() {
-            @Override
-            public String getInfoParameter() {
-                return "NON_VALID";
-            }
-
-            @Override
-            boolean hasAdditionalParameters() {
-                return false;
-            }
-
-            @Override
-            String helpMessage() {
-                return "The provided info parameter is not supported in this status reporter";
-            }
-
-            @Override
-            boolean isValid() {
-                return false;
-            }
-
-            @Override
-            Set<String> getAdditionalParameters() {
-                return null;
-            }
-
-            @Override
-            void execute() {
-                // no-op
-            }
-        };
     }
 }
