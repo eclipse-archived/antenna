@@ -80,7 +80,7 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
     @Test
     public void testUploadAttachment() throws URISyntaxException, IOException {
         String urlPath = "/releases/rel1234567890";
-        String selfUrl = wireMockRule.baseUrl() + urlPath;
+        String selfUrl = "https://some.uri.to.be.replaced" + urlPath;
         Path attachmentPath = Paths.get(resolveTestFileURL("license.json").toURI());
         byte[] attachmentContent = Files.readAllBytes(attachmentPath);
         SW360Attachment attachment = new SW360Attachment(attachmentPath, SW360AttachmentType.DOCUMENT);
