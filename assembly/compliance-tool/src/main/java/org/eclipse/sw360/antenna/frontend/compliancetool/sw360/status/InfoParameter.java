@@ -4,7 +4,7 @@ import java.util.Set;
 
 abstract public class InfoParameter {
     Set<String> parameters;
-    abstract String getInfoParameter();
+    abstract public String getInfoParameter();
     abstract boolean hasAdditionalParameters();
     abstract String helpMessage();
     abstract boolean isValid();

@@ -112,6 +112,7 @@ public abstract class AbstractAntennaCLIOptions {
     protected static List<String> readPathsFromArgs(String[] args) {
         return Arrays.stream(args)
                 .filter(arg -> !isSwitch(arg))
+                .filter(arg -> !isParameter(arg))
                 .collect(Collectors.toList());
     }
 

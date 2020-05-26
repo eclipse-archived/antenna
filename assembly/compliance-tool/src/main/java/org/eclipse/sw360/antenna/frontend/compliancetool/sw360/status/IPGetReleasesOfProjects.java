@@ -9,7 +9,7 @@ public class IPGetReleasesOfProjects extends InfoParameter {
     static final String PROJECT_ID = "--project_id";
 
     @Override
-    String getInfoParameter() {
+    public String getInfoParameter() {
         return GET_RELEASES_OF_PROJECT;
     }
 

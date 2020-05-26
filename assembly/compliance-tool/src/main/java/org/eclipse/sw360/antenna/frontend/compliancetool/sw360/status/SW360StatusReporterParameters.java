@@ -40,10 +40,10 @@ public class SW360StatusReporterParameters {
     private InfoParameter getInfoParameterFromString(String infoParameter) {
         InfoParameter infoParam;
         switch (infoParameter) {
-            case IPGetReleases.getInfoParameter():
+           /* case IPGetReleases.getInfoParameter():
                 return new IPGetReleases();
             case IPGetReleasesOfProjects.getInfoParameter():
-                return new IPGetReleasesOfProjects();
+                return new IPGetReleasesOfProjects();*/
             default:
                 return emptyInfoParameter();
 
@@ -72,7 +72,7 @@ public class SW360StatusReporterParameters {
     InfoParameter emptyInfoParameter() {
         return new InfoParameter() {
             @Override
-            String getInfoParameter() {
+            public String getInfoParameter() {
                 return "NON_VALID";
             }
 

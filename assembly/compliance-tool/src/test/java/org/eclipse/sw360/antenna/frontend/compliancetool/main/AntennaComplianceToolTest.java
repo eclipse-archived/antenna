@@ -12,6 +12,10 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter.SW360Exporter;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.IPGetReleases;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.IPGetReleasesOfProjects;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.InfoParameter;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.SW360StatusReporter;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater.SW360Updater;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 import org.junit.Rule;
@@ -27,7 +31,9 @@ import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,10 +78,27 @@ public class AntennaComplianceToolTest {
 
         assertThat(((SW360Configuration) readField(updater, "configuration")).getProperties()).isNotNull();
 
-        SW360UpdaterImpl sw360updater = (SW360UpdaterImpl) readField(updater, "updater");
+        SW360UpdaterImpl sw360updater = (SW360UpdaterImpl) readField(updater, AntennaComplianceToolOptions.MODE_NAME_UPDATER);
         assertThat(readField(sw360updater, "sw360MetaDataUpdater")).isNotNull();
 
         assertThat(readField(updater, "generator")).isNotNull();
+    }
+
+    @Test
+    public void testMainInitWithReporter() throws URISyntaxException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+        Path propertiesFile = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).toURI());
+        Set<String> parameterSet = new HashSet<>();
+        parameterSet.add(new IPGetReleases().getInfoParameter());
+
+        String methodName = "createStatusReporter";
+
+        AntennaComplianceTool antennaComplianceTool = new AntennaComplianceTool();
+        Method initMethod = antennaComplianceTool.getClass().getDeclaredMethod(methodName, Path.class, Set.class);
+        initMethod.setAccessible(true);
+        SW360StatusReporter statusReporter = (SW360StatusReporter) initMethod.invoke(antennaComplianceTool, propertiesFile, parameterSet);
+
+        assertThat(((SW360Configuration) readField(statusReporter, "configuration")).getProperties()).isNotNull();
+        assertThat(((InfoParameter) readField(statusReporter, "infoParameter")).getInfoParameter()).isEqualTo(new IPGetReleases().getInfoParameter());
     }
 
     @Test
