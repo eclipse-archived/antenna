@@ -55,13 +55,11 @@ public class LicenseSupport {
     public static LicenseInformation fromSPDXExpression(SpdxExpression spdxExpression) {
         if (spdxExpression instanceof SpdxCompoundExpression) {
             SpdxCompoundExpression spdxCompoundExpression = (SpdxCompoundExpression) spdxExpression;
-            final SpdxOperator operator = spdxCompoundExpression.component2();
-
-            if (SpdxOperator.WITH.equals(operator)) {
-                return fromSpdxWithLicense(spdxCompoundExpression);
-            }
-
             return fromSPDXCompoundExpression(spdxCompoundExpression, new LicenseStatement());
+        }
+        if (spdxExpression instanceof SpdxLicenseWithExceptionExpression) {
+            SpdxLicenseWithExceptionExpression spdxWithExceptionExpression = (SpdxLicenseWithExceptionExpression) spdxExpression;
+            return fromSpdxWithLicense(spdxWithExceptionExpression);
         }
         if (spdxExpression instanceof SpdxLicenseIdExpression) {
             SpdxLicenseIdExpression spdxLicenseIdExpression = (SpdxLicenseIdExpression) spdxExpression;
@@ -70,10 +68,6 @@ public class LicenseSupport {
         if (spdxExpression instanceof SpdxLicenseReferenceExpression) {
             SpdxLicenseReferenceExpression spdxLicenseReferenceExpression = (SpdxLicenseReferenceExpression) spdxExpression;
             return fromSpdxLicenseReferenceExpression(spdxLicenseReferenceExpression);
-        }
-        if (spdxExpression instanceof SpdxLicenseExceptionExpression) {
-            SpdxLicenseExceptionExpression spdxLicenseExceptionExpression = (SpdxLicenseExceptionExpression) spdxExpression;
-            return fromSpdxLicenseExceptionExpression(spdxLicenseExceptionExpression);
         }
         throw new ExecutionException("SPDX expression=[" + spdxExpression.toString() + "] could not be parsed");
     }
@@ -88,18 +82,13 @@ public class LicenseSupport {
         }
     }
 
-    private static LicenseInformation fromSpdxWithLicense(SpdxCompoundExpression spdxCompoundExpression) {
-        final SpdxExpression license = spdxCompoundExpression.component1();
-        final SpdxExpression exception = spdxCompoundExpression.component3();
+    private static LicenseInformation fromSpdxWithLicense(SpdxLicenseWithExceptionExpression spdxWithExceptionExpression) {
+        final SpdxSimpleExpression license = spdxWithExceptionExpression.getLicense();
+        final String exception = spdxWithExceptionExpression.getException();
         final License withLicense = (License) fromSPDXExpression(license);
         final License exceptionLicense = (License) fromSPDXExpression(exception);
         return new WithLicense(withLicense.getId(), withLicense.getCommonName(), withLicense.getText(),
                 exceptionLicense.getId(), exceptionLicense.getCommonName(), exceptionLicense.getText());
-    }
-
-    public static LicenseInformation fromSpdxLicenseExceptionExpression(SpdxLicenseExceptionExpression spdxLicenseExceptionExpression) {
-        String exceptionId = spdxLicenseExceptionExpression.getId();
-        return new License(exceptionId);
     }
 
     public static LicenseInformation fromSpdxLicenseReferenceExpression(SpdxLicenseReferenceExpression spdxLicenseReferenceExpression) {
