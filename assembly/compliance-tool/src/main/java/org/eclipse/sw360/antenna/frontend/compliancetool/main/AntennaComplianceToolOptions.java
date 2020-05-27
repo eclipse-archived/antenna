@@ -217,12 +217,13 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
         }
         AntennaComplianceToolOptions options = (AntennaComplianceToolOptions) o;
         return Objects.equals(getPropertiesFilePath(), options.getPropertiesFilePath()) &&
-                Objects.equals(getComplianceMode(), options.getComplianceMode());
+                Objects.equals(getComplianceMode(), options.getComplianceMode()) &&
+                Objects.equals(getParameters(), options.getParameters());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getPropertiesFilePath(), getComplianceMode());
+        return Objects.hash(super.hashCode(), getPropertiesFilePath(), getComplianceMode(), getParameters());
     }
 
     @Override

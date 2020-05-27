@@ -25,7 +25,7 @@ public abstract class AbstractAntennaCLIOptions {
     /**
      * The character to identify a command line parameter
      */
-    private static final String PARAMETER_IDENTIFIER = "=";
+    public static final String PARAMETER_IDENTIFIER = "=";
 
     /**
      * The short command line switch to enable debug logging.
