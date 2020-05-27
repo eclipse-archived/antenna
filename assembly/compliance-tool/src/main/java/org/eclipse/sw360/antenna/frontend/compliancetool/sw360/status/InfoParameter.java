@@ -59,12 +59,12 @@ abstract public class InfoParameter {
 
             @Override
             String[] printResult() {
-                return null;
+                return new String[]{};
             }
 
             @Override
             String getResultFileHeader() {
-                return null;
+                return "";
             }
         };
     }
