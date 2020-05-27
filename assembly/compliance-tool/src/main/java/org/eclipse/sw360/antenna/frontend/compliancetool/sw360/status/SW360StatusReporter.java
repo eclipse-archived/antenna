@@ -41,7 +41,7 @@ public class SW360StatusReporter {
     public SW360StatusReporter(SW360Configuration configuration, Set<String> parameters) {
         this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
         this.infoParameter =  SW360StatusReporterParameters
-                .getInfoRequestFromParameter(Objects.requireNonNull(parameters, "Parameters must not be null"));
+                .getInfoParameterFromParameters(Objects.requireNonNull(parameters, "Parameters must not be null"));
     }
 
     void setInfoParameter(InfoParameter infoParameter) {

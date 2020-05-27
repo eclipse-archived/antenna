@@ -8,12 +8,26 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 import java.util.Set;
 
-public class SW360StatusReporterParameters {
+/**
+ * Class responsible for parsing status reporter parameters
+ * and creating the {@code InfoParameter} the status reporter
+ * uses.
+ */
+class SW360StatusReporterParameters {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360StatusReporterParameters.class);
 
-    public static final String REPORTER_PARAMETER_PREFIX = "--info=";
+    /**
+     * The prefix to identify a parameter indication the desired info parameter of the reporter.
+     */
+    static final String REPORTER_PARAMETER_PREFIX = "--info=";
 
-    public static InfoParameter getInfoRequestFromParameter(Set<String> parameters) {
+    /**
+     * Creates a parsed {@code InfoParameter} from a set of parameter
+     * @param parameters set of parameters to be parsed
+     * @return parsed {@code InfoParameter} with parsed additional parameters
+     * @throws IllegalArgumentException when invalid or misconfigured parameters are given or are missing.
+     */
+    static InfoParameter getInfoParameterFromParameters(Set<String> parameters) {
         if (parameters.isEmpty()) {
             LOGGER.error("No parameters provided for the status reporter.");
             LOGGER.info(helpMessage());
@@ -27,6 +41,12 @@ public class SW360StatusReporterParameters {
         return parse(parameters);
     }
 
+    /**
+     * Creates a parsed {@code InfoParameter} from a set of parameter
+     * @param parameters set of parameters to be parsed
+     * @return parsed {@code InfoParameter} with parsed additional parameters
+     * @return
+     */
     private static InfoParameter parse(Set<String> parameters) {
         final Optional<String> infoParameter = parameters.stream().filter(p -> p.contains(REPORTER_PARAMETER_PREFIX)).findFirst();
         final InfoParameter infoParameter1 = infoParameter.map(SW360StatusReporterParameters::getInfoParameterFromString).orElse(InfoParameter.emptyInfoParameter());
@@ -50,9 +70,14 @@ public class SW360StatusReporterParameters {
         }
     }
 
+    /**
+     * Gives {@code InfoParameter} from a given parameter string
+     * @param infoParameter String containing parameter
+     * @return implementation of an InfoParameter or an emptyInfoParameter
+     */
     private static InfoParameter getInfoParameterFromString(String infoParameter) {
         switch (infoParameter) {
-           case "--info=releases-cleared":
+            case "--info=releases-cleared":
                 return new IPGetClearedReleases();
             case "--info=releases-of-project":
                 return new IPGetReleasesOfProjects();
@@ -63,27 +88,47 @@ public class SW360StatusReporterParameters {
         }
     }
 
+    /**
+     * Parses a parameter value from a parameter key value pair separated by {@code AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER}
+     * @param parameter String that contains a parameter key and a value plus identifiers.
+     * @return String representing a parameter value
+     *      * @throws IllegalArgumentException if more than one or no
+     *      * {@code AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER} is used.
+     */
     private static String getParameterValueFromParameter(String parameter) {
         String[] parameterParts = parameter.split(AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER);
         if (parameterParts.length != 2) {
-            throw new IllegalArgumentException (
+            throw new IllegalArgumentException(
                     "The provided parameter " + parameter + " does not adhere to the structure --<parameter>=<value> and is therefore invalid.");
         }
         return parameterParts[1];
     }
 
+    /**
+     * Parses a parameter key from a parameter key value pair separated by {@code AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER}
+     * @param parameter String that contains a parameter key and a value plus identifiers.
+     * @return String representing a parameter key
+     * @throws IllegalArgumentException if more than one or no
+     * {@code AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER} is used.
+     */
     private static String getParameterKeyFromParameter(String parameter) {
         String[] parameterParts = parameter.split(AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER);
         if (parameterParts.length != 2) {
-            throw new IllegalArgumentException (
+            throw new IllegalArgumentException(
                     "The provided parameter " + parameter + " does not adhere to the structure --<parameter>=<value> and is therefore invalid.");
         }
         return parameterParts[0];
     }
 
-    public static String parseParameterValueFromListOfParameters(Set<String> parameters, String parameterName) {
+    /**
+     * Parses the parameter value of a parameter key from a set of parameters.
+     * @param parameters
+     * @param parameterKey
+     * @return parameter value of the parameter key if contained in parameter set, otherwise null
+     */
+    static String parseParameterValueFromListOfParameters(Set<String> parameters, String parameterKey) {
         return parameters.stream()
-                .filter(p -> getParameterKeyFromParameter(p).equals(parameterName))
+                .filter(p -> getParameterKeyFromParameter(p).equals(parameterKey))
                 .findFirst()
                 .map(SW360StatusReporterParameters::getParameterValueFromParameter)
                 .orElse(null);
@@ -98,12 +143,10 @@ public class SW360StatusReporterParameters {
     static String helpMessage() {
         String cr = System.lineSeparator();
         return "Usage: java -jar compliancetool.jar " + AntennaComplianceToolOptions.SWITCH_REPORTER + "[options] <complianceMode> <propertiesFilePath>" + cr + cr +
-                "Supported options:" + cr +
-                AntennaComplianceToolOptions.SWITCH_HELP_SHORT + ", " + AntennaComplianceToolOptions.SWITCH_HELP_LONG + ":    Displays this help message." + cr +
-                AntennaComplianceToolOptions.SWITCH_DEBUG_SHORT + ", " + AntennaComplianceToolOptions.SWITCH_DEBUG_LONG +
-                ":   Sets log level to DEBUG for diagnostic purposes." + cr + cr +
                 "The reporter create a csv file for every run with the requested information statement. " + cr + cr +
                 "The reporter info statements: (only one can be set)" + cr +
-                new IPGetClearedReleases().getInfoParameter() + ":   Gives a list of all releases in a given sw360 instances that are cleared." + cr;
+                new IPGetClearedReleases().getInfoParameter() + ":   Gives a list of all releases in a given sw360 instances that are cleared." + cr +
+                new IPGetNotClearedReleases().getInfoParameter() + ":   Gives a list of all releases in a given sw360 instances that are not cleared." + cr +
+                new IPGetReleasesOfProjects().getInfoParameter() + ":   Gives a list of all releases of a given project in a given sw360 instances." + cr;
     }
 }
