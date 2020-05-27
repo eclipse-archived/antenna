@@ -21,6 +21,8 @@ import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -44,6 +46,11 @@ import static org.eclipse.sw360.antenna.http.utils.HttpConstants.URL_PATH_SEPARA
  * </p>
  */
 public abstract class SW360Client {
+    /**
+     * Constant for an URI separator.
+     */
+    private static final String URI_SEPARATOR = "/";
+
     private static final Logger LOG = LoggerFactory.getLogger(SW360Client.class);
 
     /**
@@ -149,8 +156,8 @@ public abstract class SW360Client {
                                                                      Supplier<? extends T> defaultResult) {
         ResponseProcessor<T> processor = response ->
                 (response.statusCode() == HttpConstants.STATUS_NO_CONTENT) ?
-                defaultResult.get() :
-                HttpUtils.jsonResult(getClientConfig().getObjectMapper(), resultClass).process(response);
+                        defaultResult.get() :
+                        HttpUtils.jsonResult(getClientConfig().getObjectMapper(), resultClass).process(response);
         return executeRequest(producer, processor, tag);
     }
 
@@ -165,6 +172,30 @@ public abstract class SW360Client {
      */
     protected String resourceUrl(String... paths) {
         return getClientConfig().getRestURL() + URL_PATH_SEPARATOR + String.join(URL_PATH_SEPARATOR, paths);
+    }
+
+    /**
+     * Returns a URI with the same path as the given URI, but that is relative
+     * to the configured REST base URI. This method should be used to deal with
+     * self links to make sure that they are correctly resolved against the
+     * base URI. (SW360 may return incorrect self links if it runs behind a
+     * load balancer or proxy.)
+     *
+     * @param uri the URI to be resolved
+     * @return the resolved URI
+     * @throws IllegalArgumentException if the passed in URI is invalid
+     */
+    protected URI resolveAgainstBase(String uri) {
+        URI base = getClientConfig().getBaseURI();
+        URI source = URI.create(uri);
+        String path = resolvePath(base, source);
+        try {
+            return new URI(base.getScheme(), base.getAuthority(), path,
+                    source.getQuery(), source.getFragment());
+        } catch (URISyntaxException e) {
+            // should normally not happen as the components come from valid URIs
+            throw new IllegalArgumentException("Invalid URI to resolve: " + uri);
+        }
     }
 
     /**
@@ -193,7 +224,7 @@ public abstract class SW360Client {
 
         CompletableFuture<T> futRequest = getTokenProvider().doWithToken(accessToken ->
                 getClientConfig().getHttpClient().execute(accessToken.tokenProducer(producer),
-                HttpUtils.checkResponse(processor, tag)));
+                        HttpUtils.checkResponse(processor, tag)));
         return canRetry ?
                 FutureUtils.wrapFutureForConditionalFallback(futRequest,
                         this::checkIfRetry,
@@ -211,5 +242,31 @@ public abstract class SW360Client {
      */
     private boolean checkIfRetry(Throwable exception) {
         return FutureUtils.isFailedRequestWithStatus(exception, HttpConstants.STATUS_ERR_UNAUTHORIZED);
+    }
+
+    /**
+     * Determines the path for the source URI relative to the base URI. The
+     * path of the source URI is appended to the base URI, but common path
+     * components are excluded.
+     *
+     * @param base   the base URI
+     * @param source the source URI
+     * @return the resulting path
+     */
+    private static String resolvePath(URI base, URI source) {
+        String[] baseComponents = base.getPath().split(URI_SEPARATOR);
+        String[] sourceComponents = source.getPath().split(URI_SEPARATOR);
+        int minLength = Math.min(baseComponents.length, sourceComponents.length);
+        int idx = 0;
+        while (idx < minLength && baseComponents[idx].equals(sourceComponents[idx])) {
+            idx++;
+        }
+
+        StringBuilder buf = new StringBuilder();
+        buf.append(base.getPath());
+        for (int i = idx; i < sourceComponents.length; i++) {
+            buf.append(URI_SEPARATOR).append(sourceComponents[i]);
+        }
+        return buf.toString();
     }
 }

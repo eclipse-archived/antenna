@@ -54,6 +54,12 @@ public class SW360ClientConfigTest {
         SW360ClientConfig.createConfig("", AUTH_URL, USER, PASSWORD, CLIENT_ID, CLIENT_PASS, httpClient, mapper);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidResUrlThrows() {
+        SW360ClientConfig.createConfig("this is not a valid URL?!", AUTH_URL, USER, PASSWORD, CLIENT_ID,
+                CLIENT_PASS, httpClient, mapper);
+    }
+
     @Test(expected = NullPointerException.class)
     public void testNullAuthUrlThrows() {
         SW360ClientConfig.createConfig(REST_URL, null, USER, PASSWORD, CLIENT_ID, CLIENT_PASS, httpClient, mapper);
@@ -128,6 +134,7 @@ public class SW360ClientConfigTest {
         assertThat(config.getClientPassword()).isEqualTo(CLIENT_PASS);
         assertThat(config.getHttpClient()).isEqualTo(httpClient);
         assertThat(config.getObjectMapper()).isEqualTo(mapper);
+        assertThat(config.getBaseURI().toString()).isEqualTo(REST_URL);
     }
 
     @Test
