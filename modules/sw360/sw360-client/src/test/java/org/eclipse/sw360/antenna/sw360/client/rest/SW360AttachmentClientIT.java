@@ -148,7 +148,7 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
                 .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
                         .withBodyFile(testFile)));
 
-        Path path = waitFor(attachmentClient.downloadAttachment(wireMockRule.baseUrl() + itemRef,
+        Path path = waitFor(attachmentClient.downloadAttachment("https://host.to.be.ignored" + itemRef,
                 attachment, downloadDir));
         assertThat(path.getFileName().toString()).isEqualTo(ATTACHMENT_FILE);
         assertThat(path.getParent()).isEqualTo(downloadDir);
