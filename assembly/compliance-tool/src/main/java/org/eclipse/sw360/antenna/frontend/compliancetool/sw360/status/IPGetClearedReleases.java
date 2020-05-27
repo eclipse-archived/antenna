@@ -1,5 +1,6 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
 
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentEmbedded;
@@ -9,8 +10,9 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Releas
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class IPGetReleases extends InfoParameter {
+public class IPGetClearedReleases extends InfoParameter {
     private static final String GET_RELEASES_CLEARED = SW360StatusReporterParameters.REPORTER_PARAMETER_PREFIX + "releases-cleared";
+    private Set<SW360Release> result;
 
     @Override
     public String getInfoParameter() {
@@ -18,18 +20,13 @@ public class IPGetReleases extends InfoParameter {
     }
 
     @Override
-    boolean hasAdditionalParameters() {
-        return false;
-    }
-
-    @Override
     String helpMessage() {
-        return null;
+        return "The info parameter " + GET_RELEASES_CLEARED + " does not require any additional parameters or settings.";
     }
 
     @Override
     boolean isValid() {
-        return false;
+        return true;
     }
 
     @Override
@@ -46,7 +43,7 @@ public class IPGetReleases extends InfoParameter {
     Object execute(SW360Connection connection) {
         final List<SW360SparseComponent> components = connection.getComponentAdapter().getComponents();
 
-        final Set<SW360Release> releases = components.stream()
+        result = components.stream()
                 .map(SW360HalResource::getId)
                 .map(id -> connection.getComponentAdapter().getComponentById(id))
                 .filter(Optional::isPresent)
@@ -57,8 +54,19 @@ public class IPGetReleases extends InfoParameter {
                 .map(release -> connection.getReleaseAdapter().getReleaseById(release.getReleaseId()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .filter(ComplianceFeatureUtils::isApproved)
                 .collect(Collectors.toSet());
 
-        return releases;
+        return result;
+    }
+
+    @Override
+    String[] printResult() {
+        return ReporterUtils.printCollectionOfReleases(result);
+    }
+
+    @Override
+    String getResultFileHeader() {
+        return ReporterUtils.printHeaderOfReleases(result);
     }
 }

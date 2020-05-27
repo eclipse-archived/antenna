@@ -11,13 +11,10 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.IPGetReleases;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.IPGetClearedReleases;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -96,40 +93,40 @@ public class AntennaComplianceToolOptionsTest {
 
     @Test
     public void testParseWithXSwitch() {
-        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_UPDATER, null, true, false, true),
+        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_UPDATER, Collections.emptySet(), true, false, true),
                 PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT, "-X");
     }
 
     @Test
     public void testParseWithDebugSwitch() {
-        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_UPDATER, null, true, false, true),
+        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_UPDATER, Collections.emptySet(), true, false, true),
                 AntennaComplianceToolOptions.SWITCH_DEBUG_LONG, PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT);
     }
 
     @Test
     public void testParseWithMultipleDebugSwitches() {
-        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_UPDATER, null, true, false, true),
+        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_UPDATER, Collections.emptySet(), true, false, true),
                 AntennaComplianceToolOptions.SWITCH_DEBUG_LONG, AntennaComplianceToolOptions.SWITCH_DEBUG_SHORT, PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT);
     }
 
     @Test
     public void testParseWithShortHelpSwitch() {
-        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_UPDATER, null, false, true, true),
+        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_UPDATER, Collections.emptySet(), false, true, true),
                 PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT, "-h");
     }
 
     @Test
     public void testParseWithLongHelpSwitch() {
-        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_UPDATER, null, false, true, true),
+        checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_UPDATER, Collections.emptySet(), false, true, true),
                 "--help", PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT);
     }
 
     @Test
     public void testParseWithParameters() {
         Set<String> parameterSet = new HashSet<>();
-        parameterSet.add(new IPGetReleases().getInfoParameter());
+        parameterSet.add(new IPGetClearedReleases().getInfoParameter());
         checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_REPORTER, parameterSet, false, false, true),
-                new IPGetReleases().getInfoParameter(), PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_REPORTER);
+                new IPGetClearedReleases().getInfoParameter(), PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_REPORTER);
     }
 
     @Test

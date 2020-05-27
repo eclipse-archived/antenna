@@ -10,11 +10,18 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Set;
 
@@ -30,13 +37,32 @@ public class SW360StatusReporter {
     }
 
     private InfoParameter getDesiredInformation(Set<String> parameters) {
-        return new SW360StatusReporterParameters().getInfoRequestFromParameter(parameters);
+        return SW360StatusReporterParameters.getInfoRequestFromParameter(parameters);
     }
 
     public void execute() {
         LOGGER.debug("{} has started.", SW360StatusReporter.class.getName());
         final SW360Connection connection = configuration.getConnection();
 
-        infoParameter.execute();
+        infoParameter.execute(connection);
+
+        String header = infoParameter.getResultFileHeader();
+        String[] body = infoParameter.printResult();
+
+        printCsvFile(header, body, configuration.getCsvFileName(), configuration.getTargetDir());
+    }
+
+    private void printCsvFile(String header, String[] body, String csvFileName, Path targetDir) {
+        Path csvFile = Paths.get(targetDir.toString(), csvFileName);
+        try (BufferedWriter writer = Files.newBufferedWriter(csvFile);
+             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(header))
+        ) {
+            for (String item : body) {
+                csvPrinter.printRecords(item);
+            }
+            csvPrinter.flush();
+        } catch (IOException e) {
+            LOGGER.error("Error when writing the csv file", e);
+        }
     }
 }

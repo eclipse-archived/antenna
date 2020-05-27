@@ -77,7 +77,7 @@ public class AntennaComplianceToolDebugLogTest {
     /**
      * String representing a mode of the compliance tool.
      */
-    private static final String COMPLIANCE_TOOL_MODE = AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT;
+    private static final String COMPLIANCE_TOOL_MODE = AntennaComplianceToolOptions.SWITCH_EXPORTER_SHORT;
 
 
     /**

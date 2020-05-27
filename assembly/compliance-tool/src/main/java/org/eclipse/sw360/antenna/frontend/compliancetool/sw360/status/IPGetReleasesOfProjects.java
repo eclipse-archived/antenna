@@ -3,8 +3,10 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 public class IPGetReleasesOfProjects extends InfoParameter {
     static final String GET_RELEASES_OF_PROJECT = SW360StatusReporterParameters.REPORTER_PARAMETER_PREFIX + "releases-of-project";
@@ -15,14 +17,11 @@ public class IPGetReleasesOfProjects extends InfoParameter {
     private String projectVersion;
     private String projectId;
 
+    private Collection<SW360SparseRelease> result;
+
     @Override
     public String getInfoParameter() {
         return GET_RELEASES_OF_PROJECT;
-    }
-
-    @Override
-    boolean hasAdditionalParameters() {
-        return true;
     }
 
     @Override
@@ -32,7 +31,14 @@ public class IPGetReleasesOfProjects extends InfoParameter {
 
     @Override
     boolean isValid() {
-        return false;
+        if (projectId != null && !projectId.isEmpty()) {
+            return true;
+        } else if (projectName != null && !projectName.isEmpty() &&
+                projectVersion != null && !projectVersion.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -46,26 +52,46 @@ public class IPGetReleasesOfProjects extends InfoParameter {
 
     @Override
     void parseAdditionalParameter(Set<String> parameters) {
-        parameters = parameters.stream().filter(p -> p.contains(getProjectIdParameter())).collect(Collectors.toSet());
+        System.out.println(parameters);
+        projectId = SW360StatusReporterParameters.parseParameterValueFromListOfParameters(parameters, getProjectIdParameter());
 
+        projectName = SW360StatusReporterParameters.parseParameterValueFromListOfParameters(parameters, getProjectNameParameter());
 
+        projectVersion = SW360StatusReporterParameters.parseParameterValueFromListOfParameters(parameters, getProjectVersionParameter());
     }
 
     @Override
     Object execute(SW360Connection connection) {
         if (projectId != null && !projectId.isEmpty()) {
-            return connection.getProjectAdapter().getLinkedReleases(projectId);
+            result = connection.getProjectAdapter().getLinkedReleases(projectId);
+            return result;
         } else if (projectName != null && !projectName.isEmpty() &&
             projectVersion != null && !projectVersion.isEmpty()) {
             final Optional<String> projectIdByNameAndVersion = connection.getProjectAdapter().getProjectIdByNameAndVersion(projectName, projectVersion);
             if (projectIdByNameAndVersion.isPresent()) {
-                return connection.getProjectAdapter().getLinkedReleases(projectIdByNameAndVersion.get());
+                result = connection.getProjectAdapter().getLinkedReleases(projectIdByNameAndVersion.get());
+                return result;
             } else {
                 throw new IllegalArgumentException("Project " + projectName + " with version " + projectVersion + " could not be found.");
             }
         } else {
             throw new IllegalArgumentException("The provided parameters did provide enough information to execute your request.");
         }
+    }
+
+    @Override
+    String[] printResult() {
+        return result.stream()
+                .map(SW360SparseRelease::csvPrintRow)
+                .toArray(String[]::new);
+    }
+
+    @Override
+    String getResultFileHeader() {
+        return result.stream()
+                .findFirst()
+                .map(SW360SparseRelease::csvPrintHeader)
+                .orElse("");
     }
 
     public String getProjectIdParameter() {

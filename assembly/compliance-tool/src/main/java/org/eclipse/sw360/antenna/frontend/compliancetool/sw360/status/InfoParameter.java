@@ -7,12 +7,18 @@ import java.util.Set;
 abstract public class InfoParameter {
     Set<String> parameters;
     abstract public String getInfoParameter();
-    abstract boolean hasAdditionalParameters();
+
+    boolean hasAdditionalParameters() {
+        return getAdditionalParameters().size() > 0;
+    }
+
     abstract String helpMessage();
     abstract boolean isValid();
     abstract Set<String> getAdditionalParameters();
     abstract void parseAdditionalParameter(Set<String> parameters);
     abstract Object execute(SW360Connection connection);
+    abstract String[] printResult();
+    abstract String getResultFileHeader();
 
     static InfoParameter emptyInfoParameter() {
         return new InfoParameter() {
@@ -48,6 +54,16 @@ abstract public class InfoParameter {
 
             @Override
             Object execute(SW360Connection connection) {
+                return null;
+            }
+
+            @Override
+            String[] printResult() {
+                return null;
+            }
+
+            @Override
+            String getResultFileHeader() {
                 return null;
             }
         };
