@@ -133,7 +133,7 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?, ?
             }
             Path targetFile = downloadPath.resolve(attachment.getFilename());
 
-            return executeRequest(builder -> builder.uri(url)
+            return executeRequest(builder -> builder.uri(resolveAgainstBase(url).toString())
                     .header(HttpConstants.HEADER_ACCEPT, HttpConstants.CONTENT_OCTET_STREAM),
                     response -> {
                         Files.copy(response.bodyStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
