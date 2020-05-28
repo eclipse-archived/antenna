@@ -10,7 +10,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Releas
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class IPGetClearedReleases extends InfoParameter<SW360Release> {
+public class IRGetClearedReleases extends InfoRequest<SW360Release> {
     private static final String GET_RELEASES_CLEARED = SW360StatusReporterParameters.REPORTER_PARAMETER_PREFIX + "releases-cleared";
 
     @Override

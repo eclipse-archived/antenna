@@ -11,7 +11,7 @@ import java.util.Set;
 
 /**
  * Class responsible for parsing status reporter parameters
- * and creating the {@code InfoParameter} the status reporter
+ * and creating the {@code InfoRequest} the status reporter
  * uses.
  */
 class SW360StatusReporterParameters {
@@ -38,12 +38,12 @@ class SW360StatusReporterParameters {
     private static final String DEFAULT_OUTPUT_FORMAT = "CSV";
 
     /**
-     * Creates a parsed {@code InfoParameter} from a set of parameter
+     * Creates a string representing the info parameter of an{@link InfoRequest}
      * @param parameters set of parameters to be parsed
-     * @return parsed {@code InfoParameter} with parsed additional parameters
+     * @return parsed {@code InfoRequest} with parsed additional parameters
      * @throws IllegalArgumentException when invalid or misconfigured parameters are given or are missing.
      */
-    static InfoParameter getInfoParameterFromParameters(Set<String> parameters) {
+    static String getInfoParameterFromParameters(Set<String> parameters) {
         if (parameters.isEmpty()) {
             LOGGER.error("No parameters provided for the status reporter.");
             LOGGER.info(helpMessage());
@@ -54,35 +54,7 @@ class SW360StatusReporterParameters {
             LOGGER.info(helpMessage());
             throw new IllegalArgumentException("Too many information requests were made in this status report. ");
         }
-        return parse(parameters);
-    }
-
-    /**
-     * Creates a parsed {@code InfoParameter} from a set of parameter
-     * @param parameters set of parameters to be parsed
-     * @return parsed {@code InfoParameter} with parsed additional parameters
-     */
-    private static InfoParameter parse(Set<String> parameters) {
-        final Optional<String> infoParameter = parameters.stream().filter(p -> p.contains(REPORTER_PARAMETER_PREFIX)).findFirst();
-        final InfoParameter infoParameter1 = infoParameter.map(InfoParameterFactory::getInfoParameterFromString).orElse(InfoParameter.emptyInfoParameter());
-
-        if (Objects.equals(infoParameter1, InfoParameter.emptyInfoParameter())) {
-            throw new IllegalArgumentException(infoParameter.get() + ": " + infoParameter1.helpMessage());
-        }
-
-        if (infoParameter1.hasAdditionalParameters()) {
-            infoParameter1.parseAdditionalParameter(parameters);
-        } else if (parameters.size() < 1) {
-            LOGGER.warn("You have provided additional parameters that are not necessary for the information parameter {}.", infoParameter1.getInfoParameter());
-        }
-
-        if (infoParameter1.isValid()) {
-            return infoParameter1;
-        } else {
-            throw new IllegalStateException(
-                    "The information parameter " + infoParameter1.getInfoParameter() + " you requested does not have all parameters it needs." +
-                            System.lineSeparator() + infoParameter1.helpMessage());
-        }
+        return parameters.stream().filter(p -> p.contains(REPORTER_PARAMETER_PREFIX)).findFirst().orElse("");
     }
 
     /**
@@ -142,9 +114,9 @@ class SW360StatusReporterParameters {
         return "Usage: java -jar compliancetool.jar " + AntennaComplianceToolOptions.SWITCH_REPORTER + "[options] <complianceMode> <propertiesFilePath>" + cr + cr +
                 "The reporter create a csv file for every run with the requested information statement. " + cr + cr +
                 "The reporter info statements: (only one can be set)" + cr +
-                new IPGetClearedReleases().getInfoParameter() + ":   Gives a list of all releases in a given sw360 instances that are cleared." + cr +
-                new IPGetNotClearedReleases().getInfoParameter() + ":   Gives a list of all releases in a given sw360 instances that are not cleared." + cr +
-                new IPGetReleasesOfProjects().getInfoParameter() + ":   Gives a list of all releases of a given project in a given sw360 instances." + cr;
+                new IRGetClearedReleases().getInfoParameter() + ":   Gives a list of all releases in a given sw360 instances that are cleared." + cr +
+                new IRGetNotClearedReleases().getInfoParameter() + ":   Gives a list of all releases in a given sw360 instances that are not cleared." + cr +
+                new IRGetReleasesOfProjects().getInfoParameter() + ":   Gives a list of all releases of a given project in a given sw360 instances." + cr;
     }
 
     /**

@@ -17,30 +17,30 @@ public class SW360StatusReporterParametersTest {
     private final String id = "--id";
 
     @Test(expected = IllegalArgumentException.class)
-    public void getInfoRequestFromEmptyParameters() {
+    public void getInfoParameterFromEmptyParameters() {
         SW360StatusReporterParameters.getInfoParameterFromParameters(
                 Collections.emptySet());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getInfoRequestFromMultipleInfoParameters() {
+    public void getInfoParameterFromMultipleInfoParameters() {
         SW360StatusReporterParameters.getInfoParameterFromParameters(
                 new HashSet<>(Arrays.asList(REPORTER_PARAMETER_PREFIX + "=first", REPORTER_PARAMETER_PREFIX + "=second")));
     }
 
     @Test
-    public void getInfoRequestFromParameter() {
-        InfoParameter infoParameter = new IPGetReleasesOfProjects();
-        String additionalParameter_projectId = ((Set<String>) infoParameter.getAdditionalParameters())
+    public void getInfoParameterFromParameter() {
+        String infoParameter = new IRGetReleasesOfProjects().getInfoParameter();
+        String additionalParameter_projectId = new IRGetReleasesOfProjects().getAdditionalParameters()
                 .stream()
                 .filter(s -> s.contains("id"))
                 .findFirst()
                 .get();
-        final InfoParameter infoRequestFromParameter = SW360StatusReporterParameters.getInfoParameterFromParameters(
-                new HashSet<>(Arrays.asList(infoParameter.getInfoParameter(), additionalParameter_projectId + "=12345"))
+        final String infoParameterFromParameter = SW360StatusReporterParameters.getInfoParameterFromParameters(
+                new HashSet<>(Arrays.asList(new IRGetReleasesOfProjects().getInfoParameter(), additionalParameter_projectId + "=12345"))
         );
 
-        assertThat(infoRequestFromParameter.isValid()).isTrue();
+        assertThat(infoParameterFromParameter).isEqualTo(infoParameter);
     }
 
 

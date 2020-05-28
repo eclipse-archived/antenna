@@ -1,7 +1,6 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
 
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 
 import java.util.Collection;
@@ -9,7 +8,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class IPGetReleasesOfProjects extends InfoParameter<SW360SparseRelease> {
+public class IRGetReleasesOfProjects extends InfoRequest<SW360SparseRelease> {
     private static final String GET_RELEASES_OF_PROJECT = SW360StatusReporterParameters.REPORTER_PARAMETER_PREFIX + "releases-of-project";
     private static final String PROJECT_NAME = "--project_name";
     private static final String PROJECT_VERSION = "--project-version";

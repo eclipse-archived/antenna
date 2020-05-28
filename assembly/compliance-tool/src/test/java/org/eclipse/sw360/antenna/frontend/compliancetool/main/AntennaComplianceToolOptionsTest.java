@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.IPGetClearedReleases;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.IRGetClearedReleases;
 import org.junit.Test;
 
 import java.util.*;
@@ -124,9 +124,9 @@ public class AntennaComplianceToolOptionsTest {
     @Test
     public void testParseWithParameters() {
         Set<String> parameterSet = new HashSet<>();
-        parameterSet.add(new IPGetClearedReleases().getInfoParameter());
+        parameterSet.add(new IRGetClearedReleases().getInfoParameter());
         checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_REPORTER, parameterSet, false, false, true),
-                new IPGetClearedReleases().getInfoParameter(), PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_REPORTER);
+                new IRGetClearedReleases().getInfoParameter(), PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_REPORTER);
     }
 
     @Test

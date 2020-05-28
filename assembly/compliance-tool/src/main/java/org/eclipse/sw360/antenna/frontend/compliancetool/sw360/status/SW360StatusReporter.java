@@ -29,35 +29,60 @@ public class SW360StatusReporter {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360StatusReporter.class);
 
     private final SW360Configuration configuration;
-    private InfoParameter infoParameter;
+    private final String infoParameter;
+    private InfoRequest infoRequest;
     private final String outputFormat;
     private ReporterOutput reporterOutput;
 
     public SW360StatusReporter(SW360Configuration configuration, Set<String> parameters) {
         this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
-        this.infoParameter =  SW360StatusReporterParameters
-                .getInfoParameterFromParameters(Objects.requireNonNull(parameters, "Parameters must not be null"));
+
+        Objects.requireNonNull(parameters, "Parameters must not be null");
+
         this.outputFormat = SW360StatusReporterParameters.getOutputFormat(parameters);
-        init();
-    }
-
-    private void init() {
         this.reporterOutput = ReporterOutputFactory.getReporterOutput(outputFormat);
+
+        this.infoParameter = SW360StatusReporterParameters.getInfoParameterFromParameters(parameters);
+        this.infoRequest = InfoRequestFactory.getInfoRequestFromString(infoParameter);
+        parseAdditionalParameters(parameters);
     }
 
-    void setInfoParameter(InfoParameter infoParameter) {
-        this.infoParameter = infoParameter;
+
+    /**
+     * Creates a parsed {@code InfoRequest} from a set of parameter
+     * @param parameters set of parameters to be parsed
+     */
+    private void parseAdditionalParameters(Set<String> parameters) {
+        if (Objects.equals(infoRequest, InfoRequest.emptyInfoRequest())) {
+            throw new IllegalArgumentException(infoParameter + ": " + infoRequest.helpMessage());
+        }
+
+        if (infoRequest.hasAdditionalParameters()) {
+            infoRequest.parseAdditionalParameter(parameters);
+        } else if (parameters.size() < 1) {
+            LOGGER.warn("You have provided additional parameters that are not necessary for the information parameter {}.", infoRequest.getInfoParameter());
+        }
+
+        if (!infoRequest.isValid()) {
+            throw new IllegalStateException(
+                    "The information parameter " + infoRequest.getInfoParameter() + " you requested does not have all parameters it needs." +
+                            System.lineSeparator() + infoRequest.helpMessage());
+        }
+    }
+
+    void setInfoRequest(InfoRequest infoRequest) {
+        this.infoRequest = infoRequest;
     }
 
     /**
-     * Executes the execute function of the infoParameter and prints it
+     * Executes the execute function of the infoRequest and prints it
      * to a csv file.
      */
     public void execute() {
         LOGGER.debug("{} has started.", SW360StatusReporter.class.getName());
         final SW360Connection connection = configuration.getConnection();
 
-        final Collection result = infoParameter.execute(connection);
+        final Collection result = infoRequest.execute(connection);
 
         reporterOutput.printFile(result, configuration);
     }

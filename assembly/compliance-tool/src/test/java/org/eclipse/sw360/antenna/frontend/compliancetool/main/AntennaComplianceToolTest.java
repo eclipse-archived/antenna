@@ -12,9 +12,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter.SW360Exporter;
-import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.IPGetClearedReleases;
-import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.InfoParameter;
-import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.SW360StatusReporter;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.*;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater.SW360Updater;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 import org.junit.Rule;
@@ -87,7 +85,7 @@ public class AntennaComplianceToolTest {
     public void testMainInitWithReporter() throws URISyntaxException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         Path propertiesFile = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).toURI());
         Set<String> parameterSet = new HashSet<>();
-        parameterSet.add(new IPGetClearedReleases().getInfoParameter());
+        parameterSet.add(new IRGetClearedReleases().getInfoParameter());
 
         String methodName = "createStatusReporter";
 
@@ -97,7 +95,9 @@ public class AntennaComplianceToolTest {
         SW360StatusReporter statusReporter = (SW360StatusReporter) initMethod.invoke(antennaComplianceTool, propertiesFile, parameterSet);
 
         assertThat(((SW360Configuration) readField(statusReporter, "configuration")).getProperties()).isNotNull();
-        assertThat(((InfoParameter) readField(statusReporter, "infoParameter")).getInfoParameter()).isEqualTo(new IPGetClearedReleases().getInfoParameter());
+        assertThat(((String) readField(statusReporter, "infoParameter"))).isEqualTo(new IRGetClearedReleases().getInfoParameter());
+        assertThat(((InfoRequest) readField(statusReporter, "infoRequest"))).isExactlyInstanceOf(IRGetClearedReleases.class);
+        assertThat(((ReporterOutput) readField(statusReporter, "reporterOutput"))).isExactlyInstanceOf(ReporterOutputCSV.class);
     }
 
     @Test

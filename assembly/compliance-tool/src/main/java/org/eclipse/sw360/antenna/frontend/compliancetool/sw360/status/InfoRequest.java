@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-abstract public class InfoParameter<T> {
+abstract public class InfoRequest<T> {
     abstract public String getInfoParameter();
 
     boolean hasAdditionalParameters() {
@@ -19,8 +19,8 @@ abstract public class InfoParameter<T> {
     abstract void parseAdditionalParameter(Set<String> parameters);
     abstract Collection<T> execute(SW360Connection connection);
 
-    static InfoParameter emptyInfoParameter() {
-        return new InfoParameter<Object>() {
+    static InfoRequest emptyInfoRequest() {
+        return new InfoRequest<Object>() {
             @Override
             public String getInfoParameter() {
                 return "NON_VALID";

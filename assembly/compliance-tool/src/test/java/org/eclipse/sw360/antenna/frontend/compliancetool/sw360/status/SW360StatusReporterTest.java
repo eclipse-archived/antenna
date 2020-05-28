@@ -44,10 +44,10 @@ public class SW360StatusReporterTest {
         when(configurationMock.getCsvFileName())
                 .thenReturn(csvFileName);
 
-        parameter = new HashSet<>(Collections.singletonList(new IPGetClearedReleases().getInfoParameter()));
+        parameter = new HashSet<>(Collections.singletonList(new IRGetClearedReleases().getInfoParameter()));
         SW360StatusReporter statusReporter = new SW360StatusReporter(configurationMock, parameter);
 
-        statusReporter.setInfoParameter(InfoParameter.emptyInfoParameter());
+        statusReporter.setInfoRequest(InfoRequest.emptyInfoRequest());
 
         statusReporter.execute();
         assertThat(csvFile).exists();
