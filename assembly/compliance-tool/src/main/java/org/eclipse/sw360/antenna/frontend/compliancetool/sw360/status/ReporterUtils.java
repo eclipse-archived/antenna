@@ -10,12 +10,5 @@ public class ReporterUtils {
                 .map(SW360Release::csvPrintRow)
                 .toArray(String[]::new);
     }
-
-    public static String printHeaderOfReleases(Collection<SW360Release> releases) {
-        return releases.stream()
-                .findFirst()
-                .map(SW360Release::csvPrintHeader)
-                .orElse(null);
-    }
 }
 

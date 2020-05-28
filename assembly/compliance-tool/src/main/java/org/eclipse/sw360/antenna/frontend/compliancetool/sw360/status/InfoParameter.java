@@ -2,10 +2,11 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
 
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-abstract public class InfoParameter {
+abstract public class InfoParameter<T> {
     abstract public String getInfoParameter();
 
     boolean hasAdditionalParameters() {
@@ -16,12 +17,10 @@ abstract public class InfoParameter {
     abstract boolean isValid();
     abstract Set<String> getAdditionalParameters();
     abstract void parseAdditionalParameter(Set<String> parameters);
-    abstract Object execute(SW360Connection connection);
-    abstract String[] printResult();
-    abstract String getResultFileHeader();
+    abstract Collection<T> execute(SW360Connection connection);
 
     static InfoParameter emptyInfoParameter() {
-        return new InfoParameter() {
+        return new InfoParameter<Object>() {
             @Override
             public String getInfoParameter() {
                 return "NON_VALID";
@@ -48,18 +47,8 @@ abstract public class InfoParameter {
             }
 
             @Override
-            Object execute(SW360Connection connection) {
-                return null;
-            }
-
-            @Override
-            String[] printResult() {
-                return new String[]{};
-            }
-
-            @Override
-            String getResultFileHeader() {
-                return "";
+            Collection<Object> execute(SW360Connection connection) {
+                return Collections.emptySet();
             }
         };
     }

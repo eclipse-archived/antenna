@@ -31,7 +31,8 @@ public class SW360StatusReporterParametersTest {
     @Test
     public void getInfoRequestFromParameter() {
         InfoParameter infoParameter = new IPGetReleasesOfProjects();
-        String additionalParameter_projectId = infoParameter.getAdditionalParameters().stream()
+        String additionalParameter_projectId = ((Set<String>) infoParameter.getAdditionalParameters())
+                .stream()
                 .filter(s -> s.contains("id"))
                 .findFirst()
                 .get();
@@ -80,5 +81,33 @@ public class SW360StatusReporterParametersTest {
         SW360StatusReporterParameters.parseParameterValueFromListOfParameters(parameters, id);
 
         fail("Did not throw excpected exception");
+    }
+
+    @Test
+    public void getOutputFormatFromShortSwitch() {
+        String outputFormat = "CSV";
+        Set<String> parameters = Collections.singleton(SW360StatusReporterParameters.OUTPUT_FORMAT_PREFIX_SHORT+  AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER + outputFormat);
+        final String gottenOutputFormat = SW360StatusReporterParameters.getOutputFormat(parameters);
+
+        assertThat(gottenOutputFormat).isEqualTo(outputFormat);
+    }
+
+    @Test
+    public void getOutputFormatFromLongSwitch() {
+        String outputFormat = "CSV";
+        Set<String> parameters = Collections.singleton(SW360StatusReporterParameters.OUTPUT_FORMAT_PREFIX_LONG + AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER + outputFormat);
+        final String gottenOutputFormat = SW360StatusReporterParameters.getOutputFormat(parameters);
+
+        assertThat(gottenOutputFormat).isEqualTo(outputFormat);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getOutputFormatMissingParameter() {
+        String wrongParameterPrefix = "--some-parameter=";
+        String outputFormat = "CSV";
+        Set<String> parameters = Collections.singleton(wrongParameterPrefix + AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER + outputFormat);
+        SW360StatusReporterParameters.getOutputFormat(parameters);
+
+        fail("Should have failed due to missing output format");
     }
 }

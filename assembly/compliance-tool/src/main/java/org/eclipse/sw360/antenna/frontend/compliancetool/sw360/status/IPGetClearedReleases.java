@@ -10,9 +10,8 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Releas
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class IPGetClearedReleases extends InfoParameter {
+public class IPGetClearedReleases extends InfoParameter<SW360Release> {
     private static final String GET_RELEASES_CLEARED = SW360StatusReporterParameters.REPORTER_PARAMETER_PREFIX + "releases-cleared";
-    private Set<SW360Release> result;
 
     @Override
     public String getInfoParameter() {
@@ -40,10 +39,10 @@ public class IPGetClearedReleases extends InfoParameter {
     }
 
     @Override
-    Object execute(SW360Connection connection) {
+    Collection<SW360Release> execute(SW360Connection connection) {
         final List<SW360SparseComponent> components = connection.getComponentAdapter().getComponents();
 
-        result = components.stream()
+        return components.stream()
                 .map(SW360HalResource::getId)
                 .map(id -> connection.getComponentAdapter().getComponentById(id))
                 .filter(Optional::isPresent)
@@ -56,17 +55,5 @@ public class IPGetClearedReleases extends InfoParameter {
                 .map(Optional::get)
                 .filter(ComplianceFeatureUtils::isApproved)
                 .collect(Collectors.toSet());
-
-        return result;
-    }
-
-    @Override
-    String[] printResult() {
-        return ReporterUtils.printCollectionOfReleases(result);
-    }
-
-    @Override
-    String getResultFileHeader() {
-        return ReporterUtils.printHeaderOfReleases(result);
     }
 }

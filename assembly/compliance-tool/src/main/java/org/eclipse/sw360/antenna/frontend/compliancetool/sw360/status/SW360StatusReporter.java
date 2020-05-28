@@ -10,19 +10,12 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
@@ -37,11 +30,19 @@ public class SW360StatusReporter {
 
     private final SW360Configuration configuration;
     private InfoParameter infoParameter;
+    private final String outputFormat;
+    private ReporterOutput reporterOutput;
 
     public SW360StatusReporter(SW360Configuration configuration, Set<String> parameters) {
         this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
         this.infoParameter =  SW360StatusReporterParameters
                 .getInfoParameterFromParameters(Objects.requireNonNull(parameters, "Parameters must not be null"));
+        this.outputFormat = SW360StatusReporterParameters.getOutputFormat(parameters);
+        init();
+    }
+
+    private void init() {
+        this.reporterOutput = ReporterOutputFactory.getReporterOutput(outputFormat);
     }
 
     void setInfoParameter(InfoParameter infoParameter) {
@@ -56,36 +57,8 @@ public class SW360StatusReporter {
         LOGGER.debug("{} has started.", SW360StatusReporter.class.getName());
         final SW360Connection connection = configuration.getConnection();
 
-        infoParameter.execute(connection);
+        final Collection result = infoParameter.execute(connection);
 
-        String header = infoParameter.getResultFileHeader();
-        String[] body = infoParameter.printResult();
-
-        printCsvFile(header, body, configuration.getCsvFileName(), configuration.getTargetDir());
-    }
-
-    /**
-     * Prints a csv file with a given name to a given target directory.
-     * Header and body are written
-     * @param header
-     * @param body
-     * @param csvFileName
-     * @param targetDir
-     */
-    private void printCsvFile(String header, String[] body, String csvFileName, Path targetDir) {
-        if (header.split(";").length != Arrays.stream(body).findAny().map(s -> s.split(";").length).orElse(0)) {
-            LOGGER.error("Number of header columns does not equal columns of body for the csv file.");
-        }
-        Path csvFile = Paths.get(targetDir.toString(), csvFileName);
-        try (BufferedWriter writer = Files.newBufferedWriter(csvFile);
-             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(header))
-        ) {
-            for (String item : body) {
-                csvPrinter.printRecords(item);
-            }
-            csvPrinter.flush();
-        } catch (IOException e) {
-            LOGGER.error("Error when writing the csv file", e);
-        }
+        reporterOutput.printFile(result, configuration);
     }
 }

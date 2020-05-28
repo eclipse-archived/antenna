@@ -5,6 +5,7 @@ import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,9 +18,24 @@ class SW360StatusReporterParameters {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360StatusReporterParameters.class);
 
     /**
-     * The prefix to identify a parameter indication the desired info parameter of the reporter.
+     * The long prefix to identify a parameter indication the desired info parameter of the reporter.
      */
-    static final String REPORTER_PARAMETER_PREFIX = "--info=";
+    static final String REPORTER_PARAMETER_PREFIX = AbstractAntennaCLIOptions.SWITCH_PREFIX + "-info" + AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER;
+
+    /**
+     * The long parameter prefix to determine the output format of the reporter
+     */
+    static final String OUTPUT_FORMAT_PREFIX_LONG = AbstractAntennaCLIOptions.SWITCH_PREFIX + "-output";
+
+    /**
+     * The short parameter prefix to determine the output format of the reporter
+     */
+    static final String OUTPUT_FORMAT_PREFIX_SHORT = AbstractAntennaCLIOptions.SWITCH_PREFIX + "o";
+
+    /**
+     * The default output format for the reporter output
+     */
+    private static final String DEFAULT_OUTPUT_FORMAT = "CSV";
 
     /**
      * Creates a parsed {@code InfoParameter} from a set of parameter
@@ -45,13 +61,12 @@ class SW360StatusReporterParameters {
      * Creates a parsed {@code InfoParameter} from a set of parameter
      * @param parameters set of parameters to be parsed
      * @return parsed {@code InfoParameter} with parsed additional parameters
-     * @return
      */
     private static InfoParameter parse(Set<String> parameters) {
         final Optional<String> infoParameter = parameters.stream().filter(p -> p.contains(REPORTER_PARAMETER_PREFIX)).findFirst();
         final InfoParameter infoParameter1 = infoParameter.map(InfoParameterFactory::getInfoParameterFromString).orElse(InfoParameter.emptyInfoParameter());
 
-        if (infoParameter1 == InfoParameter.emptyInfoParameter()) {
+        if (Objects.equals(infoParameter1, InfoParameter.emptyInfoParameter())) {
             throw new IllegalArgumentException(infoParameter.get() + ": " + infoParameter1.helpMessage());
         }
 
@@ -104,8 +119,8 @@ class SW360StatusReporterParameters {
 
     /**
      * Parses the parameter value of a parameter key from a set of parameters.
-     * @param parameters
-     * @param parameterKey
+     * @param parameters Set of parameters searched for parameter key
+     * @param parameterKey parameter key of the parameter key value pair
      * @return parameter value of the parameter key if contained in parameter set, otherwise null
      */
     static String parseParameterValueFromListOfParameters(Set<String> parameters, String parameterKey) {
@@ -130,5 +145,23 @@ class SW360StatusReporterParameters {
                 new IPGetClearedReleases().getInfoParameter() + ":   Gives a list of all releases in a given sw360 instances that are cleared." + cr +
                 new IPGetNotClearedReleases().getInfoParameter() + ":   Gives a list of all releases in a given sw360 instances that are not cleared." + cr +
                 new IPGetReleasesOfProjects().getInfoParameter() + ":   Gives a list of all releases of a given project in a given sw360 instances." + cr;
+    }
+
+    /**
+     * Returns the parameter value of the output format key
+     * @param parameters Set of parameters that are searched for the output format parameter
+     * @return String of the output format parameter value
+     */
+    static String getOutputFormat(Set<String> parameters) {
+        final String outputLong = parseParameterValueFromListOfParameters(parameters, OUTPUT_FORMAT_PREFIX_LONG);
+        if (outputLong != null) {
+            return outputLong;
+        } else {
+            return Optional.ofNullable(parseParameterValueFromListOfParameters(parameters, OUTPUT_FORMAT_PREFIX_SHORT))
+                    .orElseGet(() -> {
+                        LOGGER.warn("No output format is given.");
+                        return DEFAULT_OUTPUT_FORMAT;
+                    });
+        }
     }
 }
