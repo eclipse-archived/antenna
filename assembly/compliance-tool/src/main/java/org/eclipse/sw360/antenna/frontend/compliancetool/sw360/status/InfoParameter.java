@@ -2,10 +2,10 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
 
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 
+import java.util.Collections;
 import java.util.Set;
 
 abstract public class InfoParameter {
-    Set<String> parameters;
     abstract public String getInfoParameter();
 
     boolean hasAdditionalParameters() {
@@ -28,11 +28,6 @@ abstract public class InfoParameter {
             }
 
             @Override
-            boolean hasAdditionalParameters() {
-                return false;
-            }
-
-            @Override
             String helpMessage() {
                 return "The provided info parameter is not supported in this status reporter";
             }
@@ -44,7 +39,7 @@ abstract public class InfoParameter {
 
             @Override
             Set<String> getAdditionalParameters() {
-                return null;
+                return Collections.emptySet();
             }
 
             @Override

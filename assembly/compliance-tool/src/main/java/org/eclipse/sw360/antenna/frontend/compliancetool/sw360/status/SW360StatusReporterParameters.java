@@ -49,7 +49,7 @@ class SW360StatusReporterParameters {
      */
     private static InfoParameter parse(Set<String> parameters) {
         final Optional<String> infoParameter = parameters.stream().filter(p -> p.contains(REPORTER_PARAMETER_PREFIX)).findFirst();
-        final InfoParameter infoParameter1 = infoParameter.map(SW360StatusReporterParameters::getInfoParameterFromString).orElse(InfoParameter.emptyInfoParameter());
+        final InfoParameter infoParameter1 = infoParameter.map(InfoParameterFactory::getInfoParameterFromString).orElse(InfoParameter.emptyInfoParameter());
 
         if (infoParameter1 == InfoParameter.emptyInfoParameter()) {
             throw new IllegalArgumentException(infoParameter.get() + ": " + infoParameter1.helpMessage());
@@ -67,24 +67,6 @@ class SW360StatusReporterParameters {
             throw new IllegalStateException(
                     "The information parameter " + infoParameter1.getInfoParameter() + " you requested does not have all parameters it needs." +
                             System.lineSeparator() + infoParameter1.helpMessage());
-        }
-    }
-
-    /**
-     * Gives {@code InfoParameter} from a given parameter string
-     * @param infoParameter String containing parameter
-     * @return implementation of an InfoParameter or an emptyInfoParameter
-     */
-    private static InfoParameter getInfoParameterFromString(String infoParameter) {
-        switch (infoParameter) {
-            case "--info=releases-cleared":
-                return new IPGetClearedReleases();
-            case "--info=releases-of-project":
-                return new IPGetReleasesOfProjects();
-            case "--info=releases-not-cleared":
-                return new IPGetNotClearedReleases();
-            default:
-                return InfoParameter.emptyInfoParameter();
         }
     }
 
