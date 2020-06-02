@@ -29,6 +29,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -114,6 +115,22 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
 
         SW360Project createdProject = waitFor(projectClient.createProject(project));
         assertThat(createdProject).isEqualTo(project);
+    }
+
+    @Test
+    public void testUpdateProject() throws IOException {
+        SW360Project project = readTestJsonFile(resolveTestFileURL("project.json"), SW360Project.class);
+        SW360Project updProject = readTestJsonFile(resolveTestFileURL("project.json"), SW360Project.class);
+        updProject.setVersion("updatedVersion");
+        String projectJson = toJson(project);
+        String updProjectJson = toJson(updProject);
+        wireMockRule.stubFor(patch(urlPathEqualTo("/projects/" + project.getId()))
+                .withRequestBody(equalTo(projectJson))
+                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
+                        .withBody(updProjectJson)));
+
+        SW360Project result = waitFor(projectClient.updateProject(project));
+        assertThat(result).isEqualTo(updProject);
     }
 
     @Test

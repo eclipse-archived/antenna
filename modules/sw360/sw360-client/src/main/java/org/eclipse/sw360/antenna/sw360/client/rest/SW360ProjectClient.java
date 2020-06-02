@@ -45,6 +45,11 @@ public class SW360ProjectClient extends SW360Client {
     static final String TAG_CREATE_PROJECT = "post_create_project";
 
     /**
+     * Tag for the request to update an existing project.
+     */
+    static final String TAG_UPDATE_PROJECT = "patch_update_project";
+
+    /**
      * Tag for the query that adds releases to a project.
      */
     static final String TAG_ADD_RELEASES_TO_PROJECT = "post_add_releases_to_project";
@@ -91,9 +96,23 @@ public class SW360ProjectClient extends SW360Client {
      */
     public CompletableFuture<SW360Project> createProject(SW360Project sw360Project) {
         return executeJsonRequest(builder -> builder.method(RequestBuilder.Method.POST)
-                .uri(resourceUrl(PROJECTS_ENDPOINT))
-                .body(body -> body.json(sw360Project)),
+                        .uri(resourceUrl(PROJECTS_ENDPOINT))
+                        .body(body -> body.json(sw360Project)),
                 SW360Project.class, TAG_CREATE_PROJECT);
+    }
+
+    /**
+     * Updates an existing project in SW360 based on the given data object and
+     * returns a future with the updated entity.
+     *
+     * @param project a data object for the project to be updated
+     * @return a future with the updated project entity
+     */
+    public CompletableFuture<SW360Project> updateProject(SW360Project project) {
+        return executeJsonRequest(builder -> builder.method(RequestBuilder.Method.PATCH)
+                        .uri(resourceUrl(PROJECTS_ENDPOINT, project.getId()))
+                        .body(body -> body.json(project)),
+                SW360Project.class, TAG_UPDATE_PROJECT);
     }
 
     /**
@@ -106,8 +125,8 @@ public class SW360ProjectClient extends SW360Client {
      */
     public CompletableFuture<Void> addReleasesToProject(String projectId, List<String> releases) {
         return executeRequest(builder -> builder.method(RequestBuilder.Method.POST)
-                .uri(resourceUrl(PROJECTS_ENDPOINT, projectId, SW360Attributes.PROJECT_RELEASES))
-                .body(body -> body.json(releases)),
+                        .uri(resourceUrl(PROJECTS_ENDPOINT, projectId, SW360Attributes.PROJECT_RELEASES))
+                        .body(body -> body.json(releases)),
                 HttpUtils.nullProcessor(), TAG_ADD_RELEASES_TO_PROJECT);
     }
 
