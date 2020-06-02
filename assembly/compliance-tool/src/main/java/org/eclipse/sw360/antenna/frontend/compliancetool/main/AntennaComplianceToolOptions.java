@@ -191,7 +191,9 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
         boolean exporter = hasSwitch(switches, SWITCH_EXPORTER_SHORT) || hasSwitch(switches, SWITCH_EXPORTER_LONG);
         boolean reporter = hasSwitch(switches, SWITCH_REPORTER);
 
-        if (updater && exporter) {
+        if ((updater && exporter) ||
+                (updater && reporter) ||
+                (exporter && reporter)) {
             return Optional.empty();
         } else if (updater) {
             return Optional.of(MODE_NAME_UPDATER);

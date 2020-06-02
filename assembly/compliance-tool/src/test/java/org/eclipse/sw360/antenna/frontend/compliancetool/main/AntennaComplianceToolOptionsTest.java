@@ -82,7 +82,17 @@ public class AntennaComplianceToolOptionsTest {
     }
 
     @Test
-    public void testParseWithTwoModes() {
+    public void testParseWithModesReporterUpdater() {
+        checkFailedParse(PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_REPORTER, AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT, "--unknown");
+    }
+
+    @Test
+    public void testParseWithModesExporterReporter() {
+        checkFailedParse(PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_EXPORTER_SHORT, AntennaComplianceToolOptions.SWITCH_REPORTER, "--unknown");
+    }
+
+    @Test
+    public void testParseWithModesExporterUpdater() {
         checkFailedParse(PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_EXPORTER_SHORT, AntennaComplianceToolOptions.SWITCH_UPDATER_SHORT, "--unknown");
     }
 
