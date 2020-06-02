@@ -152,4 +152,15 @@ public class AntennaComplianceToolOptionsTest {
         assertThat(helpMessage).contains(expectedFragments);
         System.out.println(helpMessage);
     }
+
+    @Test
+    public void testParametersAreImmutable() {
+        Set<String> parameterSet = new HashSet<>();
+        final AntennaComplianceToolOptions antennaComplianceToolOptions = new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_REPORTER, parameterSet, false, false, true);
+        Set<String> parametersFromOptions = antennaComplianceToolOptions.getParameters();
+        parametersFromOptions.add("--parameter=x");
+
+        assertThat(parametersFromOptions).isNotEqualTo(antennaComplianceToolOptions.getParameters());
+        assertThat(antennaComplianceToolOptions.getParameters()).isEqualTo(parameterSet);
+    }
 }

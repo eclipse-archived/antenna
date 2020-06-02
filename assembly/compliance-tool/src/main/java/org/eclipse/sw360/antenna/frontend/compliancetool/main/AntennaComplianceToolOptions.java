@@ -12,10 +12,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
 import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIOptions;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
     /**
@@ -123,7 +120,7 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
      * @return the parameters of the mode of the compliance tool.
      */
     Set<String> getParameters() {
-        return parameters;
+        return parameters == null ? null : new HashSet<>(parameters);
     }
 
     /**
