@@ -8,6 +8,7 @@ specific attributes of the artifacts. Aside from a processor enriching artifact 
 * [License Knowledgebase resolver](./license-knowledgebase-resolver.html)
 * [License resolver](./license-resolver.html)
 * [Manifest resolver](manifest-resolver.html)
+* [Ort Downloader](ort-downloader.html)
 * [SW360 Enricher](./sw360-enricher.html)
 
 ### Validators
