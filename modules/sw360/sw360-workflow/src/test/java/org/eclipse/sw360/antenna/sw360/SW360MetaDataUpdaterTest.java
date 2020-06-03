@@ -15,15 +15,21 @@ import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Visibility;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -116,7 +122,7 @@ public class SW360MetaDataUpdaterTest {
         metaDataUpdater.createProject(projectName, projectVersion, Collections.emptySet());
 
         verify(projectClientAdapter, times(1)).getProjectIdByNameAndVersion(projectName, projectVersion);
-        verify(projectClientAdapter, never()).addProject(projectName, projectVersion);
+        verify(projectClientAdapter, never()).createProject(any());
         verify(projectClientAdapter, times(1)).addSW360ReleasesToSW360Project(projectId, Collections.emptySet());
     }
 
@@ -125,17 +131,28 @@ public class SW360MetaDataUpdaterTest {
         final String projectName = "projectName";
         final String projectVersion = "projectVersion";
         final String projectId = "12345";
+        final SW360Project newProject = new SW360Project();
+        newProject.setName(projectName);
+        newProject.setVersion(projectVersion);
+        newProject.getLinks().setSelf(new Self("http://some.link/" + projectId));
         when(projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion))
                 .thenReturn(Optional.empty());
-        when(projectClientAdapter.addProject(projectName, projectVersion))
-                .thenReturn(projectId);
+        when(projectClientAdapter.createProject(any()))
+                .thenReturn(newProject);
         setUp();
 
         metaDataUpdater.createProject(projectName, projectVersion, Collections.emptySet());
 
+        ArgumentCaptor<SW360Project> captor = ArgumentCaptor.forClass(SW360Project.class);
         verify(projectClientAdapter, times(1)).getProjectIdByNameAndVersion(projectName, projectVersion);
-        verify(projectClientAdapter, times(1)).addProject(projectName, projectVersion);
+        verify(projectClientAdapter, times(1)).createProject(captor.capture());
         verify(projectClientAdapter, times(1)).addSW360ReleasesToSW360Project(projectId, Collections.emptySet());
+        SW360Project sampleProject = captor.getValue();
+        assertThat(sampleProject.getName()).isEqualTo(projectName);
+        assertThat(sampleProject.getVersion()).isEqualTo(projectVersion);
+        assertThat(sampleProject.getDescription()).isEqualTo(projectName + " " + projectVersion);
+        assertThat(sampleProject.getProjectType()).isEqualTo(SW360ProjectType.PRODUCT);
+        assertThat(sampleProject.getVisibility()).isEqualTo(SW360Visibility.BUISNESSUNIT_AND_MODERATORS);
     }
 
     @Test

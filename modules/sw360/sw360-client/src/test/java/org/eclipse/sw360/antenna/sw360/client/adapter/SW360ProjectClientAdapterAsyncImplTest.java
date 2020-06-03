@@ -60,7 +60,6 @@ public class SW360ProjectClientAdapterAsyncImplTest {
                 .setSelf(projectSelf);
 
         projectWithLink = new SW360Project();
-        SW360ProjectAdapterUtils.prepareProject(projectWithLink, PROJECT_NAME, PROJECT_VERSION);
         projectWithLink.setName(PROJECT_NAME);
         projectWithLink.setVersion(PROJECT_VERSION);
         projectWithLink.setDescription(PROJECT_NAME + " " + PROJECT_VERSION);
