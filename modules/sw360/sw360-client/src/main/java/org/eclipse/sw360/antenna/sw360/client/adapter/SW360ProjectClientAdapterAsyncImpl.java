@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -56,13 +57,12 @@ class SW360ProjectClientAdapterAsyncImpl implements SW360ProjectClientAdapterAsy
 
     @Override
     public CompletableFuture<SW360Project> createProject(SW360Project project) {
-        if (!SW360ProjectAdapterUtils.isValidProject(project)) {
-            Throwable exception = new SW360ClientException("Can not create invalid project with name=" +
-                    project.getName() + " and version=" + project.getVersion());
-            return FutureUtils.failedFuture(exception);
-        }
+        return validateProjectAndProcess(project, getProjectClient()::createProject);
+    }
 
-        return getProjectClient().createProject(project);
+    @Override
+    public CompletableFuture<SW360Project> updateProject(SW360Project project) {
+        return validateProjectAndProcess(project, getProjectClient()::updateProject);
     }
 
     @Override
@@ -78,7 +78,26 @@ class SW360ProjectClientAdapterAsyncImpl implements SW360ProjectClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<List<SW360SparseRelease>> getLinkedReleases(String projectId) {
-        return getProjectClient().getLinkedReleases(projectId, true);
+    public CompletableFuture<List<SW360SparseRelease>> getLinkedReleases(String projectId, boolean transitive) {
+        return getProjectClient().getLinkedReleases(projectId, transitive);
+    }
+
+    /**
+     * Validates the given project entity and then executes an action on it.
+     * All mandatory properties must have been set. If this is the case, the
+     * given function is invoked on the project.
+     *
+     * @param project the project to be processed
+     * @param func    the processing function
+     * @return the result of the processing function
+     */
+    private static CompletableFuture<SW360Project> validateProjectAndProcess(SW360Project project,
+                                                                             Function<SW360Project, CompletableFuture<SW360Project>> func) {
+        if (!SW360ProjectAdapterUtils.isValidProject(project)) {
+            Throwable exception = new SW360ClientException("Can not create invalid project with name=" +
+                    project.getName() + " and version=" + project.getVersion());
+            return FutureUtils.failedFuture(exception);
+        }
+        return func.apply(project);
     }
 }

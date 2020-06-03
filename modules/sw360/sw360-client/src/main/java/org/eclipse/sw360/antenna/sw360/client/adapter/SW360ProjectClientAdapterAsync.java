@@ -35,6 +35,8 @@ public interface SW360ProjectClientAdapterAsync {
      */
     SW360ProjectClient getProjectClient();
 
+    CompletableFuture<Optional<String>> getProjectIdByNameAndVersion(String projectName, String projectVersion);
+
     /**
      * Creates a new {@code SW360Project} entity based on the given data
      * object. The passed in object is validated whether it contains all
@@ -45,9 +47,33 @@ public interface SW360ProjectClientAdapterAsync {
      */
     CompletableFuture<SW360Project> createProject(SW360Project project);
 
-    CompletableFuture<Optional<String>> getProjectIdByNameAndVersion(String projectName, String projectVersion);
+    /**
+     * Updates a project based on the passed in data object. The
+     * {@code SW360Project} entity provided must reference an existing project.
+     *
+     * @param project the data object with the updated properties
+     * @return a future with the updated {@code SW360Project} entity
+     */
+    CompletableFuture<SW360Project> updateProject(SW360Project project);
 
-    CompletableFuture<Void> addSW360ReleasesToSW360Project(String id, Collection<SW360Release> releases);
+    /**
+     * Assigns a number of releases to a project.
+     *
+     * @param projectId the ID of the project
+     * @param releases  a collection with the {@code SW360Release} objects to be
+     *                  assigned
+     * @return a future that is completed when the operation is done
+     */
+    CompletableFuture<Void> addSW360ReleasesToSW360Project(String projectId, Collection<SW360Release> releases);
 
-    CompletableFuture<List<SW360SparseRelease>> getLinkedReleases(String projectId);
+    /**
+     * Returns a list with all the release entities that are linked to the
+     * project specified.
+     *
+     * @param projectId  the ID of the project
+     * @param transitive if <strong>true</strong>, the releases assigned to
+     *                   directly linked releases are retrieved as well
+     * @return a future with the list with the found release entities
+     */
+    CompletableFuture<List<SW360SparseRelease>> getLinkedReleases(String projectId, boolean transitive);
 }
