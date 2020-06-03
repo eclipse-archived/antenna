@@ -10,7 +10,7 @@ class ReporterOutputFactory {
      * @return {@link ReporterOutput} of the output format
      */
     static ReporterOutput getReporterOutput(String outputFormat) {
-        if (outputFormat.equals("CSV") || outputFormat.equals("csv") || outputFormat.equals("Csv")) {
+        if (outputFormat.equalsIgnoreCase("csv")) {
             return new ReporterOutputCSV();
         }
         return new ReporterOutputCSV();
