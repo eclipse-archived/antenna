@@ -31,11 +31,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.sw360.antenna</groupId>
-            <artifactId>runtime</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
@@ -50,10 +45,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.package-url</groupId>
-            <artifactId>packageurl-java</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
