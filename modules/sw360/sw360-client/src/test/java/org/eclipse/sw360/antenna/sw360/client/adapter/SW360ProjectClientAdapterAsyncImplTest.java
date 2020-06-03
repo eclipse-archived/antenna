@@ -11,6 +11,8 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ProjectClient;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Visibility;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectType;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
@@ -59,6 +61,11 @@ public class SW360ProjectClientAdapterAsyncImplTest {
 
         projectWithLink = new SW360Project();
         SW360ProjectAdapterUtils.prepareProject(projectWithLink, PROJECT_NAME, PROJECT_VERSION);
+        projectWithLink.setName(PROJECT_NAME);
+        projectWithLink.setVersion(PROJECT_VERSION);
+        projectWithLink.setDescription(PROJECT_NAME + " " + PROJECT_VERSION);
+        projectWithLink.setProjectType(SW360ProjectType.PRODUCT);
+        projectWithLink.setVisibility(SW360Visibility.BUISNESSUNIT_AND_MODERATORS);
         projectWithLink.setLinks(linkObjects);
     }
 
@@ -75,18 +82,24 @@ public class SW360ProjectClientAdapterAsyncImplTest {
     }
 
     @Test
-    public void testAddProject() {
-        when(projectClient.createProject(any()))
-                .thenReturn(CompletableFuture.completedFuture(projectWithLink));
+    public void testCreateProject() {
+        SW360Project projectCreated = new SW360Project();
+        projectCreated.setName(PROJECT_NAME);
+        projectCreated.setVersion(PROJECT_VERSION);
+        projectCreated.setDescription("a newly created project");
+        when(projectClient.createProject(projectWithLink))
+                .thenReturn(CompletableFuture.completedFuture(projectCreated));
 
-        String indexOfSelfLink = block(projectClientAdapter.addProject(PROJECT_NAME, PROJECT_VERSION));
+        SW360Project result = block(projectClientAdapter.createProject(projectWithLink));
 
-        assertThat(indexOfSelfLink).isEqualTo(PROJECT_LAST_INDEX);
+        assertThat(result).isEqualTo(projectCreated);
     }
 
     @Test
-    public void testAddProjectInvalidName() throws InterruptedException {
-        CompletableFuture<String> future = projectClientAdapter.addProject("", PROJECT_VERSION);
+    public void testCreateProjectInvalidName() throws InterruptedException {
+        SW360Project newProject = new SW360Project();
+        newProject.setVersion(PROJECT_VERSION);
+        CompletableFuture<SW360Project> future = projectClientAdapter.createProject(newProject);
 
         try {
             future.get();

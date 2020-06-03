@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ProjectClient;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 
@@ -25,11 +26,25 @@ import java.util.Optional;
  * </p>
  */
 public interface SW360ProjectClientAdapter {
+    /**
+     * Returns the {@code SW360ProjectClient} used by this adapter. This client
+     * can be used for low-level operations on project entities.
+     *
+     * @return the {@code SW360ProjectClient}
+     */
     SW360ProjectClient getProjectClient();
 
     Optional<String> getProjectIdByNameAndVersion(String projectName, String projectVersion);
 
-    String addProject(String projectName, String projectVersion);
+    /**
+     * Creates a new {@code SW360Project} entity based on the given data
+     * object. The passed in object is validated whether it contains all
+     * mandatory properties.
+     *
+     * @param project the data object defining the project properties
+     * @return the newly created {@code SW360Project} entity
+     */
+    SW360Project createProject(SW360Project project);
 
     void addSW360ReleasesToSW360Project(String id, Collection<SW360Release> releases);
 

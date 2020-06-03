@@ -55,19 +55,14 @@ class SW360ProjectClientAdapterAsyncImpl implements SW360ProjectClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<String> addProject(String projectName, String projectVersion) {
-        SW360Project sw360Project = new SW360Project();
-        SW360ProjectAdapterUtils.prepareProject(sw360Project, projectName, projectVersion);
-
-        if (!SW360ProjectAdapterUtils.isValidProject(sw360Project)) {
-            Throwable exception = new SW360ClientException("Can not write invalid project with name=" +
-                    projectName + " and version=" + projectVersion);
+    public CompletableFuture<SW360Project> createProject(SW360Project project) {
+        if (!SW360ProjectAdapterUtils.isValidProject(project)) {
+            Throwable exception = new SW360ClientException("Can not create invalid project with name=" +
+                    project.getName() + " and version=" + project.getVersion());
             return FutureUtils.failedFuture(exception);
         }
 
-        return getProjectClient().createProject(sw360Project)
-                .thenApply(responseProject ->
-                        SW360HalResourceUtility.getLastIndexOfSelfLink(responseProject.getLinks()).orElse(""));
+        return getProjectClient().createProject(project);
     }
 
     @Override
