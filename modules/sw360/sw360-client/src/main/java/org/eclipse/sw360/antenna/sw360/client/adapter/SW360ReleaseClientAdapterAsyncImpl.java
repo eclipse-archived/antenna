@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.failedFuture;
@@ -93,31 +92,8 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     @Override
     public CompletableFuture<AttachmentUploadResult<SW360Release>>
     uploadAttachments(AttachmentUploadRequest<SW360Release> uploadRequest) {
-        CompletableFuture<AttachmentUploadResult<SW360Release>> futResult =
-                CompletableFuture.completedFuture(new AttachmentUploadResult<>(uploadRequest.getTarget()));
-
-        for (AttachmentUploadRequest.Item item : uploadRequest.getItems()) {
-            futResult = futResult.thenCompose(result -> {
-                if (attachmentIsPotentialDuplicate(item.getPath(), result.getTarget().getEmbedded().getAttachments())) {
-                    return CompletableFuture.completedFuture(result.addFailedUpload(item,
-                            new SW360ClientException("Duplicate attachment file name: " +
-                                    item.getPath().getFileName())));
-                }
-
-                return getReleaseClient()
-                        .uploadAndAttachAttachment(result.getTarget(), item.getPath(), item.getAttachmentType())
-                        .handle((updatedRelease, ex) -> (updatedRelease != null) ?
-                                result.addSuccessfulUpload(updatedRelease, item) :
-                                result.addFailedUpload(item, ex));
-            });
-        }
-
-        return futResult;
-    }
-
-    private static boolean attachmentIsPotentialDuplicate(Path attachment, Set<SW360SparseAttachment> attachments) {
-        return attachments.stream()
-                .anyMatch(attachment1 -> attachment1.getFilename().equals(attachment.getFileName().toString()));
+        return SW360AttachmentUtils.uploadAttachments(getReleaseClient(), uploadRequest,
+                release -> release.getEmbedded().getAttachments());
     }
 
     @Override
@@ -177,11 +153,9 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<Optional<Path>> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath) {
-        return Optional.ofNullable(release.getLinks().getSelf())
-                .map(self ->
-                        optionalFuture(getReleaseClient().downloadAttachment(self.getHref(), attachment, downloadPath)))
-                .orElseGet(() -> CompletableFuture.completedFuture(Optional.empty()));
+    public CompletableFuture<Optional<Path>> downloadAttachment(SW360Release release, SW360SparseAttachment attachment,
+                                                                Path downloadPath) {
+        return SW360AttachmentUtils.downloadAttachment(getReleaseClient(), release, attachment, downloadPath);
     }
 
     @Override
