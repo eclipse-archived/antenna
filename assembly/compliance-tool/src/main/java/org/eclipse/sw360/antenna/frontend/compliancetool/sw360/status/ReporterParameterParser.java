@@ -1,11 +1,9 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
 
-import org.eclipse.sw360.antenna.frontend.compliancetool.main.AntennaComplianceToolOptions;
 import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -46,12 +44,12 @@ class ReporterParameterParser {
     static String getInfoParameterFromParameters(Set<String> parameters) {
         if (parameters.isEmpty()) {
             LOGGER.error("No parameters provided for the status reporter.");
-            LOGGER.info(helpMessage());
+            LOGGER.info(InfoRequestFactory.helpMessage());
             throw new IllegalArgumentException("No parameters provided for the status reporter.");
         }
         if (parameters.stream().filter(p -> p.contains(REPORTER_PARAMETER_PREFIX)).count() != 1) {
             LOGGER.error("Too many information requests were made in this status report. ");
-            LOGGER.info(helpMessage());
+            LOGGER.info(InfoRequestFactory.helpMessage());
             throw new IllegalArgumentException("Too many information requests were made in this status report. ");
         }
         return parameters.stream().filter(p -> p.contains(REPORTER_PARAMETER_PREFIX)).findFirst().orElse("");
@@ -101,22 +99,6 @@ class ReporterParameterParser {
                 .findFirst()
                 .map(ReporterParameterParser::getParameterValueFromParameter)
                 .orElse(null);
-    }
-
-    /**
-     * Returns a help message that describes the parameter options supported
-     * by the status reporter.
-     *
-     * @return the help message
-     */
-    static String helpMessage() {
-        String cr = System.lineSeparator();
-        return "Usage: java -jar compliancetool.jar " + AntennaComplianceToolOptions.SWITCH_REPORTER + "[options] <complianceMode> <propertiesFilePath>" + cr + cr +
-                "The reporter create a csv file for every run with the requested information statement. " + cr + cr +
-                "The reporter info statements: (only one can be set)" + cr +
-                new IRGetClearedReleases().getInfoParameter() + ":   Gives a list of all releases in a given sw360 instances that are cleared." + cr +
-                new IRGetNotClearedReleases().getInfoParameter() + ":   Gives a list of all releases in a given sw360 instances that are not cleared." + cr +
-                new IRGetReleasesOfProjects().getInfoParameter() + ":   Gives a list of all releases of a given project in a given sw360 instances." + cr;
     }
 
     /**

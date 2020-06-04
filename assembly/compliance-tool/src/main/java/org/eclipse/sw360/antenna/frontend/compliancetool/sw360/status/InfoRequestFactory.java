@@ -1,5 +1,12 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
 
+import org.eclipse.sw360.antenna.frontend.compliancetool.main.AntennaComplianceToolOptions;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * <p>
  * A factory class for creating a new {@link InfoRequest}.
@@ -11,21 +18,38 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
  * </p>
  */
 public class InfoRequestFactory {
+    private static Set<InfoRequest> infoRequests = new HashSet<>(Arrays.asList(
+            new IRGetClearedReleases(),
+            new IRGetReleasesOfProjects(),
+            new IRGetNotClearedReleases()
+    )) ;
+
     /**
      * Gives {@code InfoRequest} from a given parameter string
      * @param infoParameter String containing parameter
      * @return implementation of an InfoRequest or an emptyInfoRequest
      */
     static InfoRequest getInfoRequestFromString(String infoParameter) {
-        switch (infoParameter) {
-            case "--info=releases-cleared":
-                return new IRGetClearedReleases();
-            case "--info=releases-of-project":
-                return new IRGetReleasesOfProjects();
-            case "--info=releases-not-cleared":
-                return new IRGetNotClearedReleases();
-            default:
-                return InfoRequest.emptyInfoRequest();
-        }
+        return infoRequests.stream()
+                .filter(ir -> ir.getInfoParameter().equalsIgnoreCase(infoParameter))
+                .findFirst()
+                .orElse(InfoRequest.emptyInfoRequest());
+    }
+
+    /**
+     * Returns a help message that describes the parameter options supported
+     * by the status reporter.
+     *
+     * @return the help message
+     */
+    static String helpMessage() {
+        String cr = System.lineSeparator();
+        String infoParameterString = infoRequests.stream()
+                .map(InfoRequest::getInfoParameter)
+                .collect(Collectors.joining(cr));
+        return "Usage: java -jar compliancetool.jar " + AntennaComplianceToolOptions.SWITCH_REPORTER + "[options] <complianceMode> <propertiesFilePath>" + cr + cr +
+                "The reporter create a csv file for every run with the requested information statement. " + cr + cr +
+                "The reporter info statements: (only one can be set)" + cr +
+                infoParameterString;
     }
 }
