@@ -10,8 +10,8 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -30,12 +30,13 @@ import java.util.Objects;
  * is created using a builder that offers methods to add the items to be
  * uploaded.
  * </p>
+ * @param <T> the type of the entity to upload attachments to
  */
-public final class AttachmentUploadRequest {
+public final class AttachmentUploadRequest<T extends SW360HalResource<?, ?>> {
     /**
-     * The release that is the target for uploads.
+     * The entity that is the target for uploads.
      */
-    private final SW360Release target;
+    private final T target;
 
     /**
      * Stores the items to be uploaded.
@@ -49,20 +50,20 @@ public final class AttachmentUploadRequest {
      * @param target the target entity of the uploads
      * @param items  a list with the items to be uploaded
      */
-    private AttachmentUploadRequest(SW360Release target, List<Item> items) {
+    private AttachmentUploadRequest(T target, List<Item> items) {
         this.target = target;
         this.items = Collections.unmodifiableList(new ArrayList<>(items));
     }
 
     /**
      * Returns a new {@code Builder} to define a request to upload attachments
-     * to the given release.
+     * to the given entity.
      *
      * @param target the target of the upload operation
      * @return the builder to define the upload request
      */
-    public static Builder builder(SW360Release target) {
-        return new Builder(target);
+    public static <T extends SW360HalResource<?, ?>> Builder<T> builder(T target) {
+        return new Builder<>(target);
     }
 
     /**
@@ -70,7 +71,7 @@ public final class AttachmentUploadRequest {
      *
      * @return the target entity for attachment uploads
      */
-    public SW360Release getTarget() {
+    public T getTarget() {
         return target;
     }
 
@@ -79,7 +80,7 @@ public final class AttachmentUploadRequest {
      *
      * @return a list with the items to be uploaded
      */
-    public List<Item> items() {
+    public List<Item> getItems() {
         return items;
     }
 
@@ -87,7 +88,7 @@ public final class AttachmentUploadRequest {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AttachmentUploadRequest request = (AttachmentUploadRequest) o;
+        AttachmentUploadRequest<?> request = (AttachmentUploadRequest<?>) o;
         return Objects.equals(getTarget(), request.getTarget()) &&
                 items.equals(request.items);
     }
@@ -175,18 +176,18 @@ public final class AttachmentUploadRequest {
     /**
      * A builder class for creating {@link AttachmentUploadRequest} instances.
      */
-    public static class Builder {
+    public static class Builder<T extends SW360HalResource<?, ?>> {
         /**
          * The entity to upload attachments to.
          */
-        private final SW360Release target;
+        private final T target;
 
         /**
          * Stores the items to be uploaded.
          */
         private final List<Item> items;
 
-        private Builder(SW360Release target) {
+        private Builder(T target) {
             this.target = target;
             items = new LinkedList<>();
         }
@@ -198,7 +199,7 @@ public final class AttachmentUploadRequest {
          * @param attachmentType the type of the resulting attachment
          * @return this builder
          */
-        public Builder addAttachment(Path attachmentPath, SW360AttachmentType attachmentType) {
+        public Builder<T> addAttachment(Path attachmentPath, SW360AttachmentType attachmentType) {
             items.add(new Item(attachmentPath, attachmentType));
             return this;
         }
@@ -209,8 +210,8 @@ public final class AttachmentUploadRequest {
          *
          * @return the newly created {@code AttachmentUploadRequest}
          */
-        public AttachmentUploadRequest build() {
-            return new AttachmentUploadRequest(target, items);
+        public AttachmentUploadRequest<T> build() {
+            return new AttachmentUploadRequest<>(target, items);
         }
     }
 }

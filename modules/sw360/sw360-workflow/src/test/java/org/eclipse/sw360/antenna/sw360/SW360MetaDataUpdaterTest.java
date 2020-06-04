@@ -220,7 +220,7 @@ public class SW360MetaDataUpdaterTest {
         Path uploadPath = Paths.get("upload.doc");
         SW360AttachmentType attachmentType = SW360AttachmentType.SOURCE;
         Map<Path, SW360AttachmentType> attachments = Collections.singletonMap(uploadPath, attachmentType);
-        AttachmentUploadRequest expRequest = AttachmentUploadRequest.builder(release)
+        AttachmentUploadRequest<SW360Release> expRequest = AttachmentUploadRequest.builder(release)
                 .addAttachment(uploadPath, attachmentType)
                 .build();
         AttachmentUploadResult result = new AttachmentUploadResult(release);

@@ -176,7 +176,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         SW360Release updatedRelease1 = createReleaseWithAttachments("attach1");
         SW360Release updatedRelease2 = createReleaseWithAttachments("attach1", "attach2");
 
-        AttachmentUploadRequest uploadRequest = AttachmentUploadRequest.builder(release)
+        AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
                 .addAttachment(uploadPath1, attachmentType1)
                 .addAttachment(uploadPath2, attachmentType2)
                 .build();
@@ -207,7 +207,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         release.setEmbedded(createEmbeddedReleaseWithAttachments());
         SW360Release updatedRelease = createReleaseWithAttachments("attach1");
 
-        AttachmentUploadRequest uploadRequest = AttachmentUploadRequest.builder(release)
+        AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
                 .addAttachment(uploadPath1, attachmentType1)
                 .addAttachment(uploadPath2, attachmentType2)
                 .addAttachment(uploadPath3, attachmentType3)
@@ -237,7 +237,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         Path uploadPath = Paths.get(fileName);
         SW360AttachmentType attachmentType = SW360AttachmentType.LEGAL_EVALUATION;
         release.setEmbedded(createEmbeddedReleaseWithAttachments(fileName));
-        AttachmentUploadRequest uploadRequest = AttachmentUploadRequest.builder(release)
+        AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
                 .addAttachment(uploadPath, attachmentType)
                 .build();
 

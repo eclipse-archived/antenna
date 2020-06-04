@@ -91,11 +91,11 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<AttachmentUploadResult> uploadAttachments(AttachmentUploadRequest uploadRequest) {
+    public CompletableFuture<AttachmentUploadResult> uploadAttachments(AttachmentUploadRequest<SW360Release> uploadRequest) {
         CompletableFuture<AttachmentUploadResult> futResult =
                 CompletableFuture.completedFuture(new AttachmentUploadResult(uploadRequest.getTarget()));
 
-        for (AttachmentUploadRequest.Item item : uploadRequest.items()) {
+        for (AttachmentUploadRequest.Item item : uploadRequest.getItems()) {
             futResult = futResult.thenCompose(result -> {
                 if (attachmentIsPotentialDuplicate(item.getPath(), result.getTarget().getEmbedded().getAttachments())) {
                     return CompletableFuture.completedFuture(result.addFailedUpload(item,

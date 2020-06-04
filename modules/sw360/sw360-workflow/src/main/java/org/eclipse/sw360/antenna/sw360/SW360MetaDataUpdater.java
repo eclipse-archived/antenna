@@ -106,7 +106,7 @@ public class SW360MetaDataUpdater {
     }
 
     public SW360Release uploadAttachments(SW360Release sw360Release, Map<Path, SW360AttachmentType> attachments) {
-        AttachmentUploadRequest.Builder builder = AttachmentUploadRequest.builder(sw360Release);
+        AttachmentUploadRequest.Builder<SW360Release> builder = AttachmentUploadRequest.builder(sw360Release);
         for (Map.Entry<Path, SW360AttachmentType> e : attachments.entrySet()) {
             builder = builder.addAttachment(e.getKey(), e.getValue());
         }

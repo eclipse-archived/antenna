@@ -118,7 +118,7 @@ public interface SW360ReleaseClientAdapterAsync {
      * @param uploadRequest the request with the attachments to be uploaded
      * @return a future with the result of the upload operation
      */
-    CompletableFuture<AttachmentUploadResult> uploadAttachments(AttachmentUploadRequest uploadRequest);
+    CompletableFuture<AttachmentUploadResult> uploadAttachments(AttachmentUploadRequest<SW360Release> uploadRequest);
 
     /**
      * Tries to download an attachment from a release. If it can be resolved,

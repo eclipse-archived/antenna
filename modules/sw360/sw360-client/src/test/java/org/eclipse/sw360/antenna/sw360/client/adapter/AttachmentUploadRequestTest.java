@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.junit.Test;
@@ -23,7 +24,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AttachmentUploadRequestTest {
     @Test
     public void testEquals() {
+        SW360Release release1 = new SW360Release();
+        release1.setName("release1");
+        SW360Release release2 = new SW360Release();
+        release2.setName("release2");
         EqualsVerifier.forClass(AttachmentUploadRequest.class)
+                .withPrefabValues(SW360HalResource.class, release1, release2)
                 .withNonnullFields("items")
                 .verify();
     }
@@ -34,7 +40,7 @@ public class AttachmentUploadRequestTest {
         release.setName("Test release");
         Path path1 = Paths.get("testAttachment.doc");
         Path path2 = Paths.get("anotherAttachment.json");
-        AttachmentUploadRequest request = AttachmentUploadRequest.builder(release)
+        AttachmentUploadRequest<SW360Release> request = AttachmentUploadRequest.builder(release)
                 .addAttachment(path1, SW360AttachmentType.LICENSE_AGREEMENT)
                 .addAttachment(path2, SW360AttachmentType.REQUIREMENT)
                 .build();
@@ -46,23 +52,25 @@ public class AttachmentUploadRequestTest {
     @Test
     public void testItemsListIsCopiedOnCreation() {
         Path path = Paths.get("foo");
-        AttachmentUploadRequest.Builder builder = AttachmentUploadRequest.builder(new SW360Release())
+        AttachmentUploadRequest.Builder<SW360Release> builder =
+                AttachmentUploadRequest.builder(new SW360Release())
                 .addAttachment(path, SW360AttachmentType.DECISION_REPORT);
 
-        AttachmentUploadRequest request = builder.build();
+        AttachmentUploadRequest<SW360Release> request = builder.build();
         builder.addAttachment(Paths.get("bar"), SW360AttachmentType.COMPONENT_LICENSE_INFO_COMBINED);
-        assertThat(request.items())
+        assertThat(request.getItems())
                 .containsOnly(new AttachmentUploadRequest.Item(path, SW360AttachmentType.DECISION_REPORT));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testItemsNonModifiable() {
         Path path = Paths.get("first");
-        AttachmentUploadRequest.Builder builder = AttachmentUploadRequest.builder(new SW360Release())
+        AttachmentUploadRequest.Builder<SW360Release> builder =
+                AttachmentUploadRequest.builder(new SW360Release())
                 .addAttachment(path, SW360AttachmentType.DECISION_REPORT);
-        AttachmentUploadRequest request = builder.build();
+        AttachmentUploadRequest<SW360Release> request = builder.build();
 
-        request.items()
+        request.getItems()
                 .add(new AttachmentUploadRequest.Item(Paths.get("more"), SW360AttachmentType.SCAN_RESULT_REPORT));
     }
 }

@@ -162,14 +162,15 @@ public class SW360UpdaterTest {
             verify(generator).createClearingDocument(release, getTargetDir());
         }
         verify(updater, times(2)).artifactToReleaseInSW360(any());
-        ArgumentCaptor<AttachmentUploadRequest> captor = ArgumentCaptor.forClass(AttachmentUploadRequest.class);
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<AttachmentUploadRequest<SW360Release>> captor = ArgumentCaptor.forClass(AttachmentUploadRequest.class);
         verify(releaseClientAdapter, times(expectUpload ? 1 : 0)).uploadAttachments(captor.capture());
         if (expectUpload) {
-            AttachmentUploadRequest uploadRequest = captor.getValue();
+            AttachmentUploadRequest<SW360Release> uploadRequest = captor.getValue();
             List<AttachmentUploadRequest.Item> expItems = testAttachmentMap.entrySet().stream()
                     .map(entry -> new AttachmentUploadRequest.Item(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
-            assertThat(uploadRequest.items()).containsAll(expItems);
+            assertThat(uploadRequest.getItems()).containsAll(expItems);
         }
     }
 
