@@ -223,7 +223,7 @@ public class SW360MetaDataUpdaterTest {
         AttachmentUploadRequest<SW360Release> expRequest = AttachmentUploadRequest.builder(release)
                 .addAttachment(uploadPath, attachmentType)
                 .build();
-        AttachmentUploadResult result = new AttachmentUploadResult(release);
+        AttachmentUploadResult<SW360Release> result = new AttachmentUploadResult<>(release);
         when(releaseClientAdapter.uploadAttachments(expRequest))
                 .thenReturn(result);
 

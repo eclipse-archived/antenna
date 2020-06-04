@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 
 import java.util.Collections;
@@ -29,12 +30,14 @@ import java.util.Set;
  * information about all the uploads that were made and which of them were
  * successful. The updated {@link SW360Release} object is also available.
  * </p>
+ *
+ * @param <T> the type of the entity for which attachments were uploaded
  */
-public final class AttachmentUploadResult {
+public final class AttachmentUploadResult<T extends SW360HalResource<?, ?>> {
     /**
      * Stores the target entity of the upload operation.
      */
-    private final SW360Release target;
+    private final T target;
 
     /**
      * Stores information about the attachments that could be uploaded.
@@ -49,11 +52,11 @@ public final class AttachmentUploadResult {
 
     /**
      * Creates a new instance of {@code AttachmentUploadResult} that references
-     * the given release.
+     * the given target entity.
      *
-     * @param target the {@code SW360Release} that was the target for uploads
+     * @param target the entity that was the target for uploads
      */
-    public AttachmentUploadResult(SW360Release target) {
+    public AttachmentUploadResult(T target) {
         this(target, Collections.emptySet(), Collections.emptyMap());
     }
 
@@ -61,11 +64,11 @@ public final class AttachmentUploadResult {
      * Internal constructor to create an instance of
      * {@code AttachmentUploadResult} with all information.
      *
-     * @param target            the {@code SW360Release} that was the target for uploads
+     * @param target            the entity that was the target for uploads
      * @param successfulUploads a set with successful uploads
      * @param failedUploads     a map with failed uploads
      */
-    private AttachmentUploadResult(SW360Release target,
+    private AttachmentUploadResult(T target,
                                    Set<AttachmentUploadRequest.Item> successfulUploads,
                                    Map<AttachmentUploadRequest.Item, Throwable> failedUploads) {
         this.target = target;
@@ -74,11 +77,11 @@ public final class AttachmentUploadResult {
     }
 
     /**
-     * Returns the release that is the target of the upload operation.
+     * Returns the entity that is the target of the upload operation.
      *
-     * @return the updated release to which attachments have been uploaded
+     * @return the updated entity to which attachments have been uploaded
      */
-    public SW360Release getTarget() {
+    public T getTarget() {
         return target;
     }
 
@@ -121,7 +124,7 @@ public final class AttachmentUploadResult {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AttachmentUploadResult result = (AttachmentUploadResult) o;
+        AttachmentUploadResult<?> result = (AttachmentUploadResult<?>) o;
         return Objects.equals(getTarget(), result.getTarget()) &&
                 successfulUploads.equals(result.successfulUploads) &&
                 failedUploads.equals(result.failedUploads);
@@ -145,14 +148,14 @@ public final class AttachmentUploadResult {
      * Returns a copy of this object that contains the given attachment item as
      * a successful upload.
      *
-     * @param updatedRelease the updated release entity
+     * @param updatedTarget the updated target entity
      * @param item           the item that was uploaded successfully
      * @return the modified copy of this object
      */
-    AttachmentUploadResult addSuccessfulUpload(SW360Release updatedRelease, AttachmentUploadRequest.Item item) {
+    AttachmentUploadResult<T> addSuccessfulUpload(T updatedTarget, AttachmentUploadRequest.Item item) {
         Set<AttachmentUploadRequest.Item> updatedSet = new HashSet<>(successfulUploads);
         updatedSet.add(item);
-        return new AttachmentUploadResult(updatedRelease, Collections.unmodifiableSet(updatedSet), failedUploads);
+        return new AttachmentUploadResult<>(updatedTarget, Collections.unmodifiableSet(updatedSet), failedUploads);
     }
 
     /**
@@ -163,9 +166,9 @@ public final class AttachmentUploadResult {
      * @param exception the exception causing the upload to fail
      * @return the modified copy of this object
      */
-    AttachmentUploadResult addFailedUpload(AttachmentUploadRequest.Item item, Throwable exception) {
+    AttachmentUploadResult<T> addFailedUpload(AttachmentUploadRequest.Item item, Throwable exception) {
         Map<AttachmentUploadRequest.Item, Throwable> updatedMap = new HashMap<>(failedUploads);
         updatedMap.put(item, exception);
-        return new AttachmentUploadResult(getTarget(), successfulUploads, Collections.unmodifiableMap(updatedMap));
+        return new AttachmentUploadResult<>(getTarget(), successfulUploads, Collections.unmodifiableMap(updatedMap));
     }
 }

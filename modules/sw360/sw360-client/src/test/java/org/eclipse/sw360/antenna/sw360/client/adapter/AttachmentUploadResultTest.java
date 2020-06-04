@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.junit.Test;
@@ -24,8 +25,13 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 public class AttachmentUploadResultTest {
     @Test
     public void testEquals() {
+        SW360Release release1 = new SW360Release();
+        release1.setName("release1");
+        SW360Release release2 = new SW360Release();
+        release2.setName("release2");
         EqualsVerifier.forClass(AttachmentUploadResult.class)
                 .withNonnullFields("successfulUploads", "failedUploads")
+                .withPrefabValues(SW360HalResource.class, release1, release2)
                 .verify();
     }
 
@@ -36,7 +42,7 @@ public class AttachmentUploadResultTest {
         Throwable exception = new IOException("Failed upload");
         SW360Release release = new SW360Release();
         release.setName("uploadTargetRelease");
-        AttachmentUploadResult result = new AttachmentUploadResult(release)
+        AttachmentUploadResult<SW360Release> result = new AttachmentUploadResult<>(release)
                 .addSuccessfulUpload(release,
                         new AttachmentUploadRequest.Item(successPath, SW360AttachmentType.SCREENSHOT))
                 .addFailedUpload(new AttachmentUploadRequest.Item(failurePath,
@@ -49,7 +55,7 @@ public class AttachmentUploadResultTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void testSuccessUploadsNotModifiableInitial() {
-        AttachmentUploadResult result = new AttachmentUploadResult(new SW360Release());
+        AttachmentUploadResult<SW360Release> result = new AttachmentUploadResult<>(new SW360Release());
 
         result.successfulUploads()
                 .add(new AttachmentUploadRequest.Item(Paths.get("p"), SW360AttachmentType.SOURCE));
@@ -57,7 +63,7 @@ public class AttachmentUploadResultTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void testSuccessUploadsNotModifiableWhenFilled() {
-        AttachmentUploadResult result = new AttachmentUploadResult(new SW360Release())
+        AttachmentUploadResult<SW360Release> result = new AttachmentUploadResult<>(new SW360Release())
                 .addSuccessfulUpload(new SW360Release(),
                         new AttachmentUploadRequest.Item(Paths.get("p1"), SW360AttachmentType.SCREENSHOT));
 
@@ -67,7 +73,7 @@ public class AttachmentUploadResultTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void testFailedUploadsNotModifiableInitial() {
-        AttachmentUploadResult result = new AttachmentUploadResult(new SW360Release());
+        AttachmentUploadResult<SW360Release> result = new AttachmentUploadResult<>(new SW360Release());
 
         result.failedUploads()
                 .put(new AttachmentUploadRequest.Item(Paths.get("p"), SW360AttachmentType.SOURCE_SELF),
@@ -76,7 +82,7 @@ public class AttachmentUploadResultTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void testFailedUploadsNotModifiableWhenFilled() {
-        AttachmentUploadResult result = new AttachmentUploadResult(new SW360Release())
+        AttachmentUploadResult<SW360Release> result = new AttachmentUploadResult<>(new SW360Release())
                 .addFailedUpload(new AttachmentUploadRequest.Item(Paths.get("p1"),
                         SW360AttachmentType.SOURCE_SELF), new Exception("e1"));
 

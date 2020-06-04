@@ -185,7 +185,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         when(releaseClient.uploadAndAttachAttachment(updatedRelease1, uploadPath2, attachmentType2))
                 .thenReturn(CompletableFuture.completedFuture(updatedRelease2));
 
-        AttachmentUploadResult result = block(releaseClientAdapter.uploadAttachments(uploadRequest));
+        AttachmentUploadResult<SW360Release> result = block(releaseClientAdapter.uploadAttachments(uploadRequest));
 
         assertThat(result.getTarget()).isEqualTo(updatedRelease2);
         assertThat(result.isSuccess()).isTrue();
@@ -219,7 +219,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         when(releaseClient.uploadAndAttachAttachment(release, uploadPath3, attachmentType3))
                 .thenReturn(CompletableFuture.completedFuture(updatedRelease));
 
-        AttachmentUploadResult result = block(releaseClientAdapter.uploadAttachments(uploadRequest));
+        AttachmentUploadResult<SW360Release> result = block(releaseClientAdapter.uploadAttachments(uploadRequest));
         assertThat(result.getTarget()).isEqualTo(updatedRelease);
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.successfulUploads())
@@ -241,7 +241,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
                 .addAttachment(uploadPath, attachmentType)
                 .build();
 
-        AttachmentUploadResult result = block(releaseClientAdapter.uploadAttachments(uploadRequest));
+        AttachmentUploadResult<SW360Release> result = block(releaseClientAdapter.uploadAttachments(uploadRequest));
         assertThat(result.getTarget()).isEqualTo(release);
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.failedUploads().get(new AttachmentUploadRequest.Item(uploadPath, attachmentType)))

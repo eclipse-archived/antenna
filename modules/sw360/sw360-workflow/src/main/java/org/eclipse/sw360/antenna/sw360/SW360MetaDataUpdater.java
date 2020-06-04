@@ -111,7 +111,7 @@ public class SW360MetaDataUpdater {
             builder = builder.addAttachment(e.getKey(), e.getValue());
         }
 
-        AttachmentUploadResult result = releaseClientAdapter.uploadAttachments(builder.build());
+        AttachmentUploadResult<SW360Release> result = releaseClientAdapter.uploadAttachments(builder.build());
         LOGGER.debug("Result of attachment upload operation: {}", result);
         if (!result.isSuccess()) {
             LOGGER.error("Failed to upload attachments: {}", result.failedUploads());

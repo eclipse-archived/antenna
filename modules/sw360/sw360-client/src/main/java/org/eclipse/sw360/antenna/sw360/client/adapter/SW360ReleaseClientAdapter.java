@@ -115,7 +115,7 @@ public interface SW360ReleaseClientAdapter {
      * @param uploadRequest the request with the attachments to be uploaded
      * @return the result of the upload operation
      */
-    AttachmentUploadResult uploadAttachments(AttachmentUploadRequest<SW360Release> uploadRequest);
+    AttachmentUploadResult<SW360Release> uploadAttachments(AttachmentUploadRequest<SW360Release> uploadRequest);
 
     /**
      * Tries to download an attachment from a release. If it can be resolved,
