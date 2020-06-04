@@ -11,6 +11,10 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ProjectClient;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Visibility;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.ProjectSearchParams;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
@@ -20,13 +24,16 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Releas
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
@@ -58,38 +65,103 @@ public class SW360ProjectClientAdapterAsyncImplTest {
                 .setSelf(projectSelf);
 
         projectWithLink = new SW360Project();
-        SW360ProjectAdapterUtils.prepareProject(projectWithLink, PROJECT_NAME, PROJECT_VERSION);
+        projectWithLink.setName(PROJECT_NAME);
+        projectWithLink.setVersion(PROJECT_VERSION);
+        projectWithLink.setDescription(PROJECT_NAME + " " + PROJECT_VERSION);
+        projectWithLink.setProjectType(SW360ProjectType.PRODUCT);
+        projectWithLink.setVisibility(SW360Visibility.BUISNESSUNIT_AND_MODERATORS);
         projectWithLink.setLinks(linkObjects);
     }
 
     @Test
-    public void testGetProjectIdByNameAndVersion() {
-        when(projectClient.searchByName(PROJECT_NAME))
+    public void testGetProjectByNameAndVersion() {
+        ProjectSearchParams searchParams = ProjectSearchParams.builder()
+                .withName(PROJECT_NAME)
+                .build();
+        when(projectClient.search(searchParams))
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(projectWithLink)));
 
-        Optional<String> projectIdByNameAndVersion =
-                block(projectClientAdapter.getProjectIdByNameAndVersion(PROJECT_NAME, PROJECT_VERSION));
+        Optional<SW360Project> projectIdByNameAndVersion =
+                block(projectClientAdapter.getProjectByNameAndVersion(PROJECT_NAME, PROJECT_VERSION));
 
         assertThat(projectIdByNameAndVersion).isPresent();
-        assertThat(projectIdByNameAndVersion).hasValue(PROJECT_LAST_INDEX);
+        assertThat(projectIdByNameAndVersion).contains(projectWithLink);
     }
 
     @Test
-    public void testAddProject() {
-        when(projectClient.createProject(any()))
-                .thenReturn(CompletableFuture.completedFuture(projectWithLink));
+    public void testGetProjectByNameAndVersionNotFound() {
+        when(projectClient.search(any())).thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
 
-        String indexOfSelfLink = block(projectClientAdapter.addProject(PROJECT_NAME, PROJECT_VERSION));
-
-        assertThat(indexOfSelfLink).isEqualTo(PROJECT_LAST_INDEX);
+        Optional<SW360Project> optProject =
+                block(projectClientAdapter.getProjectByNameAndVersion(PROJECT_NAME, PROJECT_VERSION));
+        assertThat(optProject).isEmpty();
     }
 
     @Test
-    public void testAddProjectInvalidName() throws InterruptedException {
-        CompletableFuture<String> future = projectClientAdapter.addProject("", PROJECT_VERSION);
+    public void testSearch() {
+        ProjectSearchParams searchParams = ProjectSearchParams.builder()
+                .withTag("testTag")
+                .withBusinessUnit("testUnit")
+                .build();
+        when(projectClient.search(searchParams))
+                .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(projectWithLink)));
+
+        List<SW360Project> projects = block(projectClientAdapter.search(searchParams));
+        assertThat(projects).containsOnly(projectWithLink);
+    }
+
+    @Test
+    public void testCreateProject() {
+        SW360Project projectCreated = new SW360Project();
+        projectCreated.setName(PROJECT_NAME);
+        projectCreated.setVersion(PROJECT_VERSION);
+        projectCreated.setDescription("a newly created project");
+        when(projectClient.createProject(projectWithLink))
+                .thenReturn(CompletableFuture.completedFuture(projectCreated));
+
+        SW360Project result = block(projectClientAdapter.createProject(projectWithLink));
+
+        assertThat(result).isEqualTo(projectCreated);
+    }
+
+    @Test
+    public void testCreateProjectInvalidName() throws InterruptedException {
+        SW360Project newProject = new SW360Project();
+        newProject.setVersion(PROJECT_VERSION);
+        CompletableFuture<SW360Project> future = projectClientAdapter.createProject(newProject);
 
         try {
             future.get();
+            fail("Invalid project not detected!");
+        } catch (ExecutionException e) {
+            assertThat(e.getCause()).isInstanceOf(SW360ClientException.class);
+            assertThat(e.getCause().getMessage()).contains("invalid project");
+        }
+    }
+
+    @Test
+    public void testUpdateProject() {
+        SW360Project projectUpdated = new SW360Project();
+        projectUpdated.setName(PROJECT_NAME);
+        projectUpdated.setVersion(PROJECT_VERSION);
+        projectUpdated.setDescription("project that was updated");
+        when(projectClient.updateProject(projectWithLink))
+                .thenReturn(CompletableFuture.completedFuture(projectUpdated));
+
+        SW360Project result = block(projectClientAdapter.updateProject(projectWithLink));
+
+        assertThat(result).isEqualTo(projectUpdated);
+    }
+
+    @Test
+    public void testUpdateProjectInvalidNoVersion() throws InterruptedException {
+        SW360Project project = new SW360Project();
+        project.setName(PROJECT_NAME);
+        CompletableFuture<SW360Project> future = projectClientAdapter.updateProject(project);
+
+        try {
+            future.get();
+            fail("Invalid project not detected!");
         } catch (ExecutionException e) {
             assertThat(e.getCause()).isInstanceOf(SW360ClientException.class);
             assertThat(e.getCause().getMessage()).contains("invalid project");
@@ -110,5 +182,31 @@ public class SW360ProjectClientAdapterAsyncImplTest {
         block(projectClientAdapter.addSW360ReleasesToSW360Project(PROJECT_LAST_INDEX, releases));
 
         verify(projectClient, atLeastOnce()).addReleasesToProject(eq(PROJECT_LAST_INDEX), any());
+    }
+
+    private void checkGetLinkedReleases(boolean transitive) {
+        SW360SparseRelease rel1 = new SW360SparseRelease();
+        rel1.setName("rel1");
+        rel1.setVersion("1.0");
+        SW360SparseRelease rel2 = new SW360SparseRelease();
+        rel2.setName("rel2");
+        rel2.setVersion("2.0");
+        List<SW360SparseRelease> releases = Arrays.asList(rel1, rel2);
+        when(projectClient.getLinkedReleases(PROJECT_LAST_INDEX, transitive))
+                .thenReturn(CompletableFuture.completedFuture(releases));
+
+        List<SW360SparseRelease> result =
+                block(projectClientAdapter.getLinkedReleases(PROJECT_LAST_INDEX, transitive));
+        assertThat(result).isEqualTo(releases);
+    }
+
+    @Test
+    public void testGetLinkedReleasesNonTransitive() {
+        checkGetLinkedReleases(false);
+    }
+
+    @Test
+    public void testGetLinkedReleasesTransitive() {
+        checkGetLinkedReleases(true);
     }
 }

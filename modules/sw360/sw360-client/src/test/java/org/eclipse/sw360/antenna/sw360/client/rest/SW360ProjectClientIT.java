@@ -12,7 +12,9 @@ package org.eclipse.sw360.antenna.sw360.client.rest;
 
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.ProjectSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +31,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getAllServeEvents;
+import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
@@ -65,42 +69,74 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
     }
 
     @Test
-    public void testSearchByName() throws IOException {
+    public void testSearchByCriteriaDefined() throws IOException {
         final String projectName = "my Important Project";
+        final SW360ProjectType projectType = SW360ProjectType.SERVICE;
+        final String businessUnit = "Test department";
+        final String tag = "test-projects";
         wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
                 .withQueryParam("name", equalTo(projectName))
+                .withQueryParam("type", equalTo(projectType.name()))
+                .withQueryParam("group", equalTo(businessUnit))
+                .withQueryParam("tag", equalTo(tag))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
                         .withBodyFile("all_projects.json")));
+        ProjectSearchParams searchParams = ProjectSearchParams.builder()
+                .withName(projectName)
+                .withBusinessUnit(businessUnit)
+                .withTag(tag)
+                .withType(projectType).build();
 
-        List<SW360Project> projects = waitFor(projectClient.searchByName(projectName));
+        List<SW360Project> projects = waitFor(projectClient.search(searchParams));
         checkTestProjects(projects);
     }
 
     @Test
-    public void testSearchByNameEmptyResult() {
+    public void testSearchByCriteriaUndefined() throws IOException {
         wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
-                .willReturn(aResponse().withStatus(HttpConstants.STATUS_ACCEPTED)));
+                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
+                        .withBodyFile("all_projects.json")));
 
-        extractException(projectClient.searchByName("foo"), IOException.class);
+        List<SW360Project> projects = waitFor(projectClient.search(ProjectSearchParams.ALL_PROJECTS));
+        checkTestProjects(projects);
+        assertThat(getAllServeEvents().get(0).getRequest().getQueryParams()).isEmpty();
     }
 
     @Test
-    public void testSearchByNameNoContent() throws IOException {
+    public void testSearchEmptyResult() {
+        final String name = "foo";
+        wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
+                .withQueryParam("name", equalTo(name))
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_ACCEPTED)));
+        ProjectSearchParams params = ProjectSearchParams.builder()
+                .withName(name)
+                .build();
+
+        extractException(projectClient.search(params), IOException.class);
+    }
+
+    @Test
+    public void testSearchNoContent() throws IOException {
         wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
                 .willReturn(aResponse().withStatus(HttpConstants.STATUS_NO_CONTENT)));
+        ProjectSearchParams params = ProjectSearchParams.builder()
+                .withName("")
+                .build();
 
-        List<SW360Project> projects = waitFor(projectClient.searchByName("some project"));
+        List<SW360Project> projects = waitFor(projectClient.search(params));
         assertThat(projects).isEmpty();
+        assertThat(getAllServeEvents().get(0).getRequest().getQueryParams()).isEmpty();
     }
 
     @Test
-    public void testSearchByNameError() {
+    public void testSearchError() {
         wireMockRule.stubFor(get(urlPathEqualTo("/projects"))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_BAD_REQUEST)));
 
         FailedRequestException exception =
-                expectFailedRequest(projectClient.searchByName("foo"), HttpConstants.STATUS_ERR_BAD_REQUEST);
-        assertThat(exception.getTag()).isEqualTo(SW360ProjectClient.TAG_GET_BY_NAME);
+                expectFailedRequest(projectClient.search(ProjectSearchParams.ALL_PROJECTS),
+                        HttpConstants.STATUS_ERR_BAD_REQUEST);
+        assertThat(exception.getTag()).isEqualTo(SW360ProjectClient.TAG_SEARCH_PROJECTS);
     }
 
     @Test
@@ -114,6 +150,22 @@ public class SW360ProjectClientIT extends AbstractMockServerTest {
 
         SW360Project createdProject = waitFor(projectClient.createProject(project));
         assertThat(createdProject).isEqualTo(project);
+    }
+
+    @Test
+    public void testUpdateProject() throws IOException {
+        SW360Project project = readTestJsonFile(resolveTestFileURL("project.json"), SW360Project.class);
+        SW360Project updProject = readTestJsonFile(resolveTestFileURL("project.json"), SW360Project.class);
+        updProject.setVersion("updatedVersion");
+        String projectJson = toJson(project);
+        String updProjectJson = toJson(updProject);
+        wireMockRule.stubFor(patch(urlPathEqualTo("/projects/" + project.getId()))
+                .withRequestBody(equalTo(projectJson))
+                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
+                        .withBody(updProjectJson)));
+
+        SW360Project result = waitFor(projectClient.updateProject(project));
+        assertThat(result).isEqualTo(updProject);
     }
 
     @Test

@@ -13,10 +13,12 @@
 
 package org.eclipse.sw360.antenna.sw360.client.rest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.ProjectSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ResourceUtils;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Attributes;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
@@ -24,7 +26,9 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Projec
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -37,12 +41,17 @@ public class SW360ProjectClient extends SW360Client {
     /**
      * Tag for the query that searches projects by their name.
      */
-    static final String TAG_GET_BY_NAME = "get_projects_by_name";
+    static final String TAG_SEARCH_PROJECTS = "get_search_projects";
 
     /**
      * Tag for the request to create a new project.
      */
     static final String TAG_CREATE_PROJECT = "post_create_project";
+
+    /**
+     * Tag for the request to update an existing project.
+     */
+    static final String TAG_UPDATE_PROJECT = "patch_update_project";
 
     /**
      * Tag for the query that adds releases to a project.
@@ -68,17 +77,17 @@ public class SW360ProjectClient extends SW360Client {
     }
 
     /**
-     * Returns a future with a list of projects whose name matches the given
-     * string.
+     * Returns a future with a list of projects that match the search
+     * parameters specified.
      *
-     * @param name the project name to search for
+     * @param searchParams the object with search parameters
      * @return a future with the list of the projects that were matched
      */
-    public CompletableFuture<List<SW360Project>> searchByName(String name) {
-        String queryUrl = HttpUtils.addQueryParameter(resourceUrl(PROJECTS_ENDPOINT),
-                SW360Attributes.PROJECT_SEARCH_BY_NAME, name);
+    public CompletableFuture<List<SW360Project>> search(ProjectSearchParams searchParams) {
+        String queryUrl = HttpUtils.addQueryParameters(resourceUrl(PROJECTS_ENDPOINT),
+                parametersMap(searchParams));
         return executeJsonRequestWithDefault(HttpUtils.get(queryUrl), SW360ProjectList.class,
-                TAG_GET_BY_NAME, SW360ProjectList::new)
+                TAG_SEARCH_PROJECTS, SW360ProjectList::new)
                 .thenApply(SW360ResourceUtils::getSw360Projects);
     }
 
@@ -91,9 +100,23 @@ public class SW360ProjectClient extends SW360Client {
      */
     public CompletableFuture<SW360Project> createProject(SW360Project sw360Project) {
         return executeJsonRequest(builder -> builder.method(RequestBuilder.Method.POST)
-                .uri(resourceUrl(PROJECTS_ENDPOINT))
-                .body(body -> body.json(sw360Project)),
+                        .uri(resourceUrl(PROJECTS_ENDPOINT))
+                        .body(body -> body.json(sw360Project)),
                 SW360Project.class, TAG_CREATE_PROJECT);
+    }
+
+    /**
+     * Updates an existing project in SW360 based on the given data object and
+     * returns a future with the updated entity.
+     *
+     * @param project a data object for the project to be updated
+     * @return a future with the updated project entity
+     */
+    public CompletableFuture<SW360Project> updateProject(SW360Project project) {
+        return executeJsonRequest(builder -> builder.method(RequestBuilder.Method.PATCH)
+                        .uri(resourceUrl(PROJECTS_ENDPOINT, project.getId()))
+                        .body(body -> body.json(project)),
+                SW360Project.class, TAG_UPDATE_PROJECT);
     }
 
     /**
@@ -106,8 +129,8 @@ public class SW360ProjectClient extends SW360Client {
      */
     public CompletableFuture<Void> addReleasesToProject(String projectId, List<String> releases) {
         return executeRequest(builder -> builder.method(RequestBuilder.Method.POST)
-                .uri(resourceUrl(PROJECTS_ENDPOINT, projectId, SW360Attributes.PROJECT_RELEASES))
-                .body(body -> body.json(releases)),
+                        .uri(resourceUrl(PROJECTS_ENDPOINT, projectId, SW360Attributes.PROJECT_RELEASES))
+                        .body(body -> body.json(releases)),
                 HttpUtils.nullProcessor(), TAG_ADD_RELEASES_TO_PROJECT);
     }
 
@@ -126,5 +149,36 @@ public class SW360ProjectClient extends SW360Client {
         return executeJsonRequestWithDefault(HttpUtils.get(uri), SW360ReleaseList.class,
                 TAG_GET_LINKED_RELEASES, SW360ReleaseList::new)
                 .thenApply(SW360ResourceUtils::getSw360SparseReleases);
+    }
+
+    /**
+     * Transforms the given object with search parameters into a map with query
+     * parameters.
+     *
+     * @param params the search parameters
+     * @return the map with query parameters
+     */
+    private static Map<String, String> parametersMap(ProjectSearchParams params) {
+        Map<String, String> paramMap = new HashMap<>();
+        appendQueryParameter(paramMap, SW360Attributes.PROJECT_SEARCH_BY_NAME, params.getName());
+        appendQueryParameter(paramMap, SW360Attributes.PROJECT_SEARCH_BY_UNIT, params.getBusinessUnit());
+        appendQueryParameter(paramMap, SW360Attributes.PROJECT_SEARCH_BY_TAG, params.getTag());
+        if (params.getType() != null) {
+            paramMap.put(SW360Attributes.PROJECT_SEARCH_BY_TYPE, params.getType().name());
+        }
+        return paramMap;
+    }
+
+    /**
+     * Adds a query parameter to a map with parameters only if it is defined.
+     *
+     * @param map   the parameter map
+     * @param key   the key of the parameter
+     * @param value the value of the parameter
+     */
+    private static void appendQueryParameter(Map<String, String> map, String key, String value) {
+        if (StringUtils.isNotEmpty(value)) {
+            map.put(key, value);
+        }
     }
 }

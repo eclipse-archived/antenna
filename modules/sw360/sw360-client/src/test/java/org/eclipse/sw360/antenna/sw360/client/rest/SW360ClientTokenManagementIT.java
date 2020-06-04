@@ -15,6 +15,7 @@ import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.auth.SW360AuthenticationClient;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.ProjectSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.junit.Before;
 import org.junit.Test;
@@ -108,7 +109,7 @@ public class SW360ClientTokenManagementIT extends AbstractMockServerTest {
                 try {
                     // for maximum parallelism, wait for all threads to be started
                     barrierStart.await();
-                    List<SW360Project> projects = waitFor(client.searchByName("test"));
+                    List<SW360Project> projects = waitFor(client.search(ProjectSearchParams.ALL_PROJECTS));
                     assertThat(projects).hasSize(4);
                     // thread completed successfully
                     latchCompletion.countDown();

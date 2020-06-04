@@ -13,20 +13,21 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ProjectClient;
-import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
-import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.ProjectSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -45,29 +46,29 @@ class SW360ProjectClientAdapterAsyncImpl implements SW360ProjectClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<Optional<String>> getProjectIdByNameAndVersion(String projectName, String projectVersion) {
-        return getProjectClient().searchByName(projectName)
+    public CompletableFuture<Optional<SW360Project>> getProjectByNameAndVersion(String projectName, String projectVersion) {
+        ProjectSearchParams nameSearchParams = ProjectSearchParams.builder()
+                .withName(projectName)
+                .build();
+        return getProjectClient().search(nameSearchParams)
                 .thenApply(projects -> projects.stream()
                         .filter(pr -> SW360ProjectAdapterUtils.hasEqualCoordinates(pr, projectName, projectVersion))
-                        .findAny()
-                        .map(SW360Project::getLinks)
-                        .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink));
+                        .findAny());
     }
 
     @Override
-    public CompletableFuture<String> addProject(String projectName, String projectVersion) {
-        SW360Project sw360Project = new SW360Project();
-        SW360ProjectAdapterUtils.prepareProject(sw360Project, projectName, projectVersion);
+    public CompletableFuture<List<SW360Project>> search(ProjectSearchParams params) {
+        return getProjectClient().search(params);
+    }
 
-        if (!SW360ProjectAdapterUtils.isValidProject(sw360Project)) {
-            Throwable exception = new SW360ClientException("Can not write invalid project with name=" +
-                    projectName + " and version=" + projectVersion);
-            return FutureUtils.failedFuture(exception);
-        }
+    @Override
+    public CompletableFuture<SW360Project> createProject(SW360Project project) {
+        return validateProjectAndProcess(project, getProjectClient()::createProject);
+    }
 
-        return getProjectClient().createProject(sw360Project)
-                .thenApply(responseProject ->
-                        SW360HalResourceUtility.getLastIndexOfSelfLink(responseProject.getLinks()).orElse(""));
+    @Override
+    public CompletableFuture<SW360Project> updateProject(SW360Project project) {
+        return validateProjectAndProcess(project, getProjectClient()::updateProject);
     }
 
     @Override
@@ -83,7 +84,26 @@ class SW360ProjectClientAdapterAsyncImpl implements SW360ProjectClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<List<SW360SparseRelease>> getLinkedReleases(String projectId) {
-        return getProjectClient().getLinkedReleases(projectId, true);
+    public CompletableFuture<List<SW360SparseRelease>> getLinkedReleases(String projectId, boolean transitive) {
+        return getProjectClient().getLinkedReleases(projectId, transitive);
+    }
+
+    /**
+     * Validates the given project entity and then executes an action on it.
+     * All mandatory properties must have been set. If this is the case, the
+     * given function is invoked on the project.
+     *
+     * @param project the project to be processed
+     * @param func    the processing function
+     * @return the result of the processing function
+     */
+    private static CompletableFuture<SW360Project> validateProjectAndProcess(SW360Project project,
+                                                                             Function<SW360Project, CompletableFuture<SW360Project>> func) {
+        if (!SW360ProjectAdapterUtils.isValidProject(project)) {
+            Throwable exception = new SW360ClientException("Can not create invalid project with name=" +
+                    project.getName() + " and version=" + project.getVersion());
+            return FutureUtils.failedFuture(exception);
+        }
+        return func.apply(project);
     }
 }

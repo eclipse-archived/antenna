@@ -17,8 +17,12 @@ import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Visibility;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +38,9 @@ public class SW360MetaDataUpdater {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360MetaDataUpdater.class);
 
     // rest service adapters
-    private SW360ProjectClientAdapter projectClientAdapter;
-    private SW360LicenseClientAdapter licenseClientAdapter;
-    private SW360ReleaseClientAdapter releaseClientAdapter;
+    private final SW360ProjectClientAdapter projectClientAdapter;
+    private final SW360LicenseClientAdapter licenseClientAdapter;
+    private final SW360ReleaseClientAdapter releaseClientAdapter;
 
     private final boolean updateReleases;
     private final boolean uploadSources;
@@ -72,16 +76,12 @@ public class SW360MetaDataUpdater {
     }
 
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) {
-        Optional<String> projectId = projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion);
+        Optional<String> projectId =
+                projectClientAdapter.getProjectByNameAndVersion(projectName, projectVersion)
+                .map(SW360HalResource::getId);
 
-        String id;
-        if (projectId.isPresent()) {
-            // TODO: Needs endpoint on sw360 to update project on sw360
-            LOGGER.debug("Could not update project {}, because the endpoint is not available.", projectId.get());
-            id = projectId.get();
-        } else {
-            id = projectClientAdapter.addProject(projectName, projectVersion);
-        }
+        String id = projectId.orElseGet(() ->
+                projectClientAdapter.createProject(prepareNewProject(projectName, projectVersion)).getId());
         projectClientAdapter.addSW360ReleasesToSW360Project(id, releases);
     }
 
@@ -91,5 +91,23 @@ public class SW360MetaDataUpdater {
 
     public SW360Release uploadAttachments(SW360Release sw360Release, Map<Path, SW360AttachmentType> attachments) {
         return releaseClientAdapter.uploadAttachments(sw360Release, attachments);
+    }
+
+    /**
+     * Creates a new {@code SW360Project} entity and sets typical properties
+     * before it is created.
+     *
+     * @param projectName    the project name
+     * @param projectVersion the project version
+     * @return the new, initialized {@code SW360Project} entity
+     */
+    private static SW360Project prepareNewProject(String projectName, String projectVersion) {
+        SW360Project sw360Project = new SW360Project();
+        sw360Project.setName(projectName);
+        sw360Project.setVersion(projectVersion);
+        sw360Project.setDescription(projectName + " " + projectVersion);
+        sw360Project.setProjectType(SW360ProjectType.PRODUCT);
+        sw360Project.setVisibility(SW360Visibility.BUISNESSUNIT_AND_MODERATORS);
+        return sw360Project;
     }
 }
