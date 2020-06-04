@@ -115,13 +115,14 @@ public class SW360MetaDataUpdaterTest {
         final String projectName = "projectName";
         final String projectVersion = "projectVersion";
         final String projectId = "12345";
-        when(projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion))
-                .thenReturn(Optional.of(projectId));
+        SW360Project project = new SW360Project();
+        project.getLinks().setSelf(new Self("https://sw360.org/projects/" + projectId));
+        when(projectClientAdapter.getProjectByNameAndVersion(projectName, projectVersion))
+                .thenReturn(Optional.of(project));
         setUp();
 
         metaDataUpdater.createProject(projectName, projectVersion, Collections.emptySet());
 
-        verify(projectClientAdapter, times(1)).getProjectIdByNameAndVersion(projectName, projectVersion);
         verify(projectClientAdapter, never()).createProject(any());
         verify(projectClientAdapter, times(1)).addSW360ReleasesToSW360Project(projectId, Collections.emptySet());
     }
@@ -135,7 +136,7 @@ public class SW360MetaDataUpdaterTest {
         newProject.setName(projectName);
         newProject.setVersion(projectVersion);
         newProject.getLinks().setSelf(new Self("http://some.link/" + projectId));
-        when(projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion))
+        when(projectClientAdapter.getProjectByNameAndVersion(projectName, projectVersion))
                 .thenReturn(Optional.empty());
         when(projectClientAdapter.createProject(any()))
                 .thenReturn(newProject);
@@ -144,7 +145,6 @@ public class SW360MetaDataUpdaterTest {
         metaDataUpdater.createProject(projectName, projectVersion, Collections.emptySet());
 
         ArgumentCaptor<SW360Project> captor = ArgumentCaptor.forClass(SW360Project.class);
-        verify(projectClientAdapter, times(1)).getProjectIdByNameAndVersion(projectName, projectVersion);
         verify(projectClientAdapter, times(1)).createProject(captor.capture());
         verify(projectClientAdapter, times(1)).addSW360ReleasesToSW360Project(projectId, Collections.emptySet());
         SW360Project sampleProject = captor.getValue();

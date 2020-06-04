@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Visibility;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
@@ -75,16 +76,12 @@ public class SW360MetaDataUpdater {
     }
 
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) {
-        Optional<String> projectId = projectClientAdapter.getProjectIdByNameAndVersion(projectName, projectVersion);
+        Optional<String> projectId =
+                projectClientAdapter.getProjectByNameAndVersion(projectName, projectVersion)
+                .map(SW360HalResource::getId);
 
-        String id;
-        if (projectId.isPresent()) {
-            // TODO: Needs endpoint on sw360 to update project on sw360
-            LOGGER.debug("Could not update project {}, because the endpoint is not available.", projectId.get());
-            id = projectId.get();
-        } else {
-            id = projectClientAdapter.createProject(prepareNewProject(projectName, projectVersion)).getId();
-        }
+        String id = projectId.orElseGet(() ->
+                projectClientAdapter.createProject(prepareNewProject(projectName, projectVersion)).getId());
         projectClientAdapter.addSW360ReleasesToSW360Project(id, releases);
     }
 
