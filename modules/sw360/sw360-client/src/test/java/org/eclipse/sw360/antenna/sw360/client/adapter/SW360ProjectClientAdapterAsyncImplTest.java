@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ProjectClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Visibility;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.ProjectSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
@@ -73,15 +74,40 @@ public class SW360ProjectClientAdapterAsyncImplTest {
     }
 
     @Test
-    public void testGetProjectIdByNameAndVersion() {
-        when(projectClient.searchByName(PROJECT_NAME))
+    public void testGetProjectByNameAndVersion() {
+        ProjectSearchParams searchParams = ProjectSearchParams.builder()
+                .withName(PROJECT_NAME)
+                .build();
+        when(projectClient.search(searchParams))
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(projectWithLink)));
 
-        Optional<String> projectIdByNameAndVersion =
-                block(projectClientAdapter.getProjectIdByNameAndVersion(PROJECT_NAME, PROJECT_VERSION));
+        Optional<SW360Project> projectIdByNameAndVersion =
+                block(projectClientAdapter.getProjectByNameAndVersion(PROJECT_NAME, PROJECT_VERSION));
 
         assertThat(projectIdByNameAndVersion).isPresent();
-        assertThat(projectIdByNameAndVersion).hasValue(PROJECT_LAST_INDEX);
+        assertThat(projectIdByNameAndVersion).contains(projectWithLink);
+    }
+
+    @Test
+    public void testGetProjectByNameAndVersionNotFound() {
+        when(projectClient.search(any())).thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
+
+        Optional<SW360Project> optProject =
+                block(projectClientAdapter.getProjectByNameAndVersion(PROJECT_NAME, PROJECT_VERSION));
+        assertThat(optProject).isEmpty();
+    }
+
+    @Test
+    public void testSearch() {
+        ProjectSearchParams searchParams = ProjectSearchParams.builder()
+                .withTag("testTag")
+                .withBusinessUnit("testUnit")
+                .build();
+        when(projectClient.search(searchParams))
+                .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(projectWithLink)));
+
+        List<SW360Project> projects = block(projectClientAdapter.search(searchParams));
+        assertThat(projects).containsOnly(projectWithLink);
     }
 
     @Test

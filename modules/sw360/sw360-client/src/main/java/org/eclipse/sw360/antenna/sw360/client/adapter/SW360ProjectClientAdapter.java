@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ProjectClient;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.ProjectSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
@@ -34,7 +35,24 @@ public interface SW360ProjectClientAdapter {
      */
     SW360ProjectClient getProjectClient();
 
-    Optional<String> getProjectIdByNameAndVersion(String projectName, String projectVersion);
+    /**
+     * Searches for a project based on its name and version. This method is
+     * more convenient for this special use case than a generic search.
+     *
+     * @param projectName    the name of the project
+     * @param projectVersion the desired project version
+     * @return an {@code Optional} with the project that was found
+     */
+    Optional<SW360Project> getProjectByNameAndVersion(String projectName, String projectVersion);
+
+    /**
+     * Searches for projects based on the given search criteria. This method
+     * just delegates to the {@link SW360ProjectClient}.
+     *
+     * @param params the search parameters
+     * @return a list with the projects that were found
+     */
+    List<SW360Project> search(ProjectSearchParams params);
 
     /**
      * Creates a new {@code SW360Project} entity based on the given data

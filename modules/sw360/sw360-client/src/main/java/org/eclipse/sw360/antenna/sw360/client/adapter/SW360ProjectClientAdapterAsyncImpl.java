@@ -13,14 +13,14 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ProjectClient;
-import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
-import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.ProjectSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,13 +46,19 @@ class SW360ProjectClientAdapterAsyncImpl implements SW360ProjectClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<Optional<String>> getProjectIdByNameAndVersion(String projectName, String projectVersion) {
-        return getProjectClient().searchByName(projectName)
+    public CompletableFuture<Optional<SW360Project>> getProjectByNameAndVersion(String projectName, String projectVersion) {
+        ProjectSearchParams nameSearchParams = ProjectSearchParams.builder()
+                .withName(projectName)
+                .build();
+        return getProjectClient().search(nameSearchParams)
                 .thenApply(projects -> projects.stream()
                         .filter(pr -> SW360ProjectAdapterUtils.hasEqualCoordinates(pr, projectName, projectVersion))
-                        .findAny()
-                        .map(SW360Project::getLinks)
-                        .flatMap(SW360HalResourceUtility::getLastIndexOfSelfLink));
+                        .findAny());
+    }
+
+    @Override
+    public CompletableFuture<List<SW360Project>> search(ProjectSearchParams params) {
+        return getProjectClient().search(params);
     }
 
     @Override
