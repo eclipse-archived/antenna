@@ -39,10 +39,10 @@ public class SW360StatusReporter {
 
         Objects.requireNonNull(parameters, "Parameters must not be null");
 
-        this.outputFormat = SW360StatusReporterParameters.getOutputFormat(parameters);
+        this.outputFormat = ReporterParameterParser.getOutputFormat(parameters);
         this.reporterOutput = ReporterOutputFactory.getReporterOutput(outputFormat);
 
-        this.infoParameter = SW360StatusReporterParameters.getInfoParameterFromParameters(parameters);
+        this.infoParameter = ReporterParameterParser.getInfoParameterFromParameters(parameters);
         this.infoRequest = InfoRequestFactory.getInfoRequestFromString(infoParameter);
         parseAdditionalParameters(parameters);
     }

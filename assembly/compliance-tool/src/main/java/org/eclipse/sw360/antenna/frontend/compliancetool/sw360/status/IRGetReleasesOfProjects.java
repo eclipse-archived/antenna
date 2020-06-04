@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class IRGetReleasesOfProjects extends InfoRequest<SW360SparseRelease> {
-    private static final String GET_RELEASES_OF_PROJECT = SW360StatusReporterParameters.REPORTER_PARAMETER_PREFIX + "releases-of-project";
+    private static final String GET_RELEASES_OF_PROJECT = ReporterParameterParser.REPORTER_PARAMETER_PREFIX + "releases-of-project";
     private static final String PROJECT_NAME = "--project_name";
     private static final String PROJECT_VERSION = "--project-version";
     private static final String PROJECT_ID = "--project_id";
@@ -47,11 +47,11 @@ public class IRGetReleasesOfProjects extends InfoRequest<SW360SparseRelease> {
     @Override
     void parseAdditionalParameter(Set<String> parameters) {
         System.out.println(parameters);
-        projectId = SW360StatusReporterParameters.parseParameterValueFromListOfParameters(parameters, getProjectIdParameter());
+        projectId = ReporterParameterParser.parseParameterValueFromListOfParameters(parameters, getProjectIdParameter());
 
-        projectName = SW360StatusReporterParameters.parseParameterValueFromListOfParameters(parameters, getProjectNameParameter());
+        projectName = ReporterParameterParser.parseParameterValueFromListOfParameters(parameters, getProjectNameParameter());
 
-        projectVersion = SW360StatusReporterParameters.parseParameterValueFromListOfParameters(parameters, getProjectVersionParameter());
+        projectVersion = ReporterParameterParser.parseParameterValueFromListOfParameters(parameters, getProjectVersionParameter());
     }
 
     @Override

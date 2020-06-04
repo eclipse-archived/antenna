@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class IRGetClearedReleases extends InfoRequest<SW360Release> {
-    private static final String GET_RELEASES_CLEARED = SW360StatusReporterParameters.REPORTER_PARAMETER_PREFIX + "releases-cleared";
+    private static final String GET_RELEASES_CLEARED = ReporterParameterParser.REPORTER_PARAMETER_PREFIX + "releases-cleared";
 
     @Override
     public String getInfoParameter() {

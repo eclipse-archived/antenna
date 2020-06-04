@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class IRGetNotClearedReleases extends InfoRequest<SW360Release> {
-    private static final String GET_RELEASES_NOT_CLEARED = SW360StatusReporterParameters.REPORTER_PARAMETER_PREFIX + "releases-not-cleared";
+    private static final String GET_RELEASES_NOT_CLEARED = ReporterParameterParser.REPORTER_PARAMETER_PREFIX + "releases-not-cleared";
 
     @Override
     public String getInfoParameter() {

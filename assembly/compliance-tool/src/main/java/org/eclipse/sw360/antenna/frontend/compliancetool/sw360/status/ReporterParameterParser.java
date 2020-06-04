@@ -14,8 +14,8 @@ import java.util.Set;
  * and creating the {@code InfoRequest} the status reporter
  * uses.
  */
-class SW360StatusReporterParameters {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SW360StatusReporterParameters.class);
+class ReporterParameterParser {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReporterParameterParser.class);
 
     /**
      * The long prefix to identify a parameter indication the desired info parameter of the reporter.
@@ -99,7 +99,7 @@ class SW360StatusReporterParameters {
         return parameters.stream()
                 .filter(p -> getParameterKeyFromParameter(p).equals(parameterKey))
                 .findFirst()
-                .map(SW360StatusReporterParameters::getParameterValueFromParameter)
+                .map(ReporterParameterParser::getParameterValueFromParameter)
                 .orElse(null);
     }
 
