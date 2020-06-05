@@ -14,6 +14,7 @@ import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuratio
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingDocument;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
@@ -24,8 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
 
 import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils.getArtifactsFromCsvFile;
@@ -71,10 +70,11 @@ public class SW360Updater {
             if (release.getClearingState() != null &&
                     !release.getClearingState().isEmpty() &&
                     ArtifactClearingState.ClearingState.valueOf(release.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
-                Map<Path, SW360AttachmentType> attachmentPathMap =
-                        Collections.singletonMap(getOrGenerateClearingDocument(release, artifact),
-                                SW360AttachmentType.CLEARING_REPORT);
-                releaseClientAdapter.uploadAttachments(release, attachmentPathMap);
+                AttachmentUploadRequest uploadRequest = AttachmentUploadRequest.builder(release)
+                        .addAttachment(getOrGenerateClearingDocument(release, artifact),
+                                SW360AttachmentType.CLEARING_REPORT)
+                        .build();
+                releaseClientAdapter.uploadAttachments(uploadRequest);
             }
         } catch (SW360ClientException e) {
             LOGGER.error("Failed to process artifact {}.", artifact, e);

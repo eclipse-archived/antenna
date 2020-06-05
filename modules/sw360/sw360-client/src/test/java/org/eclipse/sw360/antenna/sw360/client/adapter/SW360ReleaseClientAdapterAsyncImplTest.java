@@ -13,6 +13,7 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
+import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
@@ -27,6 +28,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Sparse
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -34,7 +36,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -43,6 +47,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 public class SW360ReleaseClientAdapterAsyncImplTest {
@@ -70,35 +75,6 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         componentClientAdapter = mock(SW360ComponentClientAdapterAsync.class);
         release = mkSW360Release("releaseName");
         releaseClientAdapter = new SW360ReleaseClientAdapterAsyncImpl(releaseClient, componentClientAdapter);
-    }
-
-    @Test
-    public void testGetOrCreateReleaseWithPatchRelease() {
-        SW360ReleaseLinkObjects links = getSw360ReleaseLinkObjects();
-        SW360SparseRelease sparseRelease = new SW360SparseRelease();
-        sparseRelease.setLinks(links);
-
-        when(releaseClient.getReleasesByExternalIds(release.getExternalIds()))
-                .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseRelease)));
-        when(releaseClient.getRelease(sparseRelease.getReleaseId()))
-                .thenReturn(CompletableFuture.completedFuture(release));
-
-        when(releaseClient.patchRelease(release))
-                .thenReturn(CompletableFuture.completedFuture(release));
-
-        SW360Release patchedRelease = block(releaseClientAdapter.getOrCreateRelease(release, true));
-
-        assertThat(patchedRelease).isEqualTo(release);
-        verify(releaseClient).getRelease(ID);
-        verify(releaseClient).patchRelease(release);
-    }
-
-    private static SW360ReleaseLinkObjects getSw360ReleaseLinkObjects() {
-        String releaseHref = "url/" + ID;
-        Self releaseSelf = new Self().setHref(releaseHref);
-        SW360ReleaseLinkObjects links = new SW360ReleaseLinkObjects();
-        links.setSelf(releaseSelf);
-        return links;
     }
 
     @Test
@@ -169,25 +145,108 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         }
     }
 
+    private static SW360SparseAttachment createAttachment(String file) {
+        SW360SparseAttachment attachment = new SW360SparseAttachment();
+        attachment.setFilename(file);
+        return attachment;
+    }
+
+    private static SW360Release createReleaseWithAttachments(String... files) {
+        SW360Release release = new SW360Release();
+        release.setEmbedded(createEmbeddedReleaseWithAttachments(files));
+        return release;
+    }
+
+    private static SW360ReleaseEmbedded createEmbeddedReleaseWithAttachments(String... files) {
+        SW360ReleaseEmbedded releaseEmbedded = new SW360ReleaseEmbedded();
+        Set<SW360SparseAttachment> attachmentSet = Arrays.stream(files)
+                .map(SW360ReleaseClientAdapterAsyncImplTest::createAttachment)
+                .collect(Collectors.toSet());
+        releaseEmbedded.setAttachments(attachmentSet);
+        return releaseEmbedded;
+    }
+
     @Test
-    public void testUploadAttachments() {
-        SW360ReleaseEmbedded sw360ReleaseEmbedded = new SW360ReleaseEmbedded();
-        sw360ReleaseEmbedded.setAttachments(Collections.emptySet());
-        release.setEmbedded(sw360ReleaseEmbedded);
+    public void testUploadAttachmentsSuccess() {
+        Path uploadPath1 = Paths.get("file1.doc");
+        SW360AttachmentType attachmentType1 = SW360AttachmentType.DOCUMENT;
+        Path uploadPath2 = Paths.get("sources.zip");
+        SW360AttachmentType attachmentType2 = SW360AttachmentType.SOURCE;
+        release.setEmbedded(createEmbeddedReleaseWithAttachments());
+        SW360Release updatedRelease1 = createReleaseWithAttachments("attach1");
+        SW360Release updatedRelease2 = createReleaseWithAttachments("attach1", "attach2");
 
-        SW360AttachmentType attachmentType = SW360AttachmentType.SOURCE;
-        Path path = Paths.get("");
+        AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
+                .addAttachment(uploadPath1, attachmentType1)
+                .addAttachment(uploadPath2, attachmentType2)
+                .build();
+        when(releaseClient.uploadAndAttachAttachment(release, uploadPath1, attachmentType1))
+                .thenReturn(CompletableFuture.completedFuture(updatedRelease1));
+        when(releaseClient.uploadAndAttachAttachment(updatedRelease1, uploadPath2, attachmentType2))
+                .thenReturn(CompletableFuture.completedFuture(updatedRelease2));
 
-        when(releaseClient.uploadAndAttachAttachment(release, path, attachmentType))
-                .thenReturn(CompletableFuture.completedFuture(release));
+        AttachmentUploadResult<SW360Release> result = block(releaseClientAdapter.uploadAttachments(uploadRequest));
 
-        Map<Path, SW360AttachmentType> attachmentMap = new HashMap<>();
-        attachmentMap.put(path, attachmentType);
+        assertThat(result.getTarget()).isEqualTo(updatedRelease2);
+        assertThat(result.isSuccess()).isTrue();
+        assertThat(result.failedUploads()).isEmpty();
+        assertThat(result.successfulUploads()).contains(new AttachmentUploadRequest.Item(uploadPath1, attachmentType1),
+                new AttachmentUploadRequest.Item(uploadPath2, attachmentType2));
+    }
 
-        SW360Release releaseWithAttachment = block(releaseClientAdapter.uploadAttachments(this.release, attachmentMap));
+    @Test
+    public void testUploadAttachmentsWithFailures() {
+        Path uploadPath1 = Paths.get("failedUpload1.err");
+        SW360AttachmentType attachmentType1 = SW360AttachmentType.DESIGN;
+        Throwable failure1 = new IOException("I/O exception during upload");
+        Path uploadPath2 = Paths.get("failedUpload2.exc");
+        SW360AttachmentType attachmentType2 = SW360AttachmentType.BINARY_SELF;
+        Throwable failure2 = new SW360ClientException("Forbidden upload");
+        Path uploadPath3 = Paths.get("success.yes");
+        SW360AttachmentType attachmentType3 = SW360AttachmentType.CLEARING_REPORT;
+        release.setEmbedded(createEmbeddedReleaseWithAttachments());
+        SW360Release updatedRelease = createReleaseWithAttachments("attach1");
 
-        assertThat(releaseWithAttachment).isEqualTo(release);
-        verify(releaseClient).uploadAndAttachAttachment(release, path, attachmentType);
+        AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
+                .addAttachment(uploadPath1, attachmentType1)
+                .addAttachment(uploadPath2, attachmentType2)
+                .addAttachment(uploadPath3, attachmentType3)
+                .build();
+        when(releaseClient.uploadAndAttachAttachment(release, uploadPath1, attachmentType1))
+                .thenReturn(FutureUtils.failedFuture(failure1));
+        when(releaseClient.uploadAndAttachAttachment(release, uploadPath2, attachmentType2))
+                .thenReturn(FutureUtils.failedFuture(failure2));
+        when(releaseClient.uploadAndAttachAttachment(release, uploadPath3, attachmentType3))
+                .thenReturn(CompletableFuture.completedFuture(updatedRelease));
+
+        AttachmentUploadResult<SW360Release> result = block(releaseClientAdapter.uploadAttachments(uploadRequest));
+        assertThat(result.getTarget()).isEqualTo(updatedRelease);
+        assertThat(result.isSuccess()).isFalse();
+        assertThat(result.successfulUploads())
+                .containsOnly(new AttachmentUploadRequest.Item(uploadPath3, attachmentType3));
+        assertThat(result.failedUploads()).hasSize(2);
+        assertThat(result.failedUploads().get(new AttachmentUploadRequest.Item(uploadPath1, attachmentType1)))
+                .isEqualTo(failure1);
+        assertThat(result.failedUploads().get(new AttachmentUploadRequest.Item(uploadPath2, attachmentType2)))
+                .isEqualTo(failure2);
+    }
+
+    @Test
+    public void testUploadAttachmentsDuplicate() {
+        String fileName = "alreadyExistingAttachment.1st";
+        Path uploadPath = Paths.get(fileName);
+        SW360AttachmentType attachmentType = SW360AttachmentType.LEGAL_EVALUATION;
+        release.setEmbedded(createEmbeddedReleaseWithAttachments(fileName));
+        AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
+                .addAttachment(uploadPath, attachmentType)
+                .build();
+
+        AttachmentUploadResult<SW360Release> result = block(releaseClientAdapter.uploadAttachments(uploadRequest));
+        assertThat(result.getTarget()).isEqualTo(release);
+        assertThat(result.isSuccess()).isFalse();
+        assertThat(result.failedUploads().get(new AttachmentUploadRequest.Item(uploadPath, attachmentType)))
+                .isInstanceOf(SW360ClientException.class);
+        verifyZeroInteractions(releaseClient);
     }
 
     @Test
@@ -199,7 +258,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseRelease)));
 
         Optional<SW360SparseRelease> releaseByExternalIds =
-                block(releaseClientAdapter.getReleaseByExternalIds(externalIds));
+                block(releaseClientAdapter.getSparseReleaseByExternalIds(externalIds));
 
         assertThat(releaseByExternalIds).isPresent();
         assertThat(releaseByExternalIds).hasValue(sparseRelease);
@@ -213,7 +272,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
                 .thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
 
         Optional<SW360SparseRelease> releaseByExternalIds =
-                block(releaseClientAdapter.getReleaseByExternalIds(externalIds));
+                block(releaseClientAdapter.getSparseReleaseByExternalIds(externalIds));
         assertThat(releaseByExternalIds).isEmpty();
     }
 
@@ -225,7 +284,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
                         new SW360SparseRelease(), new SW360SparseRelease())));
 
         try {
-            block(releaseClientAdapter.getReleaseByExternalIds(externalIds));
+            block(releaseClientAdapter.getSparseReleaseByExternalIds(externalIds));
             fail("Multiple results not detected");
         } catch (SW360ClientException e) {
             assertThat(e.getMessage()).contains("Multiple releases");
@@ -242,7 +301,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
                 .thenReturn(CompletableFuture.completedFuture(Optional.of(component)));
 
         Optional<SW360SparseRelease> releaseByNameAndVersion =
-                block(releaseClientAdapter.getReleaseByNameAndVersion(release));
+                block(releaseClientAdapter.getSparseReleaseByNameAndVersion(release.getName(), release.getVersion()));
 
         assertThat(releaseByNameAndVersion).isPresent();
         assertThat(releaseByNameAndVersion).hasValue(sparseRelease);
@@ -307,7 +366,15 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         assertThat(downloadPath).hasValue(path);
     }
 
-    public static SW360Release mkSW360Release(String name) throws MalformedPackageURLException {
+    @Test
+    public void testUpdateRelease() throws MalformedPackageURLException {
+        SW360Release updatedRelease = mkSW360Release("updatedRelease");
+        when(releaseClient.patchRelease(release)).thenReturn(CompletableFuture.completedFuture(updatedRelease));
+
+        assertThat(block(releaseClientAdapter.updateRelease(release))).isEqualTo(updatedRelease);
+    }
+
+    private static SW360Release mkSW360Release(String name) throws MalformedPackageURLException {
         SW360Release sw360Release = new SW360Release();
 
         sw360Release.setVersion(RELEASE_VERSION1);

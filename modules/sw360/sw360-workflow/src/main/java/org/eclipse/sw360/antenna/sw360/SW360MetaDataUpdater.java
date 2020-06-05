@@ -13,6 +13,8 @@
 package org.eclipse.sw360.antenna.sw360;
 
 import org.eclipse.sw360.antenna.model.license.License;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter;
@@ -24,6 +26,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360Licens
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +75,20 @@ public class SW360MetaDataUpdater {
     }
 
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact) {
-        return releaseClientAdapter.getOrCreateRelease(sw360ReleaseFromArtifact, updateReleases);
+        Optional<SW360SparseRelease> optSparseReleaseByIds =
+                releaseClientAdapter.getSparseReleaseByExternalIds(sw360ReleaseFromArtifact.getExternalIds());
+        Optional<SW360SparseRelease> optSparseRelease = optSparseReleaseByIds.isPresent() ? optSparseReleaseByIds :
+                releaseClientAdapter.getSparseReleaseByNameAndVersion(sw360ReleaseFromArtifact.getName(),
+                        sw360ReleaseFromArtifact.getVersion());
+        Optional<SW360Release> optRelease = optSparseRelease.flatMap(releaseClientAdapter::enrichSparseRelease)
+                .map(sw360ReleaseFromArtifact::mergeWith);
+
+        if (optRelease.isPresent()) {
+            SW360Release release = optRelease.get();
+            return updateReleases ?
+                    releaseClientAdapter.updateRelease(release) : release;
+        }
+        return releaseClientAdapter.createRelease(sw360ReleaseFromArtifact);
     }
 
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) {
@@ -90,7 +106,17 @@ public class SW360MetaDataUpdater {
     }
 
     public SW360Release uploadAttachments(SW360Release sw360Release, Map<Path, SW360AttachmentType> attachments) {
-        return releaseClientAdapter.uploadAttachments(sw360Release, attachments);
+        AttachmentUploadRequest.Builder<SW360Release> builder = AttachmentUploadRequest.builder(sw360Release);
+        for (Map.Entry<Path, SW360AttachmentType> e : attachments.entrySet()) {
+            builder = builder.addAttachment(e.getKey(), e.getValue());
+        }
+
+        AttachmentUploadResult<SW360Release> result = releaseClientAdapter.uploadAttachments(builder.build());
+        LOGGER.debug("Result of attachment upload operation: {}", result);
+        if (!result.isSuccess()) {
+            LOGGER.error("Failed to upload attachments: {}", result.failedUploads());
+        }
+        return result.getTarget();
     }
 
     /**

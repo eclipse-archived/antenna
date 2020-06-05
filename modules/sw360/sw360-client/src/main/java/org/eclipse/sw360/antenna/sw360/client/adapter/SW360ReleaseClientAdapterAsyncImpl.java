@@ -12,20 +12,18 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
-import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentEmbedded;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.failedFuture;
@@ -54,38 +52,16 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<SW360Release> getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateReleases) {
-        // NOTE: this code does now always merge with the SW360Release used for querying
-        return getRelease(sw360ReleaseFromArtifact)
-                .thenApply(optRelease -> optRelease.map(sw360ReleaseFromArtifact::mergeWith))
-                .thenCompose(optRelease -> {
-                    if (updateReleases && optRelease.isPresent()) {
-                        return getReleaseClient().patchRelease(optRelease.get())
-                                .thenApply(Optional::of);
-                    } else {
-                        return CompletableFuture.completedFuture(optRelease);
-                    }
-                })
-                .thenCompose(optRelease ->
-                        optRelease
-                                .map(CompletableFuture::completedFuture)
-                                .orElseGet(() -> createRelease(sw360ReleaseFromArtifact)));
-    }
-
-    /*
-     * Create a release in SW360
-     */
-    @Override
-    public CompletableFuture<SW360Release> createRelease(SW360Release releaseFromArtifact) {
-        if (!SW360ReleaseAdapterUtils.isValidRelease(releaseFromArtifact)) {
+    public CompletableFuture<SW360Release> createRelease(SW360Release release) {
+        if (!SW360ReleaseAdapterUtils.isValidRelease(release)) {
             return failedFuture(new SW360ClientException("Can not write invalid release for " +
-                    releaseFromArtifact.getName() + "-" + releaseFromArtifact.getVersion()));
+                    release.getName() + "-" + release.getVersion()));
         }
-        if (releaseFromArtifact.getId() != null) {
-            throw new SW360ClientException("Can not write release which already has the id " + releaseFromArtifact.getId());
+        if (release.getId() != null) {
+            throw new SW360ClientException("Can not write release which already has the id " + release.getId());
         }
 
-        return assignReleaseToComponent(releaseFromArtifact)
+        return assignReleaseToComponent(release)
                 .thenCompose(getReleaseClient()::createRelease);
     }
 
@@ -114,22 +90,10 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<SW360Release> uploadAttachments(SW360Release sw360item, Map<Path, SW360AttachmentType> attachments) {
-        CompletableFuture<SW360Release> futUpdatedRelease = CompletableFuture.completedFuture(sw360item);
-        for(Map.Entry<Path, SW360AttachmentType> attachment : attachments.entrySet()) {
-            if (!attachmentIsPotentialDuplicate(attachment.getKey(), sw360item.getEmbedded().getAttachments())) {
-                futUpdatedRelease = futUpdatedRelease.thenCompose(release ->
-                        getReleaseClient().uploadAndAttachAttachment(sw360item, attachment.getKey(),
-                                attachment.getValue()));
-            }
-        }
-
-        return futUpdatedRelease;
-    }
-
-    private static boolean attachmentIsPotentialDuplicate(Path attachment, Set<SW360SparseAttachment> attachments) {
-        return attachments.stream()
-                .anyMatch(attachment1 -> attachment1.getFilename().equals(attachment.getFileName().toString()));
+    public CompletableFuture<AttachmentUploadResult<SW360Release>>
+    uploadAttachments(AttachmentUploadRequest<SW360Release> uploadRequest) {
+        return SW360AttachmentUtils.uploadAttachments(getReleaseClient(), uploadRequest,
+                release -> release.getEmbedded().getAttachments());
     }
 
     @Override
@@ -143,23 +107,7 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<Optional<SW360SparseRelease>> getSparseRelease(SW360Release release) {
-        return getReleaseByExternalIds(release.getExternalIds())
-                .thenCompose(optRelease ->
-                        optRelease.map(rel -> CompletableFuture.completedFuture(Optional.of(rel)))
-                        .orElseGet(() -> getReleaseByNameAndVersion(release)));
-    }
-
-    @Override
-    public CompletableFuture<Optional<SW360Release>> getRelease(SW360Release sw360ReleaseFromArtifact) {
-        return getSparseRelease(sw360ReleaseFromArtifact)
-                .thenCompose(optRelease ->
-                        optRelease.map(this::enrichSparseRelease)
-                                .orElseGet(() -> CompletableFuture.completedFuture(Optional.empty())));
-    }
-
-    @Override
-    public CompletableFuture<Optional<SW360SparseRelease>> getReleaseByExternalIds(Map<String, ?> externalIds) {
+    public CompletableFuture<Optional<SW360SparseRelease>> getSparseReleaseByExternalIds(Map<String, ?> externalIds) {
         return getReleaseClient().getReleasesByExternalIds(externalIds)
                 .thenApply(releases -> {
                     if (releases.isEmpty()) {
@@ -174,13 +122,14 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<Optional<SW360SparseRelease>> getReleaseByNameAndVersion(SW360Release release) {
-        return getComponentAdapter().getComponentByName(release.getName())
+    public CompletableFuture<Optional<SW360SparseRelease>> getSparseReleaseByNameAndVersion(String componentName,
+                                                                                            String version) {
+        return getComponentAdapter().getComponentByName(componentName)
                 .thenApply(optComponent ->
                         optComponent.map(SW360Component::getEmbedded)
                                 .map(SW360ComponentEmbedded::getReleases)
                                 .flatMap(releases -> releases.stream()
-                                        .filter(rel -> release.getVersion().equals(rel.getVersion()))
+                                        .filter(rel -> version.equals(rel.getVersion()))
                                         .findFirst()));
 
     }
@@ -204,10 +153,13 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<Optional<Path>> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath) {
-        return Optional.ofNullable(release.getLinks().getSelf())
-                .map(self ->
-                        optionalFuture(getReleaseClient().downloadAttachment(self.getHref(), attachment, downloadPath)))
-                .orElseGet(() -> CompletableFuture.completedFuture(Optional.empty()));
+    public CompletableFuture<Optional<Path>> downloadAttachment(SW360Release release, SW360SparseAttachment attachment,
+                                                                Path downloadPath) {
+        return SW360AttachmentUtils.downloadAttachment(getReleaseClient(), release, attachment, downloadPath);
+    }
+
+    @Override
+    public CompletableFuture<SW360Release> updateRelease(SW360Release release) {
+        return getReleaseClient().patchRelease(release);
     }
 }

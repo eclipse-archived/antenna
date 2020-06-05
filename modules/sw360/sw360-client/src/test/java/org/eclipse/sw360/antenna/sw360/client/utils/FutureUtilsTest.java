@@ -17,6 +17,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -96,5 +97,46 @@ public class FutureUtilsTest {
 
         CompletableFuture<Optional<Integer>> optFuture = FutureUtils.optionalFuture(future);
         assertThat(FutureUtils.block(optFuture)).isNotPresent();
+    }
+
+    @Test
+    public void testOrFallbackDefinedValue() {
+        CompletableFuture<Optional<Integer>> future = CompletableFuture.completedFuture(Optional.of(RESULT));
+        Supplier<CompletableFuture<Integer>> fallback = () -> {
+            throw new UnsupportedOperationException("Unexpected");
+        };
+
+        CompletableFuture<Integer> definedFuture = FutureUtils.orFallback(future, fallback);
+        assertThat(FutureUtils.block(definedFuture)).isEqualTo(RESULT);
+    }
+
+    @Test
+    public void testOrFallbackUndefinedValue() {
+        CompletableFuture<Optional<Integer>> future = CompletableFuture.completedFuture(Optional.empty());
+        Supplier<CompletableFuture<Integer>> fallback = () -> CompletableFuture.completedFuture(RESULT);
+
+        CompletableFuture<Integer> definedFuture = FutureUtils.orFallback(future, fallback);
+        assertThat(FutureUtils.block(definedFuture)).isEqualTo(RESULT);
+    }
+
+    @Test
+    public void testOrRetryDefinedValue() {
+        CompletableFuture<Optional<Integer>> future = CompletableFuture.completedFuture(Optional.of(RESULT));
+        Supplier<CompletableFuture<Optional<Integer>>> retry = () -> {
+            throw new UnsupportedOperationException("Unexpected");
+        };
+
+        CompletableFuture<Optional<Integer>> retryFuture = FutureUtils.orRetry(future, retry);
+        assertThat(FutureUtils.block(retryFuture)).isEqualTo(Optional.of(RESULT));
+    }
+
+    @Test
+    public void testOrRetryUndefinedValue() {
+        CompletableFuture<Optional<Integer>> future = CompletableFuture.completedFuture(Optional.empty());
+        Supplier<CompletableFuture<Optional<Integer>>> retry =
+                () -> CompletableFuture.completedFuture(Optional.of(RESULT));
+
+        CompletableFuture<Optional<Integer>> retryFuture = FutureUtils.orRetry(future, retry);
+        assertThat(FutureUtils.block(retryFuture)).isEqualTo(Optional.of(RESULT));
     }
 }
