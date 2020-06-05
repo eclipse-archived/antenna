@@ -1,6 +1,7 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 
 import java.util.*;
@@ -54,13 +55,13 @@ public class IRGetReleasesOfProjects extends InfoRequest<SW360SparseRelease> {
     Collection<SW360SparseRelease> execute(SW360Connection connection) {
         Collection<SW360SparseRelease> result;
         if (projectId != null && !projectId.isEmpty()) {
-            result = connection.getProjectAdapter().getLinkedReleases(projectId);
+            result = connection.getProjectAdapter().getLinkedReleases(projectId, true);
             return result;
         } else if (projectName != null && !projectName.isEmpty() &&
             projectVersion != null && !projectVersion.isEmpty()) {
-            final Optional<String> projectIdByNameAndVersion = connection.getProjectAdapter().getProjectIdByNameAndVersion(projectName, projectVersion);
+            final Optional<SW360Project> projectIdByNameAndVersion = connection.getProjectAdapter().getProjectByNameAndVersion(projectName, projectVersion);
             if (projectIdByNameAndVersion.isPresent()) {
-                result = connection.getProjectAdapter().getLinkedReleases(projectIdByNameAndVersion.get());
+                result = connection.getProjectAdapter().getLinkedReleases(projectIdByNameAndVersion.get().getId(), true);
                 return result;
             } else {
                 throw new IllegalArgumentException("Project " + projectName + " with version " + projectVersion + " could not be found.");
