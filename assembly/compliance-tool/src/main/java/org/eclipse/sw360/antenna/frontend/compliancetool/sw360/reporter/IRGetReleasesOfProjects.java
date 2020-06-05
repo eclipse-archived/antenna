@@ -1,4 +1,4 @@
-package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
+package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;

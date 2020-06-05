@@ -172,7 +172,7 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
                 "Compliance Tool modes: (only one can be set)" + cr +
                 SWITCH_EXPORTER_SHORT + ", " + SWITCH_EXPORTER_LONG + ":    Sets the compliance tool execute the SW360Exporter" + cr +
                 SWITCH_UPDATER_SHORT + ", " + SWITCH_UPDATER_LONG + ":    Sets the compliance tool execute the SW360Updater" + cr +
-                SWITCH_REPORTER + ":    Sets the compliance tool to produce a status report of chosen content in your sw360 instance" + cr;
+                SWITCH_REPORTER + ":    Sets the compliance tool to produce a reporter report of chosen content in your sw360 instance" + cr;
     }
 
     /**

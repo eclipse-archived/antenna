@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter.SW360Exporter;
-import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.SW360StatusReporter;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter.SW360StatusReporter;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater.ClearingReportGenerator;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater.SW360Updater;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;

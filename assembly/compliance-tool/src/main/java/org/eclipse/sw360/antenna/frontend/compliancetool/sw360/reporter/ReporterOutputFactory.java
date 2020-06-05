@@ -1,4 +1,4 @@
-package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
+package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 /**
  * Factory class for creating a {@link ReporterOutput} implementation

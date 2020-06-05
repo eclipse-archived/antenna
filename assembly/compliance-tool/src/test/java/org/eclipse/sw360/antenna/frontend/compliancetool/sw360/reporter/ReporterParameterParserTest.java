@@ -1,4 +1,4 @@
-package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
+package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIOptions;
 import org.junit.Test;
@@ -10,7 +10,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.ReporterParameterParser.REPORTER_PARAMETER_PREFIX;
+import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter.ReporterParameterParser.REPORTER_PARAMETER_PREFIX;
 
 public class ReporterParameterParserTest {
 

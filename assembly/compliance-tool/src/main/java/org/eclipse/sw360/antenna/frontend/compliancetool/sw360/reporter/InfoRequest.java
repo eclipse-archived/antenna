@@ -1,4 +1,4 @@
-package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
+package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 
@@ -28,7 +28,7 @@ abstract public class InfoRequest<T> {
 
             @Override
             String helpMessage() {
-                return "The provided info parameter is not supported in this status reporter";
+                return "The provided info parameter is not supported in this reporter reporter";
             }
 
             @Override

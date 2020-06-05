@@ -1,4 +1,4 @@
-package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status;
+package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIOptions;
 import org.slf4j.Logger;
@@ -43,14 +43,14 @@ class ReporterParameterParser {
      */
     static String getInfoParameterFromParameters(Set<String> parameters) {
         if (parameters.isEmpty()) {
-            LOGGER.error("No parameters provided for the status reporter.");
+            LOGGER.error("No parameters provided for the reporter reporter.");
             LOGGER.info(InfoRequestFactory.helpMessage());
-            throw new IllegalArgumentException("No parameters provided for the status reporter.");
+            throw new IllegalArgumentException("No parameters provided for the reporter reporter.");
         }
         if (parameters.stream().filter(p -> p.contains(REPORTER_PARAMETER_PREFIX)).count() != 1) {
-            LOGGER.error("Too many information requests were made in this status report. ");
+            LOGGER.error("Too many information requests were made in this reporter report. ");
             LOGGER.info(InfoRequestFactory.helpMessage());
-            throw new IllegalArgumentException("Too many information requests were made in this status report. ");
+            throw new IllegalArgumentException("Too many information requests were made in this reporter report. ");
         }
         return parameters.stream().filter(p -> p.contains(REPORTER_PARAMETER_PREFIX)).findFirst().orElse("");
     }

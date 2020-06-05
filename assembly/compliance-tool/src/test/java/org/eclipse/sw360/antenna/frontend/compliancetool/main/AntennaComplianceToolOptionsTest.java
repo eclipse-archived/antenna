@@ -11,7 +11,7 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.main;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.status.IRGetClearedReleases;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter.IRGetClearedReleases;
 import org.junit.Test;
 
 import java.util.*;
