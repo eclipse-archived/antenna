@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -37,22 +38,39 @@ public class SW360StatusReporter {
     public SW360StatusReporter(SW360Configuration configuration, Set<String> parameters) {
         this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
 
-        Objects.requireNonNull(parameters, "Parameters must not be null");
+        ReporterParameterParser.checkParameters(parameters);
+        Map<String, String> mappedParameters = ReporterParameterParser.mapParameters(parameters);
 
-        this.outputFormat = ReporterParameterParser.getOutputFormat(parameters);
+        this.outputFormat = ReporterParameterParser.getOutputFormat(mappedParameters);
         this.reporterOutput = ReporterOutputFactory.getReporterOutput(outputFormat);
 
-        this.infoParameter = ReporterParameterParser.getInfoParameterFromParameters(parameters);
+        this.infoParameter = ReporterParameterParser.getInfoParameterFromParameters(mappedParameters);
         this.infoRequest = InfoRequestFactory.getInfoRequestFromString(infoParameter);
-        parseAdditionalParameters(parameters);
+        parseAdditionalParameters(mappedParameters);
     }
 
+    /**
+     * Executes the execute function of the infoRequest and prints it
+     * to a csv file.
+     */
+    public void execute() {
+        LOGGER.debug("{} has started.", SW360StatusReporter.class.getName());
+        final SW360Connection connection = configuration.getConnection();
+
+        final Collection result = infoRequest.execute(connection);
+
+        reporterOutput.printFile(result, configuration);
+    }
+
+    void setInfoRequest(InfoRequest infoRequest) {
+        this.infoRequest = infoRequest;
+    }
 
     /**
      * Creates a parsed {@code InfoRequest} from a set of parameter
      * @param parameters set of parameters to be parsed
      */
-    private void parseAdditionalParameters(Set<String> parameters) {
+    private void parseAdditionalParameters(Map<String, String> parameters) {
         if (Objects.equals(infoRequest, InfoRequest.emptyInfoRequest())) {
             throw new IllegalArgumentException(infoParameter + ": " + infoRequest.helpMessage());
         }
@@ -68,22 +86,5 @@ public class SW360StatusReporter {
                     "The information parameter " + infoRequest.getInfoParameter() + " you requested does not have all parameters it needs." +
                             System.lineSeparator() + infoRequest.helpMessage());
         }
-    }
-
-    void setInfoRequest(InfoRequest infoRequest) {
-        this.infoRequest = infoRequest;
-    }
-
-    /**
-     * Executes the execute function of the infoRequest and prints it
-     * to a csv file.
-     */
-    public void execute() {
-        LOGGER.debug("{} has started.", SW360StatusReporter.class.getName());
-        final SW360Connection connection = configuration.getConnection();
-
-        final Collection result = infoRequest.execute(connection);
-
-        reporterOutput.printFile(result, configuration);
     }
 }

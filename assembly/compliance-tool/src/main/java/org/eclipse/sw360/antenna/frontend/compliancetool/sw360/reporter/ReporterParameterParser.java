@@ -4,8 +4,8 @@ import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Class responsible for parsing status reporter parameters
@@ -18,7 +18,7 @@ class ReporterParameterParser {
     /**
      * The long prefix to identify a parameter indication the desired info parameter of the reporter.
      */
-    static final String REPORTER_PARAMETER_PREFIX = AbstractAntennaCLIOptions.SWITCH_PREFIX + "-info" + AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER;
+    static final String REPORTER_PARAMETER_PREFIX = AbstractAntennaCLIOptions.SWITCH_PREFIX + "-info";
 
     /**
      * The long parameter prefix to determine the output format of the reporter
@@ -33,7 +33,7 @@ class ReporterParameterParser {
     /**
      * The default output format for the reporter output
      */
-    private static final String DEFAULT_OUTPUT_FORMAT = "CSV";
+    static final String DEFAULT_OUTPUT_FORMAT = "CSV";
 
     /**
      * Creates a string representing the info parameter of an{@link InfoRequest}
@@ -41,50 +41,8 @@ class ReporterParameterParser {
      * @return parsed {@code InfoRequest} with parsed additional parameters
      * @throws IllegalArgumentException when invalid or misconfigured parameters are given or are missing.
      */
-    static String getInfoParameterFromParameters(Set<String> parameters) {
-        if (parameters.isEmpty()) {
-            LOGGER.error("No parameters provided for the reporter reporter.");
-            LOGGER.info(InfoRequestFactory.helpMessage());
-            throw new IllegalArgumentException("No parameters provided for the reporter reporter.");
-        }
-        if (parameters.stream().filter(p -> p.contains(REPORTER_PARAMETER_PREFIX)).count() != 1) {
-            LOGGER.error("Too many information requests were made in this reporter report. ");
-            LOGGER.info(InfoRequestFactory.helpMessage());
-            throw new IllegalArgumentException("Too many information requests were made in this reporter report. ");
-        }
-        return parameters.stream().filter(p -> p.contains(REPORTER_PARAMETER_PREFIX)).findFirst().orElse("");
-    }
-
-    /**
-     * Parses a parameter value from a parameter key value pair separated by {@code AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER}
-     * @param parameter String that contains a parameter key and a value plus identifiers.
-     * @return String representing a parameter value
-     *      * @throws IllegalArgumentException if more than one or no
-     *      * {@code AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER} is used.
-     */
-    private static String getParameterValueFromParameter(String parameter) {
-        String[] parameterParts = parameter.split(AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER);
-        if (parameterParts.length != 2) {
-            throw new IllegalArgumentException(
-                    "The provided parameter " + parameter + " does not adhere to the structure --<parameter>=<value> and is therefore invalid.");
-        }
-        return parameterParts[1];
-    }
-
-    /**
-     * Parses a parameter key from a parameter key value pair separated by {@code AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER}
-     * @param parameter String that contains a parameter key and a value plus identifiers.
-     * @return String representing a parameter key
-     * @throws IllegalArgumentException if more than one or no
-     * {@code AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER} is used.
-     */
-    private static String getParameterKeyFromParameter(String parameter) {
-        String[] parameterParts = parameter.split(AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER);
-        if (parameterParts.length != 2) {
-            throw new IllegalArgumentException(
-                    "The provided parameter " + parameter + " does not adhere to the structure --<parameter>=<value> and is therefore invalid.");
-        }
-        return parameterParts[0];
+    static String getInfoParameterFromParameters(Map<String, String> parameters) {
+        return parameters.get(REPORTER_PARAMETER_PREFIX);
     }
 
     /**
@@ -93,12 +51,8 @@ class ReporterParameterParser {
      * @param parameterKey parameter key of the parameter key value pair
      * @return parameter value of the parameter key if contained in parameter set, otherwise null
      */
-    static String parseParameterValueFromListOfParameters(Set<String> parameters, String parameterKey) {
-        return parameters.stream()
-                .filter(p -> getParameterKeyFromParameter(p).equals(parameterKey))
-                .findFirst()
-                .map(ReporterParameterParser::getParameterValueFromParameter)
-                .orElse(null);
+    static String parseParameterValueFromMapOfParameters(Map<String, String> parameters, String parameterKey) {
+        return parameters.get(parameterKey);
     }
 
     /**
@@ -106,16 +60,52 @@ class ReporterParameterParser {
      * @param parameters Set of parameters that are searched for the output format parameter
      * @return String of the output format parameter value
      */
-    static String getOutputFormat(Set<String> parameters) {
-        final String outputLong = parseParameterValueFromListOfParameters(parameters, OUTPUT_FORMAT_PREFIX_LONG);
+    static String getOutputFormat(Map<String, String> parameters) {
+        final String outputLong = parameters.get(OUTPUT_FORMAT_PREFIX_LONG);
         if (outputLong != null) {
             return outputLong;
         } else {
-            return Optional.ofNullable(parseParameterValueFromListOfParameters(parameters, OUTPUT_FORMAT_PREFIX_SHORT))
+            return Optional.ofNullable(parameters.get(OUTPUT_FORMAT_PREFIX_SHORT))
                     .orElseGet(() -> {
                         LOGGER.warn("No output format is given.");
                         return DEFAULT_OUTPUT_FORMAT;
                     });
+        }
+    }
+
+    /**
+     * Maps a set of parameters with the key being the parameter key
+     * and the value the parameter value. The Strings are split by the
+     * {@code AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER}
+     * @param parameters set of strings representing parameters
+     * @return Map of parameter key value pairs
+     * @throws {@code IllegalStateException} by default if set collected
+     * to map contains a duplicate key
+     */
+    static Map<String, String> mapParameters(Set<String> parameters) {
+        return parameters.stream()
+                .map(p -> p.split(AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER))
+                .filter(sa -> {
+                    if (sa.length != 2) {
+                        throw new IllegalArgumentException(Arrays.toString(sa) + " does not have the proper format.");
+                    } else {
+                        return true;
+                    }
+                })
+                .collect(Collectors.toMap(sa -> sa[0], sa -> sa[1]));
+    }
+
+    /**
+     * Checks if the given set is either null or empty
+     * @param parameters set of strings representing parameters
+     * @throws {@code IllegalArgumentException} if set is empty
+     */
+    static void checkParameters(Set<String> parameters) {
+        Objects.requireNonNull(parameters, "Parameters must not be null");
+        if (parameters.isEmpty()) {
+            LOGGER.error("No parameters provided for the reporter reporter.");
+            LOGGER.info(InfoRequestFactory.helpMessage());
+            throw new IllegalArgumentException("No parameters provided for the reporter reporter.");
         }
     }
 }

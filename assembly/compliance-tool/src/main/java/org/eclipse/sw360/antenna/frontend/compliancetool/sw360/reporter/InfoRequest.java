@@ -4,6 +4,7 @@ import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 abstract public class InfoRequest<T> {
@@ -16,7 +17,7 @@ abstract public class InfoRequest<T> {
     abstract String helpMessage();
     abstract boolean isValid();
     abstract Set<String> getAdditionalParameters();
-    abstract void parseAdditionalParameter(Set<String> parameters);
+    abstract void parseAdditionalParameter(Map<String, String> parameters);
     abstract Collection<T> execute(SW360Connection connection);
 
     static InfoRequest emptyInfoRequest() {
@@ -42,7 +43,7 @@ abstract public class InfoRequest<T> {
             }
 
             @Override
-            void parseAdditionalParameter(Set<String> parameters) {
+            void parseAdditionalParameter(Map<String, String> parameters) {
                 // no-op
             }
 

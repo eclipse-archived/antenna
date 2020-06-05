@@ -3,13 +3,10 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class IRGetReleasesOfProjects extends InfoRequest<SW360SparseRelease> {
-    private static final String GET_RELEASES_OF_PROJECT = ReporterParameterParser.REPORTER_PARAMETER_PREFIX + "releases-of-project";
+    private static final String GET_RELEASES_OF_PROJECT = "releases-of-project";
     private static final String PROJECT_NAME = "--project_name";
     private static final String PROJECT_VERSION = "--project-version";
     private static final String PROJECT_ID = "--project_id";
@@ -45,13 +42,12 @@ public class IRGetReleasesOfProjects extends InfoRequest<SW360SparseRelease> {
     }
 
     @Override
-    void parseAdditionalParameter(Set<String> parameters) {
-        System.out.println(parameters);
-        projectId = ReporterParameterParser.parseParameterValueFromListOfParameters(parameters, getProjectIdParameter());
+    void parseAdditionalParameter(Map<String, String> parameters) {
+        projectId = ReporterParameterParser.parseParameterValueFromMapOfParameters(parameters, getProjectIdParameter());
 
-        projectName = ReporterParameterParser.parseParameterValueFromListOfParameters(parameters, getProjectNameParameter());
+        projectName = ReporterParameterParser.parseParameterValueFromMapOfParameters(parameters, getProjectNameParameter());
 
-        projectVersion = ReporterParameterParser.parseParameterValueFromListOfParameters(parameters, getProjectVersionParameter());
+        projectVersion = ReporterParameterParser.parseParameterValueFromMapOfParameters(parameters, getProjectVersionParameter());
     }
 
     @Override

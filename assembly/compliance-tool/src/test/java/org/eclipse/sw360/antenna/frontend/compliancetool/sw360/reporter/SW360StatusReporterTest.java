@@ -1,6 +1,7 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
+import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIOptions;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -44,7 +45,7 @@ public class SW360StatusReporterTest {
         when(configurationMock.getCsvFileName())
                 .thenReturn(csvFileName);
 
-        parameter = new HashSet<>(Collections.singletonList(new IRGetClearedReleases().getInfoParameter()));
+        parameter = new HashSet<>(Collections.singletonList(ReporterParameterParser.REPORTER_PARAMETER_PREFIX + AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER + new IRGetClearedReleases().getInfoParameter()));
         SW360StatusReporter statusReporter = new SW360StatusReporter(configurationMock, parameter);
 
         statusReporter.setInfoRequest(InfoRequest.emptyInfoRequest());

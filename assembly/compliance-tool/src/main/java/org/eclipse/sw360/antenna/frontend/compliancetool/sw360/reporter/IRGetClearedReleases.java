@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class IRGetClearedReleases extends InfoRequest<SW360Release> {
-    private static final String GET_RELEASES_CLEARED = ReporterParameterParser.REPORTER_PARAMETER_PREFIX + "releases-cleared";
+    private static final String GET_RELEASES_CLEARED = "releases-cleared";
 
     @Override
     public String getInfoParameter() {
@@ -34,7 +34,7 @@ public class IRGetClearedReleases extends InfoRequest<SW360Release> {
     }
 
     @Override
-    void parseAdditionalParameter(Set<String> parameters) {
+    void parseAdditionalParameter(Map<String, String> parameters) {
         //no-op since no additional parameters
     }
 
