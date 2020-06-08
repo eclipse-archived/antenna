@@ -85,7 +85,7 @@ public class AntennaComplianceToolTest {
     public void testMainInitWithReporter() throws URISyntaxException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         Path propertiesFile = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).toURI());
         Set<String> parameterSet = new HashSet<>();
-        parameterSet.add(new IRGetClearedReleases().getInfoParameter());
+        parameterSet.add("--info=" + new IRGetClearedReleases().getInfoParameter());
 
         String methodName = "createStatusReporter";
 

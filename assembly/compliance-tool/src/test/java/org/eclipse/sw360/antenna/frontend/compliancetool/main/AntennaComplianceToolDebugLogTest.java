@@ -65,9 +65,9 @@ public class AntennaComplianceToolDebugLogTest {
     private static String propertiesFilePath;
 
     /**
-     * String always contained when a info message is executed.
+     * String representing a mode of the compliance tool.
      */
-    private static final String INFO_MESSAGE = "Starting Compliance Tool with mode 'updater'";
+    private static final String COMPLIANCE_TOOL_MODE = AntennaComplianceToolOptions.SWITCH_EXPORTER_SHORT;
 
     /**
      * String always contained when a debug message is executed.
@@ -75,9 +75,9 @@ public class AntennaComplianceToolDebugLogTest {
     private static final String DEBUG_MESSAGE = "has started";
 
     /**
-     * String representing a mode of the compliance tool.
+     * String always contained when a info message is executed.
      */
-    private static final String COMPLIANCE_TOOL_MODE = AntennaComplianceToolOptions.SWITCH_EXPORTER_SHORT;
+    private static final String INFO_MESSAGE = "Starting Compliance Tool with mode ";
 
 
     /**

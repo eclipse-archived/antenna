@@ -134,9 +134,9 @@ public class AntennaComplianceToolOptionsTest {
     @Test
     public void testParseWithParameters() {
         Set<String> parameterSet = new HashSet<>();
-        parameterSet.add(new IRGetClearedReleases().getInfoParameter());
+        parameterSet.add("--info=" + new IRGetClearedReleases().getInfoParameter());
         checkParse(new AntennaComplianceToolOptions(PROPERTIES_PATH, AntennaComplianceToolOptions.MODE_NAME_REPORTER, parameterSet, false, false, true),
-                new IRGetClearedReleases().getInfoParameter(), PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_REPORTER);
+                "--info=" + new IRGetClearedReleases().getInfoParameter(), PROPERTIES_PATH, AntennaComplianceToolOptions.SWITCH_REPORTER);
     }
 
     @Test
