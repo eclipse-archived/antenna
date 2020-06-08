@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Mock;
+import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
 
 import java.io.File;
@@ -51,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -107,20 +108,16 @@ public class SW360ExporterTest {
     private File csvFile;
     private SW360Release release;
 
-    SW360ComponentClientAdapter componentClientAdapterMock = mock(SW360ComponentClientAdapter.class);
+    private final SW360ComponentClientAdapter componentClientAdapterMock = mock(SW360ComponentClientAdapter.class);
 
-    SW360ReleaseClientAdapter releaseClientAdapterMock = mock(SW360ReleaseClientAdapter.class);
+    private final SW360ReleaseClientAdapter releaseClientAdapterMock = mock(SW360ReleaseClientAdapter.class);
 
-    SW360ReleaseClientAdapterAsync releaseAdapterAsyncMock;
+    private SW360ReleaseClientAdapterAsync releaseAdapterAsyncMock;
 
-    @Mock
-    SW360Configuration configurationMock = mock(SW360Configuration.class);
-
-    @Mock
-    SW360Connection connectionMock = mock(SW360Connection.class);
+    private SW360Connection connectionMock;
 
     @Before
-    public void setUp() throws IOException, URISyntaxException {
+    public void setUp() throws URISyntaxException {
         SW360SparseComponent sparseComponent = SW360TestUtils.mkSW360SparseComponent("testComponent");
         when(componentClientAdapterMock.getComponents())
                 .thenReturn(Collections.singletonList(sparseComponent));
@@ -144,30 +141,42 @@ public class SW360ExporterTest {
         when(releaseClientAdapterMock.downloadAttachment(any(), any(), any()))
                 .thenReturn(Optional.of(path));
 
-        when(connectionMock.getComponentAdapter())
+        connectionMock = createConnectionMock();
+    }
+
+    private SW360Connection createConnectionMock() {
+        SW360Connection connection = mock(SW360Connection.class);
+        when(connection.getComponentAdapter())
                 .thenReturn(componentClientAdapterMock);
-        when(connectionMock.getReleaseAdapter())
+        when(connection.getReleaseAdapter())
                 .thenReturn(releaseClientAdapterMock);
         releaseAdapterAsyncMock = createReleaseAdapterForDownloads();
-        when(connectionMock.getReleaseAdapterAsync())
+        when(connection.getReleaseAdapterAsync())
                 .thenReturn(releaseAdapterAsyncMock);
+        return connection;
+    }
 
-        when(configurationMock.getConnection())
+    private SW360Configuration createConfigurationMock(Map<String, String> properties) throws IOException {
+        SW360Configuration config = mock(SW360Configuration.class);
+        when(config.getConnection())
                 .thenReturn(connectionMock);
         csvFile = folder.newFile("sample.csv");
-        when(configurationMock.getCsvFileName())
+        when(config.getCsvFileName())
                 .thenReturn(csvFile.getName());
         Path basePath = Paths.get(csvFile.getParent());
-        when(configurationMock.getBaseDir())
+        when(config.getBaseDir())
                 .thenReturn(basePath);
-        when(configurationMock.getTargetDir())
+        when(config.getTargetDir())
                 .thenReturn(folder.getRoot().toPath());
+        when(config.getProperties()).thenReturn(properties);
+        Path sourcesPath = basePath.resolve(properties.get("sourcesDirectory"));
+        when(config.getSourcesPath()).thenReturn(sourcesPath);
+        return config;
+    }
+
+    private Map<String, String> prepareConfigProperties() {
         String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).getPath();
-        Map<String, String> propertiesMap = ComplianceFeatureUtils.mapPropertiesFile(new File(propertiesFilePath));
-        when(configurationMock.getProperties()).
-                thenReturn(propertiesMap);
-        Path sourcesPath = basePath.resolve(propertiesMap.get("sourcesDirectory"));
-        when(configurationMock.getSourcesPath()).thenReturn(sourcesPath);
+        return ComplianceFeatureUtils.mapPropertiesFile(new File(propertiesFilePath));
     }
 
     private SW360ReleaseClientAdapterAsync createReleaseAdapterForDownloads() {
@@ -186,9 +195,7 @@ public class SW360ExporterTest {
         new SW360Exporter(null);
     }
 
-    @Test
-    public void testExporter() throws IOException {
-        SW360Exporter sw360Exporter = new SW360Exporter(configurationMock);
+    private void runExporterTest(SW360Exporter sw360Exporter) throws IOException {
         sw360Exporter.execute();
 
         assertThat(csvFile).exists();
@@ -202,5 +209,30 @@ public class SW360ExporterTest {
         if (expectedNumOfReleases == 2) {
             assertThat(records.get(1).get("Copyrights")).isEqualTo(release.getCopyrights());
         }
+    }
+
+    @Test
+    public void testExporter() throws IOException {
+        SW360Configuration configurationMock = createConfigurationMock(prepareConfigProperties());
+        SW360Exporter sw360Exporter = new SW360Exporter(configurationMock);
+
+        runExporterTest(sw360Exporter);
+    }
+
+    @Test
+    public void testExporterWithCleanupOfUnreferencedSources() throws IOException {
+        Map<String, String> configProperties = prepareConfigProperties();
+        configProperties.put(SW360Exporter.PROP_REMOVE_SOURCES, "true");
+        SW360Configuration configurationMock = createConfigurationMock(configProperties);
+        SourcesExporter sourcesExporter = spy(new SourcesExporter(configurationMock.getSourcesPath()));
+        SW360Exporter exporter = new SW360Exporter(configurationMock, sourcesExporter);
+
+        runExporterTest(exporter);
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Collection<SourcesExporter.ReleaseWithSources>> captor =
+                ArgumentCaptor.forClass(Collection.class);
+        verify(sourcesExporter).removeUnreferencedFiles(captor.capture());
+        assertThat(captor.getValue()).hasSize(expectedNumOfReleases);
     }
 }

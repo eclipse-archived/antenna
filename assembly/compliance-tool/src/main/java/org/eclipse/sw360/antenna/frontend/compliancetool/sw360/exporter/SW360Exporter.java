@@ -38,6 +38,31 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SW360Exporter {
+    /**
+     * The configuration property defining the encoding of the CSV file.
+     */
+    public static final String PROP_ENCODING = "encoding";
+
+    /**
+     * The configuration property defining the delimiter to be used in the CSV
+     * file.
+     */
+    public static final String PROP_DELIMITER = "delimiter";
+
+    /**
+     * The configuration property defining the base directory for the exporter.
+     * Relative paths are resolved against this directory.
+     */
+    public static final String PROP_BASEDIR = "basedir";
+
+    /**
+     * The configuration property that controls whether source files that are
+     * not referenced by any of the current components should be removed. If
+     * set to <strong>true</strong>, obsolete source attachments are cleaned up
+     * automatically.
+     */
+    public static final String PROP_REMOVE_SOURCES = "removeUnreferencedSources";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360Exporter.class);
 
     private final SW360Configuration configuration;
@@ -45,8 +70,12 @@ public class SW360Exporter {
     private SW360Connection connection;
 
     public SW360Exporter(SW360Configuration configuration) {
+        this(configuration, new SourcesExporter(configuration.getSourcesPath()));
+    }
+
+    SW360Exporter(SW360Configuration configuration, SourcesExporter sourcesExporter) {
         this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
-        sourcesExporter = new SourcesExporter(configuration.getSourcesPath());
+        this.sourcesExporter = sourcesExporter;
     }
 
     public void execute() {
@@ -72,11 +101,15 @@ public class SW360Exporter {
                 .toFile();
 
         CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(),
-                Charset.forName(configuration.getProperties().get("encoding")),
-                configuration.getProperties().get("delimiter").charAt(0),
-                Paths.get(configuration.getProperties().get("basedir")));
+                Charset.forName(configuration.getProperties().get(PROP_ENCODING)),
+                configuration.getProperties().get(PROP_DELIMITER).charAt(0),
+                Paths.get(configuration.getProperties().get(PROP_BASEDIR)));
 
         csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
+
+        if (Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_SOURCES))) {
+            sourcesExporter.removeUnreferencedFiles(nonApprovedReleasesWithSources);
+        }
 
         LOGGER.info("The SW360Exporter was executed from the base directory: {} " +
                         "with the csv file written to the path: {}/{} " +
