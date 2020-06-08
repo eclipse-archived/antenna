@@ -14,6 +14,7 @@ import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapterA
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,11 +25,11 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -42,8 +43,21 @@ import java.util.stream.Collectors;
  * </p>
  */
 class SourcesExporter {
+    /**
+     * Format to generate a message about an unresolvable attachment.
+     */
+    private static final String FMT_UNRESOLVABLE_ATTACHMENT = "Could not resolve attachment %s for release %s:%s";
+
+    /**
+     * Format to generate a message about a failed attachment download.
+     */
+    private static final String FMT_DOWNLOAD_ERROR = "Failed to download attachment %s for release %s:%s";
+
     private static final Logger LOG = LoggerFactory.getLogger(SourcesExporter.class);
 
+    /**
+     * The path where downloaded source attachments are stored.
+     */
     private final Path sourcePath;
 
     /**
@@ -71,15 +85,10 @@ class SourcesExporter {
      */
     public Collection<ReleaseWithSources> downloadSources(SW360ReleaseClientAdapterAsync releaseAdapter,
                                                           Collection<SW360Release> releases) {
-        final ConcurrentMap<ReleaseWithSources, Boolean> processedReleases = new ConcurrentHashMap<>();
-        CompletableFuture<?>[] releaseFutures = releases.stream()
-                .map(release -> downloadSourcesForRelease(releaseAdapter, release)
-                        .thenApply(relWithSrc -> processedReleases.put(relWithSrc, Boolean.TRUE)))
-                .toArray(CompletableFuture[]::new);
-        CompletableFuture<Void> downloadFuture = CompletableFuture.allOf(releaseFutures);
-
-        downloadFuture.join();
-        return processedReleases.keySet();
+        List<CompletableFuture<ReleaseWithSources>> downloadFutures = releases.stream()
+                .map(release -> downloadSourcesForRelease(releaseAdapter, release))
+                .collect(Collectors.toList());
+        return FutureUtils.sequence(downloadFutures, ex -> false).join();
     }
 
     /**
@@ -123,43 +132,51 @@ class SourcesExporter {
      */
     private CompletableFuture<ReleaseWithSources>
     downloadSourcesForRelease(SW360ReleaseClientAdapterAsync releaseAdapter, SW360Release release) {
-        final ConcurrentMap<Path, Boolean> paths = new ConcurrentHashMap<>();
-        CompletableFuture<?>[] downloads = release.getEmbedded().getAttachments().stream()
+        List<CompletableFuture<Path>> downloads = release.getEmbedded().getAttachments().stream()
                 .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)
-                .map(attachment -> downloadAttachment(releaseAdapter, release, attachment, paths))
-                .toArray(CompletableFuture[]::new);
-        return CompletableFuture.allOf(downloads)
-                .thenApply(v -> new ReleaseWithSources(release, paths.keySet()));
+                .map(attachment -> downloadAttachment(releaseAdapter, release, attachment))
+                .collect(Collectors.toList());
+        return FutureUtils.sequence(downloads, SourcesExporter::logDownloadFailure)
+                .thenApply(paths -> new ReleaseWithSources(release, new HashSet<>(paths)));
     }
 
     /**
-     * Downloads a single source attachment. If the download is successful,
-     * the result is stored in the given map.
+     * Asynchronously downloads a single source attachment. If the download
+     * fails, a meaningful exception message is generated.
      *
      * @param releaseAdapter the release adapter
      * @param release        the release the download is for
      * @param attachment     the attachment to be downloaded
-     * @param paths          the map for storing the download result
      * @return a future that completes when the download is finished
      */
-    private CompletableFuture<Object> downloadAttachment(SW360ReleaseClientAdapterAsync releaseAdapter,
-                                                         SW360Release release, SW360SparseAttachment attachment,
-                                                         ConcurrentMap<Path, Boolean> paths) {
-        return releaseAdapter.downloadAttachment(release, attachment, sourcePath)
-                .handle((optPath, ex) -> {
-                    if (ex == null) {
-                        if (optPath.isPresent()) {
-                            paths.put(optPath.get(), Boolean.TRUE);
-                        } else {
-                            LOG.warn("Could not resolve attachment {} for release {}:{}", attachment.getFilename(),
-                                    release.getName(), release.getVersion());
-                        }
+    private CompletableFuture<Path> downloadAttachment(SW360ReleaseClientAdapterAsync releaseAdapter,
+                                                       SW360Release release, SW360SparseAttachment attachment) {
+        return FutureUtils.wrapFutureForConditionalFallback(releaseAdapter.downloadAttachment(release,
+                attachment, sourcePath), ex -> true,
+                () -> FutureUtils.failedFuture(new IllegalStateException(String.format(FMT_DOWNLOAD_ERROR,
+                        attachment.getFilename(), release.getName(), release.getVersion()))))
+                .thenApply(optPath -> {
+                    if (optPath.isPresent()) {
+                        return optPath.get();
                     } else {
-                        LOG.error("Failed to download attachment {} for release {}:{}", attachment.getFilename(),
-                                release.getName(), release.getVersion(), ex);
+                        throw new IllegalStateException(String.format(FMT_UNRESOLVABLE_ATTACHMENT,
+                                attachment.getFilename(), release.getName(), release.getVersion()));
                     }
-                    return null;
                 });
+    }
+
+    /**
+     * A special exception handling function to be passed to
+     * {@link FutureUtils#sequence(Collection, Function)}, which just logs the
+     * exception. Exceptions during download are ignored and do not cancel the
+     * export process.
+     *
+     * @param ex the exception
+     * @return flag whether the exception should cancel the process
+     */
+    private static boolean logDownloadFailure(Throwable ex) {
+        LOG.warn(ex.getMessage());
+        return false;
     }
 
     /**
@@ -213,6 +230,14 @@ class SourcesExporter {
         @Override
         public int hashCode() {
             return Objects.hash(getRelease(), getSourceAttachmentPaths());
+        }
+
+        @Override
+        public String toString() {
+            return "ReleaseWithSources{" +
+                    "release=" + release +
+                    ", sourceAttachmentPaths=" + sourceAttachmentPaths +
+                    '}';
         }
     }
 }
