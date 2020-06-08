@@ -19,8 +19,6 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ClearingState;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
@@ -31,19 +29,24 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SW360Exporter {
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360Exporter.class);
 
     private final SW360Configuration configuration;
+    private final SourcesExporter sourcesExporter;
     private SW360Connection connection;
 
     public SW360Exporter(SW360Configuration configuration) {
         this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
+        sourcesExporter = new SourcesExporter(configuration.getSourcesPath());
     }
 
     public void execute() {
@@ -56,7 +59,11 @@ public class SW360Exporter {
 
         Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases);
 
-        List<Artifact> artifacts = sw360ReleasesNotApproved.stream()
+        Collection<SourcesExporter.ReleaseWithSources> nonApprovedReleasesWithSources =
+                sourcesExporter.downloadSources(connection.getReleaseAdapterAsync(), sw360ReleasesNotApproved);
+
+        List<Artifact> artifacts = nonApprovedReleasesWithSources.stream()
+                .sorted(releasesComparator().reversed())
                 .map(this::releaseAsArtifact)
                 .collect(Collectors.toList());
 
@@ -80,22 +87,12 @@ public class SW360Exporter {
                 configuration.getTargetDir().toAbsolutePath());
     }
 
-    private Artifact releaseAsArtifact(SW360Release release) {
-        Artifact artifact = ArtifactToReleaseUtils.convertToArtifactWithoutSourceFile(release, new Artifact("SW360"));
-        Set<SW360SparseAttachment> sparseAttachments = getSparseAttachmentsSource(release);
-        sparseAttachments.forEach(sparseAttachment -> {
-            Optional<Path> path = connection.getReleaseAdapter().downloadAttachment(release, sparseAttachment, configuration.getSourcesPath());
-            path.ifPresent(pth -> artifact.addFact(new ArtifactSourceFile(pth)));
-        });
+    private Artifact releaseAsArtifact(SourcesExporter.ReleaseWithSources release) {
+        Artifact artifact = ArtifactToReleaseUtils.convertToArtifactWithoutSourceFile(release.getRelease(),
+                new Artifact("SW360"));
+        release.getSourceAttachmentPaths().forEach(path ->
+                artifact.addFact(new ArtifactSourceFile(path)));
         return artifact;
-    }
-
-    private Set<SW360SparseAttachment> getSparseAttachmentsSource(SW360Release release) {
-        Set<SW360SparseAttachment> attachments = release.getEmbedded().getAttachments();
-
-        return attachments.stream()
-                .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)
-                .collect(Collectors.toSet());
     }
 
     private Collection<SW360SparseRelease> getReleasesFromComponents(Collection<SW360SparseComponent> components) {
@@ -116,7 +113,6 @@ public class SW360Exporter {
                 .map(id -> connection.getReleaseAdapter().getReleaseById(id))
                 .map(Optional::get)
                 .filter(sw360Release -> !isApproved(sw360Release))
-                .sorted(Comparator.comparing(SW360Release::getCreatedOn).reversed())
                 .collect(Collectors.toList());
     }
 
@@ -132,5 +128,9 @@ public class SW360Exporter {
 
     private <T extends SW360HalResource<?, ?>> String getIdFromHalResource(T halResource) {
         return SW360HalResourceUtility.getLastIndexOfSelfLink(halResource.getLinks().getSelf()).orElse("");
+    }
+
+    private static Comparator<SourcesExporter.ReleaseWithSources> releasesComparator() {
+        return Comparator.comparing(releaseWithSources -> releaseWithSources.getRelease().getCreatedOn());
     }
 }

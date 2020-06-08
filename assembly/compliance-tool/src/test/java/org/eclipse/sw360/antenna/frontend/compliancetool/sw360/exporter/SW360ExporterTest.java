@@ -16,8 +16,10 @@ import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeature
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapter;
-import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapterAsync;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ClearingState;
@@ -29,6 +31,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mock;
+import org.mockito.stubbing.Answer;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -107,6 +111,8 @@ public class SW360ExporterTest {
 
     SW360ReleaseClientAdapter releaseClientAdapterMock = mock(SW360ReleaseClientAdapter.class);
 
+    SW360ReleaseClientAdapterAsync releaseAdapterAsyncMock;
+
     @Mock
     SW360Configuration configurationMock = mock(SW360Configuration.class);
 
@@ -142,20 +148,37 @@ public class SW360ExporterTest {
                 .thenReturn(componentClientAdapterMock);
         when(connectionMock.getReleaseAdapter())
                 .thenReturn(releaseClientAdapterMock);
+        releaseAdapterAsyncMock = createReleaseAdapterForDownloads();
+        when(connectionMock.getReleaseAdapterAsync())
+                .thenReturn(releaseAdapterAsyncMock);
 
         when(configurationMock.getConnection())
                 .thenReturn(connectionMock);
         csvFile = folder.newFile("sample.csv");
         when(configurationMock.getCsvFileName())
                 .thenReturn(csvFile.getName());
+        Path basePath = Paths.get(csvFile.getParent());
         when(configurationMock.getBaseDir())
-                .thenReturn(Paths.get(csvFile.getParent()));
+                .thenReturn(basePath);
         when(configurationMock.getTargetDir())
                 .thenReturn(folder.getRoot().toPath());
         String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-exporter.properties")).getPath();
         Map<String, String> propertiesMap = ComplianceFeatureUtils.mapPropertiesFile(new File(propertiesFilePath));
         when(configurationMock.getProperties()).
                 thenReturn(propertiesMap);
+        Path sourcesPath = basePath.resolve(propertiesMap.get("sourcesDirectory"));
+        when(configurationMock.getSourcesPath()).thenReturn(sourcesPath);
+    }
+
+    private SW360ReleaseClientAdapterAsync createReleaseAdapterForDownloads() {
+        SW360ReleaseClientAdapterAsync adapter = mock(SW360ReleaseClientAdapterAsync.class);
+        when(adapter.downloadAttachment(any(), any(), any()))
+                .thenAnswer((Answer<CompletableFuture<Optional<Path>>>) invocationOnMock -> {
+                    SW360SparseAttachment attachment = invocationOnMock.getArgument(1);
+                    Path downloadPath = Paths.get("download" + attachment.getFilename());
+                    return CompletableFuture.completedFuture(Optional.of(downloadPath));
+                });
+        return adapter;
     }
 
     @Test(expected = NullPointerException.class)
@@ -174,7 +197,7 @@ public class SW360ExporterTest {
         List<CSVRecord> records = csvParser.getRecords();
 
         assertThat(records.size()).isEqualTo(expectedNumOfReleases);
-        verify(releaseClientAdapterMock, atLeast(expectedNumOfReleases)).downloadAttachment(any(), any(), any());
+        verify(releaseAdapterAsyncMock, atLeast(expectedNumOfReleases)).downloadAttachment(any(), any(), any());
 
         if (expectedNumOfReleases == 2) {
             assertThat(records.get(1).get("Copyrights")).isEqualTo(release.getCopyrights());
