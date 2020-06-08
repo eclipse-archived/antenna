@@ -47,6 +47,9 @@ class ReporterUtils {
     }
 
     private static String collectionToString(Collection<String> collection) {
+        if (collection == null) {
+            return "";
+        }
         String separator = "";
         StringBuilder mainLicenses = new StringBuilder();
         for (String item : collection) {
