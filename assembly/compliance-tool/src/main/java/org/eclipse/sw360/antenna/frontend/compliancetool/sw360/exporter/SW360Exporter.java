@@ -19,8 +19,6 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ClearingState;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
@@ -31,19 +29,53 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SW360Exporter {
+    /**
+     * The configuration property defining the encoding of the CSV file.
+     */
+    public static final String PROP_ENCODING = "encoding";
+
+    /**
+     * The configuration property defining the delimiter to be used in the CSV
+     * file.
+     */
+    public static final String PROP_DELIMITER = "delimiter";
+
+    /**
+     * The configuration property defining the base directory for the exporter.
+     * Relative paths are resolved against this directory.
+     */
+    public static final String PROP_BASEDIR = "basedir";
+
+    /**
+     * The configuration property that controls whether source files that are
+     * not referenced by any of the current components should be removed. If
+     * set to <strong>true</strong>, obsolete source attachments are cleaned up
+     * automatically.
+     */
+    public static final String PROP_REMOVE_SOURCES = "removeUnreferencedSources";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360Exporter.class);
 
     private final SW360Configuration configuration;
+    private final SourcesExporter sourcesExporter;
     private SW360Connection connection;
 
     public SW360Exporter(SW360Configuration configuration) {
+        this(configuration, new SourcesExporter(configuration.getSourcesPath()));
+    }
+
+    SW360Exporter(SW360Configuration configuration, SourcesExporter sourcesExporter) {
         this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
+        this.sourcesExporter = sourcesExporter;
     }
 
     public void execute() {
@@ -56,7 +88,11 @@ public class SW360Exporter {
 
         Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases);
 
-        List<Artifact> artifacts = sw360ReleasesNotApproved.stream()
+        Collection<SourcesExporter.ReleaseWithSources> nonApprovedReleasesWithSources =
+                sourcesExporter.downloadSources(connection.getReleaseAdapterAsync(), sw360ReleasesNotApproved);
+
+        List<Artifact> artifacts = nonApprovedReleasesWithSources.stream()
+                .sorted(releasesComparator().reversed())
                 .map(this::releaseAsArtifact)
                 .collect(Collectors.toList());
 
@@ -65,11 +101,15 @@ public class SW360Exporter {
                 .toFile();
 
         CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(),
-                Charset.forName(configuration.getProperties().get("encoding")),
-                configuration.getProperties().get("delimiter").charAt(0),
-                Paths.get(configuration.getProperties().get("basedir")));
+                Charset.forName(configuration.getProperties().get(PROP_ENCODING)),
+                configuration.getProperties().get(PROP_DELIMITER).charAt(0),
+                Paths.get(configuration.getProperties().get(PROP_BASEDIR)));
 
         csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
+
+        if (Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_SOURCES))) {
+            sourcesExporter.removeUnreferencedFiles(nonApprovedReleasesWithSources);
+        }
 
         LOGGER.info("The SW360Exporter was executed from the base directory: {} " +
                         "with the csv file written to the path: {}/{} " +
@@ -80,22 +120,12 @@ public class SW360Exporter {
                 configuration.getTargetDir().toAbsolutePath());
     }
 
-    private Artifact releaseAsArtifact(SW360Release release) {
-        Artifact artifact = ArtifactToReleaseUtils.convertToArtifactWithoutSourceFile(release, new Artifact("SW360"));
-        Set<SW360SparseAttachment> sparseAttachments = getSparseAttachmentsSource(release);
-        sparseAttachments.forEach(sparseAttachment -> {
-            Optional<Path> path = connection.getReleaseAdapter().downloadAttachment(release, sparseAttachment, configuration.getSourcesPath());
-            path.ifPresent(pth -> artifact.addFact(new ArtifactSourceFile(pth)));
-        });
+    private Artifact releaseAsArtifact(SourcesExporter.ReleaseWithSources release) {
+        Artifact artifact = ArtifactToReleaseUtils.convertToArtifactWithoutSourceFile(release.getRelease(),
+                new Artifact("SW360"));
+        release.getSourceAttachmentPaths().forEach(path ->
+                artifact.addFact(new ArtifactSourceFile(path)));
         return artifact;
-    }
-
-    private Set<SW360SparseAttachment> getSparseAttachmentsSource(SW360Release release) {
-        Set<SW360SparseAttachment> attachments = release.getEmbedded().getAttachments();
-
-        return attachments.stream()
-                .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)
-                .collect(Collectors.toSet());
     }
 
     private Collection<SW360SparseRelease> getReleasesFromComponents(Collection<SW360SparseComponent> components) {
@@ -116,7 +146,6 @@ public class SW360Exporter {
                 .map(id -> connection.getReleaseAdapter().getReleaseById(id))
                 .map(Optional::get)
                 .filter(sw360Release -> !isApproved(sw360Release))
-                .sorted(Comparator.comparing(SW360Release::getCreatedOn).reversed())
                 .collect(Collectors.toList());
     }
 
@@ -132,5 +161,9 @@ public class SW360Exporter {
 
     private <T extends SW360HalResource<?, ?>> String getIdFromHalResource(T halResource) {
         return SW360HalResourceUtility.getLastIndexOfSelfLink(halResource.getLinks().getSelf()).orElse("");
+    }
+
+    private static Comparator<SourcesExporter.ReleaseWithSources> releasesComparator() {
+        return Comparator.comparing(releaseWithSources -> releaseWithSources.getRelease().getCreatedOn());
     }
 }
