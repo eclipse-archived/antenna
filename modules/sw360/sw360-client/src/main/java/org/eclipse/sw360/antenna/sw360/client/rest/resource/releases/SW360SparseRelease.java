@@ -101,27 +101,4 @@ public final class SW360SparseRelease extends SW360SimpleHalResource {
     public boolean canEqual(Object o) {
         return o instanceof SW360SparseRelease;
     }
-
-    public String csvPrintHeader() {
-        return "releaseId;name;version;mainLicenseIds;componentId";
-    }
-
-    public String csvPrintRow() {
-        return String.format("%s;%s;%s;%s;%s", getReleaseId(), name, version, mainLicenseToString(), componentId);
-    }
-
-    private String mainLicenseToString() {
-        if (mainLicenseIds == null) {
-            return "";
-        }
-
-        String separator = "";
-        StringBuilder mainLicenses = new StringBuilder();
-        for (String mainLicenseId : mainLicenseIds) {
-            mainLicenses.append(separator);
-            separator = ",";
-            mainLicenses.append(mainLicenseId);
-        }
-        return mainLicenses.toString();
-    }
 }

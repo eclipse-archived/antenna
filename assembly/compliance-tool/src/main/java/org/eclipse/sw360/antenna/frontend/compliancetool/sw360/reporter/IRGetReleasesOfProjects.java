@@ -71,6 +71,11 @@ public class IRGetReleasesOfProjects extends InfoRequest<SW360SparseRelease> {
         }
     }
 
+    @Override
+    Class<SW360SparseRelease> getType() {
+        return SW360SparseRelease.class;
+    }
+
     private String getProjectIdParameter() {
         return PROJECT_ID;
     }

@@ -12,9 +12,11 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +34,6 @@ public class SW360StatusReporter {
     private final SW360Configuration configuration;
     private final String infoParameter;
     private InfoRequest infoRequest;
-    private final String outputFormat;
     private ReporterOutput reporterOutput;
 
     public SW360StatusReporter(SW360Configuration configuration, Set<String> parameters) {
@@ -41,7 +42,7 @@ public class SW360StatusReporter {
         ReporterParameterParser.checkParameters(parameters);
         Map<String, String> mappedParameters = ReporterParameterParser.mapParameters(parameters);
 
-        this.outputFormat = ReporterParameterParser.getOutputFormat(mappedParameters);
+        String outputFormat = ReporterParameterParser.getOutputFormat(mappedParameters);
         this.reporterOutput = ReporterOutputFactory.getReporterOutput(outputFormat);
 
         this.infoParameter = ReporterParameterParser.getInfoParameterFromParameters(mappedParameters);
@@ -57,9 +58,11 @@ public class SW360StatusReporter {
         LOGGER.debug("{} has started.", SW360StatusReporter.class.getName());
         final SW360Connection connection = configuration.getConnection();
 
-        final Collection result = infoRequest.execute(connection);
+        final Collection<?> result = infoRequest.execute(connection);
 
-        reporterOutput.printFile(result, configuration);
+        reporterOutput.setResultType(infoRequest.getType());
+        reporterOutput.setFilePath((configuration.getTargetDir().resolve(configuration.getCsvFileName())));
+        reporterOutput.print(result);
     }
 
     void setInfoRequest(InfoRequest infoRequest) {

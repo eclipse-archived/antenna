@@ -56,4 +56,9 @@ public class IRGetClearedReleases extends InfoRequest<SW360Release> {
                 .filter(ComplianceFeatureUtils::isApproved)
                 .collect(Collectors.toSet());
     }
+
+    @Override
+    Class<SW360Release> getType() {
+        return SW360Release.class;
+    }
 }

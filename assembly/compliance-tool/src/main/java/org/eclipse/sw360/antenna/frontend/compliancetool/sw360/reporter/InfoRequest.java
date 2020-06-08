@@ -19,6 +19,7 @@ abstract public class InfoRequest<T> {
     abstract Set<String> getAdditionalParameters();
     abstract void parseAdditionalParameter(Map<String, String> parameters);
     abstract Collection<T> execute(SW360Connection connection);
+    abstract Class<T> getType();
 
     static InfoRequest emptyInfoRequest() {
         return new InfoRequest<Object>() {
@@ -50,6 +51,11 @@ abstract public class InfoRequest<T> {
             @Override
             Collection<Object> execute(SW360Connection connection) {
                 return Collections.emptySet();
+            }
+
+            @Override
+            Class<Object> getType() {
+                return Object.class;
             }
         };
     }

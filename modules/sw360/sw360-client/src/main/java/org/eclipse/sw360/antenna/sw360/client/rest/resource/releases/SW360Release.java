@@ -386,34 +386,4 @@ public final class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects
     public boolean canEqual(Object o) {
         return o instanceof SW360Release;
     }
-
-    public String csvPrintHeader() {
-        return "release id;name;version;" +
-                "coordinates;" +
-                "main license ids;" +
-                "overridden license;declared license;observed license;" +
-                "copyrights;clearing state;change status;" +
-                "download url; release tag url; software heritage id";
-    }
-
-    public String csvPrintRow() {
-        return String.format("%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s",
-                getId(), name, version,
-                collectionToString(getCoordinates().values()),
-                collectionToString(getMainLicenseIds()),
-                getOverriddenLicense(), getDeclaredLicense(), getObservedLicense(),
-                getCopyrights(), getClearingState(), getChangeStatus(),
-                getDownloadurl(), getReleaseTagUrl(), getSoftwareHeritageId());
-    }
-
-    private String collectionToString(Collection<String> collection) {
-        String separator = "";
-        StringBuilder mainLicenses = new StringBuilder();
-        for (String item : collection) {
-            mainLicenses.append(separator);
-            separator = ",";
-            mainLicenses.append(item);
-        }
-        return mainLicenses.toString();
-    }
 }
