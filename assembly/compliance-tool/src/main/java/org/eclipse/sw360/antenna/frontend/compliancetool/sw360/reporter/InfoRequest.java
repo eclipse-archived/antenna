@@ -7,19 +7,25 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-abstract public class InfoRequest<T> {
-    abstract public String getInfoParameter();
+public interface InfoRequest<T> {
+    String getInfoParameter();
 
-    boolean hasAdditionalParameters() {
+    default boolean hasAdditionalParameters() {
         return getAdditionalParameters().size() > 0;
     }
 
-    abstract String helpMessage();
-    abstract boolean isValid();
-    abstract Set<String> getAdditionalParameters();
-    abstract void parseAdditionalParameter(Map<String, String> parameters);
-    abstract Collection<T> execute(SW360Connection connection);
-    abstract Class<T> getType();
+    default Set<String> getAdditionalParameters() {
+        return Collections.emptySet();
+    }
+
+    default void parseAdditionalParameter(Map<String, String> parameters) {
+        //no -op
+    }
+
+    String helpMessage();
+    boolean isValid();
+    Collection<T> execute(SW360Connection connection);
+    Class<T> getType();
 
     static InfoRequest emptyInfoRequest() {
         return new InfoRequest<Object>() {
@@ -29,32 +35,27 @@ abstract public class InfoRequest<T> {
             }
 
             @Override
-            String helpMessage() {
+            public String helpMessage() {
                 return "The provided info parameter is not supported in this reporter reporter";
             }
 
             @Override
-            boolean isValid() {
+            public boolean isValid() {
                 return false;
             }
 
             @Override
-            Set<String> getAdditionalParameters() {
-                return Collections.emptySet();
-            }
-
-            @Override
-            void parseAdditionalParameter(Map<String, String> parameters) {
+            public void parseAdditionalParameter(Map<String, String> parameters) {
                 // no-op
             }
 
             @Override
-            Collection<Object> execute(SW360Connection connection) {
+            public Collection<Object> execute(SW360Connection connection) {
                 return Collections.emptySet();
             }
 
             @Override
-            Class<Object> getType() {
+            public Class<Object> getType() {
                 return Object.class;
             }
         };

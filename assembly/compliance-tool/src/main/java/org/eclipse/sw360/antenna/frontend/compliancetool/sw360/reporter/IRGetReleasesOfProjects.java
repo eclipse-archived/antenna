@@ -6,7 +6,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Sparse
 
 import java.util.*;
 
-public class IRGetReleasesOfProjects extends InfoRequest<SW360SparseRelease> {
+public class IRGetReleasesOfProjects implements InfoRequest<SW360SparseRelease> {
     private static final String GET_RELEASES_OF_PROJECT = "releases-of-project";
     private static final String PROJECT_NAME = "--project_name";
     private static final String PROJECT_VERSION = "--project-version";
@@ -21,12 +21,12 @@ public class IRGetReleasesOfProjects extends InfoRequest<SW360SparseRelease> {
     }
 
     @Override
-    String helpMessage() {
+    public String helpMessage() {
         return null;
     }
 
     @Override
-    boolean isValid() {
+    public boolean isValid() {
         if (projectId != null && !projectId.isEmpty()) {
             return true;
         } else return projectName != null && !projectName.isEmpty() &&
@@ -34,16 +34,16 @@ public class IRGetReleasesOfProjects extends InfoRequest<SW360SparseRelease> {
     }
 
     @Override
-    Set<String> getAdditionalParameters() {
-        Set<String> additionalParamaters = new HashSet<>();
-        additionalParamaters.add(PROJECT_ID);
-        additionalParamaters.add(PROJECT_NAME);
-        additionalParamaters.add(PROJECT_VERSION);
-        return additionalParamaters;
+    public Set<String> getAdditionalParameters() {
+        Set<String> additionalParameters = new HashSet<>();
+        additionalParameters.add(PROJECT_ID);
+        additionalParameters.add(PROJECT_NAME);
+        additionalParameters.add(PROJECT_VERSION);
+        return additionalParameters;
     }
 
     @Override
-    void parseAdditionalParameter(Map<String, String> parameters) {
+    public void parseAdditionalParameter(Map<String, String> parameters) {
         projectId = ReporterParameterParser.parseParameterValueFromMapOfParameters(parameters, getProjectIdParameter());
 
         projectName = ReporterParameterParser.parseParameterValueFromMapOfParameters(parameters, getProjectNameParameter());
@@ -52,7 +52,7 @@ public class IRGetReleasesOfProjects extends InfoRequest<SW360SparseRelease> {
     }
 
     @Override
-    Collection<SW360SparseRelease> execute(SW360Connection connection) {
+    public Collection<SW360SparseRelease> execute(SW360Connection connection) {
         Collection<SW360SparseRelease> result;
         if (projectId != null && !projectId.isEmpty()) {
             result = connection.getProjectAdapter().getLinkedReleases(projectId, true);
@@ -72,7 +72,7 @@ public class IRGetReleasesOfProjects extends InfoRequest<SW360SparseRelease> {
     }
 
     @Override
-    Class<SW360SparseRelease> getType() {
+    public Class<SW360SparseRelease> getType() {
         return SW360SparseRelease.class;
     }
 

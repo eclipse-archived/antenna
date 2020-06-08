@@ -2,15 +2,14 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentEmbedded;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
 
-public class IRGetClearedReleases extends InfoRequest<SW360Release> {
+public class IRGetClearedReleases extends IRForReleases {
     private static final String GET_RELEASES_CLEARED = "releases-cleared";
 
     @Override
@@ -19,46 +18,13 @@ public class IRGetClearedReleases extends InfoRequest<SW360Release> {
     }
 
     @Override
-    String helpMessage() {
-        return "The info parameter " + GET_RELEASES_CLEARED + " does not require any additional parameters or settings.";
-    }
-
-    @Override
-    boolean isValid() {
-        return true;
-    }
-
-    @Override
-    Set<String> getAdditionalParameters() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    void parseAdditionalParameter(Map<String, String> parameters) {
-        //no-op since no additional parameters
-    }
-
-    @Override
-    Collection<SW360Release> execute(SW360Connection connection) {
+    public Collection<SW360Release> execute(SW360Connection connection) {
         final List<SW360SparseComponent> components = connection.getComponentAdapter().getComponents();
 
-        return components.stream()
-                .map(SW360HalResource::getId)
-                .map(id -> connection.getComponentAdapter().getComponentById(id))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(SW360HalResource::getEmbedded)
-                .map(SW360ComponentEmbedded::getReleases)
-                .flatMap(Collection::stream)
-                .map(release -> connection.getReleaseAdapter().getReleaseById(release.getReleaseId()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .filter(ComplianceFeatureUtils::isApproved)
-                .collect(Collectors.toSet());
+        final Predicate<SW360Release> isApproved = ComplianceFeatureUtils::isApproved;
+        return getReleasesByPredicate(connection, components, isApproved);
     }
 
-    @Override
-    Class<SW360Release> getType() {
-        return SW360Release.class;
-    }
+
+
 }

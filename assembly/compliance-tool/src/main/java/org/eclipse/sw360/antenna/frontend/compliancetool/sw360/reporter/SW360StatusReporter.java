@@ -12,11 +12,9 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -61,7 +59,7 @@ public class SW360StatusReporter {
         final Collection<?> result = infoRequest.execute(connection);
 
         reporterOutput.setResultType(infoRequest.getType());
-        reporterOutput.setFilePath((configuration.getTargetDir().resolve(configuration.getCsvFileName())));
+        reporterOutput.setFilePath(configuration.getTargetDir().resolve(configuration.getCsvFileName()));
         reporterOutput.print(result);
     }
 
