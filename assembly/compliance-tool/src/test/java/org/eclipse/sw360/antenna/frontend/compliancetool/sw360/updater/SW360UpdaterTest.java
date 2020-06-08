@@ -26,6 +26,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.ArgumentCaptor;
+import org.mockito.stubbing.Answer;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +71,7 @@ public class SW360UpdaterTest {
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {
+        return Arrays.asList(new Object[][]{
                 {"OSM_APPROVED", true, true},
                 {"EXTERNAL_SOURCE", true, true},
                 {"AUTO_EXTRACT", true, true},
@@ -96,14 +97,9 @@ public class SW360UpdaterTest {
                 .thenReturn(connectionConfiguration);
     }
 
-    private void initBasicConfiguration() throws IOException {
-        String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).getPath();
-        Map<String, String> propertiesMap = ComplianceFeatureUtils.mapPropertiesFile(new File(propertiesFilePath));
-
-        Path csvFile = writeCsvFile();
+    private void initBasicConfiguration(Path sourceAttachment, Map<String, String> propertiesMap) throws IOException {
+        Path csvFile = writeCsvFile(sourceAttachment.toString());
         propertiesMap.put("csvFilePath", csvFile.toString());
-
-        final File sources = folder.newFolder("sources");
 
         when(configurationMock.getProperties()).
                 thenReturn(propertiesMap);
@@ -112,7 +108,18 @@ public class SW360UpdaterTest {
         when(configurationMock.getTargetDir())
                 .thenReturn(getTargetDir());
         when(configurationMock.getSourcesPath())
-                .thenReturn(sources.toPath());
+                .thenReturn(sourceAttachment.getParent());
+    }
+
+    private Map<String, String> getConfigProperties() {
+        String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).getPath();
+        return ComplianceFeatureUtils.mapPropertiesFile(new File(propertiesFilePath));
+    }
+
+    private Path createSourceAttachment() throws IOException {
+        Path sourcesPath = folder.newFolder("sources").toPath();
+        Path sourceAttachment = sourcesPath.resolve("testSources.zip");
+        return Files.write(sourceAttachment, "The whole source code".getBytes(StandardCharsets.UTF_8));
     }
 
     @NotNull
@@ -137,7 +144,29 @@ public class SW360UpdaterTest {
 
     @Test
     public void testExecute() throws IOException {
-        initBasicConfiguration();
+        runUpdaterTest(getConfigProperties(), false, true);
+    }
+
+    @Test
+    public void testExecuteWithSourcesCleanup() throws IOException {
+        Map<String, String> configProperties = getConfigProperties();
+        configProperties.put(SW360Updater.PROP_REMOVE_CLEARED_SOURCES, String.valueOf(true));
+
+        runUpdaterTest(configProperties, true, true);
+    }
+
+    @Test
+    public void testErrorsWhenRemovingSourceFilesAreIgnored() throws IOException {
+        Map<String, String> configProperties = getConfigProperties();
+        configProperties.put(SW360Updater.PROP_REMOVE_CLEARED_SOURCES, String.valueOf(true));
+
+        runUpdaterTest(configProperties, false, false);
+    }
+
+    private void runUpdaterTest(Map<String, String> config, boolean expectSourceRemoved, boolean attachmentExists)
+            throws IOException {
+        Path sourceAttachment = createSourceAttachment();
+        initBasicConfiguration(sourceAttachment, config);
 
         initConnectionConfiguration();
 
@@ -145,7 +174,14 @@ public class SW360UpdaterTest {
         SW360Release release = new SW360Release();
         release.setClearingState(clearingState);
         when(updater.artifactToReleaseInSW360(any()))
-                .thenReturn(release)
+                .thenAnswer((Answer<SW360Release>) invocationOnMock -> {
+                    if (!attachmentExists) {
+                        // Provoke an error when deleting the attachment. Note that the attachment must be
+                        // present when the CSV file is read; so we delete it afterwards.
+                        Files.delete(sourceAttachment);
+                    }
+                    return release;
+                })
                 .thenThrow(new SW360ClientException("Boo"));
 
         ClearingReportGenerator generator = mock(ClearingReportGenerator.class);
@@ -172,6 +208,9 @@ public class SW360UpdaterTest {
                     .collect(Collectors.toList());
             assertThat(uploadRequest.getItems()).containsAll(expItems);
         }
+
+        boolean sourcePresent = Files.exists(sourceAttachment);
+        assertThat(sourcePresent).isEqualTo((!expectUpload || !expectSourceRemoved) && attachmentExists);
     }
 
     private Map<Path, SW360AttachmentType> createExpectedAttachmentMap() {
@@ -186,17 +225,17 @@ public class SW360UpdaterTest {
         return Collections.emptyMap();
     }
 
-    private Path writeCsvFile() throws IOException {
+    private Path writeCsvFile(String sourceAttachment) throws IOException {
         final File tempCsvFile = folder.newFile("test.csv");
         String clearingDocPath = "";
         if (clearingDocAvailable) {
             File clearingDoc = folder.newFile(CLEARING_DOC);
             clearingDocPath = clearingDoc.getPath();
         }
-        String csvContent = String.format("Artifact Id,Group Id,Version,Coordinate Type,Clearing State,Clearing Document%s" +
-                "test,test,x.x.x,mvn,%s,%s%s" +
-                "error,error,y.y.y,mvn,%s,%s%s", System.lineSeparator(), clearingState, clearingDocPath,
-                System.lineSeparator(), clearingState, clearingDocPath, System.lineSeparator());
+        String csvContent = String.format("Artifact Id,Group Id,Version,Coordinate Type,Clearing State,Clearing Document,File Name%s" +
+                        "test,test,x.x.x,mvn,%s,%s,%s%s" +
+                        "error,error,y.y.y,mvn,%s,%s,%s", System.lineSeparator(), clearingState, clearingDocPath,
+                sourceAttachment, System.lineSeparator(), clearingState, clearingDocPath, System.lineSeparator());
         Files.write(tempCsvFile.toPath(), csvContent.getBytes(StandardCharsets.UTF_8));
         return tempCsvFile.toPath();
     }

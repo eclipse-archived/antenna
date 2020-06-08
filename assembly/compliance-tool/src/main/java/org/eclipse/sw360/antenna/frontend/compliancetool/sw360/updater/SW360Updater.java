@@ -19,10 +19,13 @@ import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
+import org.eclipse.sw360.antenna.sw360.utils.ArtifactToAttachmentUtils;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Objects;
@@ -30,17 +33,30 @@ import java.util.Objects;
 import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils.getArtifactsFromCsvFile;
 
 public class SW360Updater {
+    /**
+     * Configuration property that controls whether the source attachments of a
+     * release should be removed after it has been cleared. If set to
+     * <strong>true</strong> (the default is <strong>false</strong>), the
+     * source folder gets automatically cleaned up of source files that are no
+     * longer relevant for the compliance workflow.
+     */
+    public static final String PROP_REMOVE_CLEARED_SOURCES = "removeClearedSources";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360Updater.class);
 
     private final SW360UpdaterImpl updater;
     private final SW360Configuration configuration;
     private final ClearingReportGenerator generator;
 
+    private final boolean removeClearedSources;
+
     public SW360Updater(SW360UpdaterImpl updater, SW360Configuration configuration,
                         ClearingReportGenerator generator) {
         this.updater = Objects.requireNonNull(updater, "UpdaterImpl must not be null");
         this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
         this.generator = Objects.requireNonNull(generator, "Clearing report generator must not be null");
+
+        removeClearedSources = Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_CLEARED_SOURCES));
     }
 
     public void execute() {
@@ -70,11 +86,15 @@ public class SW360Updater {
             if (release.getClearingState() != null &&
                     !release.getClearingState().isEmpty() &&
                     ArtifactClearingState.ClearingState.valueOf(release.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
-                AttachmentUploadRequest uploadRequest = AttachmentUploadRequest.builder(release)
+                AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
                         .addAttachment(getOrGenerateClearingDocument(release, artifact),
                                 SW360AttachmentType.CLEARING_REPORT)
                         .build();
                 releaseClientAdapter.uploadAttachments(uploadRequest);
+
+                if (removeClearedSources) {
+                    removeSourceArtifacts(artifact, release);
+                }
             }
         } catch (SW360ClientException e) {
             LOGGER.error("Failed to process artifact {}.", artifact, e);
@@ -84,5 +104,19 @@ public class SW360Updater {
     private Path getOrGenerateClearingDocument(SW360Release release, Artifact artifact) {
         return artifact.askFor(ArtifactClearingDocument.class).map(ArtifactClearingDocument::get)
                 .orElse(generator.createClearingDocument(release, configuration.getTargetDir()));
+    }
+
+    private static void removeSourceArtifacts(Artifact artifact, SW360Release release) {
+        ArtifactToAttachmentUtils.getAttachmentsFromArtifact(artifact).keySet()
+                .forEach(path -> {
+                    LOGGER.info("Removing source attachment {} of release {}:{}.", path,
+                            release.getName(), release.getVersion());
+                    try {
+                        Files.delete(path);
+                    } catch (IOException e) {
+                        LOGGER.error("Could not remove source attachment {} of release {}:{}", path,
+                                release.getName(), release.getVersion());
+                    }
+                });
     }
 }
