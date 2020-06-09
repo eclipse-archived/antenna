@@ -22,7 +22,7 @@ public class IRGetNotClearedReleases extends IRForReleases {
         final List<SW360SparseComponent> components = connection.getComponentAdapter().getComponents();
 
         final Predicate<SW360Release> releasePredicate = sw360release -> !ComplianceFeatureUtils.isApproved(sw360release);
-        return getReleasesByPredicate(connection, components, releasePredicate);
+        return getReleasesFromComponentsByPredicate(connection, components, releasePredicate);
     }
 
 }

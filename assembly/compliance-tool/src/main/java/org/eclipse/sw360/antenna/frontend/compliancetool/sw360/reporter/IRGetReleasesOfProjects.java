@@ -9,7 +9,7 @@ import java.util.*;
 public class IRGetReleasesOfProjects implements InfoRequest<SW360SparseRelease> {
     private static final String GET_RELEASES_OF_PROJECT = "releases-of-project";
     private static final String PROJECT_NAME = "--project_name";
-    private static final String PROJECT_VERSION = "--project-version";
+    private static final String PROJECT_VERSION = "--project_version";
     private static final String PROJECT_ID = "--project_id";
     private String projectName;
     private String projectVersion;
@@ -67,7 +67,7 @@ public class IRGetReleasesOfProjects implements InfoRequest<SW360SparseRelease> 
                 throw new IllegalArgumentException("Project " + projectName + " with version " + projectVersion + " could not be found.");
             }
         } else {
-            throw new IllegalArgumentException("The provided parameters did provide enough information to execute your request.");
+            throw new IllegalArgumentException("The provided parameters did not provide enough information to execute your request.");
         }
     }
 

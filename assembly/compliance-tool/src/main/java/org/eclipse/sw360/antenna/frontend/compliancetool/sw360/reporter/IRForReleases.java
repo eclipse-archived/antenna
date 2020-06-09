@@ -30,6 +30,12 @@ abstract class IRForReleases implements InfoRequest<SW360Release> {
         return SW360Release.class;
     }
 
+    /**
+     * Gives a stream of releases from  a list if components
+     * @param connection connection object to a sw360 instance
+     * @param components list of sparse components containing linked releases
+     * @return stream of releases
+     */
     private Stream<SW360Release> getSw360ReleaseStream(SW360Connection connection, List<SW360SparseComponent> components) {
         return components.stream()
                 .map(SW360HalResource::getId)
@@ -44,7 +50,14 @@ abstract class IRForReleases implements InfoRequest<SW360Release> {
                 .map(Optional::get);
     }
 
-    Set<SW360Release> getReleasesByPredicate(SW360Connection connection, List<SW360SparseComponent> components, Predicate<SW360Release> releasePredicate) {
+    /**
+     * Filters a list of components linked releases with a predicate
+     * @param connection connection object to a sw360 instance
+     * @param components list of sparse components containing linked releases
+     * @param releasePredicate predicate by which releases are filtered
+     * @return all releases of the components that adhere to prediacte
+     */
+    Set<SW360Release> getReleasesFromComponentsByPredicate(SW360Connection connection, List<SW360SparseComponent> components, Predicate<SW360Release> releasePredicate) {
         return getSw360ReleaseStream(connection,components)
                 .filter(releasePredicate)
                 .collect(Collectors.toSet());

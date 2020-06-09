@@ -45,11 +45,6 @@ public interface InfoRequest<T> {
             }
 
             @Override
-            public void parseAdditionalParameter(Map<String, String> parameters) {
-                // no-op
-            }
-
-            @Override
             public Collection<Object> execute(SW360Connection connection) {
                 return Collections.emptySet();
             }

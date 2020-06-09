@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,8 +22,7 @@ public class SW360StatusReporterTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    @Mock
-    SW360Configuration configurationMock = mock(SW360Configuration.class);
+    private SW360Configuration configurationMock = mock(SW360Configuration.class);
 
     private Set<String> parameter;
 
@@ -52,5 +52,17 @@ public class SW360StatusReporterTest {
 
         statusReporter.execute();
         assertThat(csvFile).exists();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testStatusReporterWithMissingParameters() {
+        parameter = new HashSet<>(Collections.singletonList(ReporterParameterParser.REPORTER_PARAMETER_PREFIX + AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER + new IRGetReleasesOfProjects().getInfoParameter()));
+        SW360StatusReporter statusReporter = new SW360StatusReporter(configurationMock, parameter);
+
+        statusReporter.setInfoRequest(InfoRequest.emptyInfoRequest());
+
+        statusReporter.execute();
+
+        fail("Should have failed due to missing parameters");
     }
 }
