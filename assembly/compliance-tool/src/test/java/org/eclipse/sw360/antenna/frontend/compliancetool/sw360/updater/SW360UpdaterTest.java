@@ -144,7 +144,7 @@ public class SW360UpdaterTest {
 
     @Test
     public void testExecute() throws IOException {
-        runUpdaterTest(getConfigProperties(), false, true);
+        runUpdaterTest(getConfigProperties(), false, true, false);
     }
 
     @Test
@@ -152,7 +152,15 @@ public class SW360UpdaterTest {
         Map<String, String> configProperties = getConfigProperties();
         configProperties.put(SW360Updater.PROP_REMOVE_CLEARED_SOURCES, String.valueOf(true));
 
-        runUpdaterTest(configProperties, true, true);
+        runUpdaterTest(configProperties, true, true, false);
+    }
+
+    @Test
+    public void testExecuteWithClearingDocumentRemoved() throws IOException {
+        Map<String, String> configProperties = getConfigProperties();
+        configProperties.put(SW360Updater.PROP_REMOVE_CLEARING_DOCS, String.valueOf(true));
+
+        runUpdaterTest(configProperties, false, true, true);
     }
 
     @Test
@@ -160,10 +168,10 @@ public class SW360UpdaterTest {
         Map<String, String> configProperties = getConfigProperties();
         configProperties.put(SW360Updater.PROP_REMOVE_CLEARED_SOURCES, String.valueOf(true));
 
-        runUpdaterTest(configProperties, false, false);
+        runUpdaterTest(configProperties, false, false, false);
     }
 
-    private void runUpdaterTest(Map<String, String> config, boolean expectSourceRemoved, boolean attachmentExists)
+    private void runUpdaterTest(Map<String, String> config, boolean expectSourceRemoved, boolean attachmentExists, boolean expectClearingDocRemoved)
             throws IOException {
         Path sourceAttachment = createSourceAttachment();
         initBasicConfiguration(sourceAttachment, config);
@@ -185,8 +193,10 @@ public class SW360UpdaterTest {
                 .thenThrow(new SW360ClientException("Boo"));
 
         ClearingReportGenerator generator = mock(ClearingReportGenerator.class);
+        Path clearingDoc = getTargetDir().resolve(CLEARING_DOC);
+        Files.write(clearingDoc, "The clearing document".getBytes(StandardCharsets.UTF_8));
         when(generator.createClearingDocument(any(), any()))
-                .thenReturn(getTargetDir().resolve(CLEARING_DOC));
+                .thenReturn(clearingDoc);
 
         SW360Updater sw360Updater = new SW360Updater(updater, configurationMock, generator);
 
@@ -211,6 +221,9 @@ public class SW360UpdaterTest {
 
         boolean sourcePresent = Files.exists(sourceAttachment);
         assertThat(sourcePresent).isEqualTo((!expectUpload || !expectSourceRemoved) && attachmentExists);
+
+        boolean clearingDocPresent = Files.exists(clearingDoc);
+        assertThat(clearingDocPresent).isEqualTo(!expectUpload || !expectClearingDocRemoved);
     }
 
     private Map<Path, SW360AttachmentType> createExpectedAttachmentMap() {
