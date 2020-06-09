@@ -61,18 +61,17 @@ public class SW360Updater {
 
     public void execute() {
         LOGGER.debug("{} has started.", SW360Updater.class.getName());
-        Collection<Artifact> artifacts = getArtifactsFromCsvFile(configuration.getProperties());
+        Collection<Artifact> artifacts = getArtifactsFromCsvFile(configuration.getProperties(), configuration.getCsvFilePath());
 
         artifacts.forEach(this::uploadReleaseWithClearingDocumentFromArtifact);
 
 
         LOGGER.info("The SW360Exporter was executed from the base directory: {} " +
                         "with the csv file taken from the path: {}, " +
-                        "the clearing reports taken or temporarily created in: {}/{} " +
+                        "the clearing reports taken or temporarily created in: {} " +
                         "and the source files taken from the folder: {}.",
                 configuration.getBaseDir().toAbsolutePath(),
-                configuration.getBaseDir().toAbsolutePath(),
-                configuration.getCsvFileName(),
+                configuration.getCsvFilePath().toAbsolutePath(),
                 configuration.getTargetDir().toAbsolutePath(),
                 configuration.getSourcesPath().toAbsolutePath());
     }

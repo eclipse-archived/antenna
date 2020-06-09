@@ -161,8 +161,8 @@ public class SW360ExporterTest {
         when(config.getConnection())
                 .thenReturn(connectionMock);
         csvFile = folder.newFile("sample.csv");
-        when(config.getCsvFileName())
-                .thenReturn(csvFile.getName());
+        when(config.getCsvFilePath())
+                .thenReturn(csvFile.toPath());
         Path basePath = Paths.get(csvFile.getParent());
         when(config.getBaseDir())
                 .thenReturn(basePath);

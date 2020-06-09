@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -99,12 +98,13 @@ public class SW360UpdaterTest {
 
     private void initBasicConfiguration(Path sourceAttachment, Map<String, String> propertiesMap) throws IOException {
         Path csvFile = writeCsvFile(sourceAttachment.toString());
-        propertiesMap.put("csvFilePath", csvFile.toString());
 
-        when(configurationMock.getProperties()).
-                thenReturn(propertiesMap);
+        when(configurationMock.getProperties())
+                .thenReturn(propertiesMap);
         when(configurationMock.getBaseDir())
-                .thenReturn(Paths.get(propertiesMap.get("csvFilePath")).getParent());
+                .thenReturn(csvFile.getParent());
+        when(configurationMock.getCsvFilePath())
+                .thenReturn(csvFile);
         when(configurationMock.getTargetDir())
                 .thenReturn(getTargetDir());
         when(configurationMock.getSourcesPath())

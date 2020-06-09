@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -68,9 +69,9 @@ public class ComplianceFeatureUtils {
         }
     }
 
-    public static Collection<Artifact> getArtifactsFromCsvFile(Map<String, String> properties) {
+    public static Collection<Artifact> getArtifactsFromCsvFile(Map<String, String> properties, Path csvFilePath) {
         char delimiter = properties.get("delimiter").charAt(0);
-        File csvFile = new File(properties.get("csvFilePath"));
+        File csvFile = csvFilePath.toFile();
         if (!csvFile.exists()) {
             throw new ConfigurationException("csvFile for " + csvFile.getName() + " could not be found");
         }

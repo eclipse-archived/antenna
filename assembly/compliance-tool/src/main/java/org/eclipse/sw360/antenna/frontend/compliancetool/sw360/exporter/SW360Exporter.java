@@ -96,8 +96,7 @@ public class SW360Exporter {
                 .map(this::releaseAsArtifact)
                 .collect(Collectors.toList());
 
-        File csvFile = configuration.getTargetDir()
-                .resolve(configuration.getCsvFileName())
+        File csvFile =  configuration.getCsvFilePath()
                 .toFile();
 
         CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(),
@@ -112,11 +111,10 @@ public class SW360Exporter {
         }
 
         LOGGER.info("The SW360Exporter was executed from the base directory: {} " +
-                        "with the csv file written to the path: {}/{} " +
+                        "with the csv file written to the path: {} " +
                         "and the source files written to the folder: {}. ",
                 configuration.getBaseDir().toAbsolutePath(),
-                configuration.getBaseDir().toAbsolutePath(),
-                configuration.getCsvFileName(),
+                csvFile.toPath(),
                 configuration.getTargetDir().toAbsolutePath());
     }
 
