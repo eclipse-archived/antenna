@@ -72,6 +72,7 @@ It has the ability to update release information of already existing releases.
 - `csvFilePath`: Path and name to the csv file with the release information
 - `delimiter`: Delimiter used in the csv file to separate columns (by default it is `,`)
 - `encoding`: Encoding of the csv file, normally `UTF-8` 
+- `removeClearedSources`: A boolean property that controls whether the exporter should remove the source attachments of a release from the local sources directory once the release has been cleared. Cleared releases are no longer relevant for the workflow of the compliance tool; so by setting this property to *true*, an automatic cleanup of the sources directory can be enabled. The default value is *false*.
 - `proxyHost`: If a proxy is in use, supply the host name
 - `proxyPort`: If a proxy is in use, supply the port
 - `proxyUse`: If a proxy is in use, this should be set to true
