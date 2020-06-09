@@ -24,6 +24,7 @@ public class ClearingReportGenerator {
     Path createClearingDocument(SW360Release release, Path targetDir) {
         Path clearingDocument = targetDir.resolve(release.getId() + CLEARING_DOC_SUFFIX);
         try {
+            Files.createDirectories(targetDir);
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(Files.newBufferedWriter(clearingDocument), release);
             return clearingDocument;

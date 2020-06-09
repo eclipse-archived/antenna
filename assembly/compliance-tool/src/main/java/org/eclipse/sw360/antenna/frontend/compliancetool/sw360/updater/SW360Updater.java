@@ -42,6 +42,12 @@ public class SW360Updater {
      */
     public static final String PROP_REMOVE_CLEARED_SOURCES = "removeClearedSources";
 
+    /**
+     * Configuration property that controls whether synthetic clearing documents
+     * should be removed after they have been uploaded.
+     */
+    public static final String PROP_REMOVE_CLEARING_DOCS = "removeClearingDocuments";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360Updater.class);
 
     private final SW360UpdaterImpl updater;
@@ -49,6 +55,7 @@ public class SW360Updater {
     private final ClearingReportGenerator generator;
 
     private final boolean removeClearedSources;
+    private final boolean removeClearingDocs;
 
     public SW360Updater(SW360UpdaterImpl updater, SW360Configuration configuration,
                         ClearingReportGenerator generator) {
@@ -57,6 +64,7 @@ public class SW360Updater {
         this.generator = Objects.requireNonNull(generator, "Clearing report generator must not be null");
 
         removeClearedSources = Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_CLEARED_SOURCES));
+        removeClearingDocs = Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_CLEARING_DOCS));
     }
 
     public void execute() {
@@ -85,14 +93,18 @@ public class SW360Updater {
             if (release.getClearingState() != null &&
                     !release.getClearingState().isEmpty() &&
                     ArtifactClearingState.ClearingState.valueOf(release.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
+                Path clearingDoc = getOrGenerateClearingDocument(release, artifact);
                 AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
-                        .addAttachment(getOrGenerateClearingDocument(release, artifact),
+                        .addAttachment(clearingDoc,
                                 SW360AttachmentType.CLEARING_REPORT)
                         .build();
                 releaseClientAdapter.uploadAttachments(uploadRequest);
 
                 if (removeClearedSources) {
                     removeSourceArtifacts(artifact, release);
+                }
+                if (removeClearingDocs) {
+                    removeClearingDocument(clearingDoc);
                 }
             }
         } catch (SW360ClientException e) {
@@ -117,5 +129,14 @@ public class SW360Updater {
                                 release.getName(), release.getVersion());
                     }
                 });
+    }
+
+    private static void removeClearingDocument(Path clearingDoc) {
+        LOGGER.debug("Removing clearing document {}.", clearingDoc);
+        try {
+            Files.delete(clearingDoc);
+        } catch (IOException e) {
+            LOGGER.error("Could not delete clearing document {}", clearingDoc, e);
+        }
     }
 }

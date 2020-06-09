@@ -11,7 +11,6 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.junit.Before;
@@ -23,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,10 +57,13 @@ public class ClearingReportGeneratorTest {
         System.out.println(content);
     }
 
-    @Test(expected = ExecutionException.class)
-    public void testExceptionIsThrownOnFailedCreation() {
-        Path nonExistingFolder = Paths.get("non", "existing", "folder");
-        SW360Release release = SW360TestUtils.mkSW360Release("crash");
-        generator.createClearingDocument(release, nonExistingFolder);
+    @Test
+    public void testMissingFolderIsCreated() throws IOException {
+        Path root = folder.newFolder().toPath();
+        Path nonExistingFolder = root.resolve("non/existing/folder");
+        SW360Release release = SW360TestUtils.mkSW360Release("create");
+
+        Path clearingDocument = generator.createClearingDocument(release, nonExistingFolder);
+        assertThat(Files.exists(clearingDocument)).isTrue();
     }
 }
