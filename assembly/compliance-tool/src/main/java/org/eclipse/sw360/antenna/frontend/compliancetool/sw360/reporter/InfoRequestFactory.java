@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) Bosch.IO GmbH 2020.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.main.AntennaComplianceToolOptions;
@@ -17,15 +27,16 @@ import java.util.stream.Collectors;
  * obtain the needed information.
  * </p>
  */
-public class InfoRequestFactory {
+class InfoRequestFactory {
     private static Set<InfoRequest> infoRequests = new HashSet<>(Arrays.asList(
             new IRGetClearedReleases(),
             new IRGetReleasesOfProjects(),
             new IRGetNotClearedReleases()
-    )) ;
+    ));
 
     /**
      * Gives {@code InfoRequest} from a given parameter string
+     *
      * @param infoParameter String containing parameter
      * @return implementation of an InfoRequest or an emptyInfoRequest
      */

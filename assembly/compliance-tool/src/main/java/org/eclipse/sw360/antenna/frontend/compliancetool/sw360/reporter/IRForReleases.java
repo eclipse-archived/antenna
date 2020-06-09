@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) Bosch.IO GmbH 2020.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
@@ -32,6 +42,7 @@ abstract class IRForReleases implements InfoRequest<SW360Release> {
 
     /**
      * Gives a stream of releases from  a list if components
+     *
      * @param connection connection object to a sw360 instance
      * @param components list of sparse components containing linked releases
      * @return stream of releases
@@ -52,13 +63,14 @@ abstract class IRForReleases implements InfoRequest<SW360Release> {
 
     /**
      * Filters a list of components linked releases with a predicate
-     * @param connection connection object to a sw360 instance
-     * @param components list of sparse components containing linked releases
+     *
+     * @param connection       connection object to a sw360 instance
+     * @param components       list of sparse components containing linked releases
      * @param releasePredicate predicate by which releases are filtered
      * @return all releases of the components that adhere to prediacte
      */
     Set<SW360Release> getReleasesFromComponentsByPredicate(SW360Connection connection, List<SW360SparseComponent> components, Predicate<SW360Release> releasePredicate) {
-        return getSw360ReleaseStream(connection,components)
+        return getSw360ReleaseStream(connection, components)
                 .filter(releasePredicate)
                 .collect(Collectors.toSet());
     }

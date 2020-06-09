@@ -69,6 +69,7 @@ public class SW360StatusReporter {
 
     /**
      * Creates a parsed {@code InfoRequest} from a set of parameter
+     *
      * @param parameters set of parameters to be parsed
      */
     private void parseAdditionalParameters(Map<String, String> parameters) {

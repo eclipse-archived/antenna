@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) Bosch.IO GmbH 2020.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.apache.commons.csv.CSVFormat;
@@ -53,7 +63,7 @@ public class ReporterOutputCSV implements ReporterOutput {
         }
     }
 
-    private <T> String getHeader() {
+    private String getHeader() {
         if (resultType.equals(SW360Release.class)) {
             return ReporterUtils.releaseCsvPrintHeader();
         } else if (resultType.equals(SW360SparseRelease.class)) {
@@ -67,8 +77,8 @@ public class ReporterOutputCSV implements ReporterOutput {
      * Prints a csv file with a given name to a given target directory.
      * Header and body are written
      *
-     * @param header      header columns used for the csv file
-     * @param body        rows used for the csv file
+     * @param header header columns used for the csv file
+     * @param body   rows used for the csv file
      */
     private void printCsvFile(String header, String[] body) {
         if (header.split(";").length != Arrays.stream(body).findAny().map(s -> s.split(";").length).orElse(0)) {

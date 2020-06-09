@@ -80,7 +80,8 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
     /**
      * Creates a new instance of {@code AntennaComplianceToolOptions} with the properties
      * provided.
-     *  @param propertiesFilePath the path to the Antenna config file
+     *
+     * @param propertiesFilePath the path to the Antenna config file
      * @param complianceMode     the mode the compliance tool will get executed with
      * @param parameters
      * @param debugLog           flag whether debug log should be active
@@ -117,6 +118,7 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
     /**
      * Returns all parameters that will be given to the mode the
      * compliance tool will be executed with.
+     *
      * @return the parameters of the mode of the compliance tool.
      */
     Set<String> getParameters() {

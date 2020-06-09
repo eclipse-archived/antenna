@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) Bosch.IO GmbH 2020.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.frontend.stub.cli.AbstractAntennaCLIOptions;
@@ -37,6 +47,7 @@ class ReporterParameterParser {
 
     /**
      * Creates a string representing the info parameter of an{@link InfoRequest}
+     *
      * @param parameters set of parameters to be parsed
      * @return parsed {@code InfoRequest} with parsed additional parameters
      * @throws IllegalArgumentException when invalid or misconfigured parameters are given or are missing.
@@ -47,7 +58,8 @@ class ReporterParameterParser {
 
     /**
      * Parses the parameter value of a parameter key from a set of parameters.
-     * @param parameters Set of parameters searched for parameter key
+     *
+     * @param parameters   Set of parameters searched for parameter key
      * @param parameterKey parameter key of the parameter key value pair
      * @return parameter value of the parameter key if contained in parameter set, otherwise null
      */
@@ -57,6 +69,7 @@ class ReporterParameterParser {
 
     /**
      * Returns the parameter value of the output format key
+     *
      * @param parameters Set of parameters that are searched for the output format parameter
      * @return String of the output format parameter value
      */
@@ -77,10 +90,11 @@ class ReporterParameterParser {
      * Maps a set of parameters with the key being the parameter key
      * and the value the parameter value. The Strings are split by the
      * {@code AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER}
+     *
      * @param parameters set of strings representing parameters
      * @return Map of parameter key value pairs
      * @throws {@code IllegalStateException} by default if set collected
-     * to map contains a duplicate key
+     *                to map contains a duplicate key
      */
     static Map<String, String> mapParameters(Set<String> parameters) {
         return parameters.stream()
@@ -97,6 +111,7 @@ class ReporterParameterParser {
 
     /**
      * Checks if the given set is either null or empty
+     *
      * @param parameters set of strings representing parameters
      * @throws {@code IllegalArgumentException} if set is empty
      */

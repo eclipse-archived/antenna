@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) Bosch.IO GmbH 2020.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
@@ -28,7 +38,7 @@ public class IRGetReleasesOfProjectsTest {
 
     @Test
     public void executeGetReleasesOfProjectsByProjectNameAndVersionTest() {
-        final Map<String, String> parameters = new HashMap<String, String>(){
+        final Map<String, String> parameters = new HashMap<String, String>() {
             {
                 put("--project_name", PROJECT_NAME);
                 put("--project_version", PROJECT_VERSION);
@@ -39,6 +49,7 @@ public class IRGetReleasesOfProjectsTest {
 
     /**
      * Executes the execute method of IRGetReleasesOfProjects with given parameters
+     *
      * @param parameters map of parameters for the additional parameters
      */
     private void executeGetReleasesOfProjectsWithParameters(Map<String, String> parameters) {
@@ -55,6 +66,7 @@ public class IRGetReleasesOfProjectsTest {
 
     /**
      * creates connection with all projectadpater objects mocked
+     *
      * @param sparseRelease sparse release to be contained in result list
      * @return sw360 connection with set projectadapter objects
      */

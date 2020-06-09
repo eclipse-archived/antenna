@@ -106,6 +106,7 @@ public class ComplianceFeatureUtils {
 
     /**
      * Checks if a release is has an approved clearing state
+     *
      * @param sw360Release release to be checked
      * @return true if approved, otherwise false
      */
