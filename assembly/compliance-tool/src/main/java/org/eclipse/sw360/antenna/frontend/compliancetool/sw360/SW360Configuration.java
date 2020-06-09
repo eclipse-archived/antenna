@@ -29,7 +29,7 @@ import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.Compliance
 public class SW360Configuration extends ConfigurableWorkflowItem {
     private final SW360ConnectionConfigurationFactory connectionFactory;
     private final Map<String, String> properties;
-    private final String csvFileName;
+    private final Path csvFilePath;
     private final SW360Connection connection;
     private final Path targetDir;
     private final Path sourcesPath;
@@ -57,8 +57,8 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
         baseDir = Paths.get(properties.get("basedir"));
         targetDir = baseDir.resolve(properties.get("targetDir"));
         sourcesPath = baseDir.resolve(properties.get("sourcesDirectory"));
+        csvFilePath = baseDir.resolve(properties.get("csvFilePath"));
         connection = makeConnection();
-        csvFileName = properties.get("csvFilePath");
     }
 
     private SW360Connection makeConnection() {
@@ -92,8 +92,8 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
         return targetDir;
     }
 
-    public String getCsvFileName() {
-        return csvFileName;
+    public Path getCsvFilePath() {
+        return csvFilePath;
     }
 
     public Map<String, String> getProperties() {

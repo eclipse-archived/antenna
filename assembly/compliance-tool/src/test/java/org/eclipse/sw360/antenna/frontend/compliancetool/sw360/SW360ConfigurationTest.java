@@ -62,7 +62,7 @@ public class SW360ConfigurationTest {
         File propertiesFile = configFile("compliancetool-exporter.properties");
         SW360Configuration configuration = new SW360Configuration(propertiesFile);
         assertThat(configuration.getTargetDir()).isEqualTo(Paths.get("./"));
-        assertThat(configuration.getCsvFileName()).isEqualTo("sample.csv");
+        assertThat(configuration.getCsvFilePath()).isEqualTo(Paths.get("sample.csv"));
         assertThat(configuration.getConnection().getReleaseAdapter()).isNotNull();
         assertThat(configuration.getConnection().getComponentAdapter()).isNotNull();
     }
@@ -71,7 +71,7 @@ public class SW360ConfigurationTest {
     public void testConfigurationWithUpdaterPropertiesFile() {
         File propertiesFile = configFile("compliancetool-updater.properties");
         SW360Configuration configuration = new SW360Configuration(propertiesFile);
-        assertThat(new File(configuration.getCsvFileName()).getName()).isEqualTo("compliancetool_updater_test.csv");
+        assertThat(configuration.getCsvFilePath().toFile().getName()).isEqualTo("compliancetool_updater_test.csv");
         assertThat(configuration.getProperties().get("delimiter")).isEqualTo(",");
         assertThat(configuration.getProperties().get("sw360updateReleases")).isEqualTo("true");
         assertThat(configuration.getProperties().get("sw360uploadSources")).isEqualTo("false");
