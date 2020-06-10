@@ -43,10 +43,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(Parameterized.class)
 public class SW360UpdaterTest {
@@ -217,6 +214,8 @@ public class SW360UpdaterTest {
                     .map(entry -> new AttachmentUploadRequest.Item(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
             assertThat(uploadRequest.getItems()).containsAll(expItems);
+        } else {
+            verify(configurationMock, never()).getConnection();
         }
 
         boolean sourcePresent = Files.exists(sourceAttachment);

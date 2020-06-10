@@ -88,11 +88,12 @@ public class SW360Updater {
         LOGGER.info("Processing {}.", artifact);
         try {
             SW360Release release = updater.artifactToReleaseInSW360(artifact);
-            SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnection().getReleaseAdapter();
 
             if (release.getClearingState() != null &&
                     !release.getClearingState().isEmpty() &&
                     ArtifactClearingState.ClearingState.valueOf(release.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
+                SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnection().getReleaseAdapter();
+
                 Path clearingDoc = getOrGenerateClearingDocument(release, artifact);
                 AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
                         .addAttachment(clearingDoc,
