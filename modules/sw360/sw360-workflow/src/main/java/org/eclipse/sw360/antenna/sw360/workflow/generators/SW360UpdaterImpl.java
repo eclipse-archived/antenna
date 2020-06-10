@@ -58,13 +58,34 @@ public class SW360UpdaterImpl {
         sw360MetaDataUpdater.createProject(projectName, projectVersion, releases);
         return Collections.emptyMap();
     }
-    
-    public SW360Release artifactToReleaseInSW360(Artifact artifact) {
-        Set<String> licenseIds = getSetOfLicenseIds(artifact);
 
+    /**
+     * Maps an artifact onto an SW360Release object and either gets
+     * information about it from a SW360 instance or, if it does not
+     * exist in the instance yet, creates it
+     * @param artifact artifact to be transformed to release
+     * @return SW360Release on which artifact and additional information
+     * form SW360 instance have been mapped on.
+     */
+    public SW360Release artifactToReleaseInSW360(Artifact artifact) {
         final SW360Release sw360ReleaseFromArtifact = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
-        sw360ReleaseFromArtifact.setMainLicenseIds(licenseIds);
-        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(sw360ReleaseFromArtifact);
+
+        return artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact);
+    }
+
+    /**
+     * Maps an artifacts licenses and sources onto an SW360Release object and
+     * either gets information about it from a SW360 instance or,
+     * if it does not exist in the instance yet, creates it.
+     * @param artifact artifact to be transformed to release
+     * @param release release on which artifact license, sources and
+     *                information form sw360 instance will be mapped
+     * @return mapped SW360Release
+     */
+    public SW360Release artifactToReleaseInSW360(Artifact artifact, SW360Release release) {
+        Set<String> licenseIds = getSetOfLicenseIds(artifact);
+        release.setMainLicenseIds(licenseIds);
+        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release);
 
         sw360ReleaseFinal = handleSources(sw360ReleaseFinal, artifact);
 

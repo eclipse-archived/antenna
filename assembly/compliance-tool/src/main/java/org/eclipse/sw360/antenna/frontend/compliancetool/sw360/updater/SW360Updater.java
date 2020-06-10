@@ -20,6 +20,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360Att
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToAttachmentUtils;
+import org.eclipse.sw360.antenna.sw360.utils.ArtifactToReleaseUtils;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,12 +88,14 @@ public class SW360Updater {
     private void uploadReleaseWithClearingDocumentFromArtifact(Artifact artifact) {
         LOGGER.info("Processing {}.", artifact);
         try {
-            SW360Release release = updater.artifactToReleaseInSW360(artifact);
-            SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnection().getReleaseAdapter();
+            final SW360Release sw360ReleaseFromArtifact = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
 
-            if (release.getClearingState() != null &&
-                    !release.getClearingState().isEmpty() &&
-                    ArtifactClearingState.ClearingState.valueOf(release.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
+            if (sw360ReleaseFromArtifact.getClearingState() != null &&
+                    !sw360ReleaseFromArtifact.getClearingState().isEmpty() &&
+                    ArtifactClearingState.ClearingState.valueOf(sw360ReleaseFromArtifact.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
+                SW360Release release = updater.artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact);
+                SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnection().getReleaseAdapter();
+
                 Path clearingDoc = getOrGenerateClearingDocument(release, artifact);
                 AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
                         .addAttachment(clearingDoc,
