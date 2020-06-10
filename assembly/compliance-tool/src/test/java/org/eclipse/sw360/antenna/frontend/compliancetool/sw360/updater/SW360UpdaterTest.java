@@ -178,13 +178,9 @@ public class SW360UpdaterTest {
         SW360UpdaterImpl updater = mock(SW360UpdaterImpl.class);
         SW360Release release = new SW360Release();
         release.setClearingState(clearingState);
-        when(updater.artifactToReleaseInSW360(any()))
+        when(updater.artifactToReleaseInSW360(any(), any()))
                 .thenAnswer((Answer<SW360Release>) invocationOnMock -> {
-                    if (!attachmentExists) {
-                        // Provoke an error when deleting the attachment. Note that the attachment must be
-                        // present when the CSV file is read; so we delete it afterwards.
-                        Files.delete(sourceAttachment);
-                    }
+                    deleteSourceAttachmentIfAttachmentExists(attachmentExists, sourceAttachment);
                     return release;
                 })
                 .thenThrow(new SW360ClientException("Boo"));
@@ -204,18 +200,19 @@ public class SW360UpdaterTest {
         if (expectUpload && !clearingDocAvailable) {
             verify(generator).createClearingDocument(release, getTargetDir());
         }
-        verify(updater, times(2)).artifactToReleaseInSW360(any());
         @SuppressWarnings("unchecked")
         ArgumentCaptor<AttachmentUploadRequest<SW360Release>> captor = ArgumentCaptor.forClass(AttachmentUploadRequest.class);
         verify(releaseClientAdapter, times(expectUpload ? 1 : 0)).uploadAttachments(captor.capture());
         if (expectUpload) {
+            verify(updater, times(2)).artifactToReleaseInSW360(any(), any());
             AttachmentUploadRequest<SW360Release> uploadRequest = captor.getValue();
             List<AttachmentUploadRequest.Item> expItems = testAttachmentMap.entrySet().stream()
                     .map(entry -> new AttachmentUploadRequest.Item(entry.getKey(), entry.getValue()))
                     .collect(Collectors.toList());
             assertThat(uploadRequest.getItems()).containsAll(expItems);
         } else {
-            verify(configurationMock, never()).getConnection();
+            deleteSourceAttachmentIfAttachmentExists(attachmentExists, sourceAttachment);
+            verify(updater, never()).artifactToReleaseInSW360(any(), any());
         }
 
         boolean sourcePresent = Files.exists(sourceAttachment);
@@ -223,6 +220,20 @@ public class SW360UpdaterTest {
 
         boolean clearingDocPresent = Files.exists(clearingDoc);
         assertThat(clearingDocPresent).isEqualTo(!expectUpload || !expectClearingDocRemoved);
+    }
+
+    /**
+     * deletes the file of the given path if the given boolean is true
+     * @param attachmentExists determines if the file at the given path should remain existing
+     * @param sourceAttachment path to file that might get deleted
+     * @throws IOException
+     */
+    private void deleteSourceAttachmentIfAttachmentExists(boolean attachmentExists, Path sourceAttachment) throws IOException {
+        if (!attachmentExists) {
+            // Provoke an error when deleting the attachment. Note that the attachment must be
+            // present when the CSV file is read; so we delete it afterwards.
+            Files.delete(sourceAttachment);
+        }
     }
 
     private Map<Path, SW360AttachmentType> createExpectedAttachmentMap() {
