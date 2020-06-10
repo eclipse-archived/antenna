@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
  * </p>
  */
 class InfoRequestFactory {
+    private InfoRequestFactory() {}
+
     private static Set<InfoRequest> infoRequests = new HashSet<>(Arrays.asList(
             new IRGetClearedReleases(),
             new IRGetReleasesOfProjects(),

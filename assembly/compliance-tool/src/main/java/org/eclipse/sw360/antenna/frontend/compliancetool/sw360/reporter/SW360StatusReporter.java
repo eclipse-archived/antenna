@@ -59,7 +59,7 @@ public class SW360StatusReporter {
         final Collection<?> result = infoRequest.execute(connection);
 
         reporterOutput.setResultType(infoRequest.getType());
-        reporterOutput.setFilePath(configuration.getTargetDir().resolve(configuration.getCsvFileName()));
+        reporterOutput.setFilePath(configuration.getCsvFilePath());
         reporterOutput.print(result);
     }
 

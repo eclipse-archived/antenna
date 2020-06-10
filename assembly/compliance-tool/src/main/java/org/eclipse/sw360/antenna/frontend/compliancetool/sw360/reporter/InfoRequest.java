@@ -21,7 +21,7 @@ public interface InfoRequest<T> {
     String getInfoParameter();
 
     default boolean hasAdditionalParameters() {
-        return getAdditionalParameters().size() > 0;
+        return !getAdditionalParameters().isEmpty();
     }
 
     default Set<String> getAdditionalParameters() {
@@ -40,7 +40,7 @@ public interface InfoRequest<T> {
 
     Class<T> getType();
 
-    static InfoRequest emptyInfoRequest() {
+    static InfoRequest<Object> emptyInfoRequest() {
         return new InfoRequest<Object>() {
             @Override
             public String getInfoParameter() {

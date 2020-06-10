@@ -45,6 +45,8 @@ class ReporterParameterParser {
      */
     static final String DEFAULT_OUTPUT_FORMAT = "CSV";
 
+    private ReporterParameterParser() {}
+
     /**
      * Creates a string representing the info parameter of an{@link InfoRequest}
      *

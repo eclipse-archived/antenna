@@ -16,6 +16,8 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 class ReporterOutputFactory {
     static final ReporterOutput DEFAULT_REPORTER_OUTPUT = new ReporterOutputCSV();
 
+    private ReporterOutputFactory() {}
+
     /**
      * create function to create an object implementing the {@link ReporterOutput}
      *

@@ -50,9 +50,8 @@ public class SW360StatusReporterTest {
         when(configurationMock.getTargetDir())
                 .thenReturn(folder.getRoot().toPath());
         File csvFile = folder.newFile("result.csv");
-        String csvFileName = csvFile.getName();
-        when(configurationMock.getCsvFileName())
-                .thenReturn(csvFileName);
+        when(configurationMock.getCsvFilePath())
+                .thenReturn(csvFile.toPath());
 
         parameter = new HashSet<>(Collections.singletonList(ReporterParameterParser.REPORTER_PARAMETER_PREFIX + AbstractAntennaCLIOptions.PARAMETER_IDENTIFIER + new IRGetClearedReleases().getInfoParameter()));
         SW360StatusReporter statusReporter = new SW360StatusReporter(configurationMock, parameter);

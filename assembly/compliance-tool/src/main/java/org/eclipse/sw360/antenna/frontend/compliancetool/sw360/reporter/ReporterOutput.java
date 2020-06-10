@@ -17,7 +17,7 @@ import java.util.Collection;
  * Central interface for the report output of the status reporter
  */
 public interface ReporterOutput {
-    void setResultType(Class type);
+    void setResultType(Class<?> type);
 
     void setFilePath(Path filePath);
 

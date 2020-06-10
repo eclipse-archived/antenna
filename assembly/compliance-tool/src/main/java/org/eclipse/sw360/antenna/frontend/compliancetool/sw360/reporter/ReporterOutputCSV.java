@@ -31,7 +31,7 @@ import java.util.Collection;
 public class ReporterOutputCSV implements ReporterOutput {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReporterOutputCSV.class);
 
-    private Class resultType;
+    private Class<?> resultType;
 
     private Path filePath;
 

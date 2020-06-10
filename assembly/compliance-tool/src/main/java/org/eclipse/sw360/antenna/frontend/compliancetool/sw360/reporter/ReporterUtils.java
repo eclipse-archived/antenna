@@ -16,6 +16,8 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Sparse
 import java.util.Collection;
 
 class ReporterUtils {
+    private ReporterUtils() {}
+
     static String[] printCollectionOfReleases(Collection<SW360Release> releases) {
         return releases.stream()
                 .map(ReporterUtils::releaseCsvPrintRow)
