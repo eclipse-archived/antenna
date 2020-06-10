@@ -59,6 +59,7 @@
             <resource>
                 <directory>${project.basedir}/src/site/markdown</directory>
                 <includes>
+                    <include>**/*.md</include>
                     <include>**/*.md.vm</include>
                 </includes>
             </resource>
