@@ -14,7 +14,6 @@ package org.eclipse.sw360.antenna.ort.workflow.processors.enricher
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException
 import org.eclipse.sw360.antenna.api.workflow.AbstractProcessor
 import org.eclipse.sw360.antenna.model.artifact.Artifact
-import workflow.processors.enricher.OrtDownloaderProcessorImpl
 import java.io.File
 
 class OrtDownloaderProcessor : AbstractProcessor() {
