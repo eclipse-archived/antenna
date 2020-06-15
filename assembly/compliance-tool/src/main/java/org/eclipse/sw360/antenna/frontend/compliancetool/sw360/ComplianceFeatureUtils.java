@@ -13,6 +13,9 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.csvreader.CSVArtifactMapper;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ClearingState;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -99,5 +102,21 @@ public class ComplianceFeatureUtils {
         }
 
         return value;
+    }
+
+    /**
+     * Checks if a release is has an approved clearing state
+     *
+     * @param sw360Release release to be checked
+     * @return true if approved, otherwise false
+     */
+    public static boolean isApproved(SW360Release sw360Release) {
+        return Optional.ofNullable(sw360Release.getClearingState())
+                .map(clearingState -> ArtifactClearingState.ClearingState.valueOf(clearingState) != ArtifactClearingState.ClearingState.INITIAL)
+                .orElse(false) &&
+                Optional.ofNullable(sw360Release.getSw360ClearingState())
+                        .map(sw360ClearingState -> sw360ClearingState.equals(SW360ClearingState.APPROVED) ||
+                                sw360ClearingState.equals(SW360ClearingState.REPORT_AVAILABLE))
+                        .orElse(false);
     }
 }

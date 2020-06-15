@@ -12,15 +12,14 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter;
 
 import org.eclipse.sw360.antenna.csvreader.CSVArtifactMapper;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ClearingState;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToReleaseUtils;
@@ -143,18 +142,8 @@ public class SW360Exporter {
                 .filter(id -> !id.equals(""))
                 .map(id -> connection.getReleaseAdapter().getReleaseById(id))
                 .map(Optional::get)
-                .filter(sw360Release -> !isApproved(sw360Release))
+                .filter(sw360Release -> !ComplianceFeatureUtils.isApproved(sw360Release))
                 .collect(Collectors.toList());
-    }
-
-    private boolean isApproved(SW360Release sw360Release) {
-        return Optional.ofNullable(sw360Release.getClearingState())
-                        .map(clearingState -> ArtifactClearingState.ClearingState.valueOf(clearingState) != ArtifactClearingState.ClearingState.INITIAL)
-                        .orElse(false) &&
-                Optional.ofNullable(sw360Release.getSw360ClearingState())
-                        .map(sw360ClearingState -> sw360ClearingState.equals(SW360ClearingState.APPROVED) ||
-                                sw360ClearingState.equals(SW360ClearingState.REPORT_AVAILABLE))
-                        .orElse(false);
     }
 
     private <T extends SW360HalResource<?, ?>> String getIdFromHalResource(T halResource) {

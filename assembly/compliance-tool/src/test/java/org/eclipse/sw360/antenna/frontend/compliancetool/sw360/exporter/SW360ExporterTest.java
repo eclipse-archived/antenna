@@ -199,7 +199,7 @@ public class SW360ExporterTest {
         sw360Exporter.execute();
 
         assertThat(csvFile).exists();
-        CSVParser csvParser = SW360TestUtils.getCsvParser(csvFile);
+        CSVParser csvParser = SW360TestUtils.getCsvParser(csvFile, ',');
 
         List<CSVRecord> records = csvParser.getRecords();
 

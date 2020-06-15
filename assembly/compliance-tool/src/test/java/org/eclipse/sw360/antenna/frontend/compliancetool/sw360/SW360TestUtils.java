@@ -114,12 +114,12 @@ public class SW360TestUtils {
         return sparseComponent;
     }
 
-    public static CSVParser getCsvParser(File currentCsvFile) throws IOException {
+    public static CSVParser getCsvParser(File currentCsvFile, char delimiter) throws IOException {
         FileInputStream fs = new FileInputStream(currentCsvFile);
         InputStreamReader isr = new InputStreamReader(fs, StandardCharsets.UTF_8);
         CSVFormat csvFormat = CSVFormat.DEFAULT;
         csvFormat = csvFormat.withFirstRecordAsHeader();
-        csvFormat = csvFormat.withDelimiter(',');
+        csvFormat = csvFormat.withDelimiter(delimiter);
         return new CSVParser(isr, csvFormat);
     }
 }
