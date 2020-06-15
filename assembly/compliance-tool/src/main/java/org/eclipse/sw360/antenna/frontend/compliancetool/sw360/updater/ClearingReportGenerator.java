@@ -11,8 +11,8 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,7 +29,7 @@ public class ClearingReportGenerator {
             mapper.writeValue(Files.newBufferedWriter(clearingDocument), release);
             return clearingDocument;
         } catch (IOException e) {
-            throw new ExecutionException("Could not create clearing document " + clearingDocument.toString(), e);
+            throw new SW360ClientException("Could not create clearing document " + clearingDocument.toString(), e);
         }
     }
 }
