@@ -25,7 +25,7 @@ public class IRGetNotClearedReleasesTest {
     public void executeGetNotClearedReleasesTest() {
         SW360Release release = SW360TestUtils.mkSW360Release("test");
         release.setClearingState("INITIAL");
-        SW360Connection connection = IRGetClearedReleasesTest.getSW360Connection(release);
+        SW360Connection connection = IRForReleasesHelper.getSW360Connection(release);
 
         final IRGetNotClearedReleases getNotClearedReleases = new IRGetNotClearedReleases();
         final Collection<SW360Release> notClearedReleases = getNotClearedReleases.execute(connection);
