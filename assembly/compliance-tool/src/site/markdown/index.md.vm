@@ -55,3 +55,25 @@ much more information is printed to the console.
 
 In order to see all valid switches and a help statement use the switch `--help` 
 or `-h`.  
+
+#[[##]]# Common Properties
+There are properties all modes share. They need to be provided in every properties file.
+
+The SW360 properties are used to give the url of the used sw360 instance and the necessary credentials:
+- `sw360restServerUrl`: Link to the rest server url of your SW360 instance
+- `sw360authServerUrl`: Link to the authentication server url of your SW360 instance
+- `sw360user`: SW360 Username
+- `sw360password`: SW360 User Password
+- `sw360clientId`: SW360 Client Id
+- `sw360clientPassword`: SW360 Client Password
+
+Proxy information needs to be given if the compliance tool is used from within a proxy.
+If a proxy is not in use, `proxyUse` should be set to `false`:
+- `proxyHost`: If a proxy is in use, supply the host name
+- `proxyPort`: If a proxy is in use, supply the port
+- `proxyUse`: If a proxy is in use, this should be set to true
+
+Directory parameters that all modes need:
+- `targetDir`: Target directory in which artificial documents (e.g. clearing reports) are created in. 
+- `basedir`: Base directory of the execution
+- `csvFilePath`: Path and name where the csv file should be saved

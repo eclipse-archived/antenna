@@ -46,15 +46,4 @@ information request you can also use the `--help` switch
 ```  
 
 ### Properties
-- `targetDir`: Target directory in which the result file is created in. 
-- `basedir`: Base directory of the execution
-- `csvFilePath`: name of the csv file
-- `proxyHost`: If a proxy is in use, supply the host name
-- `proxyPort`: If a proxy is in use, supply the port
-- `proxyUse`: If a proxy is in use, this should be set to true
-- `sw360restServerUrl`: Link to the rest server url of your SW360 instance
-- `sw360authServerUrl`: Link to the authentication server url of your SW360 instance
-- `sw360user`: SW360 Username
-- `sw360password`: SW360 User Password
-- `sw360clientId`: SW360 Client Id
-- `sw360clientPassword`: SW360 Client Password
+The status reporter does not require any additional properties, only the common ones. 
