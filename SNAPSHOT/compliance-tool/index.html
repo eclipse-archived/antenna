@@ -83,7 +83,7 @@
 <p>This tool can be used for a round trip in order to enrich and clear metadata in a SW360 instance. The round trip would look like this:</p>
 <ul>
 
-<li>Data about incomplete/non-cleared releases is exported from SW360 to a csv file (<a href="#SW360Exporter">SW360 Exporter</a>)</li>
+<li>Data about incomplete/non-cleared releases is exported from SW360 to a csv file (<a href="./exporter.html">SW360 Exporter</a>)</li>
 <li>The csv file is then edited manually
 <ul>
 
@@ -91,11 +91,9 @@
 <li>When information is sufficient the clearing state of a release can be set to one of the approval states.</li>
 </ul>
 </li>
-<li>Based on the edits in the csv file, SW360 is updated and clearing states are set. (<a href="#SW360Updater">SW360 Updater</a>)</li>
+<li>Based on the edits in the csv file, SW360 is updated and clearing states are set. (<a href="./updater.html">SW360 Updater</a>)</li>
 </ul>
 <p>The csv file used adheres to the Antenna <a href="../sw360-data-model.html">SW360 data model</a>.</p>
-<div class="section">
-<h2><a name="Configuring"></a>Configuring</h2></div>
 <div class="section">
 <h2><a name="Running"></a>Running</h2>
 <p>The Compliance Tool is executed from the command line with this simple line:</p>
@@ -108,7 +106,7 @@
 <ul>
 
 <li>Jar file: This is the actual compliance tool jar. Execute it with a <tt>java -jar</tt> command.</li>
-<li>The <tt>complianceMode</tt> can be one of two modes that can be given by using switches: <tt>--exporter</tt> for the <a href="#SW360Exporter">SW360 Exporter</a> or <tt>--updater</tt> for the <a href="#SW360Updater">SW360 Updater</a>.
+<li>The <tt>complianceMode</tt> can be one of two modes that can be given by using switches: <tt>--exporter</tt> for the <a href="./exporter.html">SW360 Exporter</a>, <tt>--updater</tt> for the <a href="./updater.html">SW360 Updater</a> or <tt>--reporter</tt> for the <a href="status_reporter.html">SW360 Status Reporter</a>.
 <ul>
 
 <li>There is also a short version with <tt>-e</tt> for the exporter and <tt>-u</tt> for the updater.</li>
@@ -117,58 +115,6 @@
 </li>
 <li>Properties file: both modes require a file containing properties like paths and credentials.</li>
 </ul></div>
-<div class="section">
-<h2><a name="SW360_Exporter"></a><a name="SW360Exporter">SW360 Exporter</a></h2>
-<p>The SW360 Exporter requests all components from a given SW360 instance and filters the releases of the components to check if they have a state that shows them as &#x201c;cleared&#x201d; or &#x201c;approved&#x201d;. It then creates a list with the data of non-cleared releases and writes them sorted by creation date (from latest to oldest) in a csv file.</p>
-<p>The csv file follows the csv format accepted by the CSV Analyzer of Antenna</p>
-<div class="section">
-<div class="section">
-<h4><a name="Properties"></a>Properties</h4>
-<ul>
-
-<li><tt>targetDir</tt>: Target directory in which artificial clearing reports are created in.</li>
-<li><tt>sourcesDirectory</tt>: Directory where the sources downloaded are stored</li>
-<li><tt>basedir</tt>: Base directory of the execution</li>
-<li><tt>csvFilePath</tt>: Path and name where the csv file should be saved</li>
-<li><tt>removeUnreferencedSources</tt>: A boolean property that controls whether the exporter should do some cleanup on the sources directory. If set to <i>true</i>, the exporter checks after the download of sources whether the directory contains any files that are not referenced by any of the components that have been written to the CSV file. Such files are then removed, so that the directory contains only the sources of components that are currently in focus. The default value of this flag if <i>false</i>.</li>
-<li><tt>proxyHost</tt>: If a proxy is in use, supply the host name</li>
-<li><tt>proxyPort</tt>: If a proxy is in use, supply the port</li>
-<li><tt>proxyUse</tt>: If a proxy is in use, this should be set to true</li>
-<li><tt>sw360restServerUrl</tt>: Link to the rest server url of your SW360 instance</li>
-<li><tt>sw360authServerUrl</tt>: Link to the authentication server url of your SW360 instance</li>
-<li><tt>sw360user</tt>: SW360 Username</li>
-<li><tt>sw360password</tt>: SW360 User Password</li>
-<li><tt>sw360clientId</tt>: SW360 Client Id</li>
-<li><tt>sw360clientPassword</tt>: SW360 Client Password</li>
-</ul></div></div></div>
-<div class="section">
-<h2><a name="SW360_Updater"></a><a name="SW360Updater">SW360 Updater</a></h2>
-<p>The SW360Updater takes a given csv file with release information and maps the contents on SW360Release objects that are posted into the given SW360 instance. It has the ability to update release information of already existing releases.</p>
-<div class="section">
-<div class="section">
-<h4><a name="Properties"></a>Properties</h4>
-<ul>
-
-<li><tt>targetDir</tt>: Target directory in which artificial clearing reports are created in.</li>
-<li><tt>sourcesDirectory</tt>: Directory where the sources for uploading are stored</li>
-<li><tt>basedir</tt>: Base directory of the execution</li>
-<li><tt>csvFilePath</tt>: Path and name to the csv file with the release information</li>
-<li><tt>delimiter</tt>: Delimiter used in the csv file to separate columns (by default it is <tt>,</tt>)</li>
-<li><tt>encoding</tt>: Encoding of the csv file, normally <tt>UTF-8</tt></li>
-<li><tt>removeClearedSources</tt>: A boolean property that controls whether the updater should remove the source attachments of a release from the local sources directory once the release has been cleared. Cleared releases are no longer relevant for the workflow of the compliance tool; so by setting this property to <i>true</i>, an automatic cleanup of the sources directory can be enabled. The default value is <i>false</i>.</li>
-<li><tt>removeClearingDocuments</tt>: A boolean property that controls whether clearing documents for releases should be removed after the release has been cleared. The default value is <i>false</i>.</li>
-<li><tt>proxyHost</tt>: If a proxy is in use, supply the host name</li>
-<li><tt>proxyPort</tt>: If a proxy is in use, supply the port</li>
-<li><tt>proxyUse</tt>: If a proxy is in use, this should be set to true</li>
-<li><tt>sw360restServerUrl</tt>: Link to the rest server url of your SW360 instance</li>
-<li><tt>sw360authServerUrl</tt>: Link to the authentication server url of your SW360 instance</li>
-<li><tt>sw360user</tt>: SW360 Username</li>
-<li><tt>sw360password</tt>: SW360 User Password</li>
-<li><tt>sw360clientId</tt>: SW360 Client Id</li>
-<li><tt>sw360clientPassword</tt>: SW360 Client Password</li>
-<li><tt>sw360updateReleases</tt>: Boolean value that determines if release data is patched should new information be added to an already existent release</li>
-<li><tt>sw360uploadSources</tt>: Boolean value that determines if source files of a release are uploaded should they be present.</li>
-</ul></div></div></div>
 <div class="section">
 <h2><a name="Environment_Properties"></a>Environment Properties</h2>
 <p>It is possible to give credentials via environment properties. If you want one of the properties in your properties file to be resolved to an environment variable, add the <tt>$</tt> prefix to it and wrap it in curly braces <tt>{}</tt>, additionally to the variable name being written in upper case letters:</p>
@@ -191,6 +137,12 @@ key=${ENV_VARIABLE}
 <h2><a name="Enabling_debug_logging"></a>Enabling debug logging</h2>
 <p>To diagnose problems during the tool execution, more detailed log output is certainly helpful. This can be achieved by adding one of the switches <tt>-X</tt> or <tt>--debug</tt> to the command line. The log level is then increased to <i>DEBUG</i>, so much more information is printed to the console.</p>
 <p>In order to see all valid switches and a help statement use the switch <tt>--help</tt> or <tt>-h</tt>.</p></div>
+<div class="section">
+<h2><a name="Common_Properties"></a>Common Properties</h2>
+<p>There are properties all modes share. They need to be provided in every properties file.</p>
+<p>The SW360 properties are used to give the url of the used sw360 instance and the necessary credentials: - <tt>sw360restServerUrl</tt>: Link to the rest server url of your SW360 instance - <tt>sw360authServerUrl</tt>: Link to the authentication server url of your SW360 instance - <tt>sw360user</tt>: SW360 Username - <tt>sw360password</tt>: SW360 User Password - <tt>sw360clientId</tt>: SW360 Client Id - <tt>sw360clientPassword</tt>: SW360 Client Password</p>
+<p>Proxy information needs to be given if the compliance tool is used from within a proxy. If a proxy is not in use, <tt>proxyUse</tt> should be set to <tt>false</tt>: - <tt>proxyHost</tt>: If a proxy is in use, supply the host name - <tt>proxyPort</tt>: If a proxy is in use, supply the port - <tt>proxyUse</tt>: If a proxy is in use, this should be set to true</p>
+<p>Directory parameters that all modes need: - <tt>targetDir</tt>: Target directory in which artificial documents (e.g. clearing reports) are created in. - <tt>basedir</tt>: Base directory of the execution - <tt>csvFilePath</tt>: Path and name where the csv file should be saved</p></div>
         </div>
       </div>
     </div>
