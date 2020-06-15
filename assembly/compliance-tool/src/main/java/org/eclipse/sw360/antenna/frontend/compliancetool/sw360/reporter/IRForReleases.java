@@ -41,7 +41,7 @@ abstract class IRForReleases implements InfoRequest<SW360Release> {
     }
 
     /**
-     * Gives a stream of releases from  a list if components
+     * Gives a stream of releases from  a list of components
      *
      * @param connection connection object to a sw360 instance
      * @param components list of sparse components containing linked releases

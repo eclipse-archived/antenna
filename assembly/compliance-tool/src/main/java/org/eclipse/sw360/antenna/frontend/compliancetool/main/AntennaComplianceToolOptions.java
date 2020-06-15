@@ -122,7 +122,7 @@ public class AntennaComplianceToolOptions extends AbstractAntennaCLIOptions {
      * @return the parameters of the mode of the compliance tool.
      */
     Set<String> getParameters() {
-        return parameters == null ? null : new HashSet<>(parameters);
+        return parameters == null ? Collections.emptySet() : new HashSet<>(parameters);
     }
 
     /**

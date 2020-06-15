@@ -31,7 +31,7 @@ public class SW360StatusReporter {
 
     private final SW360Configuration configuration;
     private final String infoParameter;
-    private InfoRequest infoRequest;
+    private InfoRequest<?> infoRequest;
     private ReporterOutput reporterOutput;
 
     public SW360StatusReporter(SW360Configuration configuration, Set<String> parameters) {
@@ -63,7 +63,7 @@ public class SW360StatusReporter {
         reporterOutput.print(result);
     }
 
-    void setInfoRequest(InfoRequest infoRequest) {
+    void setInfoRequest(InfoRequest<?> infoRequest) {
         this.infoRequest = infoRequest;
     }
 

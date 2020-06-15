@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 class InfoRequestFactory {
     private InfoRequestFactory() {}
 
-    private static Set<InfoRequest> infoRequests = new HashSet<>(Arrays.asList(
+    private static final Set<InfoRequest> INFO_REQUESTS = new HashSet<>(Arrays.asList(
             new IRGetClearedReleases(),
             new IRGetReleasesOfProjects(),
             new IRGetNotClearedReleases()
@@ -42,8 +42,8 @@ class InfoRequestFactory {
      * @param infoParameter String containing parameter
      * @return implementation of an InfoRequest or an emptyInfoRequest
      */
-    static InfoRequest getInfoRequestFromString(String infoParameter) {
-        return infoRequests.stream()
+    static InfoRequest<?> getInfoRequestFromString(String infoParameter) {
+        return INFO_REQUESTS.stream()
                 .filter(ir -> ir.getInfoParameter().equalsIgnoreCase(infoParameter))
                 .findFirst()
                 .orElse(InfoRequest.emptyInfoRequest());
@@ -57,7 +57,7 @@ class InfoRequestFactory {
      */
     static String helpMessage() {
         String cr = System.lineSeparator();
-        String infoParameterString = infoRequests.stream()
+        String infoParameterString = INFO_REQUESTS.stream()
                 .map(InfoRequest::getInfoParameter)
                 .collect(Collectors.joining(cr));
         return "Usage: java -jar compliancetool.jar " + AntennaComplianceToolOptions.SWITCH_REPORTER + "[options] <complianceMode> <propertiesFilePath>" + cr + cr +

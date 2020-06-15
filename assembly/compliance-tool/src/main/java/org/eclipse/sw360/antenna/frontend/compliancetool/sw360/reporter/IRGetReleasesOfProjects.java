@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
@@ -37,10 +38,10 @@ public class IRGetReleasesOfProjects implements InfoRequest<SW360SparseRelease> 
 
     @Override
     public boolean isValid() {
-        if (projectId != null && !projectId.isEmpty()) {
+        if (StringUtils.isNotEmpty(projectId)) {
             return true;
-        } else return projectName != null && !projectName.isEmpty() &&
-                projectVersion != null && !projectVersion.isEmpty();
+        } else return StringUtils.isNotEmpty(projectName) &&
+                StringUtils.isNotEmpty(projectVersion);
     }
 
     @Override
