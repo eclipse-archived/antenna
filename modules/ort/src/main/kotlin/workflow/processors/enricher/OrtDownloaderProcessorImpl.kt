@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package workflow.processors.enricher
+package org.eclipse.sw360.antenna.ort.workflow.processors.enricher
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact
 import org.eclipse.sw360.antenna.model.artifact.ArtifactCoordinates
