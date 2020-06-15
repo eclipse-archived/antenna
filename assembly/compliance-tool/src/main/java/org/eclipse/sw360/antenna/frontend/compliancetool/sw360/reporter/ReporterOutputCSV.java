@@ -30,10 +30,13 @@ import java.util.Collection;
  */
 public class ReporterOutputCSV implements ReporterOutput {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReporterOutputCSV.class);
+    private static final String DEFAULT_DELIMITER = ";";
 
     private Class<?> resultType;
 
     private Path filePath;
+
+    private String delimiter = DEFAULT_DELIMITER;
 
     @Override
     public void setResultType(Class type) {
@@ -45,29 +48,34 @@ public class ReporterOutputCSV implements ReporterOutput {
         this.filePath = filePath;
     }
 
+    public ReporterOutputCSV setDelimiter(String delimiter) {
+        this.delimiter = delimiter;
+        return this;
+    }
+
     @Override
     public <T> void print(Collection<T> result) {
         String header = getHeader();
-        String[] body = setBody(result);
+        String[][] body = setBody(result);
 
         printCsvFile(header, body);
     }
 
-    private <T> String[] setBody(Collection<T> result) {
+    private <T> String[][] setBody(Collection<T> result) {
         if (resultType.equals(SW360Release.class)) {
             return ReporterUtils.printCollectionOfReleases((Collection<SW360Release>) result);
         } else if (resultType.equals(SW360SparseRelease.class)) {
             return ReporterUtils.printCollectionOfSparseReleases((Collection<SW360SparseRelease>) result);
         } else {
-            return new String[]{};
+            return new String[][]{};
         }
     }
 
     private String getHeader() {
         if (resultType.equals(SW360Release.class)) {
-            return ReporterUtils.releaseCsvPrintHeader();
+            return ReporterUtils.releaseCsvPrintHeader(delimiter);
         } else if (resultType.equals(SW360SparseRelease.class)) {
-            return ReporterUtils.sparseReleaseCsvPrintHeader();
+            return ReporterUtils.sparseReleaseCsvPrintHeader(delimiter);
         } else {
             return "";
         }
@@ -80,18 +88,18 @@ public class ReporterOutputCSV implements ReporterOutput {
      * @param header header columns used for the csv file
      * @param body   rows used for the csv file
      */
-    private void printCsvFile(String header, String[] body) {
-        if (header.split(";").length != Arrays.stream(body).findAny().map(s -> s.split(";").length).orElse(0)) {
+    private void printCsvFile(String header, String[][] body) {
+        if (header.split(delimiter).length != Arrays.stream(body).findAny().map(s -> s.length).orElse(0)) {
             LOGGER.error("Number of header columns does not equal columns of body for the csv file.");
         }
         if (!filePath.endsWith(".csv")) {
             LOGGER.warn("CSV file {} does not have the correct file extension", filePath);
         }
         try (BufferedWriter writer = Files.newBufferedWriter(filePath);
-             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(header))
+             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(header).withDelimiter(delimiter.charAt(0)))
         ) {
-            for (String item : body) {
-                csvPrinter.printRecords(item);
+            for (String[] record : body) {
+                csvPrinter.printRecord(record);
             }
             csvPrinter.flush();
         } catch (IOException e) {

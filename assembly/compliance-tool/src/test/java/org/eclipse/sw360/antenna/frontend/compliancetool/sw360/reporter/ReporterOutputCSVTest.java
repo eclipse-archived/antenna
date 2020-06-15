@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.junit.Rule;
@@ -20,6 +21,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +32,7 @@ public class ReporterOutputCSVTest {
     @Test
     public void testPrint() throws IOException {
         Path csvFilePath = temporaryFolder.newFile("csvFile.csv").toPath();
+        final String delimiter = ";";
 
         final ReporterOutput csvReporter = ReporterOutputFactory.getReporterOutput("csv");
         csvReporter.setFilePath(csvFilePath);
@@ -39,7 +42,9 @@ public class ReporterOutputCSVTest {
         csvReporter.print(Collections.singleton(sparseRelease));
 
         assertThat(csvFilePath).exists();
-        final CSVParser csvParser = SW360TestUtils.getCsvParser(csvFilePath.toFile());
-        assertThat(csvParser.getRecords()).hasSize(1);
+        final CSVParser csvParser = SW360TestUtils.getCsvParser(csvFilePath.toFile(), ';');
+        final List<CSVRecord> records = csvParser.getRecords();
+        assertThat(records).hasSize(1);
+        assertThat(records.get(0).size()).isEqualTo(ReporterUtils.sparseReleaseCsvPrintHeader(delimiter).split(delimiter).length);
     }
 }
