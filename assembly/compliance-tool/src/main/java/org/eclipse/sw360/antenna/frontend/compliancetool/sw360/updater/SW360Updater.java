@@ -110,7 +110,7 @@ public class SW360Updater {
                     removeClearingDocument(clearingDoc);
                 }
             }
-        } catch (SW360ClientException | IllegalStateException e) {
+        } catch (SW360ClientException e) {
             LOGGER.error("Failed to process artifact {}.", artifact, e);
         }
     }

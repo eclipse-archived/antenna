@@ -16,6 +16,7 @@ import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuratio
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 import org.junit.Rule;
 import org.junit.Test;
@@ -69,7 +70,7 @@ public class SW360UpdaterTest {
 
         final ClearingReportGenerator clearingReportGenerator = mock(ClearingReportGenerator.class);
         when(clearingReportGenerator.createClearingDocument(any(), any()))
-                .thenThrow(new IllegalStateException());
+                .thenThrow(new SW360ClientException("Clearing doc generation error"));
         SW360Updater updater = new SW360Updater(updaterImpl, configurationMock, clearingReportGenerator);
         updater.execute();
 
