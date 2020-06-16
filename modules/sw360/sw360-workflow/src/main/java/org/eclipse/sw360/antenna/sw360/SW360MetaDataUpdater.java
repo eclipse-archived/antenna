@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -112,7 +111,7 @@ public class SW360MetaDataUpdater {
     public SW360Release uploadAttachments(SW360Release sw360Release, Map<Path, SW360AttachmentType> attachments) {
         AttachmentUploadRequest.Builder<SW360Release> builder = AttachmentUploadRequest.builder(sw360Release);
         for (Map.Entry<Path, SW360AttachmentType> e : attachments.entrySet()) {
-            if (needUpload(sw360Release, e.getKey(), e.getValue())) {
+            if (needUpload(sw360Release, e.getKey())) {
                 builder = builder.addAttachment(e.getKey(), e.getValue());
             }
         }
@@ -146,16 +145,19 @@ public class SW360MetaDataUpdater {
      * Checks whether an attachment upload is necessary for the given
      * attachment file. This is the case if no attachment with this file name
      * and type and identical content exists.
+     * TODO Currently SW360 has strict checks regarding duplicate attachments;
+     * for instance, it is not possible to upload an attachment with an
+     * existing file name, even if the content has changed. So if this method
+     * returns true, an upload may still be rejected by SW360. It is still open
+     * how to handle this in the best way.
      *
-     * @param release        the release affected
-     * @param path           the path to the local attachment file
-     * @param attachmentType the attachment type
+     * @param release the release affected
+     * @param path    the path to the local attachment file
      * @return a flag whether this attachment file must be uploaded
      */
-    private boolean needUpload(SW360Release release, Path path, SW360AttachmentType attachmentType) {
-        String fileName = String.valueOf(path.getFileName());
+    private boolean needUpload(SW360Release release, Path path) {
         Optional<SW360SparseAttachment> optAttachment = release.getEmbedded().getAttachments().stream()
-                .filter(attachment -> attachmentMatches(path, attachmentType, fileName, attachment))
+                .filter(attachment -> attachmentMatches(path, attachment))
                 .findFirst();
         return !optAttachment.isPresent();
     }
@@ -165,17 +167,13 @@ public class SW360MetaDataUpdater {
      * properties. If there is an exact match, the upload of this attachment
      * file can be skipped.
      *
-     * @param path           the path to the local attachment file
-     * @param attachmentType the attachment type
-     * @param fileName       the attachment file name
-     * @param attachment     the attachment from the current release
+     * @param path       the path to the local attachment file
+     * @param attachment the attachment from the current release
      * @return a flag whether the attachment is matched by these properties
      */
-    private boolean attachmentMatches(Path path, SW360AttachmentType attachmentType, String fileName, SW360SparseAttachment attachment) {
+    private boolean attachmentMatches(Path path, SW360SparseAttachment attachment) {
         try {
-            return Objects.equals(fileName, attachment.getFilename()) &&
-                    attachmentType == attachment.getAttachmentType() &&
-                    calculateAttachmentHash(path).equals(attachment.getSha1());
+            return calculateAttachmentHash(path).equals(attachment.getSha1());
         } catch (SW360ClientException e) {
             LOGGER.warn("Could not calculate has for attachment {}.", path, e);
             return false;

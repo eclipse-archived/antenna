@@ -110,14 +110,12 @@ public class SW360MetaDataUpdaterTest {
      *
      * @param release            the target release
      * @param attachmentFileName the attachment file name
-     * @param attachmentType     the attachment type
      * @return the updated release
      */
-    private static SW360Release addAttachment(SW360Release release, String attachmentFileName,
-                                              SW360AttachmentType attachmentType) {
+    private static SW360Release addAttachment(SW360Release release, String attachmentFileName) {
         SW360SparseAttachment attachment = new SW360SparseAttachment();
         attachment.setFilename(attachmentFileName);
-        attachment.setAttachmentType(attachmentType);
+        attachment.setAttachmentType(SW360AttachmentType.SOURCE);
         attachment.setSha1(TEST_FILE_SHA1);
         release.getEmbedded().setAttachments(Collections.singleton(attachment));
         return release;
@@ -309,7 +307,7 @@ public class SW360MetaDataUpdaterTest {
     @Test
     public void testUploadAttachmentsSkippedForIdenticalFiles() throws IOException {
         final String attachmentFileName = "my-sources.jar";
-        SW360Release release = addAttachment(createRelease(), attachmentFileName, SW360AttachmentType.SOURCE);
+        SW360Release release = addAttachment(createRelease(), attachmentFileName);
         Path uploadPath = createTestFile(attachmentPath(attachmentFileName), TEST_FILE_CONTENT);
         Map<Path, SW360AttachmentType> attachments = Collections.singletonMap(uploadPath, SW360AttachmentType.SOURCE);
         setUp(true, false);
@@ -321,26 +319,9 @@ public class SW360MetaDataUpdaterTest {
     }
 
     @Test
-    public void testAttachmentsOfDifferentTypeAreUploaded() throws IOException {
-        final String attachmentFileName = "popularAttachmentFileName.doc";
-        SW360Release release = addAttachment(createRelease(), attachmentFileName, SW360AttachmentType.BINARY);
-        Path uploadPath = createTestFile(attachmentPath(attachmentFileName), TEST_FILE_CONTENT);
-        Map<Path, SW360AttachmentType> attachments = Collections.singletonMap(uploadPath, SW360AttachmentType.SOURCE);
-        AttachmentUploadRequest<SW360Release> expRequest = AttachmentUploadRequest.builder(release)
-                .addAttachment(uploadPath, SW360AttachmentType.SOURCE)
-                .build();
-        when(releaseClientAdapter.uploadAttachments(expRequest))
-                .thenReturn(new AttachmentUploadResult<>(release));
-        setUp(true, false);
-
-        metaDataUpdater.uploadAttachments(release, attachments);
-        verify(releaseClientAdapter).uploadAttachments(expRequest);
-    }
-
-    @Test
     public void testAttachmentsOfDifferentContentAreUploaded() throws IOException {
         final String attachmentFileName = "modifiedAttachmentFileName.doc";
-        SW360Release release = addAttachment(createRelease(), attachmentFileName, SW360AttachmentType.SOURCE);
+        SW360Release release = addAttachment(createRelease(), attachmentFileName);
         Path uploadPath = createTestFile(attachmentPath(attachmentFileName), "changed content");
         Map<Path, SW360AttachmentType> attachments = Collections.singletonMap(uploadPath, SW360AttachmentType.SOURCE);
         AttachmentUploadRequest<SW360Release> expRequest = AttachmentUploadRequest.builder(release)
@@ -357,7 +338,7 @@ public class SW360MetaDataUpdaterTest {
     @Test
     public void testExceptionsWhenCalculatingAttachmentHashAreHandled() throws IOException {
         final String attachmentFileName = "failingHashAttachmentFileName.doc";
-        SW360Release release = addAttachment(createRelease(), attachmentFileName, SW360AttachmentType.SOURCE);
+        SW360Release release = addAttachment(createRelease(), attachmentFileName);
         Path uploadPath = createTestFile(attachmentPath(attachmentFileName), TEST_FILE_CONTENT);
         Map<Path, SW360AttachmentType> attachments = Collections.singletonMap(uploadPath, SW360AttachmentType.SOURCE);
         AttachmentUploadRequest<SW360Release> expRequest = AttachmentUploadRequest.builder(release)
