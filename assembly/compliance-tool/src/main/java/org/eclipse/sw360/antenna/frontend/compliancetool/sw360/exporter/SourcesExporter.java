@@ -10,11 +10,13 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter;
 
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360AttachmentUtils;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapterAsync;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -121,6 +124,17 @@ class SourcesExporter {
     }
 
     /**
+     * Calculates the SHA-1 hash for a local attachment file.
+     *
+     * @param localPath the local path to the attachment file
+     * @return the SHA-1 hash calculated for this file
+     * @throws org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException if an error occurs
+     */
+    String calculateLocalAttachmentHash(Path localPath) {
+        return SW360AttachmentUtils.calculateSha1Hash(localPath);
+    }
+
+    /**
      * Handles the attachment downloads for a single release. All attachments
      * of type <em>source</em> assigned to the release are downloaded (in
      * parallel). A future with the resulting {@code ReleaseWithSources} object
@@ -141,8 +155,9 @@ class SourcesExporter {
     }
 
     /**
-     * Asynchronously downloads a single source attachment. If the download
-     * fails, a meaningful exception message is generated.
+     * Asynchronously downloads a single source attachment. A download is
+     * triggered only if no local file with the expected hash exists. If the
+     * download fails, a meaningful exception message is generated.
      *
      * @param releaseAdapter the release adapter
      * @param release        the release the download is for
@@ -151,10 +166,13 @@ class SourcesExporter {
      */
     private CompletableFuture<Path> downloadAttachment(SW360ReleaseClientAdapterAsync releaseAdapter,
                                                        SW360Release release, SW360SparseAttachment attachment) {
-        return FutureUtils.wrapFutureForConditionalFallback(releaseAdapter.downloadAttachment(release,
-                attachment, sourcePath), ex -> true,
-                () -> FutureUtils.failedFuture(new IllegalStateException(String.format(FMT_DOWNLOAD_ERROR,
-                        attachment.getFilename(), release.getName(), release.getVersion()))))
+        return getLocalAttachmentPath(attachment)
+                .map(path -> CompletableFuture.completedFuture(Optional.of(path)))
+                .orElseGet(() -> FutureUtils.wrapFutureForConditionalFallback(releaseAdapter.downloadAttachment(release,
+                        attachment, sourcePath), ex -> true,
+                        () -> FutureUtils.failedFuture(new IllegalStateException(String.format(FMT_DOWNLOAD_ERROR,
+                                attachment.getFilename(), release.getName(), release.getVersion()))))
+                )
                 .thenApply(optPath -> {
                     if (optPath.isPresent()) {
                         return optPath.get();
@@ -163,6 +181,29 @@ class SourcesExporter {
                                 attachment.getFilename(), release.getName(), release.getVersion()));
                     }
                 });
+    }
+
+    /**
+     * Tries to find the local path for an attachment. This method prevents
+     * unnecessary downloads by checking whether the attachment already exists
+     * locally and - based on the hash - has not been modified. If this is the
+     * case, an {@code Optional} with the local path is returned. Otherwise,
+     * result is an empty {@code Optional}, and the attachment must be
+     * downloaded.
+     *
+     * @param attachment the attachment affected
+     * @return an {@code Optional} with the local attachment path
+     */
+    private Optional<Path> getLocalAttachmentPath(SW360SparseAttachment attachment) {
+        Path localPath = sourcePath.resolve(attachment.getFilename());
+        try {
+            return Files.exists(localPath) &&
+                    calculateLocalAttachmentHash(localPath).equals(attachment.getSha1()) ?
+                    Optional.of(localPath) : Optional.empty();
+        } catch (SW360ClientException e) {
+            LOG.warn("Failed to verify local attachment file", e);
+            return Optional.empty();
+        }
     }
 
     /**

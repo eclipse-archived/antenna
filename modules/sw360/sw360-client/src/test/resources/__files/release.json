@@ -24,5 +24,19 @@
         "templated": true
       }
     ]
+  },
+  "_embedded": {
+    "sw360:attachments": [
+      {
+        "filename": "artifact-sources.jar",
+        "sha1": "9fa75ed24ee85514f63046a39697509c78f536de",
+        "attachmentType": "SOURCE",
+        "_links": {
+          "self": {
+            "href": "https://sw360.test.com/resource/api/attachments/xxxxxxxxxxxyyyyyyyyyyyyyzzz235b"
+          }
+        }
+      }
+    ]
   }
 }

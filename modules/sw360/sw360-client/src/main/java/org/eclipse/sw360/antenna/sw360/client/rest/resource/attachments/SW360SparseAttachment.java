@@ -22,6 +22,7 @@ import java.util.Optional;
 public final class SW360SparseAttachment extends SW360SimpleHalResource {
     private String filename;
     private SW360AttachmentType attachmentType;
+    private String sha1;
 
     public String getFilename() {
         return filename;
@@ -41,6 +42,21 @@ public final class SW360SparseAttachment extends SW360SimpleHalResource {
         return this;
     }
 
+    /**
+     * Returns the SHA1 hash sum of the represented attachment file. This
+     * checksum is calculated automatically by SW360.
+     *
+     * @return the SHA1 checksum
+     */
+    public String getSha1() {
+        return sha1;
+    }
+
+    public SW360SparseAttachment setSha1(String sha1) {
+        this.sha1 = sha1;
+        return this;
+    }
+
     @JsonIgnore
     public String getAttachmentId() {
         return Optional.ofNullable(getLinks())
@@ -55,12 +71,13 @@ public final class SW360SparseAttachment extends SW360SimpleHalResource {
         if (!(o instanceof SW360SparseAttachment) || !super.equals(o)) return false;
         SW360SparseAttachment that = (SW360SparseAttachment) o;
         return Objects.equals(filename, that.filename) &&
-                Objects.equals(attachmentType, that.attachmentType);
+                Objects.equals(attachmentType, that.attachmentType) &&
+                Objects.equals(sha1, that.sha1);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), filename, attachmentType);
+        return Objects.hash(super.hashCode(), filename, attachmentType, sha1);
     }
 
     @Override

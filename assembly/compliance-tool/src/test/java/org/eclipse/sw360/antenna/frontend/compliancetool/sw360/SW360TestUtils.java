@@ -78,7 +78,9 @@ public class SW360TestUtils {
     private static SW360ReleaseEmbedded mkReleaseEmbedded() {
         SW360ReleaseEmbedded sw360ReleaseEmbedded = new SW360ReleaseEmbedded();
         sw360ReleaseEmbedded.setAttachments
-                (Collections.singleton(new SW360SparseAttachment().setAttachmentType(SW360AttachmentType.SOURCE)));
+                (Collections.singleton(new SW360SparseAttachment()
+                        .setAttachmentType(SW360AttachmentType.SOURCE)
+                        .setFilename("source.zip")));
         return sw360ReleaseEmbedded;
     }
 

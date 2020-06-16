@@ -15,6 +15,7 @@ package org.eclipse.sw360.antenna.sw360;
 import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360AttachmentUtils;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360LicenseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ProjectClientAdapter;
@@ -22,11 +23,13 @@ import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Visibility;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +97,7 @@ public class SW360MetaDataUpdater {
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) {
         Optional<String> projectId =
                 projectClientAdapter.getProjectByNameAndVersion(projectName, projectVersion)
-                .map(SW360HalResource::getId);
+                        .map(SW360HalResource::getId);
 
         String id = projectId.orElseGet(() ->
                 projectClientAdapter.createProject(prepareNewProject(projectName, projectVersion)).getId());
@@ -108,15 +111,73 @@ public class SW360MetaDataUpdater {
     public SW360Release uploadAttachments(SW360Release sw360Release, Map<Path, SW360AttachmentType> attachments) {
         AttachmentUploadRequest.Builder<SW360Release> builder = AttachmentUploadRequest.builder(sw360Release);
         for (Map.Entry<Path, SW360AttachmentType> e : attachments.entrySet()) {
-            builder = builder.addAttachment(e.getKey(), e.getValue());
+            if (needUpload(sw360Release, e.getKey())) {
+                builder = builder.addAttachment(e.getKey(), e.getValue());
+            }
         }
 
-        AttachmentUploadResult<SW360Release> result = releaseClientAdapter.uploadAttachments(builder.build());
-        LOGGER.debug("Result of attachment upload operation: {}", result);
-        if (!result.isSuccess()) {
-            LOGGER.error("Failed to upload attachments: {}", result.failedUploads());
+        AttachmentUploadRequest<SW360Release> uploadRequest = builder.build();
+        if (!uploadRequest.getItems().isEmpty()) {
+            AttachmentUploadResult<SW360Release> result = releaseClientAdapter.uploadAttachments(uploadRequest);
+            LOGGER.debug("Result of attachment upload operation: {}", result);
+            if (!result.isSuccess()) {
+                LOGGER.error("Failed to upload attachments: {}", result.failedUploads());
+            }
+            return result.getTarget();
         }
-        return result.getTarget();
+        return sw360Release;
+    }
+
+    /**
+     * Calculates the SHA-1 hash for the given local attachment file. This is
+     * used to determine whether a modified attachment file needs to be
+     * uploaded.
+     *
+     * @param path the path to the local file
+     * @return the SHA-1 hash of this file
+     * @throws SW360ClientException if an error occurs
+     */
+    String calculateAttachmentHash(Path path) {
+        return SW360AttachmentUtils.calculateSha1Hash(path);
+    }
+
+    /**
+     * Checks whether an attachment upload is necessary for the given
+     * attachment file. This is the case if no attachment with this file name
+     * and type and identical content exists.
+     * TODO Currently SW360 has strict checks regarding duplicate attachments;
+     * for instance, it is not possible to upload an attachment with an
+     * existing file name, even if the content has changed. So if this method
+     * returns true, an upload may still be rejected by SW360. It is still open
+     * how to handle this in the best way.
+     *
+     * @param release the release affected
+     * @param path    the path to the local attachment file
+     * @return a flag whether this attachment file must be uploaded
+     */
+    private boolean needUpload(SW360Release release, Path path) {
+        Optional<SW360SparseAttachment> optAttachment = release.getEmbedded().getAttachments().stream()
+                .filter(attachment -> attachmentMatches(path, attachment))
+                .findFirst();
+        return !optAttachment.isPresent();
+    }
+
+    /**
+     * Checks whether an attachment associated with a release matches the given
+     * properties. If there is an exact match, the upload of this attachment
+     * file can be skipped.
+     *
+     * @param path       the path to the local attachment file
+     * @param attachment the attachment from the current release
+     * @return a flag whether the attachment is matched by these properties
+     */
+    private boolean attachmentMatches(Path path, SW360SparseAttachment attachment) {
+        try {
+            return calculateAttachmentHash(path).equals(attachment.getSha1());
+        } catch (SW360ClientException e) {
+            LOGGER.warn("Could not calculate has for attachment {}.", path, e);
+            return false;
+        }
     }
 
     /**

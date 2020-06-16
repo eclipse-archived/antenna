@@ -12,6 +12,8 @@ package org.eclipse.sw360.antenna.sw360.client.rest;
 
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.junit.Before;
@@ -24,6 +26,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -90,6 +93,13 @@ public class SW360ReleaseClientIT extends AbstractMockServerTest {
         assertThat(release.getName()).isEqualTo("akka-actor_2.11");
         assertThat(release.getVersion()).isEqualTo("2.4.12");
         assertThat(release.getExternalIds()).contains(new AbstractMap.SimpleEntry<>("hash_1", "501887b9053ef9f4341a"));
+
+        Set<SW360SparseAttachment> attachments = release.getEmbedded().getAttachments();
+        assertThat(attachments).hasSize(1);
+        SW360SparseAttachment attachment = attachments.iterator().next();
+        assertThat(attachment.getAttachmentType()).isEqualTo(SW360AttachmentType.SOURCE);
+        assertThat(attachment.getFilename()).isEqualTo("artifact-sources.jar");
+        assertThat(attachment.getSha1()).isEqualTo("9fa75ed24ee85514f63046a39697509c78f536de");
     }
 
     @Test
