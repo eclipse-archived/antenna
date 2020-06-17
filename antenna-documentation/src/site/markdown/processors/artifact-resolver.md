@@ -8,7 +8,7 @@ Add the following step into the `<processors>` section of your workflow.xml
 ```xml
 <step>
     <name>Maven Artifact Resolver</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.MavenArtifactResolver</classHint>
+    <classHint>org.eclipse.sw360.antenna.maven.workflow.processors.enricher.MavenArtifactResolver</classHint>
     <configuration>
         <entry key="sourcesRepositoryUrl" value="https://my.url.to/repo"/>
         <entry key="preferredSourceClassifier" value="sources-ext"/>

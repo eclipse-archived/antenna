@@ -8,6 +8,6 @@ Add the following step into the `<processors>` section of your workflow.xml
 ```xml
 <step>
     <name>ORT Downloader</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.OrtDownloaderProcessor</classHint>
+    <classHint>org.eclipse.sw360.antenna.ort.workflow.processors.enricher.OrtDownloaderProcessor</classHint>
 </step>
 ```
