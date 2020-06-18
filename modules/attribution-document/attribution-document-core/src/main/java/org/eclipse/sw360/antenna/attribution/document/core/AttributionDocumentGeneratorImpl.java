@@ -67,6 +67,26 @@ public class AttributionDocumentGeneratorImpl {
     }
 
     /**
+     * Generates the attribution document with the given PDF template files.
+     *
+     * @param artifacts (non-null) list of artifacts to use in generation.
+     * @param cover (non-null) template PDF file for the cover page.
+     * @param copyright (non-null) template PDF file for the copyright page.
+     * @param content (non-null) template PDF file for the content page with listed components.
+     * @param back (non-null) template PDF file for the back page.
+     * @return (non - null) the file handle of the generated attribution document.
+     */
+    public File generate(List<ArtifactAndLicense> artifacts,
+                         File cover,
+                         File copyright,
+                         File content,
+                         File back) {
+        try (Templates templates = TemplateLoaderUtil.load(cover, copyright, content, back)) {
+            return generate(artifacts, templates);
+        }
+    }
+
+    /**
      * Generates the attribution document.
      *
      * @param artifacts (non-null) list of artifacts to use in generation.
@@ -74,15 +94,18 @@ public class AttributionDocumentGeneratorImpl {
      */
     public File generate(List<ArtifactAndLicense> artifacts) {
          try (Templates templates = TemplateLoaderUtil.load(templateKey)) {
-
-            File title = writeTitle(templates);
-            File copyright = writeCopyright(templates);
-            File backPage = writeBackPage(templates.getBackPage());
-            File artifactPages = writeArtifacts(templates, artifacts, templates.getContent());
-            File intermediateDoc = mergePages(title, copyright, artifactPages, backPage);
-
-            return postProcess(templates, intermediateDoc, documentName);
+             return generate(artifacts, templates);
         }
+    }
+
+    private File generate(List<ArtifactAndLicense> artifacts, Templates templates) {
+        File title = writeTitle(templates);
+        File copyright = writeCopyright(templates);
+        File backPage = writeBackPage(templates.getBackPage());
+        File artifactPages = writeArtifacts(templates, artifacts, templates.getContent());
+        File intermediateDoc = mergePages(title, copyright, artifactPages, backPage);
+
+        return postProcess(templates, intermediateDoc, documentName);
     }
 
     private File postProcess(Templates templates, File intermediateDoc, String fileName) {
