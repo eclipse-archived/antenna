@@ -6,9 +6,9 @@ if this is configured in the config.xml.
 ## HowTo use
 Add the following step into the `<processors>` section of your workflow.xml
 
-```
+```xml
 <step>
     <name>License Resolver</name>
-    <classHint>org.eclipse.sw360.antenna.workflow.processors.enricher.LicenseResolver</classHint>
+    <classHint>org.eclipse.sw360.antenna.workflow.processors.LicenseResolver</classHint>
 </step>
 ```
