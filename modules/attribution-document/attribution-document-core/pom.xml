@@ -71,4 +71,15 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/test/resources/templates</directory>
+                <excludes>
+                    <exclude>test.pdf</exclude>
+                </excludes>
+            </resource>
+        </resources>
+    </build>
 </project>

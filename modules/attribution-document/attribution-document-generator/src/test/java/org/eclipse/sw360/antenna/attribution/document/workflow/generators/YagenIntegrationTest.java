@@ -1,5 +1,6 @@
 /**
  * Copyright (c) Robert Bosch Manufacturing Solutions GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -11,6 +12,8 @@
 package org.eclipse.sw360.antenna.attribution.document.workflow.generators;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,24 +34,50 @@ import static org.assertj.core.api.Assertions.assertThat;
  * in the tempdir.
  */
 class YagenIntegrationTest {
+   private static final String  productName = "My Awesome Product with a very long name, " +
+           "that also contains brackets and stuff";
+   private static final String version = "abc123";
+   private static final String copyrightHolder = "My Legal Entity GmbH";
 
    @TempDir
    File tmpDir;
 
    @Test
    void doGenerate() {
-      String productName = "My Awesome Product with a very long name, that also contains brackets and stuff";
-      String version = "abc123";
-      String copyrightHolder = "My Legal Entity GmbH";
+      DocumentValues values = createDocumentValue(productName, version, copyrightHolder);
 
-      DocumentValues values = new DocumentValues(productName, version, copyrightHolder);
-
-      AttributionDocumentGeneratorImpl attrDocGen = new AttributionDocumentGeneratorImpl("attribution_document.pdf", tmpDir, "antenna-demo", values);
+      AttributionDocumentGeneratorImpl attrDocGen =
+              new AttributionDocumentGeneratorImpl("attribution_document.pdf", tmpDir, "antenna-demo", values);
 
       List<ArtifactAndLicense> foo = createData();
       File file = attrDocGen.generate(foo);
       assertThat(file).exists().hasExtension("pdf");
    }
+
+   @Test
+   void goGenerateWithFiles() throws IOException {
+      DocumentValues values = createDocumentValue(productName, version, copyrightHolder);
+
+      AttributionDocumentGeneratorImpl attributionDocumentGenerator =
+              new AttributionDocumentGeneratorImpl("attribution-document.pdf", tmpDir, "", values);
+
+      List<ArtifactAndLicense> artifacts = createData();
+      ClassLoader classLoader = getClass().getClassLoader();
+      File cover = new File(classLoader.getResource("antenna-demo_template_title.pdf").getFile());
+      File copyright = new File(classLoader.getResource("antenna-demo_template_copyright.pdf").getFile());
+      File content = new File(classLoader.getResource("antenna-demo_template_content.pdf").getFile());
+      File back = new File(classLoader.getResource("antenna-demo_template_back.pdf").getFile());
+
+      File result = attributionDocumentGenerator.generate(artifacts, cover, copyright, content, back);
+
+      assertThat(result).exists().hasExtension("pdf");
+      assertThat(Files.readAllBytes(result.toPath()).length).isEqualTo(189490);
+   }
+
+   private DocumentValues createDocumentValue(String productName, String version, String copyright) {
+      return new DocumentValues(productName, version, copyright);
+   }
+
 
    private static List<ArtifactAndLicense> createData() {
       List<ArtifactAndLicense> list = new ArrayList<>();

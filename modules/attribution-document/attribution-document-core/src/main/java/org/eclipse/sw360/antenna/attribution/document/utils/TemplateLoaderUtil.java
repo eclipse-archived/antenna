@@ -1,5 +1,6 @@
 /**
  * Copyright (c) Robert Bosch Manufacturing Solutions GmbH 2019.
+ * Copyright (c) Bosch.IO GmbH 2020.
  * <p>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -32,8 +33,55 @@ public final class TemplateLoaderUtil {
     }
 
     public static Templates load(String key) {
-        TemplateBundle bundle = getLoader(key);
+        return load(getLoader(key));
+    }
 
+    public static Templates load(File cover, File copyright, File content, File back) {
+        return load(new TemplateBundle() {
+            @Override
+            public String key() {
+                return "";
+            }
+
+            @Override
+            public InputStream loadTitleTemplate() {
+                try {
+                    return new FileInputStream(cover);
+                } catch (IOException e) {
+                    throw new ExecutionException("Could not load cover template PDF", e);
+                }
+            }
+
+            @Override
+            public InputStream loadCopyrightTemplate() {
+                try {
+                    return new FileInputStream(copyright);
+                } catch (IOException e) {
+                    throw new ExecutionException("Could not load copyright template PDF", e);
+                }
+            }
+
+            @Override
+            public InputStream loadContentTemplate() {
+                try {
+                    return new FileInputStream(content);
+                } catch (IOException e) {
+                    throw new ExecutionException("Could not load copyright template PDF", e);
+                }
+            }
+
+            @Override
+            public InputStream loadBackPageTemplate() {
+                try {
+                    return new FileInputStream(back);
+                } catch (IOException e) {
+                    throw new ExecutionException("Could not load back template PDF", e);
+                }
+            }
+        });
+    }
+
+    public static Templates load(TemplateBundle bundle) {
         Templates templates = new Templates();
         templates.setTitle(loadTemplate(bundle::loadTitleTemplate));
         templates.setCopyright(loadTemplate(bundle::loadCopyrightTemplate));
