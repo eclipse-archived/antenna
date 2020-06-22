@@ -85,7 +85,7 @@ public class AbstractMockServerTest {
     /**
      * The mapper for JSON serialization.
      */
-    private static ObjectMapper objectMapper;
+    protected static ObjectMapper objectMapper;
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(options().dynamicPort());
