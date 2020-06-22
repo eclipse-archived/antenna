@@ -17,6 +17,7 @@ import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -219,6 +220,26 @@ public class FutureUtils {
             return failure != null ? failedFuture(failure) :
                     CompletableFuture.completedFuture(results.keySet());
         });
+    }
+
+    /**
+     * Executes the given action and wraps its result in a future. If the
+     * action fails, the resulting future also fails with an
+     * {@link SW360ClientException} whose cause is the original exception and
+     * whose error message is the given message. This method is useful to chain
+     * synchronous operations that may fail with asynchronous executions.
+     *
+     * @param action the action to be executed
+     * @param errMsg an error message to be used in case of a failure
+     * @param <T>    the result type of the action
+     * @return a future with the result of the action
+     */
+    public static <T> CompletableFuture<T> wrapInFuture(Callable<? extends T> action, String errMsg) {
+        try {
+            return CompletableFuture.completedFuture(action.call());
+        } catch (Exception e) {
+            return failedFuture(new SW360ClientException(errMsg, e));
+        }
     }
 
     /**
