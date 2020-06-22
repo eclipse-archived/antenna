@@ -16,7 +16,6 @@ import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360Attachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.junit.Before;
@@ -145,19 +144,6 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
                 waitFor(attachmentClient.processAttachment("https://host.to.be.ignored" + itemRef,
                         attachmentID, processor));
         assertThat(actResult).isEqualTo(expData);
-    }
-
-    @Test
-    public void testDownloadAttachmentInvalidDownloadPath() {
-        SW360SparseAttachment attachment = new SW360SparseAttachment();
-        attachment.getLinks().setSelf(new Self(wireMockRule.baseUrl() +
-                "/test/attachments/notDownloadedAttachment"));
-        attachment.setFilename("irrelevant.file");
-        Path downloadPath = temporaryFolder.getRoot().toPath().resolve("non").resolve("existing").resolve("path");
-
-        extractException(attachmentClient.downloadAttachment(wireMockRule.baseUrl(), attachment,
-                downloadPath), IOException.class);
-        assertThat(wireMockRule.getAllServeEvents()).hasSize(0);
     }
 
     @Test

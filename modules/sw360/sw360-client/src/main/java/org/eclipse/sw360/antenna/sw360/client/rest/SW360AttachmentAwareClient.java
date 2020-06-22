@@ -18,7 +18,6 @@ import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360Attachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -105,50 +103,6 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?, ?
                         .multiPart("file", part ->
                                 part.file(fileToAttach, HttpConstants.CONTENT_OCTET_STREAM)),
                 getHandledClassType(), TAG_UPLOAD_ATTACHMENT);
-    }
-
-    /**
-     * Downloads a specific attachment file and stores it in the directory
-     * provided as parameter. The directory is created if it does not exist yet
-     * (but not any non-existing parent components). If the attachment cannot
-     * be resolved, the resulting future fails with a
-     * {@link org.eclipse.sw360.antenna.http.utils.FailedRequestException} with
-     * status code 404; it contains an {@code IOException} if there was a
-     * problem with an operation on the file system or if the server could not
-     * be contacted. Note that this operation is not atomic; it may already
-     * create a directory and then fail if the attachment cannot be resolved.
-     *
-     * @param itemHref     the base resource URL to access the attachment entity
-     * @param attachment   a data object defining the attachment to be loaded
-     * @param downloadPath the path where to store the file downloaded
-     * @return a future with the path where the file was stored
-     * TODO Remove when replaced by processAttachment()
-     */
-    public CompletableFuture<Path> downloadAttachment(String itemHref, SW360SparseAttachment attachment,
-                                                      Path downloadPath) {
-        String attachmentId = attachment.getAttachmentId();
-        String url = itemHref + "/attachments/" + attachmentId;
-        try {
-            if (!Files.isDirectory(downloadPath)) {
-                LOGGER.debug("Creating download path {}.", downloadPath);
-                Files.createDirectory(downloadPath);
-            }
-            Path targetFile = downloadPath.resolve(attachment.getFilename());
-
-            return executeRequest(builder -> builder.uri(resolveAgainstBase(url).toString())
-                            .header(HttpConstants.HEADER_ACCEPT, HttpConstants.CONTENT_OCTET_STREAM),
-                    response -> {
-                        Files.copy(response.bodyStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
-                        return targetFile;
-                    }, TAG_DOWNLOAD_ATTACHMENT);
-        } catch (IOException e) {
-            LOGGER.warn("Request to write downloaded attachment {} to {} failed with {}",
-                    attachment.getFilename(), downloadPath, e.getMessage());
-            LOGGER.debug("Error: ", e);
-            CompletableFuture<Path> failedFuture = new CompletableFuture<>();
-            failedFuture.completeExceptionally(e);
-            return failedFuture;
-        }
     }
 
     /**

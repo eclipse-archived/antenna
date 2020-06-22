@@ -30,10 +30,12 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Releas
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +49,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.block;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -357,17 +360,30 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         links.setSelf(releaseSelf);
         release.setLinks(links);
 
+        String attachmentId = "attach-9383764983";
+        String fileName = "theAttachmentFile.tst";
         SW360SparseAttachment sparseAttachment = new SW360SparseAttachment();
+        sparseAttachment.getLinks().setSelf(new Self("https://attachments.org/attachments/" + attachmentId));
+        sparseAttachment.setFilename(fileName);
 
-        Path path = Paths.get("");
+        Path orgPath = Paths.get("download");
+        Path resultPath = Paths.get("downloadResult");
 
-        when(releaseClient.downloadAttachment(releaseHref, sparseAttachment, path))
-                .thenReturn(CompletableFuture.completedFuture(path));
+        when(releaseClient.processAttachment(eq(releaseHref), eq(attachmentId), any()))
+                .thenReturn(CompletableFuture.completedFuture(resultPath));
 
-        Optional<Path> downloadPath = block(releaseClientAdapter.downloadAttachment(release, sparseAttachment, path));
+        Optional<Path> downloadPath = block(releaseClientAdapter.downloadAttachment(release, sparseAttachment, orgPath));
 
         assertThat(downloadPath).isPresent();
-        assertThat(downloadPath).hasValue(path);
+        assertThat(downloadPath).hasValue(resultPath);
+
+        ArgumentCaptor<SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolder> captor =
+                ArgumentCaptor.forClass(SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolder.class);
+        verify(releaseClient).processAttachment(eq(releaseHref), eq(attachmentId), captor.capture());
+        SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolder processor = captor.getValue();
+        assertThat(processor.getDownloadPath()).isEqualTo(orgPath);
+        assertThat(processor.getFileName()).isEqualTo(fileName);
+        assertThat(processor.getCopyOptions()).contains(StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Test
