@@ -11,6 +11,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
+import org.eclipse.sw360.antenna.sw360.client.rest.SW360AttachmentAwareClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
@@ -19,6 +20,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Comp
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentEmbedded;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 
 import java.nio.file.Path;
@@ -158,6 +160,12 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     public CompletableFuture<Optional<Path>> downloadAttachment(SW360Release release, SW360SparseAttachment attachment,
                                                                 Path downloadPath) {
         return SW360AttachmentUtils.downloadAttachment(getReleaseClient(), release, attachment, downloadPath);
+    }
+
+    @Override
+    public <T> CompletableFuture<T> processAttachment(SW360Release release, String attachmentId, SW360AttachmentAwareClient.AttachmentProcessor<? extends T> processor) {
+        return FutureUtils.wrapInFuture(() -> release.getSelfLink().getHref(), "Release has no ID")
+                .thenCompose(href -> getReleaseClient().processAttachment(href, attachmentId, processor));
     }
 
     @Override

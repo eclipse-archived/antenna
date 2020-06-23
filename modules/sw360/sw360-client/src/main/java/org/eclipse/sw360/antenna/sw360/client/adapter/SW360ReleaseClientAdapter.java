@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
+import org.eclipse.sw360.antenna.sw360.client.rest.SW360AttachmentAwareClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
@@ -132,6 +133,24 @@ public interface SW360ReleaseClientAdapter {
      * written
      */
     Optional<Path> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath);
+
+    /**
+     * Processes an attachment of a release using the processor specified. This
+     * method opens a stream to download the attachment and passes the stream
+     * to the {@code AttachmentProcessor}. The processor can then decide how to
+     * deal with the content of the attachment and produce a corresponding
+     * result. While the {@code downloadAttachment()} method handles the
+     * default download use case, this method can be used to customize this use
+     * case.
+     *
+     * @param release      the release entity
+     * @param attachmentId the ID of the attachment in question
+     * @param processor    the processor to handle the attachment stream
+     * @param <T>          the result type of the {@code AttachmentProcessor}
+     * @return the result produced by the {@code AttachmentProcessor}
+     */
+    <T> T processAttachment(SW360Release release, String attachmentId,
+                            SW360AttachmentAwareClient.AttachmentProcessor<? extends T> processor);
 
     /**
      * Updates a release. The release is updated in the database based on the

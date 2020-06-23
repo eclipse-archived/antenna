@@ -12,12 +12,11 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
+import org.eclipse.sw360.antenna.sw360.client.rest.SW360AttachmentAwareClient;
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
-import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
-import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
@@ -26,8 +25,9 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Comp
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentEmbedded;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseEmbedded;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseLinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -69,6 +69,8 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
     private static final String RELEASE_COPYRIGHT = "Copyright xxxx Some Copyright Enterprise";
     private static final String ID = "12345";
     private static final String RELEASE_VERSION1 = "1.0.0";
+    private static final String RELEASE_HREF = "https://sw360.eclipse.org/api/releases/" + ID;
+
 
     private SW360ReleaseClientAdapterAsync releaseClientAdapter;
 
@@ -121,7 +123,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
 
     @Test
     public void testCreateReleaseWithID() {
-        release.getLinks().setSelf(new Self("R11"));
+        addSelfLink(release);
 
         try {
             block(releaseClientAdapter.createRelease(release));
@@ -354,11 +356,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
 
     @Test
     public void testDownloadAttachment() {
-        String releaseHref = "url/" + ID;
-        Self releaseSelf = new Self().setHref(releaseHref);
-        SW360ReleaseLinkObjects links = new SW360ReleaseLinkObjects();
-        links.setSelf(releaseSelf);
-        release.setLinks(links);
+        addSelfLink(release);
 
         String attachmentId = "attach-9383764983";
         String fileName = "theAttachmentFile.tst";
@@ -369,7 +367,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         Path orgPath = Paths.get("download");
         Path resultPath = Paths.get("downloadResult");
 
-        when(releaseClient.processAttachment(eq(releaseHref), eq(attachmentId), any()))
+        when(releaseClient.processAttachment(eq(RELEASE_HREF), eq(attachmentId), any()))
                 .thenReturn(CompletableFuture.completedFuture(resultPath));
 
         Optional<Path> downloadPath = block(releaseClientAdapter.downloadAttachment(release, sparseAttachment, orgPath));
@@ -379,11 +377,42 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
 
         ArgumentCaptor<SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolder> captor =
                 ArgumentCaptor.forClass(SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolder.class);
-        verify(releaseClient).processAttachment(eq(releaseHref), eq(attachmentId), captor.capture());
+        verify(releaseClient).processAttachment(eq(RELEASE_HREF), eq(attachmentId), captor.capture());
         SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolder processor = captor.getValue();
         assertThat(processor.getDownloadPath()).isEqualTo(orgPath);
         assertThat(processor.getFileName()).isEqualTo(fileName);
         assertThat(processor.getCopyOptions()).contains(StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Test
+    public void testProcessAttachment() {
+        final String attachmentId = "attach-test-id";
+        final Integer result = 42;
+        @SuppressWarnings("unchecked")
+        SW360AttachmentAwareClient.AttachmentProcessor<Integer> processor =
+                mock(SW360AttachmentAwareClient.AttachmentProcessor.class);
+        addSelfLink(release);
+        when(releaseClient.processAttachment(RELEASE_HREF, attachmentId, processor))
+                .thenReturn(CompletableFuture.completedFuture(result));
+
+        Integer processResult = block(releaseClientAdapter.processAttachment(release, attachmentId, processor));
+        assertThat(processResult).isEqualTo(result);
+    }
+
+    @Test
+    public void testProcessAttachmentNoReleaseId() {
+        SW360Release undefinedRelease = new SW360Release();
+        SW360AttachmentUtils.AttachmentDownloadProcessor processor =
+                SW360AttachmentUtils.defaultAttachmentDownloadProcessor("test.doc",
+                        Paths.get("irrelevant", "path"));
+
+        try {
+            block(releaseClientAdapter.processAttachment(undefinedRelease, "1234", processor));
+            fail("No exception thrown");
+        } catch (SW360ClientException e) {
+            assertThat(e.getCause()).isInstanceOf(NullPointerException.class);
+            assertThat(e.getMessage()).contains("no ID");
+        }
     }
 
     @Test
@@ -456,5 +485,9 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         sw360Release.setName(String.join("/", packageURL.getNamespace(), packageURL.getName()));
 
         return sw360Release;
+    }
+
+    private static void addSelfLink(SW360Release release) {
+        release.getLinks().setSelf(new Self(RELEASE_HREF));
     }
 }
