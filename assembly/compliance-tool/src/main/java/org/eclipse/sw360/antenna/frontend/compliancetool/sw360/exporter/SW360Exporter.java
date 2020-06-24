@@ -30,7 +30,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -91,7 +90,7 @@ public class SW360Exporter {
                 sourcesExporter.downloadSources(connection.getReleaseAdapterAsync(), sw360ReleasesNotApproved);
 
         List<Artifact> artifacts = nonApprovedReleasesWithSources.stream()
-                .sorted(releasesComparator().reversed())
+                .sorted(SourcesExporter.RELEASES_COMPARATOR)
                 .map(this::releaseAsArtifact)
                 .collect(Collectors.toList());
 
@@ -150,7 +149,4 @@ public class SW360Exporter {
         return SW360HalResourceUtility.getLastIndexOfSelfLink(halResource.getLinks().getSelf()).orElse("");
     }
 
-    private static Comparator<SourcesExporter.ReleaseWithSources> releasesComparator() {
-        return Comparator.comparing(releaseWithSources -> releaseWithSources.getRelease().getCreatedOn());
-    }
 }

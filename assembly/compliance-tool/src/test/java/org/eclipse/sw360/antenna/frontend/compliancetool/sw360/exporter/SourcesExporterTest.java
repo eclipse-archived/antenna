@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -489,5 +490,49 @@ public class SourcesExporterTest {
         assertThat(result).containsOnly(releaseWithSources);
         verify(releaseAdapter).processAttachment(eq(release), eq(attachment.getAttachmentId()),
                 any(SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolderWithParents.class));
+    }
+
+    @Test
+    public void testReleasesComparator() {
+        SW360Release release1 = new SW360Release();
+        SW360Release release2 = new SW360Release();
+        SW360Release release3 = new SW360Release();
+        SW360Release release4 = new SW360Release();
+        SW360Release release5 = new SW360Release();
+        release1.setCreatedOn("2020-06-24")
+                .setName("z-release")
+                .setVersion("1.7.8");
+        release2.setCreatedOn("2020-06-24")
+                .setName("z-release")
+                .setVersion("1.7.9");
+        release3.setCreatedOn("2020-06-01")
+                .setName("a-release")
+                .setVersion("9.1");
+        release4.setCreatedOn("2020-06-01")
+                .setName("b-release")
+                .setVersion("0.1-SNAPSHOT");
+        release5.setCreatedOn("2020-06-01")
+                .setName("b-release")
+                .setVersion("0.2-SNAPSHOT");
+        SourcesExporter.ReleaseWithSources releaseSrc1 = new SourcesExporter.ReleaseWithSources(release1,
+                Collections.emptySet());
+        SourcesExporter.ReleaseWithSources releaseSrc2 = new SourcesExporter.ReleaseWithSources(release2,
+                Collections.emptySet());
+        SourcesExporter.ReleaseWithSources releaseSrc3 = new SourcesExporter.ReleaseWithSources(release3,
+                Collections.emptySet());
+        SourcesExporter.ReleaseWithSources releaseSrc4 = new SourcesExporter.ReleaseWithSources(release4,
+                Collections.emptySet());
+        SourcesExporter.ReleaseWithSources releaseSrc5 = new SourcesExporter.ReleaseWithSources(release5,
+                Collections.emptySet());
+        List<SourcesExporter.ReleaseWithSources> releaseList = new ArrayList<>();
+        releaseList.add(releaseSrc2);
+        releaseList.add(releaseSrc5);
+        releaseList.add(releaseSrc1);
+        releaseList.add(releaseSrc4);
+        releaseList.add(releaseSrc3);
+
+        releaseList.sort(SourcesExporter.RELEASES_COMPARATOR);
+        assertThat(releaseList)
+                .containsExactly(releaseSrc1, releaseSrc2, releaseSrc3, releaseSrc4, releaseSrc5);
     }
 }

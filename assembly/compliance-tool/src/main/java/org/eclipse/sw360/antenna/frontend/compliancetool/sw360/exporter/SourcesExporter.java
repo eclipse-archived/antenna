@@ -32,6 +32,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -58,6 +59,13 @@ import java.util.stream.Collectors;
  * </p>
  */
 class SourcesExporter {
+    /**
+     * A {@code Comparator} for sorting {@code ReleaseWithSources} objects.
+     * This comparator is used to sort the list of releases before it is
+     * written to the output CSV file.
+     */
+    static final Comparator<ReleaseWithSources> RELEASES_COMPARATOR = createReleaseComparator();
+
     /**
      * Format to generate a message about a failed attachment download.
      */
@@ -274,6 +282,19 @@ class SourcesExporter {
     }
 
     /**
+     * Creates a {@code Comparator} for sorting a list of
+     * {@code ReleaseWithSources} objects.
+     *
+     * @return the {@code Comparator}
+     */
+    private static Comparator<ReleaseWithSources> createReleaseComparator() {
+        Comparator<ReleaseWithSources> cCreatedAsc = Comparator.comparing(rel -> rel.getRelease().getCreatedOn());
+        Comparator<ReleaseWithSources> cCreated = cCreatedAsc.reversed();
+        return cCreated.thenComparing(rel -> rel.getRelease().getName())
+                .thenComparing(rel -> rel.getRelease().getVersion());
+    }
+
+    /**
      * A data class storing information about a release and the paths to the
      * source attachments that have been downloaded.
      */
@@ -414,10 +435,10 @@ class SourcesExporter {
          */
         private void updateTraversalState(Path dir) {
             if (level == 1) {
-                currentReleaseName = dir.getFileName().toString();
+                currentReleaseName = String.valueOf(dir.getFileName());
                 shouldDelete = !releaseNames.contains(currentReleaseName);
             } else if (level == 2) {
-                Pair<String, String> relVer = Pair.of(currentReleaseName, dir.getFileName().toString());
+                Pair<String, String> relVer = Pair.of(currentReleaseName, String.valueOf(dir.getFileName()));
                 shouldDelete = !releaseVersions.contains(relVer);
             } else {
                 shouldDelete = level >= 0;
