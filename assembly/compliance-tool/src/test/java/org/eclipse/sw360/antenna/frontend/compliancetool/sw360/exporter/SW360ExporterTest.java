@@ -19,7 +19,6 @@ import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapte
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapterAsync;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ClearingState;
@@ -117,7 +116,7 @@ public class SW360ExporterTest {
     private SW360Connection connectionMock;
 
     @Before
-    public void setUp() throws URISyntaxException {
+    public void setUp() throws URISyntaxException, IOException {
         SW360SparseComponent sparseComponent = SW360TestUtils.mkSW360SparseComponent("testComponent");
         when(componentClientAdapterMock.getComponents())
                 .thenReturn(Collections.singletonList(sparseComponent));
@@ -142,6 +141,7 @@ public class SW360ExporterTest {
                 .thenReturn(Optional.of(path));
 
         connectionMock = createConnectionMock();
+        folder.newFolder("sources");
     }
 
     private SW360Connection createConnectionMock() {
@@ -181,11 +181,11 @@ public class SW360ExporterTest {
 
     private SW360ReleaseClientAdapterAsync createReleaseAdapterForDownloads() {
         SW360ReleaseClientAdapterAsync adapter = mock(SW360ReleaseClientAdapterAsync.class);
-        when(adapter.downloadAttachment(any(), any(), any()))
-                .thenAnswer((Answer<CompletableFuture<Optional<Path>>>) invocationOnMock -> {
-                    SW360SparseAttachment attachment = invocationOnMock.getArgument(1);
-                    Path downloadPath = Paths.get("download" + attachment.getFilename());
-                    return CompletableFuture.completedFuture(Optional.of(downloadPath));
+        when(adapter.processAttachment(any(), any(), any()))
+                .thenAnswer((Answer<CompletableFuture<Path>>) invocationOnMock -> {
+                    String attachmentId = invocationOnMock.getArgument(1);
+                    Path downloadPath = Paths.get("download" + attachmentId);
+                    return CompletableFuture.completedFuture(downloadPath);
                 });
         return adapter;
     }
@@ -204,7 +204,7 @@ public class SW360ExporterTest {
         List<CSVRecord> records = csvParser.getRecords();
 
         assertThat(records.size()).isEqualTo(expectedNumOfReleases);
-        verify(releaseAdapterAsyncMock, atLeast(expectedNumOfReleases)).downloadAttachment(any(), any(), any());
+        verify(releaseAdapterAsyncMock, atLeast(expectedNumOfReleases)).processAttachment(any(), any(), any());
 
         if (expectedNumOfReleases == 2) {
             assertThat(records.get(1).get("Copyrights")).isEqualTo(release.getCopyrights());

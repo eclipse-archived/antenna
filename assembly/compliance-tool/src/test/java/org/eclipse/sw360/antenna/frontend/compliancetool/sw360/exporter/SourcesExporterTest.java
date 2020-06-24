@@ -12,7 +12,9 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+import org.eclipse.sw360.antenna.sw360.client.adapter.SW360AttachmentUtils;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapterAsync;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
@@ -22,23 +24,26 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.failedFuture;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -104,6 +109,8 @@ public class SourcesExporterTest {
      */
     private static SW360SparseAttachment createAttachment(int releaseIndex, int attachmentIndex) {
         SW360SparseAttachment attachment = new SW360SparseAttachment();
+        String attachmentId = "attach-" + (1000 * releaseIndex + attachmentIndex);
+        attachment.getLinks().setSelf(new Self("https://sw360.org/attachments/" + attachmentId));
         attachment.setAttachmentType(SW360AttachmentType.SOURCE);
         attachment.setFilename("release" + releaseIndex + "_source" + attachmentIndex + ".jar");
         return attachment;
@@ -120,20 +127,43 @@ public class SourcesExporterTest {
     private static SW360Release createReleaseWithAttachments(int releaseIndex, Set<SW360SparseAttachment> attachments) {
         SW360Release release = new SW360Release();
         release.setName("release" + releaseIndex);
-        SW360ReleaseEmbedded embedded = new SW360ReleaseEmbedded();
-        release.setEmbedded(embedded);
-        embedded.setAttachments(attachments);
+        release.setVersion(releaseIndex + ".0");
+        initAttachments(release, attachments);
         return release;
     }
 
     /**
-     * Generates the path for the given attachment.
+     * Initializes the given release with the set of attachments specified.
      *
+     * @param release     the release
+     * @param attachments the attachments for this release
+     */
+    private static void initAttachments(SW360Release release, Set<SW360SparseAttachment> attachments) {
+        SW360ReleaseEmbedded embedded = new SW360ReleaseEmbedded();
+        release.setEmbedded(embedded);
+        embedded.setAttachments(attachments);
+    }
+
+    /**
+     * Generates the path for the given release. The attachments belonging to
+     * this release are located under this path.
+     *
+     * @param release the release
+     * @return the download path for this release
+     */
+    private Path releasePath(SW360Release release) {
+        return sourcePath.resolve(release.getName()).resolve(release.getVersion());
+    }
+
+    /**
+     * Generates the path for the given attachment of the given release.
+     *
+     * @param release    the release the attachment belongs to
      * @param attachment the attachment
      * @return the path where to download this attachment
      */
-    private Path attachmentPath(SW360SparseAttachment attachment) {
-        return sourcePath.resolve(attachment.getFilename());
+    private Path attachmentPath(SW360Release release, SW360SparseAttachment attachment) {
+        return releasePath(release).resolve(attachment.getFilename());
     }
 
     /**
@@ -146,7 +176,7 @@ public class SourcesExporterTest {
     private SourcesExporter.ReleaseWithSources createReleaseWithSources(SW360Release release,
                                                                         Set<SW360SparseAttachment> attachments) {
         Set<Path> paths = attachments.stream()
-                .map(this::attachmentPath)
+                .map(attachment -> attachmentPath(release, attachment))
                 .collect(Collectors.toSet());
         return new SourcesExporter.ReleaseWithSources(release, paths);
     }
@@ -160,9 +190,29 @@ public class SourcesExporterTest {
      */
     private void expectDownloads(SW360Release release, Set<SW360SparseAttachment> attachments) {
         attachments.forEach(attachment -> {
-            Path path = attachmentPath(attachment);
-            when(releaseAdapter.downloadAttachment(release, attachment, sourcePath))
-                    .thenReturn(CompletableFuture.completedFuture(Optional.of(path)));
+            Path path = attachmentPath(release, attachment);
+            when(releaseAdapter.processAttachment(eq(release), eq(attachment.getAttachmentId()), any()))
+                    .thenReturn(CompletableFuture.completedFuture(path));
+        });
+    }
+
+    /**
+     * Verifies that attachments have been downloaded using a correct processor
+     * to the expected target directory.
+     *
+     * @param release     the release affected
+     * @param attachments the attachments to be downloaded
+     */
+    private void verifyDownloads(SW360Release release, Set<SW360SparseAttachment> attachments) {
+        final Path expPath = releasePath(release);
+        attachments.forEach(attachment -> {
+            ArgumentCaptor<SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolderWithParents> captor =
+                    ArgumentCaptor.forClass(SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolderWithParents.class);
+            verify(releaseAdapter).processAttachment(eq(release), eq(attachment.getAttachmentId()), captor.capture());
+            SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolderWithParents processor = captor.getValue();
+            assertThat(processor.getFileName()).isEqualTo(attachment.getFilename());
+            assertThat(processor.getDownloadPath()).isEqualTo(expPath);
+            assertThat(processor.getCopyOptions()).containsOnly(StandardCopyOption.REPLACE_EXISTING);
         });
     }
 
@@ -197,18 +247,8 @@ public class SourcesExporterTest {
         Collection<SourcesExporter.ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, releases);
         assertThat(result).containsExactlyInAnyOrderElementsOf(expResult);
-    }
-
-    @Test
-    public void testUnresolvableAttachmentsAreHandled() {
-        SW360SparseAttachment attachment = createAttachment(1, 1);
-        SW360Release release = createReleaseWithAttachments(1, Collections.singleton(attachment));
-        when(releaseAdapter.downloadAttachment(release, attachment, sourcePath))
-                .thenReturn(CompletableFuture.completedFuture(Optional.empty()));
-
-        Collection<SourcesExporter.ReleaseWithSources> result =
-                sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
-        assertThat(result).containsOnly(new SourcesExporter.ReleaseWithSources(release, Collections.emptySet()));
+        verifyDownloads(release1, attachments1);
+        verifyDownloads(release2, attachments2);
     }
 
     @Test
@@ -225,6 +265,7 @@ public class SourcesExporterTest {
         Collection<SourcesExporter.ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
         assertThat(result).containsOnly(releaseWithSources);
+        verifyDownloads(release, sourceAttachments);
     }
 
     @Test
@@ -236,12 +277,35 @@ public class SourcesExporterTest {
         SW360Release release = createReleaseWithAttachments(1, attachments);
         SourcesExporter.ReleaseWithSources releaseWithSources = createReleaseWithSources(release, sourceAttachments);
         expectDownloads(release, sourceAttachments);
-        when(releaseAdapter.downloadAttachment(release, failedAttachment, sourcePath))
+        when(releaseAdapter.processAttachment(eq(release), eq(failedAttachment.getAttachmentId()), any()))
                 .thenReturn(failedFuture(new IOException("Download failed")));
 
         Collection<SourcesExporter.ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
         assertThat(result).containsOnly(releaseWithSources);
+    }
+
+    @Test
+    public void testPathsAreSanitizedForDownload() {
+        SW360Release release = new SW360Release();
+        release.setName("a \"complex\" *release*/name?! -with >0 #special.characters+");
+        release.setVersion("10%");
+        SW360SparseAttachment attachment = createAttachment(1, 2);
+        attachment.setFilename("strange/file\\.txt");
+        Set<SW360SparseAttachment> sourceAttachments = Collections.singleton(attachment);
+        initAttachments(release, sourceAttachments);
+        expectDownloads(release, sourceAttachments);
+
+        Collection<SourcesExporter.ReleaseWithSources> result =
+                sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
+        assertThat(result).hasSize(1);
+        ArgumentCaptor<SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolderWithParents> captor =
+                ArgumentCaptor.forClass(SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolderWithParents.class);
+        verify(releaseAdapter).processAttachment(eq(release), eq(attachment.getAttachmentId()), captor.capture());
+        SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolderWithParents processor = captor.getValue();
+        Path expPath = sourcePath.resolve("a__complex___release__name___-with__0__special.characters_").resolve("10_");
+        assertThat(processor.getDownloadPath()).isEqualTo(expPath);
+        assertThat(processor.getFileName()).isEqualTo("strange_file_.txt");
     }
 
     /**
@@ -253,9 +317,10 @@ public class SourcesExporterTest {
      */
     private static Path createTestFile(Path path, byte[] content) {
         try {
+            Files.createDirectories(path.getParent());
             return Files.write(path, content);
         } catch (IOException e) {
-            throw new AssertionError("Could not create test file " + path);
+            throw new AssertionError("Could not create test file " + path, e);
         }
     }
 
@@ -304,19 +369,62 @@ public class SourcesExporterTest {
     public void testUnreferencedFilesCanBeRemoved() {
         Set<SW360SparseAttachment> attachments1 = createAttachments(1, 2);
         Set<SW360SparseAttachment> attachments2 = createAttachments(2, 3);
+        Set<SW360SparseAttachment> attachments3 = createAttachments(1, 3);
         SourcesExporter.ReleaseWithSources release1 =
                 createReleaseWithSources(createReleaseWithAttachments(1, attachments1), attachments1);
         SourcesExporter.ReleaseWithSources release2 =
                 createReleaseWithSources(createReleaseWithAttachments(2, attachments2), attachments2);
-        Path unreferencedPath = attachmentPath(createAttachment(17, 47));
+        SW360SparseAttachment unreferencedAttachment = createAttachment(17, 47);
+        SW360Release unreferencedRelease1 =
+                createReleaseWithAttachments(17, Collections.singleton(unreferencedAttachment));
+        SW360Release unreferencedRelease2 = createReleaseWithAttachments(1, attachments3);
+        unreferencedRelease2.setVersion("2.0");
+        SourcesExporter.ReleaseWithSources unreferencedRelease2WithSources =
+                createReleaseWithSources(unreferencedRelease2, attachments3);
+        Path unreferencedPath = attachmentPath(unreferencedRelease1, unreferencedAttachment);
         createTestFile(unreferencedPath);
         createAttachmentFiles(release1);
         createAttachmentFiles(release2);
+        createAttachmentFiles(unreferencedRelease2WithSources);
+        Path furtherSubPath1 = createTestFile(releasePath(release1.getRelease())
+                .resolve("sub").resolve("subFile.txt")).getParent();
+        Path furtherSubPath2 = createTestFile(releasePath(release1.getRelease())
+                .resolve("aSubDir").resolve("otherSubFile.txt")).getParent();
+        Path topPath1 = createTestFile(sourcePath.resolve("a.txt"));
+        Path topPath2 = createTestFile(sourcePath.resolve("z.txt"));
 
         sourcesExporter.removeUnreferencedFiles(Arrays.asList(release1, release2));
         checkAllAttachmentsExist(release1);
         checkAllAttachmentsExist(release2);
         assertThat(checkFileExists(unreferencedPath)).isFalse();
+        assertThat(checkFileExists(releasePath(unreferencedRelease1))).isFalse();
+        assertThat(checkFileExists(releasePath(unreferencedRelease2))).isFalse();
+        assertThat(checkFileExists(furtherSubPath1)).isFalse();
+        assertThat(checkFileExists(furtherSubPath2)).isFalse();
+        assertThat(checkFileExists(topPath1)).isFalse();
+        assertThat(checkFileExists(topPath2)).isFalse();
+    }
+
+    @Test
+    public void testPathsAreSanitizedWhenRemovingUnreferencedFiles() {
+        SW360Release release = new SW360Release();
+        release.setName("org.apache.commons/commons-lang3");
+        release.setVersion("3.*");
+        Path delPath1 = sourcePath.resolve("org.apache.commons");
+        Path delPath2 = delPath1.resolve("commons-lang3");
+        Path delPath3 = createTestFile(delPath2.resolve("lang-source.zip"));
+        Path validPath1 = sourcePath.resolve("org.apache.commons_commons-lang3").resolve("3._");
+        Path validPath2 = createTestFile(validPath1.resolve("lang-source.zip"));
+        Set<SW360SparseAttachment> attachments = createAttachments(1, 1);
+        initAttachments(release, attachments);
+        SourcesExporter.ReleaseWithSources releaseWithSources = createReleaseWithSources(release, attachments);
+
+        sourcesExporter.removeUnreferencedFiles(Collections.singleton(releaseWithSources));
+        assertThat(checkFileExists(validPath1)).isTrue();
+        assertThat(checkFileExists(validPath2)).isTrue();
+        assertThat(checkFileExists(delPath3)).isFalse();
+        assertThat(checkFileExists(delPath2)).isFalse();
+        assertThat(checkFileExists(delPath1)).isFalse();
     }
 
     @Test
@@ -328,26 +436,13 @@ public class SourcesExporterTest {
     }
 
     @Test
-    public void testIOExceptionDuringSingleFileRemoveOperationIsIgnored() throws IOException {
-        Path subFolder = Files.createDirectory(sourcePath.resolve("sub"));
-        Path subFile = createTestFile(subFolder.resolve("test.txt"));
-        Path file1 = createTestFile(sourcePath.resolve("file1.txt"));
-        Path file2 = createTestFile(sourcePath.resolve("ultimateFile.txt"));
-
-        sourcesExporter.removeUnreferencedFiles(Collections.emptyList());
-        assertThat(checkFileExists(file1)).isFalse();
-        assertThat(checkFileExists(file2)).isFalse();
-        assertThat(checkFileExists(subFile)).isTrue();
-    }
-
-    @Test
     public void testNoDownloadIfIdenticalFileExists() {
         SW360SparseAttachment attachment = createAttachment(1, 1);
         attachment.setSha1(TEST_FILE_SHA1);
         SW360Release release = createReleaseWithAttachments(1, Collections.singleton(attachment));
         SourcesExporter.ReleaseWithSources releaseWithSources =
                 createReleaseWithSources(release, Collections.singleton(attachment));
-        createTestFile(sourcePath.resolve(attachment.getFilename()));
+        createTestFile(attachmentPath(release, attachment));
 
         Collection<SourcesExporter.ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
@@ -362,14 +457,14 @@ public class SourcesExporterTest {
         SW360Release release = createReleaseWithAttachments(1, attachments);
         SourcesExporter.ReleaseWithSources releaseWithSources =
                 createReleaseWithSources(release, attachments);
-        createTestFile(sourcePath.resolve(attachment.getFilename()),
+        createTestFile(attachmentPath(release, attachment),
                 "other content".getBytes(StandardCharsets.UTF_8));
         expectDownloads(release, attachments);
 
         Collection<SourcesExporter.ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
         assertThat(result).containsOnly(releaseWithSources);
-        verify(releaseAdapter).downloadAttachment(release, attachment, sourcePath);
+        verify(releaseAdapter).processAttachment(eq(release), eq(attachment.getAttachmentId()), any());
     }
 
     @Test
@@ -392,6 +487,7 @@ public class SourcesExporterTest {
         Collection<SourcesExporter.ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
         assertThat(result).containsOnly(releaseWithSources);
-        verify(releaseAdapter).downloadAttachment(release, attachment, sourcePath);
+        verify(releaseAdapter).processAttachment(eq(release), eq(attachment.getAttachmentId()),
+                any(SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolderWithParents.class));
     }
 }
