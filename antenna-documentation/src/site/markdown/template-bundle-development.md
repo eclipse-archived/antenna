@@ -4,6 +4,23 @@ automatically when no other bundle is configured. This guide will show how to cr
 integrate it in the Antenna workflow run. 
 
 ## Custom Template Bundle
+
+### How to create the template PDF files
+
+First, the template has to be developed with a tool like Microsoft Word / Open Office / Libre Office. The corresponding 
+document will consist of the four pages cover, copyright, content and back page. The page size is A4 at 72 PPI with 
+595x842 pixels. The first page is the cover which can be designed with logos, corporate information etc. but it should 
+be free of any text at the pixel 80x547 for the project's name and version. The second page is the copyright page to 
+which a header and/or footer can be added, but it should be free of any text at the pixel 70x659 for the project's 
+copyright notes. The third page is the content page to which a header and/or footer can be added, but it should be free 
+of any text from the pixel 40x80 until the page bottom margin 40x762 for the list of the dependencies with PURL, file 
+name, license and copyright notes. The last page is the back page which can be designed according to your own needs 
+because this page will simply be attached to the attribution document without any additions.
+
+After the document is finished, each individual page is exported as the respective template PDF file. The first page of 
+the document has to be exported to a PDF file named cover.pdf, the second page to a PDF file named copyright.pdf, the
+third page to a PDF file named content.pdf and the last page to a PDF file named back.pdf. 
+
 ### Basic folder structure
 
 ```
