@@ -416,6 +416,24 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
     }
 
     @Test
+    public void testDeleteAttachments() {
+        SW360Release updatedRelease = mock(SW360Release.class);
+        Collection<String> attachmentIds = Arrays.asList("at1", "at2", "atMore");
+        when(releaseClient.deleteAttachments(release, attachmentIds))
+                .thenReturn(CompletableFuture.completedFuture(updatedRelease));
+
+        SW360Release result = block(releaseClientAdapter.deleteAttachments(release, attachmentIds));
+        assertThat(result).isEqualTo(updatedRelease);
+    }
+
+    @Test
+    public void testDeleteAttachmentsEmptyList() {
+        SW360Release result = block(releaseClientAdapter.deleteAttachments(release, Collections.emptyList()));
+
+        assertThat(result).isSameAs(release);
+    }
+
+    @Test
     public void testUpdateRelease() throws MalformedPackageURLException {
         SW360Release updatedRelease = mkSW360Release("updatedRelease");
         when(releaseClient.patchRelease(release)).thenReturn(CompletableFuture.completedFuture(updatedRelease));

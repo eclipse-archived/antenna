@@ -159,6 +159,19 @@ public interface SW360ReleaseClientAdapterAsync {
                                                SW360AttachmentAwareClient.AttachmentProcessor<? extends T> processor);
 
     /**
+     * Deletes the attachments with the given IDs from the release specified.
+     * Note that this operation is successful even if some of the attachments
+     * could not be deleted; therefore, the set of attachments in the release
+     * returned should be checked to find out if some delete operations failed.
+     *
+     * @param release       the release entity
+     * @param attachmentIds a collection with the IDs of the attachments to be
+     *                      deleted
+     * @return a future with the updated release entity
+     */
+    CompletableFuture<SW360Release> deleteAttachments(SW360Release release, Collection<String> attachmentIds);
+
+    /**
      * Updates a release. The release is updated in the database based on the
      * properties of the passed in entity.
      *

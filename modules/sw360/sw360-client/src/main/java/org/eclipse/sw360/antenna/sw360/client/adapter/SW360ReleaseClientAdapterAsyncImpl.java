@@ -169,6 +169,12 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     }
 
     @Override
+    public CompletableFuture<SW360Release> deleteAttachments(SW360Release release, Collection<String> attachmentIds) {
+        return attachmentIds.isEmpty() ? CompletableFuture.completedFuture(release) :
+                getReleaseClient().deleteAttachments(release, attachmentIds);
+    }
+
+    @Override
     public CompletableFuture<SW360Release> updateRelease(SW360Release release) {
         return getReleaseClient().patchRelease(release);
     }
