@@ -29,6 +29,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aMultipart;
@@ -36,6 +38,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.binaryEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -174,5 +177,35 @@ public class SW360AttachmentClientIT extends AbstractMockServerTest {
         byte[] data = waitFor(attachmentClient.processAttachment(wireMockRule.baseUrl(), attachmentId,
                 processor));
         assertThat(data.length).isEqualTo(0);
+    }
+
+    @Test
+    public void testDeleteAttachments() throws IOException {
+        String urlPath = "/releases/rel1234567890";
+        String selfUrl = "https://some.uri.to.be.replaced" + urlPath;
+        SW360Release release = readTestJsonFile(resolveTestFileURL("release.json"), SW360Release.class);
+        release.getLinks().setSelf(new Self(selfUrl));
+        SW360Release releaseUpdated = readTestJsonFile(resolveTestFileURL("release.json"), SW360Release.class);
+        releaseUpdated.getEmbedded().setAttachments(null);
+        String attachId1 = "at-first-to-delete";
+        String attachId2 = "at-second-to-delete";
+        wireMockRule.stubFor(delete(urlPathEqualTo(urlPath + "/attachments/" + attachId1 + "," + attachId2))
+                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
+                        .withBody(toJson(releaseUpdated))));
+
+        SW360Release result = waitFor(attachmentClient.deleteAttachments(release, Arrays.asList(attachId1, attachId2)));
+        assertThat(result).isEqualTo(releaseUpdated);
+    }
+
+    @Test
+    public void testDeleteAttachmentsError() throws IOException {
+        SW360Release release = readTestJsonFile(resolveTestFileURL("release.json"), SW360Release.class);
+        wireMockRule.stubFor(delete(anyUrl())
+                .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_NOT_FOUND)));
+
+        FailedRequestException exception =
+                expectFailedRequest(attachmentClient.deleteAttachments(release, Collections.singleton("foo")),
+                        HttpConstants.STATUS_ERR_NOT_FOUND);
+        assertThat(exception.getTag()).isEqualTo(SW360AttachmentAwareClient.TAG_DELETE_ATTACHMENT);
     }
 }

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -49,6 +50,11 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?, ?
      * Tag for the request to download an attachment.
      */
     static final String TAG_DOWNLOAD_ATTACHMENT = "get_download_attachment";
+
+    /**
+     * Tag for the request to delete attachments.
+     */
+    static final String TAG_DELETE_ATTACHMENT = "delete_attachments";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360AttachmentAwareClient.class);
     private static final String ATTACHMENTS_ENDPOINT = "/attachments";
@@ -128,6 +134,28 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?, ?
                         .header(HttpConstants.HEADER_ACCEPT, HttpConstants.CONTENT_OCTET_STREAM),
                 response ->
                         processor.processAttachmentStream(response.bodyStream()), TAG_DOWNLOAD_ATTACHMENT);
+    }
+
+    /**
+     * Deletes the specified attachments from the entity provided. A future
+     * with the updated entity is returned. If successful, callers should
+     * inspect the attachments of the entity to find out whether actually all
+     * could be deleted. (SW360 does not allow deleting attachments already in
+     * use; if only some of the attachments could be deleted, the request is
+     * successful, but the resulting entity will still contain the problematic
+     * ones.)
+     *
+     * @param entity        the entity to be updated
+     * @param attachmentIds a list with the IDs of the attachments to be
+     *                      deleted
+     * @return a future with the updated entity
+     */
+    public CompletableFuture<T> deleteAttachments(T entity, Collection<String> attachmentIds) {
+        String url = entity.getSelfLink().getHref() + ATTACHMENTS_ENDPOINT + "/" +
+                String.join(",", attachmentIds);
+        return executeJsonRequest(builder -> builder.uri(resolveAgainstBase(url).toString())
+                        .method(RequestBuilder.Method.DELETE),
+                getHandledClassType(), TAG_DELETE_ATTACHMENT);
     }
 
     /**
