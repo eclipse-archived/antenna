@@ -105,7 +105,7 @@ public class CSVArtifactMapperTest {
     }
 
     @Test
-    public void writeFilenameToCSVFileTest() throws URISyntaxException {
+    public void writeAbsoluteFilenameToCSVFileTest() throws URISyntaxException {
         Artifact artifact =
                 mkArtifact("test", false)
                         .addFact(new ArtifactSourceFile(
@@ -123,13 +123,35 @@ public class CSVArtifactMapperTest {
     }
 
     @Test
+    public void writeRelativeFilenameToCSVFileTest() throws IOException {
+        String sourceFolderName = "sources";
+        String sourceFileName = "my-sources-jar";
+        Path sourceFolder = folder.newFolder(sourceFolderName).toPath();
+        Path sourceFile = Files.write(sourceFolder.resolve(sourceFileName),
+                "some source".getBytes(StandardCharsets.UTF_8));
+        Path baseDir = folder.getRoot().toPath();
+        Artifact artifact =
+                mkArtifact("test", false)
+                        .addFact(new ArtifactSourceFile(sourceFile));
+        List<Artifact> artifacts = Collections.singletonList(artifact);
+
+        CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER,
+                baseDir);
+        csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
+
+        List<Artifact> artifactsList = (List<Artifact>) csvArtifactMapper.createArtifactsList();
+        assertThat(artifactsList.get(0).askFor(ArtifactSourceFile.class)).isPresent();
+    }
+
+    @Test
     public void writeNonExistentFilenameToCSVFileTest() {
         Artifact artifact =
                 mkArtifact("test", false)
                         .addFact(new ArtifactSourceFile(Paths.get("non-existent-source-file.tgz")));
         List<Artifact> artifacts = Collections.singletonList(artifact);
 
-        CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER, csvFile.getParentFile().toPath());
+        CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER,
+                csvFile.getParentFile().toPath());
         csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
 
         assertThat(csvFile.exists()).isTrue();
