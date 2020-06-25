@@ -19,10 +19,12 @@ import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ComponentClientAdapte
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapterAsync;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ClearingState;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,12 +36,14 @@ import org.mockito.stubbing.Answer;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -56,6 +60,8 @@ import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 public class SW360ExporterTest {
+    private static final String SOURCE_FOLDER = "sources";
+
     private final String clearingState;
     private final SW360ClearingState sw360ClearingState;
     private final int expectedNumOfReleases;
@@ -115,33 +121,70 @@ public class SW360ExporterTest {
 
     private SW360Connection connectionMock;
 
+    private Path sourcesPath;
+
     @Before
-    public void setUp() throws URISyntaxException, IOException {
+    public void setUp() throws IOException {
         SW360SparseComponent sparseComponent = SW360TestUtils.mkSW360SparseComponent("testComponent");
         when(componentClientAdapterMock.getComponents())
                 .thenReturn(Collections.singletonList(sparseComponent));
 
-        SW360Component component = SW360TestUtils.mkSW360Component("testComponent");
-        when(componentClientAdapterMock.getComponentById(any()))
+        SW360Component component =
+                SW360TestUtils.initSelfLink(SW360TestUtils.mkSW360Component("testComponent"),
+                        sparseComponent.getSelfLink().getHref());
+        when(componentClientAdapterMock.getComponentById(component.getId()))
                 .thenReturn(Optional.of(component));
-        release = SW360TestUtils.mkSW360Release("testRelease");
+        SW360SparseRelease sparseRelease1 = SW360TestUtils.mkSW3SparseRelease("testRelease");
+        SW360SparseRelease sparseRelease2 = SW360TestUtils.mkSW3SparseRelease("testRelease2");
+        component.getEmbedded().setReleases(Arrays.asList(sparseRelease1, sparseRelease2));
+        release = SW360TestUtils.initSelfLink(SW360TestUtils.mkSW360Release("testRelease"),
+                sparseRelease1.getSelfLink().getHref());
         release.setClearingState(clearingState);
         release.setSw360ClearingState(sw360ClearingState);
 
-        SW360Release release2 = SW360TestUtils.mkSW360Release("testRelease2");
+        SW360Release release2 = SW360TestUtils.initSelfLink(SW360TestUtils.mkSW360Release("testRelease2"),
+                sparseRelease2.getSelfLink().getHref());
         release2.setClearingState(clearingState);
         release2.setSw360ClearingState(sw360ClearingState);
         release2.setCopyrights("Higher Date");
         release2.setCreatedOn("zzzz-mm-dd");
+        release2.getEmbedded().setAttachments(new HashSet<>(Arrays.asList(SW360TestUtils.mkAttachment("src1"),
+                SW360TestUtils.mkAttachment("src2"))));
 
-        when(releaseClientAdapterMock.getReleaseById(any()))
-                .thenReturn(Optional.of(release), Optional.of(release2));
-        Path path = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("test-source.txt")).toURI());
-        when(releaseClientAdapterMock.downloadAttachment(any(), any(), any()))
-                .thenReturn(Optional.of(path));
+        when(releaseClientAdapterMock.getReleaseById(release.getId()))
+                .thenReturn(Optional.of(release));
+        when(releaseClientAdapterMock.getReleaseById(release2.getId()))
+                .thenReturn(Optional.of(release2));
 
         connectionMock = createConnectionMock();
-        folder.newFolder("sources");
+        sourcesPath = folder.newFolder(SOURCE_FOLDER).toPath();
+        createSourceAttachments(release);
+        createSourceAttachments(release2);
+    }
+
+    private void createSourceAttachments(SW360Release release) throws IOException {
+        for(SW360SparseAttachment attachment : release.getEmbedded().getAttachments()) {
+            createAttachmentFile(attachment);
+        }
+    }
+
+    private void createAttachmentFile(SW360SparseAttachment attachment) throws IOException {
+        Path target = attachmentPath(attachment);
+        if(!Files.exists(target)) {
+            Files.write(target, "testSourceFile".getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    private Path attachmentPath(SW360SparseAttachment attachment) {
+        return attachmentPath(attachment.getId());
+    }
+
+    private Path attachmentPath(String attachmentId) {
+        return sourcesPath.resolve(attachmentFileName(attachmentId));
+    }
+
+    private static String attachmentFileName(String attachmentId) {
+        return attachmentId + "-src.jar";
     }
 
     private SW360Connection createConnectionMock() {
@@ -163,7 +206,7 @@ public class SW360ExporterTest {
         csvFile = folder.newFile("sample.csv");
         when(config.getCsvFilePath())
                 .thenReturn(csvFile.toPath());
-        Path basePath = Paths.get(csvFile.getParent());
+        Path basePath = csvFile.toPath().toAbsolutePath().getParent();
         when(config.getBaseDir())
                 .thenReturn(basePath);
         when(config.getTargetDir())
@@ -184,7 +227,7 @@ public class SW360ExporterTest {
         when(adapter.processAttachment(any(), any(), any()))
                 .thenAnswer((Answer<CompletableFuture<Path>>) invocationOnMock -> {
                     String attachmentId = invocationOnMock.getArgument(1);
-                    Path downloadPath = Paths.get("download" + attachmentId);
+                    Path downloadPath = attachmentPath(attachmentId);
                     return CompletableFuture.completedFuture(downloadPath);
                 });
         return adapter;
@@ -208,6 +251,10 @@ public class SW360ExporterTest {
 
         if (expectedNumOfReleases == 2) {
             assertThat(records.get(1).get("Copyrights")).isEqualTo(release.getCopyrights());
+            String expSrcPath = Paths.get(SOURCE_FOLDER,
+                    attachmentFileName(release.getEmbedded().getAttachments().iterator().next().getId())).toString();
+            assertThat(records.get(1).get("File Name")).isEqualTo(expSrcPath);
+            assertThat(records.get(0).get("File Name")).isEqualTo("");
         }
     }
 
