@@ -96,10 +96,11 @@ public class SW360UpdaterImpl {
         if (sw360MetaDataUpdater.isUploadSources()
                 && release.getLinks().getSelf() != null
                 && !release.getLinks().getSelf().getHref().isEmpty()) {
-            Map<Path, SW360AttachmentType> attachments = ArtifactToAttachmentUtils.getAttachmentsFromArtifact(artifact);
-            if (!attachments.isEmpty()) {
-                release = sw360MetaDataUpdater.uploadAttachments(release, attachments);
-            }
+            Optional<Path> optSrcPath = ArtifactToAttachmentUtils.getSourceAttachmentFromArtifact(artifact);
+            return optSrcPath.map(srcPath ->
+                    sw360MetaDataUpdater.uploadAttachments(release,
+                            Collections.singletonMap(srcPath, SW360AttachmentType.SOURCE)))
+                    .orElse(release);
         }
         return release;
     }

@@ -122,8 +122,8 @@ public class SW360Updater {
     }
 
     private static void removeSourceArtifacts(Artifact artifact, SW360Release release) {
-        ArtifactToAttachmentUtils.getAttachmentsFromArtifact(artifact).keySet()
-                .forEach(path -> {
+        ArtifactToAttachmentUtils.getSourceAttachmentFromArtifact(artifact)
+                .ifPresent(path -> {
                     LOGGER.info("Removing source attachment {} of release {}:{}.", path,
                             release.getName(), release.getVersion());
                     try {

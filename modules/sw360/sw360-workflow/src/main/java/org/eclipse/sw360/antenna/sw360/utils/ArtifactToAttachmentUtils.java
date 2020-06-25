@@ -13,25 +13,16 @@ package org.eclipse.sw360.antenna.sw360.utils;
 
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 public class ArtifactToAttachmentUtils {
 
     private ArtifactToAttachmentUtils() {}
 
-    public static Map<Path, SW360AttachmentType> getAttachmentsFromArtifact(Artifact artifact) {
-        return getSourceFile(artifact)
-                .map(sourceFile ->
-                        Collections.singletonMap(sourceFile, SW360AttachmentType.SOURCE))
-                .orElse(Collections.emptyMap());
-    }
-
-    private static Optional<Path> getSourceFile(Artifact artifact) {
+    public static Optional<Path> getSourceAttachmentFromArtifact(Artifact artifact) {
         return artifact.askForGet(ArtifactSourceFile.class);
     }
+
 }

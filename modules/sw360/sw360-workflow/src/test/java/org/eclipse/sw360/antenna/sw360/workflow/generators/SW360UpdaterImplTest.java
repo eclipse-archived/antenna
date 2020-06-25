@@ -19,7 +19,6 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360Spa
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseEmbedded;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseLinkObjects;
-import org.eclipse.sw360.antenna.sw360.utils.ArtifactToAttachmentUtils;
 import org.eclipse.sw360.antenna.sw360.utils.TestUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,16 +30,21 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SW360UpdaterImplTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private SW360MetaDataUpdater metaDataUpdater = mock(SW360MetaDataUpdater.class);
+    private final SW360MetaDataUpdater metaDataUpdater = mock(SW360MetaDataUpdater.class);
 
     @Test
     public void testUpdaterProduce() {
@@ -65,31 +69,28 @@ public class SW360UpdaterImplTest {
         linkObjectsWithSelf.setSelf(self);
         release.setLinks(linkObjectsWithSelf);
 
-        Map<Path, SW360AttachmentType> attachmentsFromArtifact = ArtifactToAttachmentUtils.getAttachmentsFromArtifact(artifact);
-
-        Set<SW360SparseAttachment> sparseAttachments = attachmentsFromArtifact.entrySet().stream()
-                .map(entry -> new SW360SparseAttachment()
-                        .setAttachmentType(entry.getValue())
-                        .setFilename(entry.getKey().toString()))
-                .collect(Collectors.toSet());
+        SW360SparseAttachment attachment = new SW360SparseAttachment()
+                .setAttachmentType(SW360AttachmentType.SOURCE)
+                .setFilename(sourceFile.toString());
+        Set<SW360SparseAttachment> sparseAttachments = Collections.singleton(attachment);
+        Map<Path, SW360AttachmentType> uploadMap = Collections.singletonMap(sourceFile, SW360AttachmentType.SOURCE);
 
         SW360ReleaseEmbedded sw360ReleaseEmbedded = new SW360ReleaseEmbedded();
         sw360ReleaseEmbedded.setAttachments(sparseAttachments);
 
-        SW360Release releaseWithAttachment = release;
-        releaseWithAttachment.setEmbedded(sw360ReleaseEmbedded);
+        release.setEmbedded(sw360ReleaseEmbedded);
 
         when(metaDataUpdater.isUploadSources())
                 .thenReturn(true);
-        when(metaDataUpdater.uploadAttachments(release, attachmentsFromArtifact))
-                .thenReturn(releaseWithAttachment);
+        when(metaDataUpdater.uploadAttachments(release, uploadMap))
+                .thenReturn(release);
 
         SW360UpdaterImpl updater = new SW360UpdaterImpl(metaDataUpdater, "test", "version");
 
         SW360Release releaseWithSources = updater.handleSources(release, artifact);
 
-        assertThat(releaseWithAttachment).isEqualTo(releaseWithSources);
+        assertThat(release).isEqualTo(releaseWithSources);
 
-        verify(metaDataUpdater, atLeastOnce()).uploadAttachments(release, attachmentsFromArtifact);
+        verify(metaDataUpdater, atLeastOnce()).uploadAttachments(release, uploadMap);
     }
 }
