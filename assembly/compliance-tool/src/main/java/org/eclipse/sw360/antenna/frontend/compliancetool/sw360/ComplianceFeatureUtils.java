@@ -72,7 +72,8 @@ public class ComplianceFeatureUtils {
         }
     }
 
-    public static Collection<Artifact> getArtifactsFromCsvFile(Map<String, String> properties, Path csvFilePath) {
+    public static Collection<Artifact> getArtifactsFromCsvFile(Map<String, String> properties, Path csvFilePath,
+                                                               Path baseDir) {
         char delimiter = properties.get("delimiter").charAt(0);
         File csvFile = csvFilePath.toFile();
         if (!csvFile.exists()) {
@@ -80,7 +81,7 @@ public class ComplianceFeatureUtils {
         }
         Charset encoding = Charset.forName(properties.get("encoding"));
 
-        return new CSVArtifactMapper(csvFile.toPath(), encoding, delimiter, csvFile.getParentFile().toPath()).createArtifactsList();
+        return new CSVArtifactMapper(csvFile.toPath(), encoding, delimiter, baseDir).createArtifactsList();
     }
 
     /**
