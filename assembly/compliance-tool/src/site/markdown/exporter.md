@@ -10,5 +10,6 @@ The csv file follows the csv format accepted by the [CSV Analyzer](../analyzers/
 
 ### Properties
 Sources specific properties:
+
 - `sourcesDirectory`: Directory where the sources downloaded are stored
 - `removeUnreferencedSources`: A boolean property that controls whether the exporter should do some cleanup on the sources directory. If set to *true*, the exporter checks after the download of sources whether the directory contains any files that are not referenced by any of the components that have been written to the CSV file. Such files are then removed, so that the directory contains only the sources of components that are currently in focus. The default value of this flag if *false*.
