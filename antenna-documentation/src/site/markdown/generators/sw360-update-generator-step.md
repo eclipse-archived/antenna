@@ -28,6 +28,7 @@ Add the following step into the `<generators>` section of your workflow.xml
         <entry key="proxy.use" value="true"/>
         <entry key="update_releases" value="false"/>
         <entry key="upload_sources" value="false"/>
+        <entry key="delete_obsolete_sources" value="false"/>
     </configuration>
 </step>
 ```
@@ -42,6 +43,7 @@ Add the following step into the `<generators>` section of your workflow.xml
 * `proxy.use`: Enable proxy for communication to SW360.
 * `update_releases`: Update already existing releases 
 * `update_sources`: Upload sources corresponding to releases to SW360
+* `delete_obsolete_sources`: Delete source attachments other than the one that is currently uploaded.
 
 #### Name of your Project
 As mentioned above all information created or updated will be with your current project metadata. 
