@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 
+import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.attribution.document.core.model.ArtifactAndLicense;
 import org.eclipse.sw360.antenna.attribution.document.core.model.LicenseInfo;
@@ -177,8 +178,22 @@ public class AttributionDocumentGeneratorImpl {
                     boldFont,
                     italicFont,
                     boldItalicFont);
-            p.addText(license.getText(), 10, sansFont);
-
+            List<String> lines = Arrays.asList(license
+                    .getText()
+                    .replace("\u0009", "    ")
+                    .replace("\u0092", "")
+                    .replace("\u009d", "")
+                    .replace("\u221e", "(infinity)")
+                    .replace("\u2212", "-")
+                    .replace("\u25aa", "[]")
+                    .replace("\u2661", "(heart)")
+                    .replace("\udbff", "")
+                    .replace("\udc00", "")
+                    .replace("\uf0b7", "")
+                    .split("\\r\\n|\\n|\\r|\\u2028|\\u2029"));
+            for (String line : lines) {
+                p.addText(line, 10, sansFont);
+            }
             document.add(p);
         }
 
