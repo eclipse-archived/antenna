@@ -65,6 +65,7 @@ public class AntennaComplianceToolTest {
     @Test
     public void testMainInitWithUpdater() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, URISyntaxException {
         Path propertiesFile = Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).toURI());
+        SW360Configuration configuration = new SW360Configuration(propertiesFile.toFile());
 
         String methodName = "createUpdater";
 
@@ -77,6 +78,12 @@ public class AntennaComplianceToolTest {
 
         SW360UpdaterImpl sw360updater = (SW360UpdaterImpl) readField(updater, AntennaComplianceToolOptions.MODE_NAME_UPDATER);
         assertThat(readField(sw360updater, "sw360MetaDataUpdater")).isNotNull();
+        assertThat(sw360updater.isUpdateReleases())
+                .isEqualTo(configuration.getBooleanConfigValue("sw360updateReleases"));
+        assertThat(sw360updater.isUploadSources())
+                .isEqualTo(configuration.getBooleanConfigValue("sw360uploadSources"));
+        assertThat(sw360updater.isDeleteObsoleteSourceAttachments())
+                .isEqualTo(configuration.getBooleanConfigValue("sw360deleteObsoleteSources"));
 
         assertThat(readField(updater, "generator")).isNotNull();
     }

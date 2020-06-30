@@ -25,12 +25,10 @@ import java.util.Map;
 public class SW360Updater extends AbstractGenerator {
     private static final String UPDATE_RELEASES = "update_releases";
     private static final String UPLOAD_SOURCES = "upload_sources";
+    private static final String DELETE_OBSOLETE_SOURCES = "delete_obsolete_sources";
 
     private final SW360ConnectionConfigurationFactory connectionFactory;
 
-    private String projectName;
-    private String projectVersion;
-    private SW360MetaDataUpdater sw360MetaDataUpdater;
     private SW360UpdaterImpl updaterImpl;
 
     public SW360Updater() {
@@ -51,18 +49,7 @@ public class SW360Updater extends AbstractGenerator {
 
     @Override
     public void configure(Map<String, String> configMap) {
-        projectName = getProjectName();
-        projectVersion = getProjectVersion();
-
-        SW360Connection sw360Connection =
-                getConnectionFactory().createConnection(key -> getConfigValue(key, configMap),
-                        context.getHttpClient(), context.getObjectMapper());
-
-        // General configuration
-        final boolean updateReleases = getBooleanConfigValue(UPDATE_RELEASES, configMap);
-        Boolean uploadSources = getBooleanConfigValue(UPLOAD_SOURCES, configMap);
-
-        sw360MetaDataUpdater = new SW360MetaDataUpdater(sw360Connection, updateReleases, uploadSources);
+        updaterImpl = createUpdaterImpl(configMap);
     }
 
     private String getProjectVersion() {
@@ -79,14 +66,26 @@ public class SW360Updater extends AbstractGenerator {
 
     @Override
     public Map<String, IAttachable> produce(Collection<Artifact> intermediates) {
-        return updaterImpl == null ?
-                new SW360UpdaterImpl(sw360MetaDataUpdater,projectName, projectVersion)
-                        .produce(intermediates) :
-                updaterImpl.produce(intermediates);
+        return updaterImpl.produce(intermediates);
     }
 
-    public void setUpdaterImpl(SW360UpdaterImpl updaterImpl) {
-        this.updaterImpl = updaterImpl;
+    /**
+     * Creates the {@code SW360UpdaterImpl} which executes the actual update
+     * procedure.
+     *
+     * @param configMap the map with configuration properties
+     * @return the {@code SW360UpdaterImpl}
+     */
+    SW360UpdaterImpl createUpdaterImpl(Map<String, String> configMap) {
+        SW360Connection sw360Connection =
+                getConnectionFactory().createConnection(key -> getConfigValue(key, configMap),
+                        context.getHttpClient(), context.getObjectMapper());
+        SW360MetaDataUpdater sw360MetaDataUpdater = new SW360MetaDataUpdater(sw360Connection);
+
+        return new SW360UpdaterImpl(sw360MetaDataUpdater, getProjectName(), getProjectVersion(),
+                getBooleanConfigValue(UPDATE_RELEASES, configMap),
+                getBooleanConfigValue(UPLOAD_SOURCES, configMap),
+                getBooleanConfigValue(DELETE_OBSOLETE_SOURCES, configMap));
     }
 
     SW360ConnectionConfigurationFactory getConnectionFactory() {

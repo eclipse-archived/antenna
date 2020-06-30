@@ -29,6 +29,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Releas
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseEmbedded;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -79,7 +80,8 @@ public class SW360MetaDataUpdaterTest {
     private final SW360LicenseClientAdapter licenseClientAdapter = mock(SW360LicenseClientAdapter.class);
     private final SW360ReleaseClientAdapter releaseClientAdapter = mock(SW360ReleaseClientAdapter.class);
 
-    public void setUp(boolean uploadSources, boolean updateReleases) {
+    @Before
+    public void setUp() {
         when(connection.getReleaseAdapter())
                 .thenReturn(releaseClientAdapter);
         when(connection.getProjectAdapter())
@@ -87,7 +89,7 @@ public class SW360MetaDataUpdaterTest {
         when(connection.getLicenseAdapter())
                 .thenReturn(licenseClientAdapter);
 
-        metaDataUpdater = new SW360MetaDataUpdater(connection, updateReleases, uploadSources);
+        metaDataUpdater = new SW360MetaDataUpdater(connection);
     }
 
     /**
@@ -202,7 +204,6 @@ public class SW360MetaDataUpdaterTest {
         when(licenseClientAdapter.getLicenses()).thenReturn(testLicenses);
         when(licenseClientAdapter.getLicenseByName(licenseName))
                 .thenReturn(Optional.of(license));
-        setUp(true, false);
 
         final Set<SW360License> licenses = metaDataUpdater.getLicenses(Collections.singletonList(licenseAntenna));
 
@@ -223,7 +224,6 @@ public class SW360MetaDataUpdaterTest {
                 .thenReturn(createTestLicenses());
         when(licenseClientAdapter.getLicenseByName(licenseName))
                 .thenReturn(Optional.of(license));
-        setUp(true, false);
 
         final Set<SW360License> licenses = metaDataUpdater.getLicenses(Collections.singletonList(licenseAntenna));
 
@@ -241,9 +241,8 @@ public class SW360MetaDataUpdaterTest {
         when(releaseClientAdapter.getSparseReleaseByNameAndVersion(release.getName(), release.getVersion()))
                 .thenReturn(Optional.empty());
         when(releaseClientAdapter.createRelease(release)).thenReturn(newRelease);
-        setUp(true, true);
 
-        assertThat(metaDataUpdater.getOrCreateRelease(release)).isEqualTo(newRelease);
+        assertThat(metaDataUpdater.getOrCreateRelease(release, true)).isEqualTo(newRelease);
         verify(releaseClientAdapter, never()).updateRelease(any());
     }
 
@@ -266,9 +265,8 @@ public class SW360MetaDataUpdaterTest {
                     assertThat(rel.getCopyrights()).isEqualTo(copyright);
                     return patchedRelease;
                 });
-        setUp(true, true);
 
-        assertThat(metaDataUpdater.getOrCreateRelease(queryRelease)).isEqualTo(patchedRelease);
+        assertThat(metaDataUpdater.getOrCreateRelease(queryRelease, true)).isEqualTo(patchedRelease);
     }
 
     @Test
@@ -284,9 +282,8 @@ public class SW360MetaDataUpdaterTest {
         when(releaseClientAdapter.getSparseReleaseByNameAndVersion(queryRelease.getName(), queryRelease.getVersion()))
                 .thenReturn(Optional.of(sparseRelease));
         when(releaseClientAdapter.enrichSparseRelease(sparseRelease)).thenReturn(Optional.of(foundRelease));
-        setUp(true, false);
 
-        assertThat(metaDataUpdater.getOrCreateRelease(queryRelease)).isEqualTo(queryRelease);
+        assertThat(metaDataUpdater.getOrCreateRelease(queryRelease, false)).isEqualTo(queryRelease);
         assertThat(queryRelease.getExternalIds()).containsKey("id2");
         verify(releaseClientAdapter, never()).updateRelease(any());
     }
@@ -300,7 +297,6 @@ public class SW360MetaDataUpdaterTest {
         project.getLinks().setSelf(new Self("https://sw360.org/projects/" + projectId));
         when(projectClientAdapter.getProjectByNameAndVersion(projectName, projectVersion))
                 .thenReturn(Optional.of(project));
-        setUp(true, false);
 
         metaDataUpdater.createProject(projectName, projectVersion, Collections.emptySet());
 
@@ -321,7 +317,6 @@ public class SW360MetaDataUpdaterTest {
                 .thenReturn(Optional.empty());
         when(projectClientAdapter.createProject(any()))
                 .thenReturn(newProject);
-        setUp(true, false);
 
         metaDataUpdater.createProject(projectName, projectVersion, Collections.emptySet());
 
@@ -337,12 +332,6 @@ public class SW360MetaDataUpdaterTest {
     }
 
     @Test
-    public void testIsUploadSources() {
-        setUp(true, false);
-        assertThat(metaDataUpdater.isUploadSources()).isEqualTo(true);
-    }
-
-    @Test
     public void testUploadAttachments() throws IOException {
         final SW360Release release = createRelease();
         Path uploadPath = createTestFile(attachmentPath("upload.doc"), TEST_FILE_CONTENT);
@@ -355,8 +344,6 @@ public class SW360MetaDataUpdaterTest {
         when(releaseClientAdapter.uploadAttachments(expRequest))
                 .thenReturn(result);
 
-        setUp(true, false);
-
         final SW360Release releaseWithAttachment = metaDataUpdater.uploadAttachments(release, attachments);
 
         assertThat(releaseWithAttachment).isEqualTo(release);
@@ -366,7 +353,6 @@ public class SW360MetaDataUpdaterTest {
     @Test
     public void testNeedUploadAttachmentNotPresent() {
         SW360Release release = createRelease();
-        setUp(true, true);
 
         assertThat(metaDataUpdater.needUpload(release, Paths.get("nonExistingFile.zip"))).isTrue();
     }
@@ -376,7 +362,6 @@ public class SW360MetaDataUpdaterTest {
         final String attachmentFileName = "my-sources.jar";
         SW360Release release = addSourceAttachment(createRelease(), attachmentFileName);
         Path uploadPath = createTestFile(attachmentPath(attachmentFileName), TEST_FILE_CONTENT);
-        setUp(true, false);
 
         assertThat(metaDataUpdater.needUpload(release, uploadPath)).isFalse();
     }
@@ -386,7 +371,6 @@ public class SW360MetaDataUpdaterTest {
         final String attachmentFileName = "my-updated-sources.jar";
         SW360Release release = addSourceAttachment(createRelease(), attachmentFileName);
         Path uploadPath = createTestFile(attachmentPath(attachmentFileName), TEST_FILE_CONTENT + "changes");
-        setUp(true, false);
 
         assertThat(metaDataUpdater.needUpload(release, uploadPath)).isTrue();
     }
@@ -402,7 +386,6 @@ public class SW360MetaDataUpdaterTest {
                 .build();
         when(releaseClientAdapter.uploadAttachments(expRequest))
                 .thenReturn(new AttachmentUploadResult<>(release));
-        setUp(true, false);
 
         metaDataUpdater.uploadAttachments(release, attachments);
         verify(releaseClientAdapter).uploadAttachments(expRequest);
@@ -419,8 +402,7 @@ public class SW360MetaDataUpdaterTest {
                 .build();
         when(releaseClientAdapter.uploadAttachments(expRequest))
                 .thenReturn(new AttachmentUploadResult<>(release));
-        setUp(true, false);
-        metaDataUpdater = new SW360MetaDataUpdater(connection, false, true) {
+        metaDataUpdater = new SW360MetaDataUpdater(connection) {
             @Override
             String calculateAttachmentHash(Path path) {
                 throw new SW360ClientException("Hash failed");
@@ -443,7 +425,6 @@ public class SW360MetaDataUpdaterTest {
         when(releaseClientAdapter.deleteAttachments(release,
                 new HashSet<>(Arrays.asList(attachment1.getId(), attachment2.getId()))))
                 .thenReturn(updatedRelease);
-        setUp(true, true);
 
         SW360Release result = metaDataUpdater.deleteSourceAttachments(release);
         assertThat(result).isEqualTo(updatedRelease);
@@ -452,7 +433,6 @@ public class SW360MetaDataUpdaterTest {
     @Test
     public void testDeleteSourceAttachmentsNothingToDelete() {
         SW360Release release = createRelease();
-        setUp(true, true);
 
         assertThat(metaDataUpdater.deleteSourceAttachments(release)).isEqualTo(release);
         verifyZeroInteractions(releaseClientAdapter);

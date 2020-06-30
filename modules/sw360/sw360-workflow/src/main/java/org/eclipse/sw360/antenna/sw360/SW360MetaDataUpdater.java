@@ -50,22 +50,17 @@ public class SW360MetaDataUpdater {
     private final SW360LicenseClientAdapter licenseClientAdapter;
     private final SW360ReleaseClientAdapter releaseClientAdapter;
 
-    private final boolean updateReleases;
-    private final boolean uploadSources;
-
     /**
      * Stores a set with the IDs of licenses known to SW360. This set is
      * populated on demand and then cached to speed up further license checks.
      */
     private final AtomicReference<Set<String>> knownSW360LicenseIds;
 
-    public SW360MetaDataUpdater(SW360Connection connection, boolean updateReleases, boolean uploadSources) {
+    public SW360MetaDataUpdater(SW360Connection connection) {
         projectClientAdapter = connection.getProjectAdapter();
         licenseClientAdapter = connection.getLicenseAdapter();
         releaseClientAdapter = connection.getReleaseAdapter();
         knownSW360LicenseIds = new AtomicReference<>();
-        this.updateReleases = updateReleases;
-        this.uploadSources = uploadSources;
     }
 
     public Set<SW360License> getLicenses(Collection<License> licenses) {
@@ -116,7 +111,18 @@ public class SW360MetaDataUpdater {
                 .collect(Collectors.toSet());
     }
 
-    public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact) {
+    /**
+     * Makes sure that a release corresponding to the passed in data object
+     * exists in SW360 and returns it. If no matching release is found, a new
+     * one is created. Otherwise, based on the {@code updateExisting} flag, the
+     * release found in SW360 may or may not be updated.
+     *
+     * @param sw360ReleaseFromArtifact the release to update or create
+     * @param updateExisting           a flag whether the release should be
+     *                                 updated if it already exists
+     * @return the updated or newly created release entity
+     */
+    public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateExisting) {
         Optional<SW360SparseRelease> optSparseReleaseByIds =
                 releaseClientAdapter.getSparseReleaseByExternalIds(sw360ReleaseFromArtifact.getExternalIds());
         Optional<SW360SparseRelease> optSparseRelease = optSparseReleaseByIds.isPresent() ? optSparseReleaseByIds :
@@ -127,7 +133,7 @@ public class SW360MetaDataUpdater {
 
         if (optRelease.isPresent()) {
             SW360Release release = optRelease.get();
-            return updateReleases ?
+            return updateExisting ?
                     releaseClientAdapter.updateRelease(release) : release;
         }
         return releaseClientAdapter.createRelease(sw360ReleaseFromArtifact);
@@ -141,10 +147,6 @@ public class SW360MetaDataUpdater {
         String id = projectId.orElseGet(() ->
                 projectClientAdapter.createProject(prepareNewProject(projectName, projectVersion)).getId());
         projectClientAdapter.addSW360ReleasesToSW360Project(id, releases);
-    }
-
-    public boolean isUploadSources() {
-        return uploadSources;
     }
 
     public SW360Release uploadAttachments(SW360Release sw360Release, Map<Path, SW360AttachmentType> attachments) {
