@@ -39,7 +39,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,6 +56,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 public class SW360MetaDataUpdaterTest {
@@ -110,19 +114,46 @@ public class SW360MetaDataUpdaterTest {
     }
 
     /**
-     * Adds an attachment with the given properties to a release.
+     * Adds a source attachment with the given file name to a release.
      *
      * @param release            the target release
      * @param attachmentFileName the attachment file name
      * @return the updated release
      */
-    private static SW360Release addAttachment(SW360Release release, String attachmentFileName) {
+    private static SW360Release addSourceAttachment(SW360Release release, String attachmentFileName) {
+        SW360SparseAttachment attachment = createAttachment(attachmentFileName, SW360AttachmentType.SOURCE);
+        return addAttachment(release, attachment);
+    }
+
+    /**
+     * Adds the given attachment to a release.
+     *
+     * @param release    the target release
+     * @param attachment the attachment to be added
+     * @return the updated release
+     */
+    private static SW360Release addAttachment(SW360Release release, SW360SparseAttachment attachment) {
+        Set<SW360SparseAttachment> existingAttachments = release.getEmbedded().getAttachments();
+        Set<SW360SparseAttachment> newAttachments = new HashSet<>(existingAttachments);
+        newAttachments.add(attachment);
+        release.getEmbedded().setAttachments(newAttachments);
+        return release;
+    }
+
+    /**
+     * Creates an attachment with the given properties.
+     *
+     * @param attachmentFileName the attachment file name
+     * @param type               the type of the attachment
+     * @return the new attachment
+     */
+    private static SW360SparseAttachment createAttachment(String attachmentFileName, SW360AttachmentType type) {
         SW360SparseAttachment attachment = new SW360SparseAttachment();
         attachment.setFilename(attachmentFileName);
-        attachment.setAttachmentType(SW360AttachmentType.SOURCE);
+        attachment.setAttachmentType(type);
         attachment.setSha1(TEST_FILE_SHA1);
-        release.getEmbedded().setAttachments(Collections.singleton(attachment));
-        return release;
+        attachment.getLinks().setSelf(new Self("https://attachments.org/" + System.identityHashCode(attachment)));
+        return attachment;
     }
 
     /**
@@ -333,23 +364,37 @@ public class SW360MetaDataUpdaterTest {
     }
 
     @Test
-    public void testUploadAttachmentsSkippedForIdenticalFiles() throws IOException {
+    public void testNeedUploadAttachmentNotPresent() {
+        SW360Release release = createRelease();
+        setUp(true, true);
+
+        assertThat(metaDataUpdater.needUpload(release, Paths.get("nonExistingFile.zip"))).isTrue();
+    }
+
+    @Test
+    public void testNeedUploadFileNotChanged() throws IOException {
         final String attachmentFileName = "my-sources.jar";
-        SW360Release release = addAttachment(createRelease(), attachmentFileName);
+        SW360Release release = addSourceAttachment(createRelease(), attachmentFileName);
         Path uploadPath = createTestFile(attachmentPath(attachmentFileName), TEST_FILE_CONTENT);
-        Map<Path, SW360AttachmentType> attachments = Collections.singletonMap(uploadPath, SW360AttachmentType.SOURCE);
         setUp(true, false);
 
-        SW360Release changedRelease = metaDataUpdater.uploadAttachments(release, attachments);
+        assertThat(metaDataUpdater.needUpload(release, uploadPath)).isFalse();
+    }
 
-        assertThat(changedRelease).isEqualTo(release);
-        verify(releaseClientAdapter, never()).uploadAttachments(any());
+    @Test
+    public void testNeedUploadFileChanged() throws IOException {
+        final String attachmentFileName = "my-updated-sources.jar";
+        SW360Release release = addSourceAttachment(createRelease(), attachmentFileName);
+        Path uploadPath = createTestFile(attachmentPath(attachmentFileName), TEST_FILE_CONTENT + "changes");
+        setUp(true, false);
+
+        assertThat(metaDataUpdater.needUpload(release, uploadPath)).isTrue();
     }
 
     @Test
     public void testAttachmentsOfDifferentContentAreUploaded() throws IOException {
         final String attachmentFileName = "modifiedAttachmentFileName.doc";
-        SW360Release release = addAttachment(createRelease(), attachmentFileName);
+        SW360Release release = addSourceAttachment(createRelease(), attachmentFileName);
         Path uploadPath = createTestFile(attachmentPath(attachmentFileName), "changed content");
         Map<Path, SW360AttachmentType> attachments = Collections.singletonMap(uploadPath, SW360AttachmentType.SOURCE);
         AttachmentUploadRequest<SW360Release> expRequest = AttachmentUploadRequest.builder(release)
@@ -366,7 +411,7 @@ public class SW360MetaDataUpdaterTest {
     @Test
     public void testExceptionsWhenCalculatingAttachmentHashAreHandled() throws IOException {
         final String attachmentFileName = "failingHashAttachmentFileName.doc";
-        SW360Release release = addAttachment(createRelease(), attachmentFileName);
+        SW360Release release = addSourceAttachment(createRelease(), attachmentFileName);
         Path uploadPath = createTestFile(attachmentPath(attachmentFileName), TEST_FILE_CONTENT);
         Map<Path, SW360AttachmentType> attachments = Collections.singletonMap(uploadPath, SW360AttachmentType.SOURCE);
         AttachmentUploadRequest<SW360Release> expRequest = AttachmentUploadRequest.builder(release)
@@ -384,5 +429,32 @@ public class SW360MetaDataUpdaterTest {
 
         metaDataUpdater.uploadAttachments(release, attachments);
         verify(releaseClientAdapter).uploadAttachments(expRequest);
+    }
+
+    @Test
+    public void testDeleteSourceAttachments() {
+        SW360SparseAttachment attachment1 = createAttachment("source1", SW360AttachmentType.SOURCE);
+        SW360SparseAttachment attachment2 = createAttachment("source2", SW360AttachmentType.SOURCE);
+        SW360SparseAttachment attachment3 = createAttachment("other1", SW360AttachmentType.BINARY);
+        SW360SparseAttachment attachment4 = createAttachment("other1", SW360AttachmentType.DOCUMENT);
+        SW360Release release = addAttachment(addAttachment(addAttachment(addAttachment(createRelease(),
+                attachment1), attachment2), attachment3), attachment4);
+        SW360Release updatedRelease = addAttachment(addAttachment(createRelease(), attachment3), attachment4);
+        when(releaseClientAdapter.deleteAttachments(release,
+                new HashSet<>(Arrays.asList(attachment1.getId(), attachment2.getId()))))
+                .thenReturn(updatedRelease);
+        setUp(true, true);
+
+        SW360Release result = metaDataUpdater.deleteSourceAttachments(release);
+        assertThat(result).isEqualTo(updatedRelease);
+    }
+
+    @Test
+    public void testDeleteSourceAttachmentsNothingToDelete() {
+        SW360Release release = createRelease();
+        setUp(true, true);
+
+        assertThat(metaDataUpdater.deleteSourceAttachments(release)).isEqualTo(release);
+        verifyZeroInteractions(releaseClientAdapter);
     }
 }

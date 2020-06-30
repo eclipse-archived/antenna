@@ -150,9 +150,7 @@ public class SW360MetaDataUpdater {
     public SW360Release uploadAttachments(SW360Release sw360Release, Map<Path, SW360AttachmentType> attachments) {
         AttachmentUploadRequest.Builder<SW360Release> builder = AttachmentUploadRequest.builder(sw360Release);
         for (Map.Entry<Path, SW360AttachmentType> e : attachments.entrySet()) {
-            if (needUpload(sw360Release, e.getKey())) {
-                builder = builder.addAttachment(e.getKey(), e.getValue());
-            }
+            builder = builder.addAttachment(e.getKey(), e.getValue());
         }
 
         AttachmentUploadRequest<SW360Release> uploadRequest = builder.build();
@@ -168,6 +166,42 @@ public class SW360MetaDataUpdater {
     }
 
     /**
+     * Deletes all the source attachments of the given release. This is useful
+     * before uploading a new source attachment to avoid clashes with existing
+     * ones and to make sure that there is only a single source attachment.
+     *
+     * @param release the release to be updated
+     * @return the updated release
+     */
+    public SW360Release deleteSourceAttachments(SW360Release release) {
+        Set<String> sourceAttachmentIds = release.getEmbedded().getAttachments().stream()
+                .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)
+                .map(SW360SparseAttachment::getId)
+                .collect(Collectors.toSet());
+        return sourceAttachmentIds.isEmpty() ? release :
+                releaseClientAdapter.deleteAttachments(release, sourceAttachmentIds);
+    }
+
+    /**
+     * Checks whether an attachment upload is necessary for the given
+     * attachment file. This is the case if no attachment with this file name
+     * and identical content exists. Note that SW360 does not allow overriding
+     * an already existing attachment with updated content. So it may be
+     * necessary to delete attachments first. This can be done via the
+     * {@code deleteSourceAttachments()} method.
+     *
+     * @param release the release affected
+     * @param path    the path to the local attachment file
+     * @return a flag whether this attachment file must be uploaded
+     */
+    public boolean needUpload(SW360Release release, Path path) {
+        Optional<SW360SparseAttachment> optAttachment = release.getEmbedded().getAttachments().stream()
+                .filter(attachment -> attachmentMatches(path, attachment))
+                .findFirst();
+        return !optAttachment.isPresent();
+    }
+
+    /**
      * Calculates the SHA-1 hash for the given local attachment file. This is
      * used to determine whether a modified attachment file needs to be
      * uploaded.
@@ -178,27 +212,6 @@ public class SW360MetaDataUpdater {
      */
     String calculateAttachmentHash(Path path) {
         return SW360AttachmentUtils.calculateSha1Hash(path);
-    }
-
-    /**
-     * Checks whether an attachment upload is necessary for the given
-     * attachment file. This is the case if no attachment with this file name
-     * and type and identical content exists.
-     * TODO Currently SW360 has strict checks regarding duplicate attachments;
-     * for instance, it is not possible to upload an attachment with an
-     * existing file name, even if the content has changed. So if this method
-     * returns true, an upload may still be rejected by SW360. It is still open
-     * how to handle this in the best way.
-     *
-     * @param release the release affected
-     * @param path    the path to the local attachment file
-     * @return a flag whether this attachment file must be uploaded
-     */
-    private boolean needUpload(SW360Release release, Path path) {
-        Optional<SW360SparseAttachment> optAttachment = release.getEmbedded().getAttachments().stream()
-                .filter(attachment -> attachmentMatches(path, attachment))
-                .findFirst();
-        return !optAttachment.isPresent();
     }
 
     /**
