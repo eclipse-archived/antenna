@@ -12,9 +12,11 @@
 package org.eclipse.sw360.antenna.attribution.document.utils;
 
 import java.io.*;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.eclipse.sw360.antenna.api.exceptions.ExecutionException;
 import org.eclipse.sw360.antenna.attribution.document.core.TemplateBundle;
@@ -37,6 +39,12 @@ public final class TemplateLoaderUtil {
     }
 
     public static Templates load(File cover, File copyright, File content, File back) {
+        return load(cover, copyright, content, back,
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+    }
+
+    public static Templates load(File cover, File copyright, File content, File back, Optional<File> regular,
+                                 Optional<File> bold, Optional<File> boldItalic, Optional<File> italic) {
         return load(new TemplateBundle() {
             @Override
             public String key() {
@@ -76,6 +84,62 @@ public final class TemplateLoaderUtil {
                     return new FileInputStream(back);
                 } catch (IOException e) {
                     throw new ExecutionException("Could not load back template PDF", e);
+                }
+            }
+
+            @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Will be closed in Templates.")
+            @Override
+            public Optional<InputStream> loadSansFont() {
+                if (!regular.isPresent()) {
+                    return Optional.empty();
+                }
+
+                try {
+                    return Optional.of(new FileInputStream(regular.get()));
+                } catch (IOException e) {
+                    throw new ExecutionException("Could not load regular sans font", e);
+                }
+            }
+
+            @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Will be closed in Templates.")
+            @Override
+            public Optional<InputStream> loadSansItalicFont() {
+                if (!italic.isPresent()) {
+                    return Optional.empty();
+                }
+
+                try {
+                    return Optional.of(new FileInputStream(italic.get()));
+                } catch (IOException e) {
+                    throw new ExecutionException("Could not load italic font", e);
+                }
+            }
+
+            @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Will be closed in Templates.")
+            @Override
+            public Optional<InputStream> loadSansBoldFont() {
+                if (!bold.isPresent()) {
+                    return Optional.empty();
+                }
+
+                try {
+                    return Optional.of(new FileInputStream(bold.get()));
+                } catch (IOException e) {
+                    throw new ExecutionException("Could not load bold font", e);
+                }
+            }
+
+            @SuppressFBWarnings(value = "OBL_UNSATISFIED_OBLIGATION", justification = "Will be closed in Templates.")
+            @Override
+            public Optional<InputStream> loadSansBoldItalicFont() {
+                if (!boldItalic.isPresent()) {
+                    return Optional.empty();
+                }
+
+                try {
+                    return Optional.of(new FileInputStream(boldItalic.get()));
+                } catch (IOException e) {
+                    throw new ExecutionException("Could not load bold italic font", e);
                 }
             }
         });

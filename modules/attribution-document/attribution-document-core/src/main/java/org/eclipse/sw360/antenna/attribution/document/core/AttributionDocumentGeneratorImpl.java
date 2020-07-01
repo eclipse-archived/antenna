@@ -76,12 +76,16 @@ public class AttributionDocumentGeneratorImpl {
      * @param back (non-null) template PDF file for the back page.
      * @return (non - null) the file handle of the generated attribution document.
      */
+    public File generate(List<ArtifactAndLicense> artifacts, File cover, File copyright, File content, File back) {
+        return generate(artifacts, cover, copyright, content, back, null, null, null, null);
+    }
+
     public File generate(List<ArtifactAndLicense> artifacts,
-                         File cover,
-                         File copyright,
-                         File content,
-                         File back) {
-        try (Templates templates = TemplateLoaderUtil.load(cover, copyright, content, back)) {
+                         File cover, File copyright, File content, File back,
+                         File regular, File bold, File boldItalic, File italic) {
+        try (Templates templates = TemplateLoaderUtil.load(cover, copyright, content, back,
+                Optional.ofNullable(regular), Optional.ofNullable(bold),
+                Optional.ofNullable(boldItalic), Optional.ofNullable(italic))) {
             return generate(artifacts, templates);
         }
     }
