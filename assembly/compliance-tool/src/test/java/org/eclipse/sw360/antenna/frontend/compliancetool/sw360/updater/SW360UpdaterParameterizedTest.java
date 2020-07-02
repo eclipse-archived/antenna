@@ -48,6 +48,7 @@ import static org.mockito.Mockito.*;
 @RunWith(Parameterized.class)
 public class SW360UpdaterParameterizedTest {
     private static final String CLEARING_DOC = "clearing.doc";
+    private static final String CLEARING_DOC_DIR = "clearing_documents";
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -102,8 +103,6 @@ public class SW360UpdaterParameterizedTest {
                 .thenReturn(csvFile.getParent());
         when(configurationMock.getCsvFilePath())
                 .thenReturn(csvFile);
-        when(configurationMock.getTargetDir())
-                .thenReturn(getTargetDir());
         when(configurationMock.getSourcesPath())
                 .thenReturn(sourceAttachment.getParent());
     }
@@ -122,6 +121,10 @@ public class SW360UpdaterParameterizedTest {
     @NotNull
     private Path getTargetDir() {
         return folder.getRoot().toPath();
+    }
+
+    private Path getClearingDocDir() throws IOException {
+        return Files.createDirectories(getTargetDir().resolve(CLEARING_DOC_DIR));
     }
 
     @Test
@@ -171,9 +174,10 @@ public class SW360UpdaterParameterizedTest {
                 .thenThrow(new SW360ClientException("Boo"));
 
         ClearingReportGenerator generator = mock(ClearingReportGenerator.class);
-        Path clearingDoc = getTargetDir().resolve(CLEARING_DOC);
+        Path clearingDocDir = getClearingDocDir();
+        Path clearingDoc = clearingDocDir.resolve(CLEARING_DOC);
         Files.write(clearingDoc, "The clearing document".getBytes(StandardCharsets.UTF_8));
-        when(generator.createClearingDocument(any(), any()))
+        when(generator.createClearingDocument(any(), eq(clearingDocDir)))
                 .thenReturn(clearingDoc);
 
         SW360Updater sw360Updater = new SW360Updater(updater, configurationMock, generator);
@@ -183,7 +187,7 @@ public class SW360UpdaterParameterizedTest {
         Map<Path, SW360AttachmentType> testAttachmentMap = createExpectedAttachmentMap();
 
         if (expectUpload && !clearingDocAvailable) {
-            verify(generator).createClearingDocument(release, getTargetDir());
+            verify(generator).createClearingDocument(release, clearingDocDir);
         }
         @SuppressWarnings("unchecked")
         ArgumentCaptor<AttachmentUploadRequest<SW360Release>> captor = ArgumentCaptor.forClass(AttachmentUploadRequest.class);
@@ -203,7 +207,7 @@ public class SW360UpdaterParameterizedTest {
         boolean sourcePresent = Files.exists(sourceAttachment);
         assertThat(sourcePresent).isEqualTo((!expectUpload || !expectSourceRemoved) && attachmentExists);
 
-        boolean clearingDocPresent = Files.exists(clearingDoc);
+        boolean clearingDocPresent = Files.exists(getAvailableOrGeneratedClearingDocumentPath());
         assertThat(clearingDocPresent).isEqualTo(!expectUpload || !expectClearingDocRemoved);
     }
 
@@ -213,7 +217,6 @@ public class SW360UpdaterParameterizedTest {
      *
      * @param attachmentExists determines if file should exist or not
      * @param sourceAttachment path to file that might get deleted
-     * @throws IOException
      */
     private void deleteSourceFileIfNotAttachmentExists(boolean attachmentExists, Path sourceAttachment) throws IOException {
         if (!attachmentExists) {
@@ -223,13 +226,15 @@ public class SW360UpdaterParameterizedTest {
         }
     }
 
-    private Map<Path, SW360AttachmentType> createExpectedAttachmentMap() {
-        if (clearingDocAvailable) {
+    private Path getAvailableOrGeneratedClearingDocumentPath() throws IOException {
+        return clearingDocAvailable ? configurationMock.getBaseDir().resolve(CLEARING_DOC) :
+                getClearingDocDir().resolve(CLEARING_DOC);
+    }
+
+    private Map<Path, SW360AttachmentType> createExpectedAttachmentMap() throws IOException {
+        if (clearingDocAvailable || expectUpload) {
             return Collections
-                    .singletonMap(configurationMock.getBaseDir().resolve(CLEARING_DOC), SW360AttachmentType.CLEARING_REPORT);
-        } else if (expectUpload) {
-            return Collections
-                    .singletonMap(getTargetDir().resolve(CLEARING_DOC), SW360AttachmentType.CLEARING_REPORT);
+                    .singletonMap(getAvailableOrGeneratedClearingDocumentPath(), SW360AttachmentType.CLEARING_REPORT);
         }
 
         return Collections.emptyMap();

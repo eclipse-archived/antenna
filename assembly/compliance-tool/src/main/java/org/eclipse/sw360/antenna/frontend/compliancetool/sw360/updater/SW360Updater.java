@@ -49,12 +49,20 @@ public class SW360Updater {
      */
     public static final String PROP_REMOVE_CLEARING_DOCS = "removeClearingDocuments";
 
+    /**
+     * Configuration property that defines the location of synthetic clearing
+     * documents created by the updater. The path can be relative and is then
+     * resolved against the base directory.
+     */
+    public static final String PROP_CLEARING_DOC_FOLDER = "clearingDocDir";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360Updater.class);
 
     private final SW360UpdaterImpl updater;
     private final SW360Configuration configuration;
     private final ClearingReportGenerator generator;
 
+    private final Path clearingDocDir;
     private final boolean removeClearedSources;
     private final boolean removeClearingDocs;
 
@@ -64,6 +72,8 @@ public class SW360Updater {
         this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
         this.generator = Objects.requireNonNull(generator, "Clearing report generator must not be null");
 
+        clearingDocDir = configuration.getBaseDir()
+                .resolve(configuration.getProperties().get(PROP_CLEARING_DOC_FOLDER));
         removeClearedSources = Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_CLEARED_SOURCES));
         removeClearingDocs = Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_CLEARING_DOCS));
     }
@@ -82,7 +92,7 @@ public class SW360Updater {
                         "and the source files taken from the folder: {}.",
                 configuration.getBaseDir().toAbsolutePath(),
                 configuration.getCsvFilePath().toAbsolutePath(),
-                configuration.getTargetDir().toAbsolutePath(),
+                clearingDocDir,
                 configuration.getSourcesPath().toAbsolutePath());
     }
 
@@ -118,7 +128,7 @@ public class SW360Updater {
 
     private Path getOrGenerateClearingDocument(SW360Release release, Artifact artifact) {
         return artifact.askFor(ArtifactClearingDocument.class).map(ArtifactClearingDocument::get)
-                .orElse(generator.createClearingDocument(release, configuration.getTargetDir()));
+                .orElse(generator.createClearingDocument(release, clearingDocDir));
     }
 
     private static void removeSourceArtifacts(Artifact artifact, SW360Release release) {

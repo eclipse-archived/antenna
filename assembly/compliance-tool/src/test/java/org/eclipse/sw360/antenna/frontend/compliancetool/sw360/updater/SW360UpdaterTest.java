@@ -86,8 +86,6 @@ public class SW360UpdaterTest {
                 .thenReturn(csvFile.getParent());
         when(configurationMock.getCsvFilePath())
                 .thenReturn(csvFile);
-        when(configurationMock.getTargetDir())
-                .thenReturn(folder.getRoot().toPath());
         when(configurationMock.getSourcesPath())
                 .thenReturn(folder.getRoot().toPath());
     }
