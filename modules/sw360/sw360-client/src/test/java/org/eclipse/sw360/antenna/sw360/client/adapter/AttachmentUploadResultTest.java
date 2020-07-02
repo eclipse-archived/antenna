@@ -19,6 +19,11 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -89,5 +94,76 @@ public class AttachmentUploadResultTest {
         result.failedUploads()
                 .put(new AttachmentUploadRequest.Item(Paths.get("p2"), SW360AttachmentType.SOURCE_SELF),
                         new Exception("e2"));
+    }
+
+    @Test
+    public void testNewInstance() {
+        SW360Release release = new SW360Release();
+        Set<AttachmentUploadRequest.Item> success =
+                Collections.singleton(new AttachmentUploadRequest.Item(Paths.get("foo"),
+                        SW360AttachmentType.REQUIREMENT));
+        Map<AttachmentUploadRequest.Item, Throwable> failed =
+                Collections.singletonMap(new AttachmentUploadRequest.Item(Paths.get("bar"),
+                        SW360AttachmentType.BINARY), new Exception("Failed"));
+
+        AttachmentUploadResult<SW360Release> result = AttachmentUploadResult.newResult(release, success, failed);
+        assertThat(result.getTarget()).isEqualTo(release);
+        assertThat(result.successfulUploads()).isEqualTo(success);
+        assertThat(result.failedUploads()).isEqualTo(failed);
+    }
+
+    @Test
+    public void testNewInstanceSuccessDefensiveCopy() {
+        Set<AttachmentUploadRequest.Item> success = new HashSet<>();
+        AttachmentUploadRequest.Item successItem = new AttachmentUploadRequest.Item(Paths.get("foo"),
+                SW360AttachmentType.REQUIREMENT);
+        success.add(successItem);
+
+        AttachmentUploadResult<SW360Release> result =
+                AttachmentUploadResult.newResult(new SW360Release(), success, Collections.emptyMap());
+        success.add(new AttachmentUploadRequest.Item(Paths.get("bar"), SW360AttachmentType.BINARY));
+        assertThat(result.successfulUploads()).containsOnly(successItem);
+    }
+
+    @Test
+    public void testNewInstanceFailedDefensiveCopy() {
+        Map<AttachmentUploadRequest.Item, Throwable> failed = new HashMap<>();
+        AttachmentUploadRequest.Item failureItem = new AttachmentUploadRequest.Item(Paths.get("failure"),
+                SW360AttachmentType.SOURCE);
+        failed.put(failureItem, new Exception("Crash"));
+
+        AttachmentUploadResult<SW360Release> result =
+                AttachmentUploadResult.newResult(new SW360Release(), Collections.emptySet(), failed);
+        failed.put(new AttachmentUploadRequest.Item(Paths.get("bar"), SW360AttachmentType.SCAN_RESULT_REPORT),
+                new Exception("Crash 2"));
+        assertThat(result.failedUploads().keySet()).containsOnly(failureItem);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testNewInstanceSuccessUnmodifiable() {
+        Set<AttachmentUploadRequest.Item> success =
+                Collections.singleton(new AttachmentUploadRequest.Item(Paths.get("foo"),
+                        SW360AttachmentType.REQUIREMENT));
+        Map<AttachmentUploadRequest.Item, Throwable> failed =
+                Collections.singletonMap(new AttachmentUploadRequest.Item(Paths.get("bar"),
+                        SW360AttachmentType.BINARY), new Exception("Failed"));
+
+        AttachmentUploadResult<SW360Release> result =
+                AttachmentUploadResult.newResult(new SW360Release(), success, failed);
+        result.successfulUploads().clear();
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testNewInstanceFailedUnmodifiable() {
+        Set<AttachmentUploadRequest.Item> success =
+                Collections.singleton(new AttachmentUploadRequest.Item(Paths.get("foo"),
+                        SW360AttachmentType.REQUIREMENT));
+        Map<AttachmentUploadRequest.Item, Throwable> failed =
+                Collections.singletonMap(new AttachmentUploadRequest.Item(Paths.get("bar"),
+                        SW360AttachmentType.BINARY), new Exception("Failed"));
+
+        AttachmentUploadResult<SW360Release> result =
+                AttachmentUploadResult.newResult(new SW360Release(), success, failed);
+        result.failedUploads().clear();
     }
 }

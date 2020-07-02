@@ -77,6 +77,24 @@ public final class AttachmentUploadResult<T extends SW360HalResource<?, ?>> {
     }
 
     /**
+     * Creates a new instance of {@code AttachmentUploadResult} with the
+     * information provided.
+     *
+     * @param target            the entity that was the target for uploads
+     * @param successfulUploads a set with successful uploads
+     * @param failedUploads     a map with failed uploads
+     * @param <T>               the type of the target entity
+     * @return the newly created result
+     */
+    public static <T extends SW360HalResource<?, ?>>
+    AttachmentUploadResult<T> newResult(T target,
+                                        Set<AttachmentUploadRequest.Item> successfulUploads,
+                                        Map<AttachmentUploadRequest.Item, Throwable> failedUploads) {
+        return new AttachmentUploadResult<>(target, Collections.unmodifiableSet(new HashSet<>(successfulUploads)),
+                Collections.unmodifiableMap(new HashMap<>(failedUploads)));
+    }
+
+    /**
      * Returns the entity that is the target of the upload operation.
      *
      * @return the updated entity to which attachments have been uploaded
@@ -149,7 +167,7 @@ public final class AttachmentUploadResult<T extends SW360HalResource<?, ?>> {
      * a successful upload.
      *
      * @param updatedTarget the updated target entity
-     * @param item           the item that was uploaded successfully
+     * @param item          the item that was uploaded successfully
      * @return the modified copy of this object
      */
     AttachmentUploadResult<T> addSuccessfulUpload(T updatedTarget, AttachmentUploadRequest.Item item) {
