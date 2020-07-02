@@ -90,22 +90,18 @@ public class SW360Exporter {
                 .toFile();
 
         CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(),
-                Charset.forName(configuration.getProperties().get(PROP_ENCODING)),
-                configuration.getProperties().get(PROP_DELIMITER).charAt(0),
+                Charset.forName(configuration.getProperty(PROP_ENCODING)),
+                configuration.getProperty(PROP_DELIMITER).charAt(0),
                 configuration.getBaseDir());
 
         csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
 
-        if (Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_SOURCES))) {
+        if (Boolean.parseBoolean(configuration.getProperty(PROP_REMOVE_SOURCES))) {
             sourcesExporter.removeUnreferencedFiles(nonApprovedReleasesWithSources);
         }
 
-        LOGGER.info("The SW360Exporter was executed from the base directory: {} " +
-                        "with the csv file written to the path: {} " +
-                        "and the source files written to the folder: {}. ",
-                configuration.getBaseDir().toAbsolutePath(),
-                csvFile.toPath(),
-                configuration.getTargetDir().toAbsolutePath());
+        LOGGER.info("The SW360Exporter was executed with the following configuration:");
+        configuration.logConfiguration(LOGGER);
     }
 
     private Artifact releaseAsArtifact(SourcesExporter.ReleaseWithSources release) {

@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
+import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
@@ -97,14 +98,13 @@ public class SW360UpdaterParameterizedTest {
     private void initBasicConfiguration(Path sourceAttachment, Map<String, String> propertiesMap) throws IOException {
         Path csvFile = writeCsvFile(sourceAttachment.toString());
 
-        when(configurationMock.getProperties())
-                .thenReturn(propertiesMap);
         when(configurationMock.getBaseDir())
                 .thenReturn(csvFile.getParent());
         when(configurationMock.getCsvFilePath())
                 .thenReturn(csvFile);
         when(configurationMock.getSourcesPath())
                 .thenReturn(sourceAttachment.getParent());
+        SW360TestUtils.initConfigProperties(configurationMock, propertiesMap);
     }
 
     private Map<String, String> getConfigProperties() {

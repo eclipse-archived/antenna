@@ -12,10 +12,12 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.service.ServiceFactory;
 import org.eclipse.sw360.antenna.api.workflow.ConfigurableWorkflowItem;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -31,10 +33,9 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
     private final Map<String, String> properties;
     private final Path csvFilePath;
     private final SW360Connection connection;
-    private final Path targetDir;
     private final Path sourcesPath;
     private final Path baseDir;
-    private ServiceFactory serviceFactory;
+    private final ServiceFactory serviceFactory;
 
     public SW360Configuration(File propertiesFile) {
         this(propertiesFile, new SW360ConnectionConfigurationFactory(), new ServiceFactory());
@@ -47,17 +48,17 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
      *
      * @param propertiesFile the file containing configuration properties
      * @param factory        the factory for the SW360 connection
-     * @param  serviceFactory the factory for creating service objects
+     * @param serviceFactory the factory for creating service objects
+     * @throws ConfigurationException if mandatory properties are missing
      */
     SW360Configuration(File propertiesFile, SW360ConnectionConfigurationFactory factory,
                        ServiceFactory serviceFactory) {
         connectionFactory = factory;
         this.serviceFactory = serviceFactory;
         properties = mapPropertiesFile(propertiesFile);
-        baseDir = Paths.get(properties.get("basedir"));
-        targetDir = baseDir.resolve(properties.get("targetDir"));
-        sourcesPath = baseDir.resolve(properties.get("sourcesDirectory"));
-        csvFilePath = baseDir.resolve(properties.get("csvFilePath"));
+        baseDir = Paths.get(getProperty("basedir")).toAbsolutePath().normalize();
+        sourcesPath = baseDir.resolve(getProperty("sourcesDirectory"));
+        csvFilePath = baseDir.resolve(getProperty("csvFilePath"));
         connection = makeConnection();
     }
 
@@ -88,16 +89,26 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
     public Path getSourcesPath() {
         return this.sourcesPath;
     }
-    public Path getTargetDir() {
-        return targetDir;
-    }
 
     public Path getCsvFilePath() {
         return csvFilePath;
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
+    /**
+     * Returns the value of the configuration property with the given key. All
+     * properties are considered mandatory; so if the property cannot be
+     * resolved, an exception is thrown.
+     *
+     * @param key the key of the property
+     * @return the value of the property (can be <strong>null</strong>)
+     * @throws ConfigurationException if the property is not defined
+     */
+    public String getProperty(String key) {
+        String value = properties.get(key);
+        if (value == null) {
+            throw new ConfigurationException("Missing mandatory configuration property: " + key);
+        }
+        return value;
     }
 
     public SW360Connection getConnection() {
@@ -106,6 +117,18 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
 
     public Boolean getBooleanConfigValue(String key) {
         return getBooleanConfigValue(key, properties);
+    }
+
+    /**
+     * Logs basic configuration settings. This method can be used by the
+     * different applications of the compliance tool to log status information.
+     *
+     * @param logger the logger to use
+     */
+    public void logConfiguration(Logger logger) {
+        logger.info("Base directory: {}", getBaseDir());
+        logger.info("Sources directory: {}", getSourcesPath());
+        logger.info("CSV path: {}", getCsvFilePath());
     }
 
     SW360ConnectionConfigurationFactory getConnectionFactory() {

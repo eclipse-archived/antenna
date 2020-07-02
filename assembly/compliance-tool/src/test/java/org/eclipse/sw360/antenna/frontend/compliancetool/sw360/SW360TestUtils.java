@@ -35,6 +35,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
+
+import static org.mockito.Mockito.when;
 
 public class SW360TestUtils {
     private static final String RELEASE_VERSION1 = "1.0.0";
@@ -134,5 +137,19 @@ public class SW360TestUtils {
         csvFormat = csvFormat.withFirstRecordAsHeader();
         csvFormat = csvFormat.withDelimiter(delimiter);
         return new CSVParser(isr, csvFormat);
+    }
+
+    /**
+     * Prepares the given configuration mock to return the configuration
+     * properties provided.
+     *
+     * @param mockConfig the configuration mock
+     * @param properties the properties
+     */
+    public static void initConfigProperties(SW360Configuration mockConfig, Map<String, String> properties) {
+        properties.forEach((key, value) -> {
+            when(mockConfig.getProperty(key)).thenReturn(value);
+            when(mockConfig.getBooleanConfigValue(key)).thenReturn(Boolean.valueOf(value));
+        });
     }
 }

@@ -80,8 +80,7 @@ public class SW360UpdaterTest {
     private void initConfiguration(Map<String, String> propertiesMap) throws IOException {
         Path csvFile = folder.newFile("csvFile.csv").toPath();
 
-        when(configurationMock.getProperties())
-                .thenReturn(propertiesMap);
+        SW360TestUtils.initConfigProperties(configurationMock, propertiesMap);
         when(configurationMock.getBaseDir())
                 .thenReturn(csvFile.getParent());
         when(configurationMock.getCsvFilePath())

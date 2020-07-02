@@ -73,27 +73,21 @@ public class SW360Updater {
         this.generator = Objects.requireNonNull(generator, "Clearing report generator must not be null");
 
         clearingDocDir = configuration.getBaseDir()
-                .resolve(configuration.getProperties().get(PROP_CLEARING_DOC_FOLDER));
-        removeClearedSources = Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_CLEARED_SOURCES));
-        removeClearingDocs = Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_CLEARING_DOCS));
+                .resolve(configuration.getProperty(PROP_CLEARING_DOC_FOLDER));
+        removeClearedSources = configuration.getBooleanConfigValue(PROP_REMOVE_CLEARED_SOURCES);
+        removeClearingDocs = configuration.getBooleanConfigValue(PROP_REMOVE_CLEARING_DOCS);
     }
 
     public void execute() {
         LOGGER.debug("{} has started.", SW360Updater.class.getName());
-        Collection<Artifact> artifacts = getArtifactsFromCsvFile(configuration.getProperties(),
-                configuration.getCsvFilePath(), configuration.getBaseDir());
+        Collection<Artifact> artifacts = getArtifactsFromCsvFile(configuration);
 
         artifacts.forEach(this::uploadReleaseWithClearingDocumentFromArtifact);
 
 
-        LOGGER.info("The SW360Exporter was executed from the base directory: {} " +
-                        "with the csv file taken from the path: {}, " +
-                        "the clearing reports taken or temporarily created in: {} " +
-                        "and the source files taken from the folder: {}.",
-                configuration.getBaseDir().toAbsolutePath(),
-                configuration.getCsvFilePath().toAbsolutePath(),
-                clearingDocDir,
-                configuration.getSourcesPath().toAbsolutePath());
+        LOGGER.info("The SW360Updater was executed with the following configuration:");
+        configuration.logConfiguration(LOGGER);
+        LOGGER.info("Path for clearing documents: {}", clearingDocDir);
     }
 
     private void uploadReleaseWithClearingDocumentFromArtifact(Artifact artifact) {

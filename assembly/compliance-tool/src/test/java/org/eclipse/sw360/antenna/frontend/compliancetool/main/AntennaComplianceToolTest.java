@@ -59,7 +59,7 @@ public class AntennaComplianceToolTest {
 
         SW360Configuration configuration = (SW360Configuration) readField(exporter, "configuration");
         assertThat(configuration.getConnection()).isNotNull();
-        assertThat(configuration.getProperties()).isNotNull();
+        assertThat(configuration.getBaseDir()).isNotNull();
     }
 
     @Test
@@ -74,7 +74,7 @@ public class AntennaComplianceToolTest {
         initMethod.setAccessible(true);
         SW360Updater updater = (SW360Updater) initMethod.invoke(antennaComplianceTool, propertiesFile);
 
-        assertThat(((SW360Configuration) readField(updater, "configuration")).getProperties()).isNotNull();
+        assertThat(((SW360Configuration) readField(updater, "configuration")).getBaseDir()).isNotNull();
 
         SW360UpdaterImpl sw360updater = (SW360UpdaterImpl) readField(updater, AntennaComplianceToolOptions.MODE_NAME_UPDATER);
         assertThat(readField(sw360updater, "sw360MetaDataUpdater")).isNotNull();
@@ -101,7 +101,7 @@ public class AntennaComplianceToolTest {
         initMethod.setAccessible(true);
         SW360StatusReporter statusReporter = (SW360StatusReporter) initMethod.invoke(antennaComplianceTool, propertiesFile, parameterSet);
 
-        assertThat(((SW360Configuration) readField(statusReporter, "configuration")).getProperties()).isNotNull();
+        assertThat(((SW360Configuration) readField(statusReporter, "configuration")).getBaseDir()).isNotNull();
         assertThat(((String) readField(statusReporter, "infoParameter"))).isEqualTo(new IRGetClearedReleases().getInfoParameter());
         assertThat(((InfoRequest) readField(statusReporter, "infoRequest"))).isExactlyInstanceOf(IRGetClearedReleases.class);
         assertThat(((ReporterOutput) readField(statusReporter, "reporterOutput"))).isExactlyInstanceOf(ReporterOutputCSV.class);

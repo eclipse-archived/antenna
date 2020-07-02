@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
@@ -72,16 +73,15 @@ public class ComplianceFeatureUtils {
         }
     }
 
-    public static Collection<Artifact> getArtifactsFromCsvFile(Map<String, String> properties, Path csvFilePath,
-                                                               Path baseDir) {
-        char delimiter = properties.get("delimiter").charAt(0);
-        File csvFile = csvFilePath.toFile();
-        if (!csvFile.exists()) {
-            throw new ConfigurationException("csvFile for " + csvFile.getName() + " could not be found");
+    public static Collection<Artifact> getArtifactsFromCsvFile(SW360Configuration configuration) {
+        char delimiter = configuration.getProperty("delimiter").charAt(0);
+        Path csvFile = configuration.getCsvFilePath();
+        if (!Files.exists(csvFile)) {
+            throw new ConfigurationException("csvFile for " + csvFile + " could not be found");
         }
-        Charset encoding = Charset.forName(properties.get("encoding"));
+        Charset encoding = Charset.forName(configuration.getProperty("encoding"));
 
-        return new CSVArtifactMapper(csvFile.toPath(), encoding, delimiter, baseDir).createArtifactsList();
+        return new CSVArtifactMapper(csvFile, encoding, delimiter, configuration.getBaseDir()).createArtifactsList();
     }
 
     /**

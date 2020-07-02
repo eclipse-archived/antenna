@@ -209,9 +209,7 @@ public class SW360ExporterTest {
         Path basePath = csvFile.toPath().toAbsolutePath().getParent();
         when(config.getBaseDir())
                 .thenReturn(basePath);
-        when(config.getTargetDir())
-                .thenReturn(folder.getRoot().toPath());
-        when(config.getProperties()).thenReturn(properties);
+        SW360TestUtils.initConfigProperties(config, properties);
         Path sourcesPath = basePath.resolve(properties.get("sourcesDirectory"));
         when(config.getSourcesPath()).thenReturn(sourcesPath);
         return config;
