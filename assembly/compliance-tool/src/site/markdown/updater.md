@@ -12,6 +12,7 @@ Specific properties that need to be set for sources and clearing document handli
 - `sourcesDirectory`: Directory where the sources for uploading are stored
 - `removeClearedSources`: A boolean property that controls whether the updater should remove the source attachments of a release from the local sources directory once the release has been cleared. Cleared releases are no longer relevant for the workflow of the compliance tool; so by setting this property to *true*, an automatic cleanup of the sources directory can be enabled. The default value is *false*.
 - `removeClearingDocuments`: A boolean property that controls whether clearing documents for releases should be removed after the release has been cleared. The default value is *false*.
+- `clearingDocDir`: Directory in which clearing documents are generated
 
 Properties required to correctly parse the given csv file:
 

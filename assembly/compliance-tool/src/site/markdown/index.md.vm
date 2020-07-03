@@ -77,6 +77,5 @@ If a proxy is not in use, `proxyUse` should be set to `false`:
 
 Directory parameters that all modes need:
 
-- `targetDir`: Target directory in which artificial documents (e.g. clearing reports) are created in. 
 - `basedir`: Base directory of the execution
-- `csvFilePath`: Path and name where the csv file should be saved
+- `csvFilePath`: Path and name where the csv file should be saved; this should be a relative path; it is resolved against the base directory
