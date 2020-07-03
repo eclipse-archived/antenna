@@ -17,7 +17,9 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.util.ArtifactLicenseUtils;
 import org.eclipse.sw360.antenna.sw360.SW360MetaDataUpdater;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -153,37 +156,59 @@ public class SW360UpdaterImpl {
         release.setMainLicenseIds(licenseIds);
         SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release, isUpdateReleases());
 
-        sw360ReleaseFinal = handleSourceArtifact(sw360ReleaseFinal, artifact);
+        sw360ReleaseFinal = uploadSourceAndAttachments(sw360ReleaseFinal, artifact, Collections.emptyMap()).getTarget();
 
         return sw360ReleaseFinal;
     }
 
     /**
+     * Updates a release with properties from the given artifact. Makes sure
+     * that the release exists in SW360 (it is created now if necessary). It is
+     * possible to upload additional files, e.g. a clearing report.
+     *
+     * @param artifact artifact to be transformed to release
+     * @param release  release on which artifact license, sources and
+     *                 information form sw360 instance will be mapped
+     * @param uploads  a map with additional files to be uploaded
+     * @return an object with the result of the upload operation
+     */
+    public AttachmentUploadResult<SW360Release> artifactToReleaseWithUploads(Artifact artifact, SW360Release release,
+                                                                             Map<Path, SW360AttachmentType> uploads) {
+        Set<String> licenseIds = getSetOfLicenseIds(artifact);
+        release.setMainLicenseIds(licenseIds);
+        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release, isUpdateReleases());
+
+        return uploadSourceAndAttachments(sw360ReleaseFinal, artifact, uploads);
+    }
+
+    /**
      * Uploads the source artifact for the given release if it is available and
-     * if uploads are enabled. SW360 per default does not allow overriding
-     * existing attachments. So if a source attachment is already available
-     * that should be replaced, this can be problematic. To deal with this
-     * situation, this class supports a flag whether obsolete source
-     * attachments should be deleted. If set to <strong>true</strong>, the
-     * class tries to delete all existing source attachments before uploading
-     * the new one.
+     * if uploads are enabled plus any additional attachments. If configured,
+     * all other source attachments are deleted for this release.
      *
      * @param release  the release affected by the update
      * @param artifact the corresponding {@code Artifact}
-     * @return the updated release
+     * @param uploads  a map with additional files to be uploadd
+     * @return an object with the result of the upload operation
      */
-    public SW360Release handleSourceArtifact(SW360Release release, Artifact artifact) {
+    private AttachmentUploadResult<SW360Release> uploadSourceAndAttachments(SW360Release release, Artifact artifact,
+                                                                            Map<Path, SW360AttachmentType> uploads) {
+        Optional<Path> optSrcPath = ArtifactToAttachmentUtils.getSourceAttachmentFromArtifact(artifact);
+        String srcFileName = optSrcPath.map(path -> path.getFileName().toString()).orElse(null);
+        SW360Release srcDeletedRelease = deleteSourceAttachments(release, srcFileName);
+
+        Map<Path, SW360AttachmentType> allUploads = new HashMap<>(uploads);
         if (isUploadSources() && release.getLinks().getSelf() != null
                 && !release.getLinks().getSelf().getHref().isEmpty()) {
-            SW360Release srcDeletedRelease = deleteSourceAttachments(release);
-            Optional<Path> optSrcPath = ArtifactToAttachmentUtils.getSourceAttachmentFromArtifact(artifact);
-            return optSrcPath.map(srcPath ->
-                    sw360MetaDataUpdater.uploadAttachments(srcDeletedRelease,
-                            Collections.singletonMap(srcPath, SW360AttachmentType.SOURCE), false)
-            .getTarget())
-                    .orElse(release);
+            optSrcPath.ifPresent(srcPath -> allUploads.put(srcPath, SW360AttachmentType.SOURCE));
         }
-        return release;
+
+        if (!allUploads.isEmpty()) {
+            return sw360MetaDataUpdater.uploadAttachments(srcDeletedRelease, allUploads,
+                    isDeleteObsoleteSourceAttachments());
+        }
+
+        return new AttachmentUploadResult<>(srcDeletedRelease);
     }
 
     /**
@@ -192,18 +217,36 @@ public class SW360UpdaterImpl {
      * exceptions are just logged. (It may be the case, that the following
      * attachment upload fails because of that failure.)
      *
-     * @param release the release affected by the update
+     * @param release     the release affected by the update
+     * @param srcFileName the name of the source attachment (or null)
      * @return the updated release
      */
-    private SW360Release deleteSourceAttachments(SW360Release release) {
+    private SW360Release deleteSourceAttachments(SW360Release release, String srcFileName) {
         try {
             return isDeleteObsoleteSourceAttachments() ?
-                    sw360MetaDataUpdater.deleteSourceAttachments(release) : release;
+                    sw360MetaDataUpdater.deleteAttachments(release, deleteAttachmentsPredicate(srcFileName)) :
+                    release;
         } catch (SW360ClientException e) {
             LOGGER.warn("Could not delete source attachments for release {}:{}",
                     release.getName(), release.getVersion(), e);
             return release;
         }
+    }
+
+    /**
+     * Obtains the predicate for deleting attachments. If the current release
+     * has a source attachment, this attachment is excluded from the delete
+     * operation. (It may be deleted later if a conflict is detected, but
+     * otherwise not.)
+     *
+     * @param srcFileName the name of the source attachment (or null)
+     * @return the predicate to select the attachments to be deleted
+     */
+    private Predicate<SW360SparseAttachment> deleteAttachmentsPredicate(String srcFileName) {
+        Predicate<SW360SparseAttachment> sourceTypePredicate = attachment ->
+                attachment.getAttachmentType() == SW360AttachmentType.SOURCE;
+        return srcFileName == null ? sourceTypePredicate :
+                sourceTypePredicate.and(attachment -> !srcFileName.equals(attachment.getFilename()));
     }
 
     private Set<String> getSetOfLicenseIds(Artifact artifact) {
