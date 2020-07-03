@@ -14,6 +14,7 @@ import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeature
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
@@ -37,14 +38,19 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyMap;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(Parameterized.class)
 public class SW360UpdaterParameterizedTest {
@@ -129,7 +135,7 @@ public class SW360UpdaterParameterizedTest {
 
     @Test
     public void testExecute() throws IOException {
-        runUpdaterTest(getConfigProperties(), false, true, false);
+        runUpdaterTest(getConfigProperties(), false, true, false, true);
     }
 
     @Test
@@ -137,7 +143,7 @@ public class SW360UpdaterParameterizedTest {
         Map<String, String> configProperties = getConfigProperties();
         configProperties.put(SW360Updater.PROP_REMOVE_CLEARED_SOURCES, String.valueOf(true));
 
-        runUpdaterTest(configProperties, true, true, false);
+        runUpdaterTest(configProperties, true, true, false, true);
     }
 
     @Test
@@ -145,7 +151,7 @@ public class SW360UpdaterParameterizedTest {
         Map<String, String> configProperties = getConfigProperties();
         configProperties.put(SW360Updater.PROP_REMOVE_CLEARING_DOCS, String.valueOf(true));
 
-        runUpdaterTest(configProperties, false, true, true);
+        runUpdaterTest(configProperties, false, true, true, true);
     }
 
     @Test
@@ -153,23 +159,39 @@ public class SW360UpdaterParameterizedTest {
         Map<String, String> configProperties = getConfigProperties();
         configProperties.put(SW360Updater.PROP_REMOVE_CLEARED_SOURCES, String.valueOf(true));
 
-        runUpdaterTest(configProperties, false, false, false);
+        runUpdaterTest(configProperties, false, false, false, true);
     }
 
-    private void runUpdaterTest(Map<String, String> config, boolean expectSourceRemoved, boolean attachmentExists, boolean expectClearingDocRemoved)
+    @Test
+    public void testFilesAreNotRemovedWhenUploadFails() throws IOException {
+        Map<String, String> configProperties = getConfigProperties();
+        configProperties.put(SW360Updater.PROP_REMOVE_CLEARED_SOURCES, String.valueOf(true));
+        configProperties.put(SW360Updater.PROP_REMOVE_CLEARING_DOCS, String.valueOf(true));
+
+        runUpdaterTest(configProperties, false, true, false, false);
+    }
+
+    private void runUpdaterTest(Map<String, String> config, boolean expectSourceRemoved, boolean attachmentExists,
+                                boolean expectClearingDocRemoved, boolean uploadsSuccessful)
             throws IOException {
         Path sourceAttachment = createSourceAttachment();
         initBasicConfiguration(sourceAttachment, config);
 
         initConnectionConfiguration();
 
+        Path clearingDocumentPath = getAvailableOrGeneratedClearingDocumentPath();
+        Map<AttachmentUploadRequest.Item, Throwable> uploadFailures = new HashMap<>();
+        if(!uploadsSuccessful) {
+            uploadFailures.put(toItem(sourceAttachment), new IOException("Failure 1"));
+            uploadFailures.put(toItem(clearingDocumentPath), new IOException("Failure 2"));
+        }
         SW360UpdaterImpl updater = mock(SW360UpdaterImpl.class);
         SW360Release release = new SW360Release();
         release.setClearingState(clearingState);
-        when(updater.artifactToReleaseInSW360(any(), any()))
-                .thenAnswer((Answer<SW360Release>) invocationOnMock -> {
+        when(updater.artifactToReleaseWithUploads(any(), any(), anyMap()))
+                .thenAnswer((Answer<AttachmentUploadResult<SW360Release>>) invocationOnMock -> {
                     deleteSourceFileIfNotAttachmentExists(attachmentExists, sourceAttachment);
-                    return release;
+                    return AttachmentUploadResult.newResult(release, Collections.emptySet(), uploadFailures);
                 })
                 .thenThrow(new SW360ClientException("Boo"));
 
@@ -187,27 +209,28 @@ public class SW360UpdaterParameterizedTest {
         Map<Path, SW360AttachmentType> testAttachmentMap = createExpectedAttachmentMap();
 
         if (expectUpload && !clearingDocAvailable) {
-            verify(generator).createClearingDocument(release, clearingDocDir);
+            ArgumentCaptor<SW360Release> captorAllReleases = ArgumentCaptor.forClass(SW360Release.class);
+            ArgumentCaptor<SW360Release> captorClearedReleases = ArgumentCaptor.forClass(SW360Release.class);
+            verify(updater, times(2))
+                    .artifactToReleaseWithUploads(any(), captorAllReleases.capture(), anyMap());
+            verify(generator, times(2))
+                    .createClearingDocument(captorClearedReleases.capture(), eq(clearingDocDir));
+            assertThat(captorClearedReleases.getAllValues()).containsOnlyElementsOf(captorAllReleases.getAllValues());
         }
-        @SuppressWarnings("unchecked")
-        ArgumentCaptor<AttachmentUploadRequest<SW360Release>> captor = ArgumentCaptor.forClass(AttachmentUploadRequest.class);
-        verify(releaseClientAdapter, times(expectUpload ? 1 : 0)).uploadAttachments(captor.capture());
         if (expectUpload) {
-            verify(updater, times(2)).artifactToReleaseInSW360(any(), any());
-            AttachmentUploadRequest<SW360Release> uploadRequest = captor.getValue();
-            List<AttachmentUploadRequest.Item> expItems = testAttachmentMap.entrySet().stream()
-                    .map(entry -> new AttachmentUploadRequest.Item(entry.getKey(), entry.getValue()))
-                    .collect(Collectors.toList());
-            assertThat(uploadRequest.getItems()).containsAll(expItems);
+            @SuppressWarnings("unchecked")
+            ArgumentCaptor<Map<Path, SW360AttachmentType>> captor = ArgumentCaptor.forClass(Map.class);
+            verify(updater, times(2)).artifactToReleaseWithUploads(any(), any(), captor.capture());
+            assertThat(captor.getAllValues().stream().anyMatch(map -> map.equals(testAttachmentMap))).isTrue();
         } else {
             deleteSourceFileIfNotAttachmentExists(attachmentExists, sourceAttachment);
-            verify(updater, never()).artifactToReleaseInSW360(any(), any());
+            verify(updater, never()).artifactToReleaseWithUploads(any(), any(), anyMap());
         }
 
         boolean sourcePresent = Files.exists(sourceAttachment);
         assertThat(sourcePresent).isEqualTo((!expectUpload || !expectSourceRemoved) && attachmentExists);
 
-        boolean clearingDocPresent = Files.exists(getAvailableOrGeneratedClearingDocumentPath());
+        boolean clearingDocPresent = Files.exists(clearingDocumentPath);
         assertThat(clearingDocPresent).isEqualTo(!expectUpload || !expectClearingDocRemoved);
     }
 
@@ -253,5 +276,16 @@ public class SW360UpdaterParameterizedTest {
                 sourceAttachment, System.lineSeparator(), clearingState, clearingDocPath, System.lineSeparator());
         Files.write(tempCsvFile.toPath(), csvContent.getBytes(StandardCharsets.UTF_8));
         return tempCsvFile.toPath();
+    }
+
+    /**
+     * Generates an upload request item for the path provided. The attachment
+     * type is not relevant here.
+     *
+     * @param p the path of the item
+     * @return the item with this path
+     */
+    private static AttachmentUploadRequest.Item toItem(Path p) {
+        return new AttachmentUploadRequest.Item(p, SW360AttachmentType.SOURCE);
     }
 }
