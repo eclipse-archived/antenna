@@ -102,8 +102,9 @@ public class SW360UpdaterImplTest {
         SW360Release updatedRelease = createRelease("testUpdated", sourceFile);
         Map<Path, SW360AttachmentType> uploadMap = Collections.singletonMap(sourceFile, SW360AttachmentType.SOURCE);
 
-        when(metaDataUpdater.uploadAttachments(release, uploadMap))
-                .thenReturn(updatedRelease);
+        //TODO adapt to changes
+//        when(metaDataUpdater.uploadAttachments(release, uploadMap, false))
+//                .thenReturn(updatedRelease);
 
         SW360UpdaterImpl updater = new SW360UpdaterImpl(metaDataUpdater, "test", "version",
                 false, true, false);
@@ -112,7 +113,7 @@ public class SW360UpdaterImplTest {
 
         assertThat(releaseWithSources).isEqualTo(updatedRelease);
 
-        verify(metaDataUpdater, atLeastOnce()).uploadAttachments(release, uploadMap);
+        verify(metaDataUpdater, atLeastOnce()).uploadAttachments(release, uploadMap, false);
         verify(metaDataUpdater, never()).deleteSourceAttachments(any());
     }
 
@@ -142,8 +143,9 @@ public class SW360UpdaterImplTest {
         Map<Path, SW360AttachmentType> uploadMap = Collections.singletonMap(sourceFile, SW360AttachmentType.SOURCE);
 
         when(metaDataUpdater.deleteSourceAttachments(release)).thenReturn(srcDeletedRelease);
-        when(metaDataUpdater.uploadAttachments(srcDeletedRelease, uploadMap))
-                .thenReturn(updatedRelease);
+        //TODO adapt to changes
+//        when(metaDataUpdater.uploadAttachments(srcDeletedRelease, uploadMap, false))
+//                .thenReturn(updatedRelease);
 
         SW360UpdaterImpl updater = new SW360UpdaterImpl(metaDataUpdater, "test", "version",
                 false, true, true);
@@ -154,7 +156,7 @@ public class SW360UpdaterImplTest {
 
         InOrder inOrder = Mockito.inOrder(metaDataUpdater);
         inOrder.verify(metaDataUpdater).deleteSourceAttachments(release);
-        inOrder.verify(metaDataUpdater).uploadAttachments(srcDeletedRelease, uploadMap);
+        inOrder.verify(metaDataUpdater).uploadAttachments(srcDeletedRelease, uploadMap, false);
     }
 
     @Test
@@ -168,8 +170,9 @@ public class SW360UpdaterImplTest {
 
         when(metaDataUpdater.deleteSourceAttachments(release))
                 .thenThrow(new SW360ClientException("Delete operation failed"));
-        when(metaDataUpdater.uploadAttachments(release, uploadMap))
-                .thenReturn(updatedRelease);
+        //TODO adapt to changes
+//        when(metaDataUpdater.uploadAttachments(release, uploadMap, false))
+//                .thenReturn(updatedRelease);
 
         SW360UpdaterImpl updater = new SW360UpdaterImpl(metaDataUpdater, "test", "version",
                 false, true, true);

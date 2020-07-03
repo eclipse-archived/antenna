@@ -179,7 +179,8 @@ public class SW360UpdaterImpl {
             Optional<Path> optSrcPath = ArtifactToAttachmentUtils.getSourceAttachmentFromArtifact(artifact);
             return optSrcPath.map(srcPath ->
                     sw360MetaDataUpdater.uploadAttachments(srcDeletedRelease,
-                            Collections.singletonMap(srcPath, SW360AttachmentType.SOURCE)))
+                            Collections.singletonMap(srcPath, SW360AttachmentType.SOURCE), false)
+            .getTarget())
                     .orElse(release);
         }
         return release;
