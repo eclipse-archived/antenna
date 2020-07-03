@@ -95,8 +95,8 @@ public class Templates implements Closeable {
 
     private static byte[] loadFontData(Optional<InputStream> fontData) {
         if (fontData.isPresent()) {
-            try {
-                return IOUtils.toByteArray(fontData.get());
+            try (InputStream i = fontData.get()) {
+                return IOUtils.toByteArray(i);
             } catch (IOException e) {
                 throw new ExecutionException("Unable to load font.", e);
             }
