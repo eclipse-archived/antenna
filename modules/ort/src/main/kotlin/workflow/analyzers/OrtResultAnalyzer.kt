@@ -29,6 +29,9 @@ class OrtResultAnalyzer : ManualAnalyzer() {
         private val LOGGER = LoggerFactory.getLogger(OrtResultAnalyzer::class.java)
     }
 
+    private val keepExcludedArtifactsProperty = "keep.excluded.artifacts"
+    private var omitExcludedArtifacts = true
+
     init {
         workflowStepOrder = 700
     }
@@ -36,6 +39,11 @@ class OrtResultAnalyzer : ManualAnalyzer() {
     override fun yield() = WorkflowStepResult(createArtifactList(componentInfoFile))
 
     override fun getName() = "OrtResult"
+
+    override fun configure(configMap: Map<String, String>) {
+        super.configure(configMap)
+        omitExcludedArtifacts = !getBooleanConfigValue(keepExcludedArtifactsProperty, configMap)
+    }
 
     @Throws(IOException::class)
     fun createArtifactList(ortResultFile: File): Collection<Artifact> {
@@ -45,6 +53,6 @@ class OrtResultAnalyzer : ManualAnalyzer() {
         if (result.analyzer == null) throw IOException("No analyzer run found in ORT result file.")
 
         val resolver = OrtResultArtifactResolver(result)
-        return result.getPackages().map { (pkg, _) -> resolver.apply(pkg) }.toSet()
+        return result.getPackages(omitExcludedArtifacts).map { (pkg, _) -> resolver.apply(pkg) }.toSet()
     }
 }
