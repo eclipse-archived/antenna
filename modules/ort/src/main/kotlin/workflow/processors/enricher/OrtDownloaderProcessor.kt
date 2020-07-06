@@ -27,7 +27,7 @@ class OrtDownloaderProcessor : AbstractProcessor() {
 
     private lateinit var sourcesZipDirectory: File
 
-    override fun configure(configMap: MutableMap<String, String>) {
+    override fun configure(configMap: Map<String, String>) {
         sourcesZipDirectory = context.toolConfiguration.antennaTargetDirectory.resolve(ORT_DOWNLOADER_DIR).toFile()
         if (!sourcesZipDirectory.isDirectory && !sourcesZipDirectory.mkdirs()) {
             throw ConfigurationException("Failed to create directory '${sourcesZipDirectory.absolutePath}' " +
