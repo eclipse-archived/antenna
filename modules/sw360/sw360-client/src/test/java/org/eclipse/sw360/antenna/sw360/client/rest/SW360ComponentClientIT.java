@@ -21,12 +21,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
+import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -195,5 +198,48 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
         FailedRequestException exception =
                 expectFailedRequest(componentClient.createComponent(component), HttpConstants.STATUS_ERR_BAD_REQUEST);
         assertThat(exception.getTag()).isEqualTo(SW360ComponentClient.TAG_CREATE_COMPONENT);
+    }
+
+    @Test
+    public void testDeleteComponents() throws IOException {
+        String compId1 = "res-1";
+        String compId2 = "res-2";
+        wireMockRule.stubFor(delete(urlPathEqualTo("/components/" + compId1 + "," + compId2))
+                .willReturn(aJsonResponse(HttpConstants.STATUS_MULTI_STATUS)
+                        .withBodyFile("multi_status_success.json")));
+
+        MultiStatusResponse multiResponse = waitFor(componentClient.deleteComponents(Arrays.asList(compId1, compId2)));
+        assertThat(multiResponse.responseCount()).isEqualTo(2);
+        assertThat(multiResponse.getStatus("res-1")).isEqualTo(200);
+        assertThat(multiResponse.getStatus("res-2")).isEqualTo(200);
+    }
+
+    @Test
+    public void testDeleteComponentsUnexpectedStatus() {
+        wireMockRule.stubFor(delete(anyUrl())
+                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
+                        .withBodyFile("multi_status_success.json")));
+
+        FailedRequestException exception =
+                expectFailedRequest(componentClient.deleteComponents(Collections.singletonList("c1")),
+                        HttpConstants.STATUS_OK);
+        assertThat(exception.getTag()).isEqualTo(SW360ComponentClient.TAG_DELETE_COMPONENTS);
+    }
+
+    @Test
+    public void testDeleteComponentsUnexpectedResponse() {
+        wireMockRule.stubFor(delete(anyUrl())
+                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
+                        .withBodyFile("all_components.json")));
+
+        extractException(componentClient.deleteComponents(Collections.singletonList("cDel")), IOException.class);
+    }
+
+    @Test
+    public void testDeleteComponentsEmptyResponse() {
+        wireMockRule.stubFor(delete(anyUrl())
+                .willReturn(aResponse().withStatus(HttpConstants.STATUS_MULTI_STATUS)));
+
+        extractException(componentClient.deleteComponents(Collections.singletonList("cDel")), IOException.class);
     }
 }

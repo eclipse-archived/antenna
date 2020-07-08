@@ -48,6 +48,13 @@ public final class HttpConstants {
     public static final int STATUS_NO_CONTENT = 204;
 
     /**
+     * Constant for the HTTP status code 207 MULTI_STATUS that is returned for
+     * operations affecting multiple entities. The response body typically
+     * contains more information about the single operations and their outcome.
+     */
+    public static final int STATUS_MULTI_STATUS = 207;
+
+    /**
      * Constant for the HTTP status code 400 BAD REQUEST indicating a general
      * problem with a request sent by a client.
      */

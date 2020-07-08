@@ -81,6 +81,6 @@ public interface RequestBuilder {
      * An enumeration class for the HTTP methods supported by the HTTP client.
      */
     enum Method {
-        GET, POST, PUT, PATCH
+        GET, POST, PUT, PATCH, DELETE
     }
 }

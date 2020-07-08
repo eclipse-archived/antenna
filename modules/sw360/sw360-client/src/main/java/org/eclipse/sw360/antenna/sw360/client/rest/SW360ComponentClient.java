@@ -22,6 +22,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Comp
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentList;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -51,6 +52,11 @@ public class SW360ComponentClient extends SW360Client {
      * Tag for the request to create a new component.
      */
     static final String TAG_CREATE_COMPONENT = "post_create_component";
+
+    /**
+     * Tag for the request to delete components.
+     */
+    static final String TAG_DELETE_COMPONENTS = "delete_components";
 
     private static final String COMPONENTS_ENDPOINT = "components";
 
@@ -118,5 +124,17 @@ public class SW360ComponentClient extends SW360Client {
                         .uri(resourceUrl(COMPONENTS_ENDPOINT))
                         .body(body -> body.json(sw360Component)),
                 SW360Component.class, TAG_CREATE_COMPONENT);
+    }
+
+    /**
+     * Triggers a DELETE operation for the components identified by the given
+     * IDs.
+     *
+     * @param idsToDelete a collection with the IDs of the components to delete
+     * @return a future with the {@code MultiStatusResponse} returned by the
+     * server
+     */
+    public CompletableFuture<MultiStatusResponse> deleteComponents(Collection<String> idsToDelete) {
+        return executeDeleteRequest(COMPONENTS_ENDPOINT, idsToDelete, TAG_DELETE_COMPONENTS);
     }
 }

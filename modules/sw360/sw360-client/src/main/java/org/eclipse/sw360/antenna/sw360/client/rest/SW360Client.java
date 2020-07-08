@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -136,6 +137,31 @@ public abstract class SW360Client {
     }
 
     /**
+     * Executes a request to delete multiple entities of a given resource.
+     * SW360 typically supports DELETE operations on resources that accept a
+     * list of IDs. Result is a {@code MultiStatusResponse} with information
+     * about the single operations and their outcome. This method handles the
+     * details of constructing the correct REST URL for the delete operation
+     * and parsing the response from the server.
+     *
+     * @param endpoint    the endpoint of the resource affected by the operation
+     * @param idsToDelete a list with the IDs of the entities to be deleted
+     * @param tag         a tag to identify the request
+     * @return a future with the {@code MultiStatusResponse} returned by the
+     * server
+     */
+    protected CompletableFuture<MultiStatusResponse> executeDeleteRequest(String endpoint,
+                                                                          Collection<String> idsToDelete,
+                                                                          String tag) {
+        String strIdsToDelete = String.join(",", idsToDelete);
+        String url = resourceUrl(endpoint, strIdsToDelete);
+        return executeRequest(builder ->
+                        builder.uri(url).method(RequestBuilder.Method.DELETE),
+                createMultiStatusProcessor(tag),
+                tag);
+    }
+
+    /**
      * Executes a request to SW360 with authentication and retry logic that
      * expects an optional JSON response. This method extends
      * {@link #executeJsonRequest(Consumer, Class, String)} by a handling of
@@ -242,6 +268,20 @@ public abstract class SW360Client {
      */
     private boolean checkIfRetry(Throwable exception) {
         return FutureUtils.isFailedRequestWithStatus(exception, HttpConstants.STATUS_ERR_UNAUTHORIZED);
+    }
+
+    /**
+     * Returns a {@code ResponseProcessor} to process a multi-status response.
+     * This processor expects a response with status code 207 whose content is
+     * a JSON multi-status response representation.
+     *
+     * @param tag a tag to identify the request
+     * @return the processor for the multi-status response
+     */
+    private ResponseProcessor<MultiStatusResponse> createMultiStatusProcessor(String tag) {
+        ResponseProcessor<MultiStatusResponse> processor =
+                response -> MultiStatusResponse.fromJson(getClientConfig().getObjectMapper(), response.bodyStream());
+        return HttpUtils.checkResponse(processor, HttpUtils.hasStatus(HttpConstants.STATUS_MULTI_STATUS), tag);
     }
 
     /**
