@@ -11,6 +11,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
+import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
@@ -21,6 +22,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Sparse
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -161,5 +163,15 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
     @Override
     public CompletableFuture<SW360Release> updateRelease(SW360Release release) {
         return getReleaseClient().patchRelease(release);
+    }
+
+    @Override
+    public CompletableFuture<MultiStatusResponse> deleteReleases(Collection<String> idsToDelete) {
+        return SW360DeleteUtils.deleteEntities(getReleaseClient()::deleteReleases, idsToDelete);
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteRelease(String releaseId) {
+        return SW360DeleteUtils.deleteEntity(getReleaseClient()::deleteReleases, releaseId, "release");
     }
 }
