@@ -10,10 +10,12 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
+import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ComponentClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -36,4 +38,26 @@ public interface SW360ComponentClientAdapterAsync {
     CompletableFuture<Optional<SW360Component>> getComponentByName(String componentName);
 
     CompletableFuture<List<SW360SparseComponent>> getComponents();
+
+    /**
+     * Triggers a multi-delete operation for the components with the IDs
+     * specified. Returns a {@code MultiStatusResponse} that allows checking
+     * whether all the components could be deleted successfully.
+     *
+     * @param idsToDelete a collection with the IDs of components to delete
+     * @return a future with the {@code MultiStatusResponse} with the results
+     * of the operation
+     */
+    CompletableFuture<MultiStatusResponse> deleteComponents(Collection<String> idsToDelete);
+
+    /**
+     * Deletes the component with the given ID. This is a convenience method for
+     * the special case that only a single component should be deleted. It
+     * inspects the {@link MultiStatusResponse} returned by SW360 and returns a
+     * failed future if the operation was not successful.
+     *
+     * @param componentId the ID of the component to be deleted
+     * @return a future indicating the result of the operation
+     */
+    CompletableFuture<Void> deleteComponent(String componentId);
 }
