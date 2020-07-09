@@ -11,18 +11,14 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
-import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
-import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ComponentClient;
-import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -87,26 +83,12 @@ class SW360ComponentClientAdapterAsyncImpl implements SW360ComponentClientAdapte
 
     @Override
     public CompletableFuture<MultiStatusResponse> deleteComponents(Collection<String> idsToDelete) {
-        return idsToDelete.isEmpty() ?
-                CompletableFuture.completedFuture(new MultiStatusResponse(new HashMap<>())) :
-                getComponentClient().deleteComponents(idsToDelete);
+        return SW360DeleteUtils.deleteEntities(getComponentClient()::deleteComponents, idsToDelete);
     }
 
     @Override
     public CompletableFuture<Void> deleteComponent(String componentId) {
-        return deleteComponents(Collections.singleton(componentId))
-                .thenApply(status -> {
-                    if (status.responseCount() != 1 || !status.hasResourceId(componentId)) {
-                        throw new SW360ClientException("Unexpected multi-status response. Expected a response that " +
-                                "contains only a status for " + componentId + ", but got: " + status);
-                    }
-                    if (!HttpUtils.isSuccessStatus(status.getStatus(componentId))) {
-                        FailedRequestException requestException =
-                                new FailedRequestException("delete component " + componentId,
-                                        status.getStatus(componentId));
-                        throw new SW360ClientException("Delete operation failed", requestException);
-                    }
-                    return null;
-                });
+        return SW360DeleteUtils.deleteEntity(getComponentClient()::deleteComponents,
+                componentId, "component");
     }
 }
