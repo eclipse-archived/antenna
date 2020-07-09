@@ -61,9 +61,17 @@ public class ArtifactAdapter implements ArtifactAndLicense {
     */
    public static String getLicenseText(License license) {
       String text = license.getText();
-      text = StringUtils.isNotBlank(text) ? text : "No license text available";
+      if (StringUtils.isBlank(text)) {
+         return "No license text available";
+      }
+
       // remove the magic unicode as it will likely not be in a unicode font set.
-      return StringUtils.replace(text, "\uFEFF", "");
+      return text
+              .replace("\u0009", "    ")
+              .replace("\u00a0", " ")
+              .replace("\u200b", "")
+              .replace("\u2028", "\n")
+              .replace("\ufeff", "");
    }
 
    /**
