@@ -15,6 +15,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.SW360LicenseClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -33,6 +34,11 @@ class SW360LicenseClientAdapterAsyncImpl implements SW360LicenseClientAdapterAsy
     @Override
     public SW360LicenseClient getLicenseClient() {
         return licenseClient;
+    }
+
+    @Override
+    public CompletableFuture<List<SW360SparseLicense>> getLicenses() {
+        return getLicenseClient().getLicenses();
     }
 
     @Override

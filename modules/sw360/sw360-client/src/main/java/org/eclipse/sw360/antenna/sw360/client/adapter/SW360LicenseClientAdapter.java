@@ -14,6 +14,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.SW360LicenseClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -23,7 +24,20 @@ import java.util.Optional;
  * </p>
  */
 public interface SW360LicenseClientAdapter {
+    /**
+     * Returns the {@code SW360LicenseClient} used for the interaction with
+     * the SW360 server.
+     *
+     * @return the underlying {@code SW360LicenseClient}
+     */
     SW360LicenseClient getLicenseClient();
+
+    /**
+     * Returns a list with all licenses known to the system.
+     *
+     * @return a list with all the licenses known
+     */
+    List<SW360SparseLicense> getLicenses();
 
     boolean isLicenseOfArtifactAvailable(String license);
 

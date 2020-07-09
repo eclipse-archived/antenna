@@ -16,7 +16,9 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360Sparse
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -38,6 +40,17 @@ public class SW360LicenseClientAdapterAsyncImplTest {
     public void setUp() {
         licenseClient = mock(SW360LicenseClient.class);
         licenseClientAdapter = new SW360LicenseClientAdapterAsyncImpl(licenseClient);
+    }
+
+    @Test
+    public void testGetLicenses() {
+        List<SW360SparseLicense> licenses = Arrays.asList(new SW360SparseLicense().setShortName("l1"),
+                new SW360SparseLicense().setShortName("l2"));
+        when(licenseClient.getLicenses())
+                .thenReturn(CompletableFuture.completedFuture(licenses));
+
+        List<SW360SparseLicense> result = block(licenseClientAdapter.getLicenses());
+        assertThat(result).isEqualTo(licenses);
     }
 
     @Test
