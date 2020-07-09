@@ -234,4 +234,26 @@ public class HttpUtilsTest {
         assertThat(processor.process(response)).isNull();
         verifyZeroInteractions(response);
     }
+
+    @Test
+    public void testIsSuccessStatusTooSmall() {
+        assertThat(HttpUtils.isSuccessStatus(199)).isFalse();
+        assertThat(HttpUtils.isSuccessStatus(0)).isFalse();
+        assertThat(HttpUtils.isSuccessStatus(Integer.MIN_VALUE)).isFalse();
+    }
+
+    @Test
+    public void testIsSuccessStatusTrue() {
+        for (int i = 200; i < 300; i++) {
+            assertThat(HttpUtils.isSuccessStatus(i)).isTrue();
+        }
+    }
+
+    @Test
+    public void testIsSuccessStatusTooBig() {
+        assertThat(HttpUtils.isSuccessStatus(300)).isFalse();
+        assertThat(HttpUtils.isSuccessStatus(HttpConstants.STATUS_ERR_BAD_REQUEST)).isFalse();
+        assertThat(HttpUtils.isSuccessStatus(HttpConstants.STATUS_ERR_SERVER)).isFalse();
+        assertThat(HttpUtils.isSuccessStatus(Integer.MAX_VALUE)).isFalse();
+    }
 }
