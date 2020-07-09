@@ -71,7 +71,7 @@ public class SW360MetaDataUpdater {
     public Set<SW360License> getLicenses(Collection<License> licenses) {
         return licenses.stream()
                 .filter(this::isLicenseInSW360)
-                .map(license -> licenseClientAdapter.getSW360LicenseByAntennaLicense(license.getId()))
+                .map(license -> licenseClientAdapter.getLicenseByName(license.getId()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());

@@ -169,7 +169,7 @@ public class SW360MetaDataUpdaterTest {
         License licenseAntenna = new License();
         licenseAntenna.setId(licenseName);
         when(licenseClientAdapter.getLicenses()).thenReturn(testLicenses);
-        when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName))
+        when(licenseClientAdapter.getLicenseByName(licenseName))
                 .thenReturn(Optional.of(license));
         setUp(true, false);
 
@@ -177,7 +177,7 @@ public class SW360MetaDataUpdaterTest {
 
         assertThat(licenses).hasSize(1);
 
-        verify(licenseClientAdapter, times(1)).getSW360LicenseByAntennaLicense(licenseName);
+        verify(licenseClientAdapter, times(1)).getLicenseByName(licenseName);
     }
 
     @Test
@@ -189,7 +189,7 @@ public class SW360MetaDataUpdaterTest {
         licenseAntenna.setId(licenseName);
         when(licenseClientAdapter.getLicenses())
                 .thenReturn(createTestLicenses());
-        when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName))
+        when(licenseClientAdapter.getLicenseByName(licenseName))
                 .thenReturn(Optional.of(license));
         setUp(true, false);
 

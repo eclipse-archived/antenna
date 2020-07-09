@@ -42,20 +42,17 @@ class SW360LicenseClientAdapterAsyncImpl implements SW360LicenseClientAdapterAsy
     }
 
     @Override
-    public CompletableFuture<Boolean> isLicenseOfArtifactAvailable(String license) {
-        return getLicenseClient().getLicenses()
-                .thenApply(sw360Licenses -> sw360Licenses.stream()
-                        .map(SW360SparseLicense::getShortName)
-                        .anyMatch(n -> n.equals(license)));
-    }
-
-    @Override
-    public CompletableFuture<Optional<SW360License>> getSW360LicenseByAntennaLicense(String license) {
+    public CompletableFuture<Optional<SW360License>> getLicenseByName(String license) {
         return optionalFuture(getLicenseClient().getLicenseByName(license));
     }
 
     @Override
-    public CompletableFuture<Optional<SW360License>> getLicenseDetails(SW360SparseLicense sparseLicense) {
-        return optionalFuture(getLicenseClient().getLicenseByName(sparseLicense.getShortName()));
+    public CompletableFuture<SW360License> enrichSparseLicense(SW360SparseLicense sparseLicense) {
+        return getLicenseClient().getLicenseByName(sparseLicense.getShortName());
+    }
+
+    @Override
+    public CompletableFuture<SW360License> createLicense(SW360License license) {
+        return getLicenseClient().createLicense(license);
     }
 }

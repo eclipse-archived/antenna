@@ -40,9 +40,34 @@ public interface SW360LicenseClientAdapterAsync {
      */
     CompletableFuture<List<SW360SparseLicense>> getLicenses();
 
-    CompletableFuture<Boolean> isLicenseOfArtifactAvailable(String license);
+    /**
+     * Queries a license from SW360 by its (short) name. If the server
+     * responds with a 404 status indicating that the license is unknown,
+     * result is an empty {@code Optional}.
+     *
+     * @param license the ID of the desired license
+     * @return a future with an {@code Optional} with the license fetched from
+     * the server
+     */
+    CompletableFuture<Optional<SW360License>> getLicenseByName(String license);
 
-    CompletableFuture<Optional<SW360License>> getSW360LicenseByAntennaLicense(String license);
+    /**
+     * Transforms the given sparse license to an entity with full properties.
+     * This method looks up the license on the server by its name. It expects
+     * the license to be present. If the lookup fails, the future completes
+     * with a failure.
+     *
+     * @param sparseLicense the entity object for the sparse license
+     * @return a future with the resolved license
+     */
+    CompletableFuture<SW360License> enrichSparseLicense(SW360SparseLicense sparseLicense);
 
-    CompletableFuture<Optional<SW360License>> getLicenseDetails(SW360SparseLicense sparseLicense);
+    /**
+     * Creates a new license in SW360 based on the properties of the data
+     * object passed in.
+     *
+     * @param license the data object for the new license
+     * @return a future with the newly created license
+     */
+    CompletableFuture<SW360License> createLicense(SW360License license);
 }
