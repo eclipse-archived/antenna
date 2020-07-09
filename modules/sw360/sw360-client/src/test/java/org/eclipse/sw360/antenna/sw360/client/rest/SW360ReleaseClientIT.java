@@ -22,6 +22,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
+import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -193,5 +195,30 @@ public class SW360ReleaseClientIT extends AbstractMockServerTest {
         FailedRequestException exception =
                 expectFailedRequest(releaseClient.patchRelease(release), HttpConstants.STATUS_ERR_BAD_REQUEST);
         assertThat(exception.getTag()).isEqualTo(SW360ReleaseClient.TAG_UPDATE_RELEASE);
+    }
+
+    @Test
+    public void testDeleteReleases() throws IOException {
+        String relId1 = "res-1";
+        String relId2 = "res-2";
+        wireMockRule.stubFor(delete(urlPathEqualTo("/releases/" + relId1 + "," + relId2))
+                .willReturn(aJsonResponse(HttpConstants.STATUS_MULTI_STATUS)
+                        .withBodyFile("multi_status_success.json")));
+
+        MultiStatusResponse multiResponse = waitFor(releaseClient.deleteReleases(Arrays.asList(relId1, relId2)));
+        assertThat(multiResponse.responseCount()).isEqualTo(2);
+        assertThat(multiResponse.getStatus("res-1")).isEqualTo(200);
+        assertThat(multiResponse.getStatus("res-2")).isEqualTo(200);
+    }
+
+    @Test
+    public void testDeleteReleasesFailure() {
+        wireMockRule.stubFor(delete(anyUrl())
+                .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_SERVER)));
+
+        FailedRequestException exception =
+                expectFailedRequest(releaseClient.deleteReleases(Collections.singleton("relDelFail")),
+                        HttpConstants.STATUS_ERR_SERVER);
+        assertThat(exception.getTag()).isEqualTo(SW360ReleaseClient.TAG_DELETE_RELEASES);
     }
 }
