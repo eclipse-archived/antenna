@@ -24,7 +24,9 @@ import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.eclipse.sw360.antenna.http.utils.HttpUtils.waitFor;
@@ -117,5 +119,30 @@ public class SW360LicenseClientIT extends AbstractMockServerTest {
                 .willReturn(aResponse().withStatus(HttpConstants.STATUS_OK)));
 
         extractException(licenseClient.getLicenseByName("foo"), IOException.class);
+    }
+
+    @Test
+    public void testCreateLicense() throws IOException {
+        SW360License license = readTestJsonFile(resolveTestFileURL("license.json"), SW360License.class);
+        SW360License licenseCreated = readTestJsonFile(resolveTestFileURL("license.json"), SW360License.class);
+        licenseCreated.setText(license.getText() + "_updated");
+        wireMockRule.stubFor(post(urlPathEqualTo("/licenses"))
+                .withRequestBody(equalToJson(toJson(license)))
+                .willReturn(aJsonResponse(HttpConstants.STATUS_CREATED)
+                        .withBody(toJson(licenseCreated))));
+
+        SW360License result = waitFor(licenseClient.createLicense(license));
+        assertThat(result).isEqualTo(licenseCreated);
+    }
+
+    @Test
+    public void testCreateLicenseError() throws IOException {
+        SW360License license = readTestJsonFile(resolveTestFileURL("license.json"), SW360License.class);
+        wireMockRule.stubFor(post(urlPathEqualTo("/licenses"))
+                .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_SERVER)));
+
+        FailedRequestException exception =
+                expectFailedRequest(licenseClient.createLicense(license), HttpConstants.STATUS_ERR_SERVER);
+        assertThat(exception.getTag()).isEqualTo(SW360LicenseClient.TAG_CREATE_LICENSE);
     }
 }
