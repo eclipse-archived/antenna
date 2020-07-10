@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
@@ -185,5 +186,32 @@ public class FutureUtilsTest {
         CompletableFuture<Collection<Integer>> sequence = FutureUtils.sequence(futures, ex -> false);
         Collection<Integer> values = FutureUtils.block(sequence);
         assertThat(values).containsOnly(1, 2);
+    }
+
+    @Test
+    public void testWrapInFutureSuccess() {
+        final Integer result = 42;
+        Callable<Integer> action = () -> result;
+
+        CompletableFuture<Integer> actionFuture = FutureUtils.wrapInFuture(action, "don't care");
+        assertThat(FutureUtils.block(actionFuture)).isEqualTo(result);
+    }
+
+    @Test
+    public void testWrapInFutureFailure() {
+        String message = "My action failed?!";
+        Exception exception = new RuntimeException("Action failed");
+        Callable<Integer> action = () -> {
+            throw exception;
+        };
+
+        CompletableFuture<Integer> actionFuture = FutureUtils.wrapInFuture(action, message);
+        try {
+            FutureUtils.block(actionFuture);
+            fail("Future did not fail");
+        } catch (SW360ClientException e) {
+            assertThat(e.getMessage()).isEqualTo(message);
+            assertThat(e.getCause()).isEqualTo(exception);
+        }
     }
 }

@@ -18,14 +18,14 @@ import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360Attachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -50,6 +50,11 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?, ?
      * Tag for the request to download an attachment.
      */
     static final String TAG_DOWNLOAD_ATTACHMENT = "get_download_attachment";
+
+    /**
+     * Tag for the request to delete attachments.
+     */
+    static final String TAG_DELETE_ATTACHMENT = "delete_attachments";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360AttachmentAwareClient.class);
     private static final String ATTACHMENTS_ENDPOINT = "/attachments";
@@ -107,45 +112,80 @@ public abstract class SW360AttachmentAwareClient<T extends SW360HalResource<?, ?
     }
 
     /**
-     * Downloads a specific attachment file and stores it in the directory
-     * provided as parameter. The directory is created if it does not exist yet
-     * (but not any non-existing parent components). If the attachment cannot
-     * be resolved, the resulting future fails with a
+     * Fetches the content of an attachment and passes it to the
+     * {@code AttachmentProcessor} provided. A future with the result produced
+     * by the processor is returned. If the attachment cannot be resolved, the
+     * resulting future fails with a
      * {@link org.eclipse.sw360.antenna.http.utils.FailedRequestException} with
      * status code 404; it contains an {@code IOException} if there was a
-     * problem with an operation on the file system or if the server could not
-     * be contacted. Note that this operation is not atomic; it may already
-     * create a directory and then fail if the attachment cannot be resolved.
+     * problem with the processor or if the server could not be contacted.
      *
      * @param itemHref     the base resource URL to access the attachment entity
-     * @param attachment   a data object defining the attachment to be loaded
-     * @param downloadPath the path where to store the file downloaded
-     * @return a future with the path where the file was stored
+     * @param attachmentId the ID of the attachment to be processed
+     * @param processor    the object to process the attachment's content
+     * @param <S>          the result type of the {@code AttachmentProcessor}
+     * @return a future with the result produced by the
+     * {@code AttachmentProcessor}
      */
-    public CompletableFuture<Path> downloadAttachment(String itemHref, SW360SparseAttachment attachment,
-                                                      Path downloadPath) {
-        String attachmentId = attachment.getAttachmentId();
+    public <S> CompletableFuture<S> processAttachment(String itemHref, String attachmentId,
+                                                      AttachmentProcessor<? extends S> processor) {
         String url = itemHref + "/attachments/" + attachmentId;
-        try {
-            if (!Files.isDirectory(downloadPath)) {
-                LOGGER.debug("Creating download path {}.", downloadPath);
-                Files.createDirectory(downloadPath);
-            }
-            Path targetFile = downloadPath.resolve(attachment.getFilename());
+        return executeRequest(builder -> builder.uri(resolveAgainstBase(url).toString())
+                        .header(HttpConstants.HEADER_ACCEPT, HttpConstants.CONTENT_OCTET_STREAM),
+                response ->
+                        processor.processAttachmentStream(response.bodyStream()), TAG_DOWNLOAD_ATTACHMENT);
+    }
 
-            return executeRequest(builder -> builder.uri(resolveAgainstBase(url).toString())
-                    .header(HttpConstants.HEADER_ACCEPT, HttpConstants.CONTENT_OCTET_STREAM),
-                    response -> {
-                        Files.copy(response.bodyStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
-                        return targetFile;
-                    }, TAG_DOWNLOAD_ATTACHMENT);
-        } catch (IOException e) {
-            LOGGER.warn("Request to write downloaded attachment {} to {} failed with {}",
-                    attachment.getFilename(), downloadPath, e.getMessage());
-            LOGGER.debug("Error: ", e);
-            CompletableFuture<Path> failedFuture = new CompletableFuture<>();
-            failedFuture.completeExceptionally(e);
-            return failedFuture;
-        }
+    /**
+     * Deletes the specified attachments from the entity provided. A future
+     * with the updated entity is returned. If successful, callers should
+     * inspect the attachments of the entity to find out whether actually all
+     * could be deleted. (SW360 does not allow deleting attachments already in
+     * use; if only some of the attachments could be deleted, the request is
+     * successful, but the resulting entity will still contain the problematic
+     * ones.)
+     *
+     * @param entity        the entity to be updated
+     * @param attachmentIds a list with the IDs of the attachments to be
+     *                      deleted
+     * @return a future with the updated entity
+     */
+    public CompletableFuture<T> deleteAttachments(T entity, Collection<String> attachmentIds) {
+        String url = entity.getSelfLink().getHref() + ATTACHMENTS_ENDPOINT + "/" +
+                String.join(",", attachmentIds);
+        return executeJsonRequest(builder -> builder.uri(resolveAgainstBase(url).toString())
+                        .method(RequestBuilder.Method.DELETE),
+                getHandledClassType(), TAG_DELETE_ATTACHMENT);
+    }
+
+    /**
+     * <p>
+     * An interface for accessing and processing attachments from SW360
+     * resources.
+     * </p>
+     * <p>
+     * An object implementing this interface needs to be provided to the
+     * {@link #processAttachment(String, String, AttachmentProcessor)} method.
+     * It is invoked with the input stream for the attachment's content. This
+     * stream can be consumed to produce an arbitrary result. An obvious use
+     * case is copying the stream to a local file, which corresponds to an
+     * attachment download operation. But by providing different processor
+     * implementations, attachments can be handled in flexible ways.
+     * </p>
+     *
+     * @param <R> the result type of this processor
+     */
+    @FunctionalInterface
+    public interface AttachmentProcessor<R> {
+        /**
+         * Processes a stream with the content of an attachment and produces a
+         * result based on this operation. Implementations do not have to close
+         * the stream.
+         *
+         * @param stream the stream with the content of the attachment
+         * @return the result produced by this processor
+         * @throws IOException if an I/O error occurs
+         */
+        R processAttachmentStream(InputStream stream) throws IOException;
     }
 }

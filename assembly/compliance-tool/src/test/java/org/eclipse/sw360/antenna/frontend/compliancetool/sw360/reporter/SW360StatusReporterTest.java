@@ -47,8 +47,6 @@ public class SW360StatusReporterTest {
 
     @Test
     public void testStatusReporter() throws IOException {
-        when(configurationMock.getTargetDir())
-                .thenReturn(folder.getRoot().toPath());
         File csvFile = folder.newFile("result.csv");
         when(configurationMock.getCsvFilePath())
                 .thenReturn(csvFile.toPath());

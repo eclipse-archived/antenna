@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
+import org.eclipse.sw360.antenna.sw360.client.rest.SW360AttachmentAwareClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
@@ -137,6 +138,38 @@ public interface SW360ReleaseClientAdapterAsync {
      */
     CompletableFuture<Optional<Path>> downloadAttachment(SW360Release release, SW360SparseAttachment attachment,
                                                          Path downloadPath);
+
+    /**
+     * Processes an attachment of a release using the processor specified. This
+     * method opens a stream to download the attachment and passes the stream
+     * to the {@code AttachmentProcessor}. The processor can then decide how to
+     * deal with the content of the attachment and produce a corresponding
+     * result. While the {@code downloadAttachment()} method handles the
+     * default download use case, this method can be used to customize this use
+     * case.
+     *
+     * @param release      the release entity
+     * @param attachmentId the ID of the attachment in question
+     * @param processor    the processor to handle the attachment stream
+     * @param <T>          the result type of the {@code AttachmentProcessor}
+     * @return a future with the result produced by the
+     * {@code AttachmentProcessor}
+     */
+    <T> CompletableFuture<T> processAttachment(SW360Release release, String attachmentId,
+                                               SW360AttachmentAwareClient.AttachmentProcessor<? extends T> processor);
+
+    /**
+     * Deletes the attachments with the given IDs from the release specified.
+     * Note that this operation is successful even if some of the attachments
+     * could not be deleted; therefore, the set of attachments in the release
+     * returned should be checked to find out if some delete operations failed.
+     *
+     * @param release       the release entity
+     * @param attachmentIds a collection with the IDs of the attachments to be
+     *                      deleted
+     * @return a future with the updated release entity
+     */
+    CompletableFuture<SW360Release> deleteAttachments(SW360Release release, Collection<String> attachmentIds);
 
     /**
      * Updates a release. The release is updated in the database based on the

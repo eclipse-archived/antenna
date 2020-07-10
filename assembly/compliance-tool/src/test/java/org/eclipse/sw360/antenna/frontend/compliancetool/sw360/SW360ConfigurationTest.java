@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 
+import org.eclipse.sw360.antenna.api.exceptions.ConfigurationException;
 import org.eclipse.sw360.antenna.api.service.ServiceFactory;
 import org.eclipse.sw360.antenna.http.HttpClient;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
@@ -17,10 +18,12 @@ import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFact
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +32,11 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,8 +67,10 @@ public class SW360ConfigurationTest {
     public void testConfigurationWithExporterPropertiesFile() {
         File propertiesFile = configFile("compliancetool-exporter.properties");
         SW360Configuration configuration = new SW360Configuration(propertiesFile);
-        assertThat(configuration.getTargetDir()).isEqualTo(Paths.get("./"));
-        assertThat(configuration.getCsvFilePath()).isEqualTo(Paths.get("sample.csv"));
+        assertThat(configuration.getBaseDir()).isAbsolute();
+        assertThat(configuration.getBaseDir()).isNormalized();
+        assertThat(configuration.getCsvFilePath()).isAbsolute();
+        assertThat(configuration.getCsvFilePath().getFileName().toString()).isEqualTo("sample.csv");
         assertThat(configuration.getConnection().getReleaseAdapter()).isNotNull();
         assertThat(configuration.getConnection().getComponentAdapter()).isNotNull();
     }
@@ -72,9 +80,9 @@ public class SW360ConfigurationTest {
         File propertiesFile = configFile("compliancetool-updater.properties");
         SW360Configuration configuration = new SW360Configuration(propertiesFile);
         assertThat(configuration.getCsvFilePath().toFile().getName()).isEqualTo("compliancetool_updater_test.csv");
-        assertThat(configuration.getProperties().get("delimiter")).isEqualTo(",");
-        assertThat(configuration.getProperties().get("sw360updateReleases")).isEqualTo("true");
-        assertThat(configuration.getProperties().get("sw360uploadSources")).isEqualTo("false");
+        assertThat(configuration.getProperty("delimiter")).isEqualTo(",");
+        assertThat(configuration.getProperty("sw360updateReleases")).isEqualTo("true");
+        assertThat(configuration.getProperty("sw360uploadSources")).isEqualTo("false");
     }
 
     @Test
@@ -118,5 +126,41 @@ public class SW360ConfigurationTest {
 
         SW360Configuration configuration = new SW360Configuration(propertiesFile, conFactory, svcFactory);
         assertThat(configuration.getConnection()).isEqualTo(connection);
+    }
+
+    @Test
+    public void testLogConfig() {
+        final StringBuilder logBuffer = new StringBuilder();
+        Logger logger = mock(Logger.class);
+        doAnswer(invocationOnMock -> {
+            logBuffer.append(invocationOnMock.getArgument(0).toString())
+                    .append(" - ")
+                    .append(invocationOnMock.getArgument(1).toString())
+                    .append(System.lineSeparator());
+            return null;
+        }).when(logger).info(anyString(), any(Object.class));
+        Path localBaseDir = Paths.get(".").toAbsolutePath().normalize();
+        File propertiesFile = configFile("compliancetool-updater.properties");
+        SW360Configuration configuration = new SW360Configuration(propertiesFile);
+
+        configuration.logConfiguration(logger);
+        assertThat(logBuffer.toString())
+                .contains("Base directory", localBaseDir.toString(),
+                        "Sources directory", localBaseDir.resolve("sources").toString(),
+                        "CSV path", "updater_test.csv");
+    }
+
+    @Test
+    public void testQueryUndefinedConfigurationProperty() {
+        final String key = "undefined.property";
+        File propertiesFile = configFile("compliancetool-updater.properties");
+        SW360Configuration configuration = new SW360Configuration(propertiesFile);
+
+        try {
+            configuration.getProperty(key);
+            fail("Access to undefined property not detected!");
+        } catch (ConfigurationException e) {
+            assertThat(e.getMessage()).contains(key);
+        }
     }
 }

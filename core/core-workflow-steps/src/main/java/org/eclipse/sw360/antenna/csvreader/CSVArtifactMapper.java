@@ -428,17 +428,16 @@ public class CSVArtifactMapper {
         .orElse("");
     }
 
-    private static String getFilepathAsString(Artifact artifact) {
+    private String getFilepathAsString(Artifact artifact) {
         return artifact.askFor(ArtifactSourceFile.class)
                 .map(ArtifactFactWithPayload::get)
                 .map(pth -> getPathAsStringIfExists(pth, artifact))
                 .orElse("");
     }
 
-    private static String getPathAsStringIfExists(Path path, Artifact artifact) {
-        File file = path.toAbsolutePath().toFile();
-        if (file.exists()) {
-            return file.toString();
+    private String getPathAsStringIfExists(Path path, Artifact artifact) {
+        if (Files.exists(path)) {
+            return baseDir.relativize(path).toString();
         } else {
             artifact.getMainCoordinate().ifPresent(coordinate ->
                     LOGGER.debug("The given source file for artifact {} does not exist", coordinate));

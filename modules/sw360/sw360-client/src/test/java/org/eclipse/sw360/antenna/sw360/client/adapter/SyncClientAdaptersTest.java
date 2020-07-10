@@ -17,6 +17,7 @@ import org.junit.Test;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
@@ -67,11 +68,43 @@ public class SyncClientAdaptersTest {
         }
         ParameterizedType type = (ParameterizedType) method.getGenericReturnType();
         Type actualTypeArgument = type.getActualTypeArguments()[0];
-        Type expectedType = unbox(actualTypeArgument);
-        if (!syncMethod.getGenericReturnType().equals(expectedType)) {
+        if (!checkMethodReturnTypes(actualTypeArgument, syncMethod.getGenericReturnType())) {
             throw new AssertionError("Incompatible return type of method " + syncMethod +
-                    ". Expected " + expectedType);
+                    ". Expected " + actualTypeArgument);
         }
+    }
+
+    /**
+     * Compares the return types of a corresponding pair of an asynchronous and
+     * synchronous method. Here some corner cases have to be taken into
+     * account; for instance, the case that the return type is generic.
+     *
+     * @param asyncReturnType the return type of the asynchronous method (which
+     *                        has already been extracted from the future)
+     * @param syncReturnType  the return type of the synchronous method
+     * @return a flag whether both types are compatible
+     */
+    private static boolean checkMethodReturnTypes(Type asyncReturnType, Type syncReturnType) {
+        if (asyncReturnType.equals(syncReturnType)) {
+            return true;
+        }
+
+        // Deal with primitive and wrapper types
+        if (unbox(asyncReturnType).equals(syncReturnType)) {
+            return true;
+        }
+
+        // Special case generic return type
+        if (asyncReturnType instanceof TypeVariable<?> && syncReturnType instanceof TypeVariable<?>) {
+            TypeVariable<?> asyncVar = (TypeVariable<?>) asyncReturnType;
+            TypeVariable<?> syncVar = (TypeVariable<?>) syncReturnType;
+            if (asyncVar.getName().equals(syncVar.getName()) &&
+                    Arrays.equals(asyncVar.getBounds(), syncVar.getBounds())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

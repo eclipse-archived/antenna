@@ -15,6 +15,7 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingDocument;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
@@ -29,7 +30,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils.getArtifactsFromCsvFile;
 
@@ -49,12 +54,20 @@ public class SW360Updater {
      */
     public static final String PROP_REMOVE_CLEARING_DOCS = "removeClearingDocuments";
 
+    /**
+     * Configuration property that defines the location of synthetic clearing
+     * documents created by the updater. The path can be relative and is then
+     * resolved against the base directory.
+     */
+    public static final String PROP_CLEARING_DOC_FOLDER = "clearingDocDir";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360Updater.class);
 
     private final SW360UpdaterImpl updater;
     private final SW360Configuration configuration;
     private final ClearingReportGenerator generator;
 
+    private final Path clearingDocDir;
     private final boolean removeClearedSources;
     private final boolean removeClearingDocs;
 
@@ -64,25 +77,22 @@ public class SW360Updater {
         this.configuration = Objects.requireNonNull(configuration, "Configuration must not be null");
         this.generator = Objects.requireNonNull(generator, "Clearing report generator must not be null");
 
-        removeClearedSources = Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_CLEARED_SOURCES));
-        removeClearingDocs = Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_CLEARING_DOCS));
+        clearingDocDir = configuration.getBaseDir()
+                .resolve(configuration.getProperty(PROP_CLEARING_DOC_FOLDER));
+        removeClearedSources = configuration.getBooleanConfigValue(PROP_REMOVE_CLEARED_SOURCES);
+        removeClearingDocs = configuration.getBooleanConfigValue(PROP_REMOVE_CLEARING_DOCS);
     }
 
     public void execute() {
         LOGGER.debug("{} has started.", SW360Updater.class.getName());
-        Collection<Artifact> artifacts = getArtifactsFromCsvFile(configuration.getProperties(), configuration.getCsvFilePath());
+        Collection<Artifact> artifacts = getArtifactsFromCsvFile(configuration);
 
         artifacts.forEach(this::uploadReleaseWithClearingDocumentFromArtifact);
 
 
-        LOGGER.info("The SW360Exporter was executed from the base directory: {} " +
-                        "with the csv file taken from the path: {}, " +
-                        "the clearing reports taken or temporarily created in: {} " +
-                        "and the source files taken from the folder: {}.",
-                configuration.getBaseDir().toAbsolutePath(),
-                configuration.getCsvFilePath().toAbsolutePath(),
-                configuration.getTargetDir().toAbsolutePath(),
-                configuration.getSourcesPath().toAbsolutePath());
+        LOGGER.info("The SW360Updater was executed with the following configuration:");
+        configuration.logConfiguration(LOGGER);
+        LOGGER.info("Path for clearing documents: {}", clearingDocDir);
     }
 
     private void uploadReleaseWithClearingDocumentFromArtifact(Artifact artifact) {
@@ -93,21 +103,28 @@ public class SW360Updater {
             if (sw360ReleaseFromArtifact.getClearingState() != null &&
                     !sw360ReleaseFromArtifact.getClearingState().isEmpty() &&
                     ArtifactClearingState.ClearingState.valueOf(sw360ReleaseFromArtifact.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
-                SW360Release release = updater.artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact);
+                Path clearingDoc = getOrGenerateClearingDocument(sw360ReleaseFromArtifact, artifact);
+                Map<Path, SW360AttachmentType> clearingDocUpload =
+                        Collections.singletonMap(clearingDoc, SW360AttachmentType.CLEARING_REPORT);
+                AttachmentUploadResult<SW360Release> uploadResult =
+                        updater.artifactToReleaseWithUploads(artifact, sw360ReleaseFromArtifact, clearingDocUpload);
+                SW360Release release = uploadResult.getTarget();
                 SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnection().getReleaseAdapter();
 
-                Path clearingDoc = getOrGenerateClearingDocument(release, artifact);
                 AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
                         .addAttachment(clearingDoc,
                                 SW360AttachmentType.CLEARING_REPORT)
                         .build();
                 releaseClientAdapter.uploadAttachments(uploadRequest);
 
+                Set<Path> failedUploads = uploadResult.failedUploads().keySet().stream()
+                        .map(AttachmentUploadRequest.Item::getPath)
+                        .collect(Collectors.toSet());
                 if (removeClearedSources) {
-                    removeSourceArtifacts(artifact, release);
+                    removeSourceArtifact(artifact, release, failedUploads);
                 }
                 if (removeClearingDocs) {
-                    removeClearingDocument(clearingDoc);
+                    removeClearingDocument(clearingDoc, failedUploads);
                 }
             }
         } catch (SW360ClientException e) {
@@ -117,29 +134,38 @@ public class SW360Updater {
 
     private Path getOrGenerateClearingDocument(SW360Release release, Artifact artifact) {
         return artifact.askFor(ArtifactClearingDocument.class).map(ArtifactClearingDocument::get)
-                .orElse(generator.createClearingDocument(release, configuration.getTargetDir()));
+                .orElse(generator.createClearingDocument(release, clearingDocDir));
     }
 
-    private static void removeSourceArtifacts(Artifact artifact, SW360Release release) {
-        ArtifactToAttachmentUtils.getAttachmentsFromArtifact(artifact).keySet()
-                .forEach(path -> {
-                    LOGGER.info("Removing source attachment {} of release {}:{}.", path,
-                            release.getName(), release.getVersion());
-                    try {
-                        Files.delete(path);
-                    } catch (IOException e) {
-                        LOGGER.error("Could not remove source attachment {} of release {}:{}", path,
-                                release.getName(), release.getVersion());
-                    }
-                });
+    private static void removeSourceArtifact(Artifact artifact, SW360Release release, Set<Path> failedUploads) {
+        ArtifactToAttachmentUtils.getSourceAttachmentFromArtifact(artifact)
+                .ifPresent(path -> removeUploadedFile(path, failedUploads, "source attachment of release " +
+                        release.getName() + ":" + release.getVersion()));
     }
 
-    private static void removeClearingDocument(Path clearingDoc) {
-        LOGGER.debug("Removing clearing document {}.", clearingDoc);
-        try {
-            Files.delete(clearingDoc);
-        } catch (IOException e) {
-            LOGGER.error("Could not delete clearing document {}", clearingDoc, e);
+    private static void removeClearingDocument(Path clearingDoc, Set<Path> failedUploads) {
+        removeUploadedFile(clearingDoc, failedUploads, "clearing document");
+    }
+
+    /**
+     * Removes a file after it has been uploaded. Before deleting the file, it
+     * is checked whether the upload actually was successful; otherwise, the
+     * file is kept.
+     *
+     * @param path          the path to the file to be deleted
+     * @param failedUploads a set with files that could not be uploaded
+     * @param tag           a tag describing the file for log output
+     */
+    private static void removeUploadedFile(Path path, Set<Path> failedUploads, String tag) {
+        if (failedUploads.contains(path)) {
+            LOGGER.debug("Skipping removal of {} {} as it could not be uploaded.", tag, path);
+        } else {
+            LOGGER.debug("Removing {} {}.", tag, path);
+            try {
+                Files.delete(path);
+            } catch (IOException e) {
+                LOGGER.error("Could not delete {} {}", tag, path, e);
+            }
         }
     }
 }

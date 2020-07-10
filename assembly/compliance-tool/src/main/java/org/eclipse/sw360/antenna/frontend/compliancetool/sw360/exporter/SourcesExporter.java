@@ -10,6 +10,9 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.exporter;
 
+import org.apache.commons.lang.text.StrBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360AttachmentUtils;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapterAsync;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
@@ -21,14 +24,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -42,19 +46,34 @@ import java.util.stream.Collectors;
  * </p>
  * <p>
  * The compliance tool exporter delegates to an instance of this class for all
- * download-related functionality.
+ * download-related functionality. Downloads are done in parallel for all
+ * source attachments assigned to releases. Files are stored in a directory
+ * structure below the configured sources directory. To avoid clashes with file
+ * names (there is no guarantee that only unique file names are used for
+ * attachments), for each release a dedicated folder is created in which its
+ * source attachments are downloaded. The folder structure is derived from the
+ * release name and its version.
  * </p>
  */
 class SourcesExporter {
     /**
-     * Format to generate a message about an unresolvable attachment.
-     */
-    private static final String FMT_UNRESOLVABLE_ATTACHMENT = "Could not resolve attachment %s for release %s:%s";
-
-    /**
      * Format to generate a message about a failed attachment download.
      */
     private static final String FMT_DOWNLOAD_ERROR = "Failed to download attachment %s for release %s:%s";
+
+    /**
+     * A string with characters that are allowed in path names generated from
+     * release names. If a release name, its version, or an attachment file
+     * name contains characters not contained in this string, they are replaced
+     * to avoid problems with file system operations.
+     */
+    private static final String ALLOWED_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+            "0123456789.:-";
+
+    /**
+     * The character to replace illegal characters in path names.
+     */
+    private static final char REPLACE_CHARACTER = '_';
 
     private static final Logger LOG = LoggerFactory.getLogger(SourcesExporter.class);
 
@@ -95,31 +114,19 @@ class SourcesExporter {
     }
 
     /**
-     * Removes all files from the sources directory which are not referenced by
-     * one of the given releases. This method can be called after the download
-     * is complete to clean-up the directory from files that are no longer
-     * relevant for the compliance workflow.
+     * Removes all files and directories from the sources directory which are
+     * not referenced by one of the given releases. This method can be called
+     * after the download is complete to clean-up the directory from files that
+     * are no longer relevant for the compliance workflow.
      *
      * @param releases the list with currently relevant releases
      */
     public void removeUnreferencedFiles(Collection<ReleaseWithSources> releases) {
-        Set<Path> referencedPaths = releases.stream()
-                .flatMap(release -> release.getSourceAttachmentPaths().stream())
-                .collect(Collectors.toSet());
-
-        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(sourcePath)) {
-            for (Path path : dirStream) {
-                if (!referencedPaths.contains(path)) {
-                    LOG.info("Removing unreferenced source attachment {}.", path);
-                    try {
-                        Files.delete(path);
-                    } catch (IOException e) {
-                        LOG.warn("Could not delete source attachment {}", path, e);
-                    }
-                }
-            }
+        RemoveUnreferencedFilesVisitor visitor = new RemoveUnreferencedFilesVisitor(releases);
+        try {
+            Files.walkFileTree(sourcePath, visitor);
         } catch (IOException e) {
-            LOG.error("Could not open stream for sources directory {}", sourcePath, e);
+            LOG.error("Could not traverse sources directory {}", sourcePath, e);
         }
     }
 
@@ -146,9 +153,10 @@ class SourcesExporter {
      */
     private CompletableFuture<ReleaseWithSources>
     downloadSourcesForRelease(SW360ReleaseClientAdapterAsync releaseAdapter, SW360Release release) {
+        Path releaseFolder = pathForRelease(release);
         List<CompletableFuture<Path>> downloads = release.getEmbedded().getAttachments().stream()
                 .filter(attachment -> attachment.getAttachmentType() == SW360AttachmentType.SOURCE)
-                .map(attachment -> downloadAttachment(releaseAdapter, release, attachment))
+                .map(attachment -> downloadAttachment(releaseAdapter, release, attachment, releaseFolder))
                 .collect(Collectors.toList());
         return FutureUtils.sequence(downloads, SourcesExporter::logDownloadFailure)
                 .thenApply(paths -> new ReleaseWithSources(release, new HashSet<>(paths)));
@@ -162,25 +170,20 @@ class SourcesExporter {
      * @param releaseAdapter the release adapter
      * @param release        the release the download is for
      * @param attachment     the attachment to be downloaded
+     * @param releasePath    the path where to store the release's attachments
      * @return a future that completes when the download is finished
      */
     private CompletableFuture<Path> downloadAttachment(SW360ReleaseClientAdapterAsync releaseAdapter,
-                                                       SW360Release release, SW360SparseAttachment attachment) {
-        return getLocalAttachmentPath(attachment)
-                .map(path -> CompletableFuture.completedFuture(Optional.of(path)))
-                .orElseGet(() -> FutureUtils.wrapFutureForConditionalFallback(releaseAdapter.downloadAttachment(release,
-                        attachment, sourcePath), ex -> true,
+                                                       SW360Release release, SW360SparseAttachment attachment,
+                                                       Path releasePath) {
+        return getLocalAttachmentPath(attachment, releasePath)
+                .map(CompletableFuture::completedFuture)
+                .orElseGet(() -> FutureUtils.wrapFutureForConditionalFallback(releaseAdapter.processAttachment(release,
+                        attachment.getAttachmentId(),
+                        createDownloadProcessor(releasePath, attachment)), ex -> true,
                         () -> FutureUtils.failedFuture(new IllegalStateException(String.format(FMT_DOWNLOAD_ERROR,
                                 attachment.getFilename(), release.getName(), release.getVersion()))))
-                )
-                .thenApply(optPath -> {
-                    if (optPath.isPresent()) {
-                        return optPath.get();
-                    } else {
-                        throw new IllegalStateException(String.format(FMT_UNRESOLVABLE_ATTACHMENT,
-                                attachment.getFilename(), release.getName(), release.getVersion()));
-                    }
-                });
+                );
     }
 
     /**
@@ -191,11 +194,12 @@ class SourcesExporter {
      * result is an empty {@code Optional}, and the attachment must be
      * downloaded.
      *
-     * @param attachment the attachment affected
+     * @param attachment  the attachment affected
+     * @param releasePath the path where to store the release's attachments
      * @return an {@code Optional} with the local attachment path
      */
-    private Optional<Path> getLocalAttachmentPath(SW360SparseAttachment attachment) {
-        Path localPath = sourcePath.resolve(attachment.getFilename());
+    private Optional<Path> getLocalAttachmentPath(SW360SparseAttachment attachment, Path releasePath) {
+        Path localPath = releasePath.resolve(attachment.getFilename());
         try {
             return Files.exists(localPath) &&
                     calculateLocalAttachmentHash(localPath).equals(attachment.getSha1()) ?
@@ -204,6 +208,33 @@ class SourcesExporter {
             LOG.warn("Failed to verify local attachment file", e);
             return Optional.empty();
         }
+    }
+
+    /**
+     * Determines the local path where files associated with the given release
+     * are stored. All the releases of a component are stored in the same sub
+     * folder; the attachments of a specific release are in a sub folder whose
+     * name is derived from the version.
+     *
+     * @param release the release
+     * @return the storage directory for the attachments of this release
+     */
+    private Path pathForRelease(SW360Release release) {
+        return sourcePath.resolve(sanitizePath(release.getName()))
+                .resolve(sanitizePath(release.getVersion()));
+    }
+
+    /**
+     * Creates the processor to download an attachment of a release.
+     *
+     * @param releasePath the download path for the release
+     * @param attachment  the attachment to be downloaded
+     * @return the processor to download this attachment
+     */
+    private static SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolderWithParents
+    createDownloadProcessor(Path releasePath, SW360SparseAttachment attachment) {
+        return new SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolderWithParents(releasePath,
+                sanitizePath(attachment.getFilename()), StandardCopyOption.REPLACE_EXISTING);
     }
 
     /**
@@ -221,64 +252,156 @@ class SourcesExporter {
     }
 
     /**
-     * A data class storing information about a release and the paths to the
-     * source attachments that have been downloaded.
+     * Makes sure that a string to be used as path name contains only allowed
+     * characters. All other characters are replaced by an underscore.
+     *
+     * @param name the name to be sanitized
+     * @return the name with problematic characters replaced
      */
-    static final class ReleaseWithSources {
-        /**
-         * The release.
-         */
-        private final SW360Release release;
-
-        /**
-         * A set with paths to source attachments that have been downloaded.
-         */
-        private final Set<Path> sourceAttachmentPaths;
-
-        public ReleaseWithSources(SW360Release release, Set<Path> sourceAttachmentPaths) {
-            this.release = release;
-            this.sourceAttachmentPaths = Collections.unmodifiableSet(new HashSet<>(sourceAttachmentPaths));
+    private static String sanitizePath(String name) {
+        if (StringUtils.containsOnly(name, ALLOWED_CHARACTERS)) {
+            return name;
         }
 
+        StrBuilder buf = new StrBuilder(name.length());
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            buf.append(ALLOWED_CHARACTERS.indexOf(c) >= 0 ? c : REPLACE_CHARACTER);
+        }
+        return buf.toString();
+    }
+
+    /**
+     * An implementation of a file visitor to iterate over the sources folder
+     * and to remove all files and folders that are not referenced by the
+     * current set of releases. As the releases of a component share parts of
+     * the folder structure, it has to be checked carefully, which files can
+     * actually be removed.
+     */
+    private static class RemoveUnreferencedFilesVisitor extends SimpleFileVisitor<Path> {
         /**
-         * Returns the release.
+         * A set with tuples for all existing releases and versions.
+         */
+        private final Set<Pair<String, String>> releaseVersions;
+
+        /**
+         * A set with the names of all the existing releases.
+         */
+        private final Set<String> releaseNames;
+
+        /**
+         * Stores the name of the release that is associated with the currently
+         * visited directory.
+         */
+        private String currentReleaseName;
+
+        /**
+         * Keeps track on the level in the current directory structure.
+         */
+        private int level = -1;
+
+        /**
+         * A flag whether elements encountered during the traversal of the
+         * directory structure should be deleted.
+         */
+        private boolean shouldDelete;
+
+        /**
+         * Creates a new instance of {@code RemoveUnreferencedFilesVisitor} and
+         * initializes it with all existing releases.
          *
-         * @return the release
+         * @param releases a collection with all known releases
          */
-        public SW360Release getRelease() {
-            return release;
+        public RemoveUnreferencedFilesVisitor(Collection<ReleaseWithSources> releases) {
+            releaseVersions = extractReleaseVersions(releases);
+            releaseNames = extractReleaseNames(releases);
+        }
+
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+            level++;
+            updateTraversalState(dir);
+            return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+            deleteIfNecessary(file, "Removing unreferenced source attachment {}.");
+            return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+            level--;
+            if (level >= 0) {
+                deleteIfNecessary(dir, "Removing unreferenced directory {}.");
+            }
+            updateTraversalState(dir.getParent());
+            return FileVisitResult.CONTINUE;
         }
 
         /**
-         * Returns an unmodifiable set with paths to attachments that have been
-         * downloaded.
+         * Updates the current state of the traversal after changing the
+         * current directory. Keeps track on the release associated with the
+         * current directory; checks whether it exists and if files need to be
+         * deleted.
          *
-         * @return the set of downloaded attachment paths
+         * @param dir the current directory in the traversal
          */
-        public Set<Path> getSourceAttachmentPaths() {
-            return sourceAttachmentPaths;
+        private void updateTraversalState(Path dir) {
+            if (level == 1) {
+                currentReleaseName = String.valueOf(dir.getFileName());
+                shouldDelete = !releaseNames.contains(currentReleaseName);
+            } else if (level == 2) {
+                Pair<String, String> relVer = Pair.of(currentReleaseName, String.valueOf(dir.getFileName()));
+                shouldDelete = !releaseVersions.contains(relVer);
+            } else {
+                shouldDelete = level >= 0;
+            }
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ReleaseWithSources that = (ReleaseWithSources) o;
-            return Objects.equals(getRelease(), that.getRelease()) &&
-                    Objects.equals(getSourceAttachmentPaths(), that.getSourceAttachmentPaths());
+        /**
+         * Deletes an element from a folder structure depending on the current
+         * state of the traversal. Logs a message and handles exceptions.
+         *
+         * @param path the path to be deleted
+         * @param msg  the message to be logged
+         */
+        private void deleteIfNecessary(Path path, String msg) {
+            if (shouldDelete) {
+                LOG.info(msg, path);
+                try {
+                    Files.delete(path);
+                } catch (IOException e) {
+                    LOG.warn("Could not delete source attachment {}", path, e);
+                }
+            }
         }
 
-        @Override
-        public int hashCode() {
-            return Objects.hash(getRelease(), getSourceAttachmentPaths());
+        /**
+         * Generates a set with tuples for all known releases and their
+         * versions.
+         *
+         * @param releases a collection with all known releases
+         * @return a set with the known releases and versions
+         */
+        private static Set<Pair<String, String>> extractReleaseVersions(Collection<ReleaseWithSources> releases) {
+            return releases.stream()
+                    .map(release -> Pair.of(sanitizePath(release.getRelease().getName()),
+                            sanitizePath(release.getRelease().getVersion())))
+                    .collect(Collectors.toSet());
         }
 
-        @Override
-        public String toString() {
-            return "ReleaseWithSources{" +
-                    "release=" + release +
-                    ", sourceAttachmentPaths=" + sourceAttachmentPaths +
-                    '}';
+        /**
+         * Generates a set with the names of all known releases.
+         *
+         * @param releases a collection with all known releases
+         * @return a set with all existing release names
+         */
+        private static Set<String> extractReleaseNames(Collection<ReleaseWithSources> releases) {
+            return releases.stream()
+                    .map(release -> sanitizePath(release.getRelease().getName()))
+                    .collect(Collectors.toSet());
         }
     }
 }

@@ -17,15 +17,16 @@ import org.eclipse.sw360.antenna.api.configuration.AntennaContext;
 import org.eclipse.sw360.antenna.api.configuration.ToolConfiguration;
 import org.eclipse.sw360.antenna.http.HttpClient;
 import org.eclipse.sw360.antenna.model.Configuration;
+import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.workflow.SW360ConnectionConfigurationFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,15 +39,14 @@ import static org.mockito.Mockito.when;
 
 public class SW360UpdaterTest {
 
-    @Mock
-    protected AntennaContext antennaContextMock = mock(AntennaContext.class);
-    @Mock
-    protected ToolConfiguration toolConfigMock = mock(ToolConfiguration.class);
-    @Mock
-    protected Configuration configMock = mock(Configuration.class);
+    private AntennaContext antennaContextMock;
 
     @Before
     public void setUp() {
+        antennaContextMock = mock(AntennaContext.class);
+        ToolConfiguration toolConfigMock = mock(ToolConfiguration.class);
+        Configuration configMock = mock(Configuration.class);
+
         final String projectName = "projectName";
         final String version = "version";
         when(toolConfigMock.getProductFullName())
@@ -58,6 +58,21 @@ public class SW360UpdaterTest {
                 .thenReturn(toolConfigMock);
         when(antennaContextMock.getConfiguration())
                 .thenReturn(configMock);
+    }
+
+    private static Map<String, String> createConfigMap() {
+        return Stream.of(new String[][]{
+                {"rest.server.url", "https://sw360.org/api"},
+                {"auth.server.url", "https://auth.sw360.org/token"},
+                {"user.id", "scott"},
+                {"user.password", "tiger"},
+                {"client.id", "test-client"},
+                {"client.password", "test-client-pwd"},
+                {"upload_sources", "true"},
+                {"update_releases", "true"},
+                {"delete_obsolete_sources", "true"},
+                {"proxy.use", "true"}})
+                .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
     }
 
     @Test
@@ -80,17 +95,7 @@ public class SW360UpdaterTest {
         SW360Updater updater = new SW360Updater(connectionFactory);
         updater.setAntennaContext(antennaContextMock);
 
-        Map<String, String> configMap = Stream.of(new String[][]{
-                {"rest.server.url", "https://sw360.org/api"},
-                {"auth.server.url", "https://auth.sw360.org/token"},
-                {"user.id", "scott"},
-                {"user.password", "tiger"},
-                {"client.id", "test-client"},
-                {"client.password", "test-client-pwd"},
-                {"upload_sources", "true"},
-                {"update_releases", "true"},
-                {"proxy.use", "true"}})
-                .collect(Collectors.toMap(entry -> entry[0], entry -> entry[1]));
+        Map<String, String> configMap = createConfigMap();
 
         updater.configure(configMap);
 
@@ -106,14 +111,35 @@ public class SW360UpdaterTest {
     }
 
     @Test
-    public void testProduce() {
-        SW360UpdaterImpl updaterImpl = mock(SW360UpdaterImpl.class);
-        when(updaterImpl.produce(Collections.emptySet()))
-                .thenReturn(Collections.emptyMap());
-        SW360Updater updater = new SW360Updater();
-        updater.setUpdaterImpl(updaterImpl);
-        final Map<String, IAttachable> releases = updater.produce(Collections.emptySet());
+    public void testCreateUpdaterImpl() {
+        SW360ConnectionConfigurationFactory connectionFactory = mock(SW360ConnectionConfigurationFactory.class);
+        SW360Connection connection = mock(SW360Connection.class);
+        when(connectionFactory.createConnection(any(), any(), any())).thenReturn(connection);
+        SW360Updater updater = new SW360Updater(connectionFactory);
+        updater.setAntennaContext(antennaContextMock);
 
-        assertThat(releases).isEmpty();
+        SW360UpdaterImpl updaterImpl = updater.createUpdaterImpl(createConfigMap());
+        assertThat(updaterImpl.isUpdateReleases()).isTrue();
+        assertThat(updaterImpl.isUploadSources()).isTrue();
+        assertThat(updaterImpl.isDeleteObsoleteSourceAttachments()).isTrue();
+    }
+
+    @Test
+    public void testProduce() {
+        Set<Artifact> artifacts = Collections.singleton(mock(Artifact.class));
+        Map<String, IAttachable> updateResult = Collections.singletonMap("foo", mock(IAttachable.class));
+        final SW360UpdaterImpl updaterImpl = mock(SW360UpdaterImpl.class);
+        when(updaterImpl.produce(artifacts))
+                .thenReturn(updateResult);
+        SW360Updater updater = new SW360Updater() {
+            @Override
+            SW360UpdaterImpl createUpdaterImpl(Map<String, String> configMap) {
+                return updaterImpl;
+            }
+        };
+        updater.configure(createConfigMap());
+
+        final Map<String, IAttachable> releases = updater.produce(artifacts);
+        assertThat(releases).isEqualTo(updateResult);
     }
 }

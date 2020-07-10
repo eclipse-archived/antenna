@@ -18,7 +18,6 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
@@ -28,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -49,18 +47,19 @@ public class SW360Exporter {
     public static final String PROP_DELIMITER = "delimiter";
 
     /**
-     * The configuration property defining the base directory for the exporter.
-     * Relative paths are resolved against this directory.
-     */
-    public static final String PROP_BASEDIR = "basedir";
-
-    /**
      * The configuration property that controls whether source files that are
      * not referenced by any of the current components should be removed. If
      * set to <strong>true</strong>, obsolete source attachments are cleaned up
      * automatically.
      */
     public static final String PROP_REMOVE_SOURCES = "removeUnreferencedSources";
+
+    /**
+     * A {@code Comparator} for sorting {@code ReleaseWithSources} objects.
+     * This comparator is used to sort the list of releases before it is
+     * written to the output CSV file.
+     */
+    static final Comparator<ReleaseWithSources> RELEASES_COMPARATOR = createReleaseComparator();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360Exporter.class);
 
@@ -87,11 +86,11 @@ public class SW360Exporter {
 
         Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases);
 
-        Collection<SourcesExporter.ReleaseWithSources> nonApprovedReleasesWithSources =
+        Collection<ReleaseWithSources> nonApprovedReleasesWithSources =
                 sourcesExporter.downloadSources(connection.getReleaseAdapterAsync(), sw360ReleasesNotApproved);
 
         List<Artifact> artifacts = nonApprovedReleasesWithSources.stream()
-                .sorted(releasesComparator().reversed())
+                .sorted(RELEASES_COMPARATOR)
                 .map(this::releaseAsArtifact)
                 .collect(Collectors.toList());
 
@@ -99,36 +98,31 @@ public class SW360Exporter {
                 .toFile();
 
         CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(),
-                Charset.forName(configuration.getProperties().get(PROP_ENCODING)),
-                configuration.getProperties().get(PROP_DELIMITER).charAt(0),
-                Paths.get(configuration.getProperties().get(PROP_BASEDIR)));
+                Charset.forName(configuration.getProperty(PROP_ENCODING)),
+                configuration.getProperty(PROP_DELIMITER).charAt(0),
+                configuration.getBaseDir());
 
         csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
 
-        if (Boolean.parseBoolean(configuration.getProperties().get(PROP_REMOVE_SOURCES))) {
+        if (Boolean.parseBoolean(configuration.getProperty(PROP_REMOVE_SOURCES))) {
             sourcesExporter.removeUnreferencedFiles(nonApprovedReleasesWithSources);
         }
 
-        LOGGER.info("The SW360Exporter was executed from the base directory: {} " +
-                        "with the csv file written to the path: {} " +
-                        "and the source files written to the folder: {}. ",
-                configuration.getBaseDir().toAbsolutePath(),
-                csvFile.toPath(),
-                configuration.getTargetDir().toAbsolutePath());
+        LOGGER.info("The SW360Exporter was executed with the following configuration:");
+        configuration.logConfiguration(LOGGER);
     }
 
-    private Artifact releaseAsArtifact(SourcesExporter.ReleaseWithSources release) {
+    private Artifact releaseAsArtifact(ReleaseWithSources release) {
         Artifact artifact = ArtifactToReleaseUtils.convertToArtifactWithoutSourceFile(release.getRelease(),
                 new Artifact("SW360"));
-        release.getSourceAttachmentPaths().forEach(path ->
-                artifact.addFact(new ArtifactSourceFile(path)));
+        addSourceAttachment(release, artifact);
         return artifact;
     }
 
     private Collection<SW360SparseRelease> getReleasesFromComponents(Collection<SW360SparseComponent> components) {
         return components.stream()
-                .map(this::getIdFromHalResource)
-                .filter(id -> !id.equals(""))
+                .map(SW360HalResource::getId)
+                .filter(Objects::nonNull)
                 .map(id -> connection.getComponentAdapter().getComponentById(id))
                 .map(component -> component.orElse(null))
                 .filter(Objects::nonNull)
@@ -138,19 +132,42 @@ public class SW360Exporter {
 
     private Collection<SW360Release> getNonApprovedReleasesFromSpareReleases(Collection<SW360SparseRelease> sw360SparseReleases) {
         return sw360SparseReleases.stream()
-                .map(this::getIdFromHalResource)
-                .filter(id -> !id.equals(""))
+                .map(SW360HalResource::getId)
+                .filter(Objects::nonNull)
                 .map(id -> connection.getReleaseAdapter().getReleaseById(id))
                 .map(Optional::get)
                 .filter(sw360Release -> !ComplianceFeatureUtils.isApproved(sw360Release))
                 .collect(Collectors.toList());
     }
 
-    private <T extends SW360HalResource<?, ?>> String getIdFromHalResource(T halResource) {
-        return SW360HalResourceUtility.getLastIndexOfSelfLink(halResource.getLinks().getSelf()).orElse("");
+    /**
+     * Adds the single source attachment to the given artifact if it exists.
+     * A release in SW360 may be assigned multiple source attachments, but for
+     * the workflow of the compliance tool, we support only a single one. So if
+     * multiple source attachments exist, they are all downloaded, but no
+     * source path is added to the artifact; during curation, the correct
+     * source artifact must be selected explicitly.
+     *
+     * @param release  the release
+     * @param artifact the artifact to be updated
+     */
+    private static void addSourceAttachment(ReleaseWithSources release, Artifact artifact) {
+        if (release.getSourceAttachmentPaths().size() == 1) {
+            release.getSourceAttachmentPaths().forEach(path ->
+                    artifact.addFact(new ArtifactSourceFile(path)));
+        }
     }
 
-    private static Comparator<SourcesExporter.ReleaseWithSources> releasesComparator() {
-        return Comparator.comparing(releaseWithSources -> releaseWithSources.getRelease().getCreatedOn());
+    /**
+     * Creates a {@code Comparator} for sorting a list of
+     * {@code ReleaseWithSources} objects.
+     *
+     * @return the {@code Comparator}
+     */
+    private static Comparator<ReleaseWithSources> createReleaseComparator() {
+        Comparator<ReleaseWithSources> cCreatedAsc = Comparator.comparing(rel -> rel.getRelease().getCreatedOn());
+        Comparator<ReleaseWithSources> cCreated = cCreatedAsc.reversed();
+        return cCreated.thenComparing(rel -> rel.getRelease().getName())
+                .thenComparing(rel -> rel.getRelease().getVersion());
     }
 }

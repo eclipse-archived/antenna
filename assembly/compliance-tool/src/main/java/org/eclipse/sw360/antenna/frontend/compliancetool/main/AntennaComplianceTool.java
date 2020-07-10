@@ -82,11 +82,13 @@ public class AntennaComplianceTool {
         SW360Configuration configuration = new SW360Configuration(propertiesFile.toFile());
 
         SW360UpdaterImpl updaterImpl = new SW360UpdaterImpl(new SW360MetaDataUpdater(
-                configuration.getConnection(),
-                configuration.getBooleanConfigValue("sw360updateReleases"),
-                configuration.getBooleanConfigValue("sw360uploadSources")),
+                configuration.getConnection()
+        ),
                 "redundant project name",
-                "redundant project version");
+                "redundant project version",
+                configuration.getBooleanConfigValue("sw360updateReleases"),
+                configuration.getBooleanConfigValue("sw360uploadSources"),
+                configuration.getBooleanConfigValue("sw360deleteObsoleteSources"));
         // since we only use the updaters functionality to handle individual releases,
         // we do not need to give a project name or version.
 
