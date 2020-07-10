@@ -10,13 +10,17 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
+import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
+import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360LicenseClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
+import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -41,51 +45,61 @@ public class SW360LicenseClientAdapterAsyncImplTest {
     }
 
     @Test
-    public void testIsLicenseOfArtifactAvailableIsAvailable() {
-        SW360SparseLicense sparseLicense = new SW360SparseLicense()
-                .setShortName(LICENSE_NAME);
+    public void testGetLicenses() {
+        List<SW360SparseLicense> licenses = Arrays.asList(new SW360SparseLicense().setShortName("l1"),
+                new SW360SparseLicense().setShortName("l2"));
         when(licenseClient.getLicenses())
-                .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseLicense)));
+                .thenReturn(CompletableFuture.completedFuture(licenses));
 
-        boolean licenseOfArtifactAvailable = block(licenseClientAdapter.isLicenseOfArtifactAvailable(LICENSE_NAME));
-
-        assertThat(licenseOfArtifactAvailable).isTrue();
-        verify(licenseClient, atLeastOnce()).getLicenses();
+        List<SW360SparseLicense> result = block(licenseClientAdapter.getLicenses());
+        assertThat(result).isEqualTo(licenses);
     }
 
     @Test
-    public void testIsLicenseOfArtifactAvailableIsNotAvailable() {
-        SW360SparseLicense sparseLicense = new SW360SparseLicense()
-                .setShortName(LICENSE_NAME);
-        when(licenseClient.getLicenses())
-                .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseLicense)));
-
-        boolean licenseOfArtifactAvailable =
-                block(licenseClientAdapter.isLicenseOfArtifactAvailable(LICENSE_NAME + "-no"));
-
-        assertThat(licenseOfArtifactAvailable).isFalse();
-        verify(licenseClient, atLeastOnce()).getLicenses();
-    }
-
-    @Test
-    public void testGetSW360LicenseByAntennaLicense() {
+    public void testGetLicenseByName() {
         SW360License license = prepareLicenseClientGetLicenseByName();
 
         Optional<SW360License> sw360LicenseByAntennaLicense =
-                block(licenseClientAdapter.getSW360LicenseByAntennaLicense(LICENSE_NAME));
+                block(licenseClientAdapter.getLicenseByName(LICENSE_NAME));
 
-        assertLicenseByNameResult(license, sw360LicenseByAntennaLicense);
+        assertThat(sw360LicenseByAntennaLicense).isPresent();
+        assertThat(sw360LicenseByAntennaLicense).hasValue(license);
+        verify(licenseClient, atLeastOnce()).getLicenseByName(LICENSE_NAME);
     }
 
     @Test
-    public void testGetLicenseDetails() {
+    public void testGetLicenseByNameUnresolved() {
+        FailedRequestException exception =
+                new FailedRequestException("get_license", HttpConstants.STATUS_ERR_NOT_FOUND);
+        when(licenseClient.getLicenseByName(LICENSE_NAME))
+                .thenReturn(FutureUtils.failedFuture(exception));
+
+        Optional<SW360License> result = block(licenseClientAdapter.getLicenseByName(LICENSE_NAME));
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    public void testEnrichSparseLicense() {
         SW360License license = prepareLicenseClientGetLicenseByName();
         SW360SparseLicense sparseLicense = new SW360SparseLicense()
                 .setShortName(LICENSE_NAME);
 
-        Optional<SW360License> licenseDetails = block(licenseClientAdapter.getLicenseDetails(sparseLicense));
+        SW360License licenseDetails = block(licenseClientAdapter.enrichSparseLicense(sparseLicense));
+        assertThat(licenseDetails).isEqualTo(license);
+    }
 
-        assertLicenseByNameResult(license, licenseDetails);
+    @Test
+    public void testCreateLicense() {
+        SW360License licenseTemplate = new SW360License()
+                .setFullName("testLicense");
+        SW360License licenseCreated = new SW360License()
+                .setShortName("createdLicense")
+                .setFullName("testLicense");
+        when(licenseClient.createLicense(licenseTemplate))
+                .thenReturn(CompletableFuture.completedFuture(licenseCreated));
+
+        SW360License result = block(licenseClientAdapter.createLicense(licenseTemplate));
+        assertThat(result).isEqualTo(licenseCreated);
     }
 
     private SW360License prepareLicenseClientGetLicenseByName() {
@@ -96,11 +110,4 @@ public class SW360LicenseClientAdapterAsyncImplTest {
 
         return license;
     }
-
-    private void assertLicenseByNameResult(SW360License license, Optional<SW360License> sw360LicenseByAntennaLicense) {
-        assertThat(sw360LicenseByAntennaLicense).isPresent();
-        assertThat(sw360LicenseByAntennaLicense).hasValue(license);
-        verify(licenseClient, atLeastOnce()).getLicenseByName(LICENSE_NAME);
-    }
-
 }

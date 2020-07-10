@@ -22,6 +22,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Comp
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToComponentUtils;
 import org.junit.Test;
 
@@ -106,14 +107,25 @@ public class SW360MetaDataReceiverTest {
     public void testGetLicenseDetails() {
         SW360SparseLicense sparseLicense = new SW360SparseLicense();
         SW360License sw360License = new SW360License();
-        when(licenseClientAdapter.getLicenseDetails(sparseLicense))
-                .thenReturn(Optional.of(sw360License));
+        when(licenseClientAdapter.enrichSparseLicense(sparseLicense))
+                .thenReturn(sw360License);
         setUp();
 
         Optional<SW360License> licenseDetails = metaDataReceiver.getLicenseDetails(sparseLicense);
 
         assertThat(licenseDetails).hasValue(sw360License);
-        verify(licenseClientAdapter, times(1)).getLicenseDetails(sparseLicense);
+        verify(licenseClientAdapter, times(1)).enrichSparseLicense(sparseLicense);
+    }
+
+    @Test
+    public void testGetLicenseDetailsException() {
+        SW360SparseLicense license = new SW360SparseLicense().setShortName("foo");
+        when(licenseClientAdapter.enrichSparseLicense(license))
+                .thenThrow(new SW360ClientException("License lookup failed"));
+        setUp();
+
+        Optional<SW360License> licenseDetails = metaDataReceiver.getLicenseDetails(license);
+        assertThat(licenseDetails).isEmpty();
     }
 
     @Test

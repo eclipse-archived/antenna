@@ -25,6 +25,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Visibility;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
@@ -38,6 +39,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class SW360MetaDataUpdater {
@@ -51,10 +53,17 @@ public class SW360MetaDataUpdater {
     private final boolean updateReleases;
     private final boolean uploadSources;
 
+    /**
+     * Stores a set with the IDs of licenses known to SW360. This set is
+     * populated on demand and then cached to speed up further license checks.
+     */
+    private final AtomicReference<Set<String>> knownSW360LicenseIds;
+
     public SW360MetaDataUpdater(SW360Connection connection, boolean updateReleases, boolean uploadSources) {
         projectClientAdapter = connection.getProjectAdapter();
         licenseClientAdapter = connection.getLicenseAdapter();
         releaseClientAdapter = connection.getReleaseAdapter();
+        knownSW360LicenseIds = new AtomicReference<>();
         this.updateReleases = updateReleases;
         this.uploadSources = uploadSources;
     }
@@ -62,19 +71,49 @@ public class SW360MetaDataUpdater {
     public Set<SW360License> getLicenses(Collection<License> licenses) {
         return licenses.stream()
                 .filter(this::isLicenseInSW360)
-                .map(license -> licenseClientAdapter.getSW360LicenseByAntennaLicense(license.getId()))
+                .map(license -> licenseClientAdapter.getLicenseByName(license.getId()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
     }
 
     private boolean isLicenseInSW360(License license) {
-        if (licenseClientAdapter.isLicenseOfArtifactAvailable(license.getId())) {
+        if (getSW360Licenses().contains(license.getId())) {
             LOGGER.debug("License [{}] found in SW360.", license.getId());
             return true;
         }
         LOGGER.debug("License [{}] unknown in SW360.", license.getId());
         return false;
+    }
+
+    /**
+     * Returns a set with the licenses known to SW360. The set is retrieved
+     * once and then cached. Note that an atomic reference is used to make
+     * sure that the initialization happens in a thread-safe way.
+     *
+     * @return the set with licenses known to SW360
+     */
+    private Set<String> getSW360Licenses() {
+        Set<String> licenseIds = knownSW360LicenseIds.get();
+        while (licenseIds == null) {
+            licenseIds = loadLicensesFromSW360();
+            if (!knownSW360LicenseIds.compareAndSet(null, licenseIds)) {
+                licenseIds = knownSW360LicenseIds.get();
+            }
+        }
+        return licenseIds;
+    }
+
+    /**
+     * Queries the licenses known to SW360 and generates a set with their IDs.
+     *
+     * @return the set with IDs of all known licenses in SW360
+     */
+    private Set<String> loadLicensesFromSW360() {
+        LOGGER.info("Querying existing licenses from SW360.");
+        return licenseClientAdapter.getLicenses().stream()
+                .map(SW360SparseLicense::getShortName)
+                .collect(Collectors.toSet());
     }
 
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact) {

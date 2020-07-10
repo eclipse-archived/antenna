@@ -22,6 +22,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
@@ -39,9 +40,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -131,16 +135,41 @@ public class SW360MetaDataUpdaterTest {
         return folder.getRoot().toPath().resolve(name);
     }
 
+    /**
+     * Creates a test license with the given name.
+     *
+     * @param name the license name
+     * @return the test license with this name
+     */
+    private static SW360SparseLicense createLicense(String name) {
+        SW360SparseLicense license = new SW360SparseLicense();
+        return license.setShortName(name)
+                .setFullName(name + "_full");
+    }
+
+    /**
+     * Generates a list with test licenses.
+     *
+     * @return the list with test licenses
+     */
+    private static List<SW360SparseLicense> createTestLicenses() {
+        return IntStream.range(1, 9)
+                .mapToObj(idx -> "testLicense" + idx)
+                .map(SW360MetaDataUpdaterTest::createLicense)
+                .collect(Collectors.toList());
+    }
+
     @Test
     public void testGetLicensesWithExistingLicense() {
         final String licenseName = "licenseName";
+        List<SW360SparseLicense> testLicenses = createTestLicenses();
+        testLicenses.add(createLicense(licenseName));
         final SW360License license = new SW360License()
                 .setShortName(licenseName);
         License licenseAntenna = new License();
         licenseAntenna.setId(licenseName);
-        when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName))
-                .thenReturn(true);
-        when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName))
+        when(licenseClientAdapter.getLicenses()).thenReturn(testLicenses);
+        when(licenseClientAdapter.getLicenseByName(licenseName))
                 .thenReturn(Optional.of(license));
         setUp(true, false);
 
@@ -148,8 +177,8 @@ public class SW360MetaDataUpdaterTest {
 
         assertThat(licenses).hasSize(1);
 
-        verify(licenseClientAdapter, times(1)).isLicenseOfArtifactAvailable(licenseName);
-        verify(licenseClientAdapter, times(1)).getSW360LicenseByAntennaLicense(licenseName);
+        verify(licenseClientAdapter, times(1)).getLicenses();
+        verify(licenseClientAdapter, times(1)).getLicenseByName(licenseName);
     }
 
     @Test
@@ -159,17 +188,16 @@ public class SW360MetaDataUpdaterTest {
                 .setShortName(licenseName);
         License licenseAntenna = new License();
         licenseAntenna.setId(licenseName);
-        when(licenseClientAdapter.isLicenseOfArtifactAvailable(licenseName))
-                .thenReturn(false);
-        when(licenseClientAdapter.getSW360LicenseByAntennaLicense(licenseName))
+        when(licenseClientAdapter.getLicenses())
+                .thenReturn(createTestLicenses());
+        when(licenseClientAdapter.getLicenseByName(licenseName))
                 .thenReturn(Optional.of(license));
         setUp(true, false);
 
         final Set<SW360License> licenses = metaDataUpdater.getLicenses(Collections.singletonList(licenseAntenna));
 
         assertThat(licenses).hasSize(0);
-
-        verify(licenseClientAdapter, times(1)).isLicenseOfArtifactAvailable(licenseName);
+        verify(licenseClientAdapter, times(1)).getLicenses();
     }
 
     @Test

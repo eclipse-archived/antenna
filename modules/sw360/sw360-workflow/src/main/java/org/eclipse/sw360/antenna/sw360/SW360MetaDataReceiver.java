@@ -23,6 +23,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Comp
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360License;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToComponentUtils;
 import org.eclipse.sw360.antenna.sw360.utils.ArtifactToReleaseUtils;
 import org.slf4j.Logger;
@@ -56,7 +57,12 @@ public class SW360MetaDataReceiver {
     }
 
     public Optional<SW360License> getLicenseDetails(SW360SparseLicense sparseLicense) {
-        return licenseClientAdapter.getLicenseDetails(sparseLicense);
+        try {
+            return Optional.of(licenseClientAdapter.enrichSparseLicense(sparseLicense));
+        } catch (SW360ClientException e) {
+            LOGGER.debug("Failed to lookup sparse license {}.", sparseLicense.getShortName(), e);
+            return Optional.empty();
+        }
     }
 
     public Optional<Path> downloadAttachment(SW360Release release, SW360SparseAttachment attachment, Path downloadPath) {
