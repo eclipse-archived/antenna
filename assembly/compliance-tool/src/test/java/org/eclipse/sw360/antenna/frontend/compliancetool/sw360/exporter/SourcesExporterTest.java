@@ -174,12 +174,12 @@ public class SourcesExporterTest {
      * @param attachments the set with attachments
      * @return the resulting release with sources
      */
-    private SourcesExporter.ReleaseWithSources createReleaseWithSources(SW360Release release,
-                                                                        Set<SW360SparseAttachment> attachments) {
+    private ReleaseWithSources createReleaseWithSources(SW360Release release,
+                                                        Set<SW360SparseAttachment> attachments) {
         Set<Path> paths = attachments.stream()
                 .map(attachment -> attachmentPath(release, attachment))
                 .collect(Collectors.toSet());
-        return new SourcesExporter.ReleaseWithSources(release, paths);
+        return new ReleaseWithSources(release, paths);
     }
 
     /**
@@ -219,14 +219,14 @@ public class SourcesExporterTest {
 
     @Test
     public void testEqualsReleaseWithSources() {
-        EqualsVerifier.forClass(SourcesExporter.ReleaseWithSources.class)
+        EqualsVerifier.forClass(ReleaseWithSources.class)
                 .verify();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testReleaseWithSourcesAttachmentsUnmodifiable() {
         Set<SW360SparseAttachment> attachments = createAttachments(3, 8);
-        SourcesExporter.ReleaseWithSources releaseWithSources =
+        ReleaseWithSources releaseWithSources =
                 createReleaseWithSources(createReleaseWithAttachments(3, attachments), attachments);
 
         releaseWithSources.getSourceAttachmentPaths().clear();
@@ -239,13 +239,13 @@ public class SourcesExporterTest {
         SW360Release release1 = createReleaseWithAttachments(1, attachments1);
         SW360Release release2 = createReleaseWithAttachments(2, attachments2);
         List<SW360Release> releases = Arrays.asList(release1, release2);
-        List<SourcesExporter.ReleaseWithSources> expResult =
+        List<ReleaseWithSources> expResult =
                 Arrays.asList(createReleaseWithSources(release1, attachments1),
                         createReleaseWithSources(release2, attachments2));
         expectDownloads(release1, attachments1);
         expectDownloads(release2, attachments2);
 
-        Collection<SourcesExporter.ReleaseWithSources> result =
+        Collection<ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, releases);
         assertThat(result).containsExactlyInAnyOrderElementsOf(expResult);
         verifyDownloads(release1, attachments1);
@@ -260,10 +260,10 @@ public class SourcesExporterTest {
         Set<SW360SparseAttachment> attachments = new HashSet<>(sourceAttachments);
         attachments.add(otherAttachment);
         SW360Release release = createReleaseWithAttachments(1, attachments);
-        SourcesExporter.ReleaseWithSources releaseWithSources = createReleaseWithSources(release, sourceAttachments);
+        ReleaseWithSources releaseWithSources = createReleaseWithSources(release, sourceAttachments);
         expectDownloads(release, sourceAttachments);
 
-        Collection<SourcesExporter.ReleaseWithSources> result =
+        Collection<ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
         assertThat(result).containsOnly(releaseWithSources);
         verifyDownloads(release, sourceAttachments);
@@ -276,12 +276,12 @@ public class SourcesExporterTest {
         Set<SW360SparseAttachment> attachments = new HashSet<>(sourceAttachments);
         attachments.add(failedAttachment);
         SW360Release release = createReleaseWithAttachments(1, attachments);
-        SourcesExporter.ReleaseWithSources releaseWithSources = createReleaseWithSources(release, sourceAttachments);
+        ReleaseWithSources releaseWithSources = createReleaseWithSources(release, sourceAttachments);
         expectDownloads(release, sourceAttachments);
         when(releaseAdapter.processAttachment(eq(release), eq(failedAttachment.getAttachmentId()), any()))
                 .thenReturn(failedFuture(new IOException("Download failed")));
 
-        Collection<SourcesExporter.ReleaseWithSources> result =
+        Collection<ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
         assertThat(result).containsOnly(releaseWithSources);
     }
@@ -297,7 +297,7 @@ public class SourcesExporterTest {
         initAttachments(release, sourceAttachments);
         expectDownloads(release, sourceAttachments);
 
-        Collection<SourcesExporter.ReleaseWithSources> result =
+        Collection<ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
         assertThat(result).hasSize(1);
         ArgumentCaptor<SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolderWithParents> captor =
@@ -340,7 +340,7 @@ public class SourcesExporterTest {
      *
      * @param releaseWithSources the release
      */
-    private static void createAttachmentFiles(SourcesExporter.ReleaseWithSources releaseWithSources) {
+    private static void createAttachmentFiles(ReleaseWithSources releaseWithSources) {
         releaseWithSources.getSourceAttachmentPaths()
                 .forEach(SourcesExporterTest::createTestFile);
     }
@@ -361,7 +361,7 @@ public class SourcesExporterTest {
      *
      * @param release the release to be checked
      */
-    private static void checkAllAttachmentsExist(SourcesExporter.ReleaseWithSources release) {
+    private static void checkAllAttachmentsExist(ReleaseWithSources release) {
         assertThat(release.getSourceAttachmentPaths().stream().allMatch(SourcesExporterTest::checkFileExists))
                 .isTrue();
     }
@@ -371,16 +371,16 @@ public class SourcesExporterTest {
         Set<SW360SparseAttachment> attachments1 = createAttachments(1, 2);
         Set<SW360SparseAttachment> attachments2 = createAttachments(2, 3);
         Set<SW360SparseAttachment> attachments3 = createAttachments(1, 3);
-        SourcesExporter.ReleaseWithSources release1 =
+        ReleaseWithSources release1 =
                 createReleaseWithSources(createReleaseWithAttachments(1, attachments1), attachments1);
-        SourcesExporter.ReleaseWithSources release2 =
+        ReleaseWithSources release2 =
                 createReleaseWithSources(createReleaseWithAttachments(2, attachments2), attachments2);
         SW360SparseAttachment unreferencedAttachment = createAttachment(17, 47);
         SW360Release unreferencedRelease1 =
                 createReleaseWithAttachments(17, Collections.singleton(unreferencedAttachment));
         SW360Release unreferencedRelease2 = createReleaseWithAttachments(1, attachments3);
         unreferencedRelease2.setVersion("2.0");
-        SourcesExporter.ReleaseWithSources unreferencedRelease2WithSources =
+        ReleaseWithSources unreferencedRelease2WithSources =
                 createReleaseWithSources(unreferencedRelease2, attachments3);
         Path unreferencedPath = attachmentPath(unreferencedRelease1, unreferencedAttachment);
         createTestFile(unreferencedPath);
@@ -418,7 +418,7 @@ public class SourcesExporterTest {
         Path validPath2 = createTestFile(validPath1.resolve("lang-source.zip"));
         Set<SW360SparseAttachment> attachments = createAttachments(1, 1);
         initAttachments(release, attachments);
-        SourcesExporter.ReleaseWithSources releaseWithSources = createReleaseWithSources(release, attachments);
+        ReleaseWithSources releaseWithSources = createReleaseWithSources(release, attachments);
 
         sourcesExporter.removeUnreferencedFiles(Collections.singleton(releaseWithSources));
         assertThat(checkFileExists(validPath1)).isTrue();
@@ -441,11 +441,11 @@ public class SourcesExporterTest {
         SW360SparseAttachment attachment = createAttachment(1, 1);
         attachment.setSha1(TEST_FILE_SHA1);
         SW360Release release = createReleaseWithAttachments(1, Collections.singleton(attachment));
-        SourcesExporter.ReleaseWithSources releaseWithSources =
+        ReleaseWithSources releaseWithSources =
                 createReleaseWithSources(release, Collections.singleton(attachment));
         createTestFile(attachmentPath(release, attachment));
 
-        Collection<SourcesExporter.ReleaseWithSources> result =
+        Collection<ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
         assertThat(result).containsOnly(releaseWithSources);
     }
@@ -456,13 +456,13 @@ public class SourcesExporterTest {
         attachment.setSha1(TEST_FILE_SHA1);
         Set<SW360SparseAttachment> attachments = Collections.singleton(attachment);
         SW360Release release = createReleaseWithAttachments(1, attachments);
-        SourcesExporter.ReleaseWithSources releaseWithSources =
+        ReleaseWithSources releaseWithSources =
                 createReleaseWithSources(release, attachments);
         createTestFile(attachmentPath(release, attachment),
                 "other content".getBytes(StandardCharsets.UTF_8));
         expectDownloads(release, attachments);
 
-        Collection<SourcesExporter.ReleaseWithSources> result =
+        Collection<ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
         assertThat(result).containsOnly(releaseWithSources);
         verify(releaseAdapter).processAttachment(eq(release), eq(attachment.getAttachmentId()), any());
@@ -474,7 +474,7 @@ public class SourcesExporterTest {
         attachment.setSha1(TEST_FILE_SHA1);
         Set<SW360SparseAttachment> attachments = Collections.singleton(attachment);
         SW360Release release = createReleaseWithAttachments(1, attachments);
-        SourcesExporter.ReleaseWithSources releaseWithSources =
+        ReleaseWithSources releaseWithSources =
                 createReleaseWithSources(release, attachments);
         createTestFile(sourcePath.resolve(attachment.getFilename()));
         expectDownloads(release, attachments);
@@ -485,54 +485,10 @@ public class SourcesExporterTest {
             }
         };
 
-        Collection<SourcesExporter.ReleaseWithSources> result =
+        Collection<ReleaseWithSources> result =
                 sourcesExporter.downloadSources(releaseAdapter, Collections.singleton(release));
         assertThat(result).containsOnly(releaseWithSources);
         verify(releaseAdapter).processAttachment(eq(release), eq(attachment.getAttachmentId()),
                 any(SW360AttachmentUtils.AttachmentDownloadProcessorCreateDownloadFolderWithParents.class));
-    }
-
-    @Test
-    public void testReleasesComparator() {
-        SW360Release release1 = new SW360Release();
-        SW360Release release2 = new SW360Release();
-        SW360Release release3 = new SW360Release();
-        SW360Release release4 = new SW360Release();
-        SW360Release release5 = new SW360Release();
-        release1.setCreatedOn("2020-06-24")
-                .setName("z-release")
-                .setVersion("1.7.8");
-        release2.setCreatedOn("2020-06-24")
-                .setName("z-release")
-                .setVersion("1.7.9");
-        release3.setCreatedOn("2020-06-01")
-                .setName("a-release")
-                .setVersion("9.1");
-        release4.setCreatedOn("2020-06-01")
-                .setName("b-release")
-                .setVersion("0.1-SNAPSHOT");
-        release5.setCreatedOn("2020-06-01")
-                .setName("b-release")
-                .setVersion("0.2-SNAPSHOT");
-        SourcesExporter.ReleaseWithSources releaseSrc1 = new SourcesExporter.ReleaseWithSources(release1,
-                Collections.emptySet());
-        SourcesExporter.ReleaseWithSources releaseSrc2 = new SourcesExporter.ReleaseWithSources(release2,
-                Collections.emptySet());
-        SourcesExporter.ReleaseWithSources releaseSrc3 = new SourcesExporter.ReleaseWithSources(release3,
-                Collections.emptySet());
-        SourcesExporter.ReleaseWithSources releaseSrc4 = new SourcesExporter.ReleaseWithSources(release4,
-                Collections.emptySet());
-        SourcesExporter.ReleaseWithSources releaseSrc5 = new SourcesExporter.ReleaseWithSources(release5,
-                Collections.emptySet());
-        List<SourcesExporter.ReleaseWithSources> releaseList = new ArrayList<>();
-        releaseList.add(releaseSrc2);
-        releaseList.add(releaseSrc5);
-        releaseList.add(releaseSrc1);
-        releaseList.add(releaseSrc4);
-        releaseList.add(releaseSrc3);
-
-        releaseList.sort(SourcesExporter.RELEASES_COMPARATOR);
-        assertThat(releaseList)
-                .containsExactly(releaseSrc1, releaseSrc2, releaseSrc3, releaseSrc4, releaseSrc5);
     }
 }

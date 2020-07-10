@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,6 +53,13 @@ public class SW360Exporter {
      * automatically.
      */
     public static final String PROP_REMOVE_SOURCES = "removeUnreferencedSources";
+
+    /**
+     * A {@code Comparator} for sorting {@code ReleaseWithSources} objects.
+     * This comparator is used to sort the list of releases before it is
+     * written to the output CSV file.
+     */
+    static final Comparator<ReleaseWithSources> RELEASES_COMPARATOR = createReleaseComparator();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SW360Exporter.class);
 
@@ -78,11 +86,11 @@ public class SW360Exporter {
 
         Collection<SW360Release> sw360ReleasesNotApproved = getNonApprovedReleasesFromSpareReleases(sw360SparseReleases);
 
-        Collection<SourcesExporter.ReleaseWithSources> nonApprovedReleasesWithSources =
+        Collection<ReleaseWithSources> nonApprovedReleasesWithSources =
                 sourcesExporter.downloadSources(connection.getReleaseAdapterAsync(), sw360ReleasesNotApproved);
 
         List<Artifact> artifacts = nonApprovedReleasesWithSources.stream()
-                .sorted(SourcesExporter.RELEASES_COMPARATOR)
+                .sorted(RELEASES_COMPARATOR)
                 .map(this::releaseAsArtifact)
                 .collect(Collectors.toList());
 
@@ -104,7 +112,7 @@ public class SW360Exporter {
         configuration.logConfiguration(LOGGER);
     }
 
-    private Artifact releaseAsArtifact(SourcesExporter.ReleaseWithSources release) {
+    private Artifact releaseAsArtifact(ReleaseWithSources release) {
         Artifact artifact = ArtifactToReleaseUtils.convertToArtifactWithoutSourceFile(release.getRelease(),
                 new Artifact("SW360"));
         addSourceAttachment(release, artifact);
@@ -143,10 +151,23 @@ public class SW360Exporter {
      * @param release  the release
      * @param artifact the artifact to be updated
      */
-    private static void addSourceAttachment(SourcesExporter.ReleaseWithSources release, Artifact artifact) {
+    private static void addSourceAttachment(ReleaseWithSources release, Artifact artifact) {
         if (release.getSourceAttachmentPaths().size() == 1) {
             release.getSourceAttachmentPaths().forEach(path ->
                     artifact.addFact(new ArtifactSourceFile(path)));
         }
+    }
+
+    /**
+     * Creates a {@code Comparator} for sorting a list of
+     * {@code ReleaseWithSources} objects.
+     *
+     * @return the {@code Comparator}
+     */
+    private static Comparator<ReleaseWithSources> createReleaseComparator() {
+        Comparator<ReleaseWithSources> cCreatedAsc = Comparator.comparing(rel -> rel.getRelease().getCreatedOn());
+        Comparator<ReleaseWithSources> cCreated = cCreatedAsc.reversed();
+        return cCreated.thenComparing(rel -> rel.getRelease().getName())
+                .thenComparing(rel -> rel.getRelease().getVersion());
     }
 }

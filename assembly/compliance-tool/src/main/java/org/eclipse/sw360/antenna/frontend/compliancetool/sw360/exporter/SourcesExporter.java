@@ -31,11 +31,8 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -59,13 +56,6 @@ import java.util.stream.Collectors;
  * </p>
  */
 class SourcesExporter {
-    /**
-     * A {@code Comparator} for sorting {@code ReleaseWithSources} objects.
-     * This comparator is used to sort the list of releases before it is
-     * written to the output CSV file.
-     */
-    static final Comparator<ReleaseWithSources> RELEASES_COMPARATOR = createReleaseComparator();
-
     /**
      * Format to generate a message about a failed attachment download.
      */
@@ -279,81 +269,6 @@ class SourcesExporter {
             buf.append(ALLOWED_CHARACTERS.indexOf(c) >= 0 ? c : REPLACE_CHARACTER);
         }
         return buf.toString();
-    }
-
-    /**
-     * Creates a {@code Comparator} for sorting a list of
-     * {@code ReleaseWithSources} objects.
-     *
-     * @return the {@code Comparator}
-     */
-    private static Comparator<ReleaseWithSources> createReleaseComparator() {
-        Comparator<ReleaseWithSources> cCreatedAsc = Comparator.comparing(rel -> rel.getRelease().getCreatedOn());
-        Comparator<ReleaseWithSources> cCreated = cCreatedAsc.reversed();
-        return cCreated.thenComparing(rel -> rel.getRelease().getName())
-                .thenComparing(rel -> rel.getRelease().getVersion());
-    }
-
-    /**
-     * A data class storing information about a release and the paths to the
-     * source attachments that have been downloaded.
-     */
-    static final class ReleaseWithSources {
-        /**
-         * The release.
-         */
-        private final SW360Release release;
-
-        /**
-         * A set with paths to source attachments that have been downloaded.
-         */
-        private final Set<Path> sourceAttachmentPaths;
-
-        public ReleaseWithSources(SW360Release release, Set<Path> sourceAttachmentPaths) {
-            this.release = release;
-            this.sourceAttachmentPaths = Collections.unmodifiableSet(new HashSet<>(sourceAttachmentPaths));
-        }
-
-        /**
-         * Returns the release.
-         *
-         * @return the release
-         */
-        public SW360Release getRelease() {
-            return release;
-        }
-
-        /**
-         * Returns an unmodifiable set with paths to attachments that have been
-         * downloaded.
-         *
-         * @return the set of downloaded attachment paths
-         */
-        public Set<Path> getSourceAttachmentPaths() {
-            return sourceAttachmentPaths;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ReleaseWithSources that = (ReleaseWithSources) o;
-            return Objects.equals(getRelease(), that.getRelease()) &&
-                    Objects.equals(getSourceAttachmentPaths(), that.getSourceAttachmentPaths());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(getRelease(), getSourceAttachmentPaths());
-        }
-
-        @Override
-        public String toString() {
-            return "ReleaseWithSources{" +
-                    "release=" + release +
-                    ", sourceAttachmentPaths=" + sourceAttachmentPaths +
-                    '}';
-        }
     }
 
     /**
