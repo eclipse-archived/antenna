@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
+import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
@@ -17,6 +18,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Releas
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -92,7 +94,7 @@ public interface SW360ReleaseClientAdapter {
      * {@link #enrichSparseRelease(SW360SparseRelease)} method.
      *
      * @param componentName the name of the component affected
-     * @param version the version of the desired release
+     * @param version       the version of the desired release
      * @return an {@code Optional} with the release that was found
      */
     Optional<SW360SparseRelease> getSparseReleaseByNameAndVersion(String componentName, String version);
@@ -139,4 +141,25 @@ public interface SW360ReleaseClientAdapter {
      * @return the updated release
      */
     SW360Release updateRelease(SW360Release release);
+
+    /**
+     * Triggers a multi-delete operation for the releases with the IDs
+     * specified. Returns a {@code MultiStatusResponse} that allows checking
+     * whether all the releases could be deleted successfully.
+     *
+     * @param idsToDelete a collection with the IDs of releases to delete
+     * @return a {@code MultiStatusResponse} with the results of the operation
+     */
+    MultiStatusResponse deleteReleases(Collection<String> idsToDelete);
+
+    /**
+     * Deletes the release with the given ID. This is a convenience method for
+     * the special case that only a single release should be deleted. It
+     * inspects the {@link MultiStatusResponse} returned by SW360 and throws an
+     * exception if the operation was not successful.
+     *
+     * @param releaseId the ID of the release to be deleted
+     * @throws org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException if the release could not be deleted
+     */
+    void deleteRelease(String releaseId);
 }

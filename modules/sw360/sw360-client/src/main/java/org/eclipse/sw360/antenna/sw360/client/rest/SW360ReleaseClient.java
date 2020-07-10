@@ -21,6 +21,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Releas
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -51,6 +52,11 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
      * Tag for the request that modifies a release.
      */
     static final String TAG_UPDATE_RELEASE = "patch_update_release";
+
+    /**
+     * Tag for the request that deletes releases.
+     */
+    static final String TAG_DELETE_RELEASES = "delete_releases";
 
     private static final String RELEASES_ENDPOINT_APPENDIX = "releases";
     private static final String PATH_SEARCH_EXT_IDS = "searchByExternalIds";
@@ -134,5 +140,17 @@ public class SW360ReleaseClient extends SW360AttachmentAwareClient<SW360Release>
                         .uri(resourceUrl(RELEASES_ENDPOINT_APPENDIX, sw360Release.getId()))
                         .body(body -> body.json(sw360Release)),
                 SW360Release.class, TAG_UPDATE_RELEASE);
+    }
+
+    /**
+     * Triggers a DELETE operation for the releases identified by the given
+     * IDs.
+     *
+     * @param idsToDelete a collection with the IDs of the releases to delete
+     * @return a future with the {@code MultiStatusResponse} returned by the
+     * server
+     */
+    public CompletableFuture<MultiStatusResponse> deleteReleases(Collection<String> idsToDelete) {
+        return executeDeleteRequest(RELEASES_ENDPOINT_APPENDIX, idsToDelete, TAG_DELETE_RELEASES);
     }
 }

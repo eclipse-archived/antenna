@@ -12,6 +12,9 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
+import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
+import org.eclipse.sw360.antenna.http.utils.HttpConstants;
+import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
 import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
@@ -32,6 +35,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +61,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
     private static final String RELEASE_OBSERVED_LICENSE = "A-Test-License";
     private static final String RELEASE_RELEASE_TAG_URL = "https://gitTool.com/project/repository";
     private static final String RELEASE_SOFTWAREHERITGAE_ID = "swh:1:rel:1234512345123451234512345123451234512345";
-    private static final String RELEASE_HASH1= "b2a4d4ae21c789b689dd162deb819665567f481c";
+    private static final String RELEASE_HASH1 = "b2a4d4ae21c789b689dd162deb819665567f481c";
     private static final String RELEASE_CHANGESTATUS = "AS_IS";
     private static final String RELEASE_COPYRIGHT = "Copyright xxxx Some Copyright Enterprise";
     private static final String ID = "12345";
@@ -372,6 +376,47 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         when(releaseClient.patchRelease(release)).thenReturn(CompletableFuture.completedFuture(updatedRelease));
 
         assertThat(block(releaseClientAdapter.updateRelease(release))).isEqualTo(updatedRelease);
+    }
+
+    @Test
+    public void testDeleteReleases() {
+        Collection<String> idsToDelete = Arrays.asList(ID, "otherReleaseToDelete");
+        MultiStatusResponse response = new MultiStatusResponse(Collections.singletonMap(ID, HttpConstants.STATUS_OK));
+        when(releaseClient.deleteReleases(idsToDelete))
+                .thenReturn(CompletableFuture.completedFuture(response));
+
+        MultiStatusResponse result = block(releaseClientAdapter.deleteReleases(idsToDelete));
+        assertThat(result).isEqualTo(response);
+    }
+
+    @Test
+    public void testDeleteSingleReleaseSuccess() {
+        MultiStatusResponse response = new MultiStatusResponse(Collections.singletonMap(ID, HttpConstants.STATUS_OK));
+        Set<String> idsToDelete = Collections.singleton(ID);
+        when(releaseClient.deleteReleases(idsToDelete))
+                .thenReturn(CompletableFuture.completedFuture(response));
+
+        block(releaseClientAdapter.deleteRelease(ID));
+        verify(releaseClient).deleteReleases(idsToDelete);
+
+    }
+
+    @Test
+    public void testDeleteSingleReleaseFailure() {
+        MultiStatusResponse response =
+                new MultiStatusResponse(Collections.singletonMap(ID, HttpConstants.STATUS_ERR_NOT_FOUND));
+        when(releaseClient.deleteReleases(Collections.singleton(ID)))
+                .thenReturn(CompletableFuture.completedFuture(response));
+
+        try {
+            block(releaseClientAdapter.deleteRelease(ID));
+            fail("Failure response not detected");
+        } catch (SW360ClientException e) {
+            assertThat(e.getCause()).isInstanceOf(FailedRequestException.class);
+            FailedRequestException reqEx = (FailedRequestException) e.getCause();
+            assertThat(reqEx.getStatusCode()).isEqualTo(HttpConstants.STATUS_ERR_NOT_FOUND);
+            assertThat(reqEx.getTag()).isEqualTo("delete release " + ID);
+        }
     }
 
     private static SW360Release mkSW360Release(String name) throws MalformedPackageURLException {

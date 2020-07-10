@@ -119,6 +119,19 @@ public final class HttpUtils {
     }
 
     /**
+     * Returns a flag whether the passed in response status code indicates a
+     * successful response. This is the case if the status code is in the range
+     * of [200, 300).
+     *
+     * @param status the status code to check
+     * @return <strong>true</strong> if the status code indicates a successful
+     * response; <strong>false</strong> otherwise
+     */
+    public static boolean isSuccessStatus(int status) {
+        return status >= HttpConstants.STATUS_OK && status < 300;
+    }
+
+    /**
      * Returns a {@code ResponseProcessor} that checks whether a request was
      * successful based on a given predicate and allows tagging the request.
      * The resulting processor invokes the given predicate on the response
