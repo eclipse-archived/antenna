@@ -177,6 +177,7 @@ public class SW360MetaDataUpdaterTest {
 
         assertThat(licenses).hasSize(1);
 
+        verify(licenseClientAdapter, times(1)).getLicenses();
         verify(licenseClientAdapter, times(1)).getLicenseByName(licenseName);
     }
 
@@ -196,6 +197,7 @@ public class SW360MetaDataUpdaterTest {
         final Set<SW360License> licenses = metaDataUpdater.getLicenses(Collections.singletonList(licenseAntenna));
 
         assertThat(licenses).hasSize(0);
+        verify(licenseClientAdapter, times(1)).getLicenses();
     }
 
     @Test
