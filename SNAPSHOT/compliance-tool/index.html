@@ -140,9 +140,29 @@ key=${ENV_VARIABLE}
 <div class="section">
 <h2><a name="Common_Properties"></a>Common Properties</h2>
 <p>There are properties all modes share. They need to be provided in every properties file.</p>
-<p>The SW360 properties are used to give the url of the used sw360 instance and the necessary credentials: - <tt>sw360restServerUrl</tt>: Link to the rest server url of your SW360 instance - <tt>sw360authServerUrl</tt>: Link to the authentication server url of your SW360 instance - <tt>sw360user</tt>: SW360 Username - <tt>sw360password</tt>: SW360 User Password - <tt>sw360clientId</tt>: SW360 Client Id - <tt>sw360clientPassword</tt>: SW360 Client Password</p>
-<p>Proxy information needs to be given if the compliance tool is used from within a proxy. If a proxy is not in use, <tt>proxyUse</tt> should be set to <tt>false</tt>: - <tt>proxyHost</tt>: If a proxy is in use, supply the host name - <tt>proxyPort</tt>: If a proxy is in use, supply the port - <tt>proxyUse</tt>: If a proxy is in use, this should be set to true</p>
-<p>Directory parameters that all modes need: - <tt>targetDir</tt>: Target directory in which artificial documents (e.g. clearing reports) are created in. - <tt>basedir</tt>: Base directory of the execution - <tt>csvFilePath</tt>: Path and name where the csv file should be saved</p></div>
+<p>The SW360 properties are used to give the url of the used sw360 instance and the necessary credentials:</p>
+<ul>
+
+<li><tt>sw360restServerUrl</tt>: Link to the rest server url of your SW360 instance</li>
+<li><tt>sw360authServerUrl</tt>: Link to the authentication server url of your SW360 instance</li>
+<li><tt>sw360user</tt>: SW360 Username</li>
+<li><tt>sw360password</tt>: SW360 User Password</li>
+<li><tt>sw360clientId</tt>: SW360 Client Id</li>
+<li><tt>sw360clientPassword</tt>: SW360 Client Password</li>
+</ul>
+<p>Proxy information needs to be given if the compliance tool is used from within a proxy. If a proxy is not in use, <tt>proxyUse</tt> should be set to <tt>false</tt>:</p>
+<ul>
+
+<li><tt>proxyHost</tt>: If a proxy is in use, supply the host name</li>
+<li><tt>proxyPort</tt>: If a proxy is in use, supply the port</li>
+<li><tt>proxyUse</tt>: If a proxy is in use, this should be set to true</li>
+</ul>
+<p>Directory parameters that all modes need:</p>
+<ul>
+
+<li><tt>basedir</tt>: Base directory of the execution</li>
+<li><tt>csvFilePath</tt>: Path and name where the csv file should be saved; this should be a relative path; it is resolved against the base directory</li>
+</ul></div>
         </div>
       </div>
     </div>

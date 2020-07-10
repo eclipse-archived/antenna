@@ -82,9 +82,27 @@
 <p>The SW360Updater takes a given csv file with release information and maps the contents on SW360Release objects that are posted into the given SW360 instance. It has the ability to update release information of already existing releases.</p>
 <div class="section">
 <h3><a name="Properties"></a>Properties</h3>
-<p>Specific properties that need to be set for sources and clearing document handling: - <tt>sourcesDirectory</tt>: Directory where the sources for uploading are stored - <tt>removeClearedSources</tt>: A boolean property that controls whether the updater should remove the source attachments of a release from the local sources directory once the release has been cleared. Cleared releases are no longer relevant for the workflow of the compliance tool; so by setting this property to <i>true</i>, an automatic cleanup of the sources directory can be enabled. The default value is <i>false</i>. - <tt>removeClearingDocuments</tt>: A boolean property that controls whether clearing documents for releases should be removed after the release has been cleared. The default value is <i>false</i>.</p>
-<p>Properties required to correctly parse the given csv file: - <tt>delimiter</tt>: Delimiter used in the csv file to separate columns (by default it is <tt>,</tt>) - <tt>encoding</tt>: Encoding of the csv file, normally <tt>UTF-8</tt></p>
-<p>SW360 specific properties to determine in which way the new metadata is updated: - <tt>sw360updateReleases</tt>: Boolean value that determines if release data is patched should new information be added to an already existent release - <tt>sw360uploadSources</tt>: Boolean value that determines if source files of a release are uploaded should they be present</p></div></div>
+<p>Specific properties that need to be set for sources and clearing document handling:</p>
+<ul>
+
+<li><tt>sourcesDirectory</tt>: Directory where the sources for uploading are stored</li>
+<li><tt>removeClearedSources</tt>: A boolean property that controls whether the updater should remove the source attachments of a release from the local sources directory once the release has been cleared. Cleared releases are no longer relevant for the workflow of the compliance tool; so by setting this property to <i>true</i>, an automatic cleanup of the sources directory can be enabled. The default value is <i>false</i>.</li>
+<li><tt>removeClearingDocuments</tt>: A boolean property that controls whether clearing documents for releases should be removed after the release has been cleared. The default value is <i>false</i>.</li>
+<li><tt>clearingDocDir</tt>: Directory in which clearing documents are generated</li>
+</ul>
+<p>Properties required to correctly parse the given csv file:</p>
+<ul>
+
+<li><tt>delimiter</tt>: Delimiter used in the csv file to separate columns (by default it is <tt>,</tt>)</li>
+<li><tt>encoding</tt>: Encoding of the csv file, normally <tt>UTF-8</tt></li>
+</ul>
+<p>SW360 specific properties to determine in which way the new metadata is updated:</p>
+<ul>
+
+<li><tt>sw360updateReleases</tt>: Boolean value that determines if release data is patched should new information be added to an already existent release</li>
+<li><tt>sw360uploadSources</tt>: Boolean value that determines if source files of a release are uploaded should they be present</li>
+<li><tt>sw360deleteObsoleteSources</tt>: Boolean value that determines if the updater should delete existing source attachments before uploading a new one. Typically, there is only a single source attachment. By setting this property to <i>true</i>, a new source attachment replaces any existing ones. As SW360 supports multiple source attachments, it is also possible to configure the updater to upload new source attachments in addition to existing ones. Be aware, however, that SW360 currently does not allow overriding an existing source attachment with a file having the same name.</li>
+</ul></div></div>
         </div>
       </div>
     </div>
