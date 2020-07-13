@@ -44,7 +44,20 @@ public class FailedRequestException extends IOException {
      * @param statusCode the HTTP status code
      */
     public FailedRequestException(String tag, int statusCode) {
-        super(generateMessage(tag, statusCode));
+        this(tag, statusCode, null);
+    }
+
+    /**
+     * Creates a new instance of {@code FailedRequestException} and initializes
+     * it with a tag, the error status code, and the message sent from the
+     * server as response to the failed request.
+     *
+     * @param tag           a tag to identify the failed request
+     * @param statusCode    the HTTP status code
+     * @param serverMessage the error message sent by the server
+     */
+    public FailedRequestException(String tag, int statusCode, String serverMessage) {
+        super(generateMessage(tag, statusCode, serverMessage));
         this.tag = tag;
         this.statusCode = statusCode;
     }
@@ -72,12 +85,25 @@ public class FailedRequestException extends IOException {
      * Generates a message for this exception based on the parameters passed
      * in.
      *
-     * @param tag        a tag to identify the failed request
-     * @param statusCode the HTTP status code
+     * @param tag           a tag to identify the failed request
+     * @param statusCode    the HTTP status code
+     * @param serverMessage the error message sent by the server
      * @return the exception message
      */
-    private static String generateMessage(String tag, int statusCode) {
-        String prefix = (tag != null) ? "The request '" + tag + "'" : "A request";
-        return prefix + " failed with status code " + statusCode;
+    private static String generateMessage(String tag, int statusCode, String serverMessage) {
+        StringBuilder buf = new StringBuilder();
+        if (tag != null) {
+            buf.append("The request '").append(tag).append('\'');
+        } else {
+            buf.append("A request");
+        }
+        buf.append(" failed with status code ").append(statusCode).append('.');
+
+        if (serverMessage != null && !serverMessage.isEmpty()) {
+            buf.append(" Message from the server:")
+                    .append(System.lineSeparator())
+                    .append('"').append(serverMessage).append('"');
+        }
+        return buf.toString();
     }
 }

@@ -391,6 +391,22 @@ public class HttpRequestExecutionIT {
     }
 
     @Test
+    public void testGetWithFailedResponseStatusAndErrorMessage() throws IOException {
+        final String serverError = "Server did not like this request!";
+        wireMockRule.stubFor(get(ENDPOINT)
+        .willReturn(aResponse().withStatus(STATUS_ERR_BAD_REQUEST)
+        .withBody(serverError)));
+
+        try {
+            waitFor(httpClient.execute(HttpUtils.get(endpointUri()),
+                    checkResponse(response -> new Object())));
+        } catch (FailedRequestException e) {
+            assertThat(e.getStatusCode()).isEqualTo(STATUS_ERR_BAD_REQUEST);
+            assertThat(e.getMessage()).contains(String.valueOf(STATUS_ERR_BAD_REQUEST), serverError);
+        }
+    }
+
+    @Test
     public void testJsonResponse() throws IOException {
         JsonBean bean = new JsonBean();
         bean.setTitle("JSON serialization test");

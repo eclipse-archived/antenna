@@ -303,6 +303,7 @@ the HTTP client.
 
 The functions are named _checkResponse()_. There are multiple overloaded
 variants; they support the following arguments:
+
 * the original _ResponseProcessor_; as has already been explained, this
   processor is decorated with the checking logic.
 * a predicate defining the checking logic. This is a function that expects a
@@ -318,6 +319,17 @@ a default one which just checks whether the HTTP status is in the successful
 range. This may be sufficient for many use cases. If more control is needed, 
 the _hasStatus()_ function is a candidate: it is passed a status code, and it
 returns *true* if and only if a response has exactly this status.
+
+When detecting a failed request the functions throw an exception of type
+_FailedRequestException_. This exception becomes the result of the future
+returned by the HTTP client. From its properties, the caller can gain some
+useful information about the failure:
+
+* the HTTP status code
+* the tag of the request (if provided)
+* the body of the response; this is the content sent by the server in the
+  response - depending on the server, this may contain additional information
+  why the request failed
 
 #[[###]]# JSON deserialization support
 
