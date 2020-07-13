@@ -12,12 +12,18 @@ package org.eclipse.sw360.antenna.http.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.sw360.antenna.http.HttpClient;
 import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.Response;
 import org.eclipse.sw360.antenna.http.ResponseProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -62,6 +68,8 @@ public final class HttpUtils {
      * The character that separates the query string from the URL.
      */
     private static final char QUERY_PREFIX = '?';
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtils.class);
 
     /**
      * Private constructor to prevent the creation of instances.
@@ -153,7 +161,7 @@ public final class HttpUtils {
                                                          String tag) {
         return response -> {
             if (!successPredicate.test(response)) {
-                throw new FailedRequestException(tag, response.statusCode());
+                throw createExceptionForResponse(response, tag);
             }
             return processor.process(response);
         };
@@ -216,6 +224,29 @@ public final class HttpUtils {
      */
     public static Predicate<Response> hasStatus(int status) {
         return response -> response.statusCode() == status;
+    }
+
+    /**
+     * Creates a {@code FailedRequestException} based on the passed in response
+     * and request tag. The properties of the exception are initialized
+     * accordingly. The response entity is read as well and stored in the
+     * exception.
+     *
+     * @param response the failing response
+     * @param tag      a tag to identify the request
+     * @return the exception reporting a failed request
+     */
+    public static FailedRequestException createExceptionForResponse(Response response, String tag) {
+        StringBuilder buf = new StringBuilder();
+        InputStream bodyStream = response.bodyStream();
+        if (bodyStream != null) {
+            try (Reader reader = new InputStreamReader(bodyStream, StandardCharsets.UTF_8)) {
+                IOUtils.copy(reader, buf);
+            } catch (IOException e) {
+                LOGGER.warn("Could not read server message when handling failed request '{}'.", tag, e);
+            }
+        }
+        return new FailedRequestException(tag, response.statusCode(), buf.toString());
     }
 
     /**

@@ -10,6 +10,7 @@
  */
 package org.eclipse.sw360.antenna.http.utils;
 
+import org.apache.commons.io.input.BrokenInputStream;
 import org.eclipse.sw360.antenna.http.Response;
 import org.eclipse.sw360.antenna.http.ResponseProcessor;
 import org.junit.Test;
@@ -143,6 +144,34 @@ public class HttpUtilsTest {
         ResponseProcessor<Object> processor = createProcessorMock();
         when(response.isSuccess()).thenReturn(Boolean.FALSE);
         when(response.statusCode()).thenReturn(status);
+
+        ResponseProcessor<Object> checkProcessor = HttpUtils.checkResponse(processor, tag);
+        try {
+            checkProcessor.process(response);
+            fail("No exception thrown!");
+        } catch (FailedRequestException e) {
+            assertThat(e.getMessage()).contains(String.valueOf(status), tag);
+            assertThat(e.getStatusCode()).isEqualTo(status);
+            assertThat(e.getTag()).isEqualTo(tag);
+            verifyZeroInteractions(processor);
+        }
+    }
+
+    @Test
+    public void testCheckResponseStatusFailedBodyStreamThrowsException() throws IOException {
+        final int status = 401;
+        final String tag = "failed_request_with_broken_response";
+        Response response = mock(Response.class);
+        ResponseProcessor<Object> processor = createProcessorMock();
+        when(response.isSuccess()).thenReturn(Boolean.FALSE);
+        when(response.statusCode()).thenReturn(status);
+        when(response.bodyStream()).thenReturn(new BrokenInputStream() {
+            @Override
+            public void close() {
+                // override to not throw an exception here; otherwise, this yields
+                // "java.lang.IllegalArgumentException: Self-suppression not permitted"
+            }
+        });
 
         ResponseProcessor<Object> checkProcessor = HttpUtils.checkResponse(processor, tag);
         try {
