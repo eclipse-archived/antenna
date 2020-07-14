@@ -14,6 +14,7 @@ import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ComponentClient;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
@@ -43,6 +44,11 @@ import static org.mockito.Mockito.when;
 public class SW360ComponentClientAdapterAsyncImplTest {
     private final static String COMPONENT_ID = "12345";
     private final static String COMPONENT_NAME = "componentName";
+
+    private static final ComponentSearchParams NAME_SEARCH_PARAMS =
+            ComponentSearchParams.builder()
+            .withName(COMPONENT_NAME)
+            .build();
 
     private SW360ComponentClientAdapterAsync componentClientAdapter;
 
@@ -82,7 +88,7 @@ public class SW360ComponentClientAdapterAsyncImplTest {
 
         when(componentClient.getComponent(COMPONENT_ID))
                 .thenReturn(CompletableFuture.completedFuture(component));
-        when(componentClient.searchByName(COMPONENT_NAME))
+        when(componentClient.search(NAME_SEARCH_PARAMS))
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseComponent)));
 
         Optional<SW360Component> optResult = block(componentClientAdapter.getOrCreateComponent(componentFromRelease));
@@ -95,7 +101,7 @@ public class SW360ComponentClientAdapterAsyncImplTest {
         when(componentFromRelease.getId()).thenReturn(null);
         when(componentFromRelease.getName()).thenReturn(COMPONENT_NAME);
         when(componentFromRelease.getCategories()).thenReturn(Collections.singleton("Antenna"));
-        when(componentClient.searchByName(COMPONENT_NAME))
+        when(componentClient.search(NAME_SEARCH_PARAMS))
                 .thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
         when(componentClient.createComponent(componentFromRelease))
                 .thenReturn(CompletableFuture.completedFuture(component));
@@ -167,7 +173,7 @@ public class SW360ComponentClientAdapterAsyncImplTest {
 
         when(componentClient.getComponent(COMPONENT_ID))
                 .thenReturn(CompletableFuture.completedFuture(component));
-        when(componentClient.searchByName(COMPONENT_NAME))
+        when(componentClient.search(NAME_SEARCH_PARAMS))
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseComponent)));
 
         Optional<SW360Component> componentByName = block(componentClientAdapter.getComponentByName(COMPONENT_NAME));
@@ -175,7 +181,15 @@ public class SW360ComponentClientAdapterAsyncImplTest {
         assertThat(componentByName).isPresent();
         assertThat(componentByName).hasValue(component);
         verify(componentClient).getComponent(COMPONENT_ID);
-        verify(componentClient).searchByName(COMPONENT_NAME);
+    }
+
+    @Test
+    public void testGetComponentByNameNotFound() {
+        when(componentClient.search(NAME_SEARCH_PARAMS))
+                .thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
+
+        Optional<SW360Component> result = block(componentClientAdapter.getComponentByName(COMPONENT_NAME));
+        assertThat(result).isEmpty();
     }
 
     @Test

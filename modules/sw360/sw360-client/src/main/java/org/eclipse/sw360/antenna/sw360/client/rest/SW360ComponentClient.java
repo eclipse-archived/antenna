@@ -16,7 +16,6 @@ import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
 import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Attributes;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentList;
@@ -45,11 +44,6 @@ public class SW360ComponentClient extends SW360Client {
      * Tag for the query that returns details about a specific component.
      */
     static final String TAG_GET_COMPONENT = "get_component";
-
-    /**
-     * Tag for the query that searches for components by name.
-     */
-    static final String TAG_GET_COMPONENTS_BY_NAME = "get_components_by_name";
 
     /**
      * Tag for the request to create a new component.
@@ -142,21 +136,6 @@ public class SW360ComponentClient extends SW360Client {
         String url = HttpUtils.addQueryParameters(resourceUrl(COMPONENTS_ENDPOINT), params, true);
         return executeJsonRequestWithDefault(HttpUtils.get(url), SW360ComponentList.class,
                 TAG_GET_COMPONENTS, SW360ComponentList::new)
-                .thenApply(SW360ResourceUtils::getSw360SparseComponents);
-    }
-
-    /**
-     * Returns a future with a list containing all the components whose name
-     * matches the given pattern.
-     *
-     * @param name the search pattern for the component name
-     * @return a future with a list with all matching components
-     */
-    public CompletableFuture<List<SW360SparseComponent>> searchByName(String name) {
-        String url = HttpUtils.addQueryParameter(resourceUrl(COMPONENTS_ENDPOINT),
-                SW360Attributes.COMPONENT_SEARCH_BY_NAME, name);
-        return executeJsonRequestWithDefault(HttpUtils.get(url), SW360ComponentList.class,
-                TAG_GET_COMPONENTS_BY_NAME, SW360ComponentList::new)
                 .thenApply(SW360ResourceUtils::getSw360SparseComponents);
     }
 
