@@ -13,18 +13,17 @@
 
 package org.eclipse.sw360.antenna.sw360.client.rest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
-import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.ProjectSearchParams;
-import org.eclipse.sw360.antenna.sw360.client.utils.SW360ResourceUtils;
+import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Attributes;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.ProjectSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Project;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectList;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseList;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ResourceUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +84,7 @@ public class SW360ProjectClient extends SW360Client {
      */
     public CompletableFuture<List<SW360Project>> search(ProjectSearchParams searchParams) {
         String queryUrl = HttpUtils.addQueryParameters(resourceUrl(PROJECTS_ENDPOINT),
-                parametersMap(searchParams));
+                parametersMap(searchParams), true);
         return executeJsonRequestWithDefault(HttpUtils.get(queryUrl), SW360ProjectList.class,
                 TAG_SEARCH_PROJECTS, SW360ProjectList::new)
                 .thenApply(SW360ResourceUtils::getSw360Projects);
@@ -160,25 +159,12 @@ public class SW360ProjectClient extends SW360Client {
      */
     private static Map<String, String> parametersMap(ProjectSearchParams params) {
         Map<String, String> paramMap = new HashMap<>();
-        appendQueryParameter(paramMap, SW360Attributes.PROJECT_SEARCH_BY_NAME, params.getName());
-        appendQueryParameter(paramMap, SW360Attributes.PROJECT_SEARCH_BY_UNIT, params.getBusinessUnit());
-        appendQueryParameter(paramMap, SW360Attributes.PROJECT_SEARCH_BY_TAG, params.getTag());
+        paramMap.put(SW360Attributes.PROJECT_SEARCH_BY_NAME, params.getName());
+        paramMap.put(SW360Attributes.PROJECT_SEARCH_BY_UNIT, params.getBusinessUnit());
+        paramMap.put(SW360Attributes.PROJECT_SEARCH_BY_TAG, params.getTag());
         if (params.getType() != null) {
             paramMap.put(SW360Attributes.PROJECT_SEARCH_BY_TYPE, params.getType().name());
         }
         return paramMap;
-    }
-
-    /**
-     * Adds a query parameter to a map with parameters only if it is defined.
-     *
-     * @param map   the parameter map
-     * @param key   the key of the parameter
-     * @param value the value of the parameter
-     */
-    private static void appendQueryParameter(Map<String, String> map, String key, String value) {
-        if (StringUtils.isNotEmpty(value)) {
-            map.put(key, value);
-        }
     }
 }

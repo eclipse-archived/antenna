@@ -329,21 +329,40 @@ public final class HttpUtils {
     }
 
     /**
-     * Adds the given query parameters to a URL. Each parameter value is
-     * encoded. The parameters are appended to the URL string using the correct
-     * separator characters.
+     * Adds the given query parameters to a URL without applying any filtering.
      *
      * @param url    the URL
      * @param params a map with the query parameters to append
      * @return the resulting URL string with query parameters
      * @throws NullPointerException if the URL or the map with parameters is
      *                              <strong>null</strong>
+     * @see #addQueryParameters(String, Map, boolean)
      */
     public static String addQueryParameters(String url, Map<String, ?> params) {
+        return addQueryParameters(url, params, false);
+    }
+
+    /**
+     * Adds the given query parameters to a URL. Each parameter value is
+     * encoded. The parameters are appended to the URL string using the correct
+     * separator characters. If the {@code filterUndefined} flag is set to
+     * <strong>true</strong>, parameters having a null or empty string value
+     * are filtered out.
+     *
+     * @param url             the URL
+     * @param params          a map with the query parameters to append
+     * @param filterUndefined flag whether undefined parameters should be
+     *                        ignored
+     * @return the resulting URL string with query parameters
+     * @throws NullPointerException if the URL or the map with parameters is
+     *                              <strong>null</strong>
+     */
+    public static String addQueryParameters(String url, Map<String, ?> params, boolean filterUndefined) {
         if (url == null) {
             throw new NullPointerException("URL must not be null");
         }
         String paramStr = params.entrySet().stream()
+                .filter(entry -> !filterUndefined || isParameterDefined(entry.getValue()))
                 .map(entry -> encodeQueryParameter(entry.getKey(), entry.getValue()))
                 .collect(Collectors.joining(PARAMETER_SEPARATOR));
         return paramStr.isEmpty() ? url : url + QUERY_PREFIX + paramStr;
@@ -351,7 +370,8 @@ public final class HttpUtils {
 
     /**
      * Adds a single query parameter to a URL. This is a convenience function
-     * for the case that there is only a single query parameter needed.
+     * for the case that there is only a single query parameter needed. Note
+     * that this method does not filter out undefined parameters.
      *
      * @param url   the URL
      * @param key   the parameter key
@@ -384,6 +404,18 @@ public final class HttpUtils {
      * @return the encoded form of this parameter
      */
     private static String encodeQueryParameter(String key, Object value) {
-        return urlEncode(key) + KEY_VALUE_SEPARATOR + urlEncode(String.valueOf(value));
+        String encValue = value == null ? "" : urlEncode(value.toString());
+        return urlEncode(key) + KEY_VALUE_SEPARATOR + encValue;
+    }
+
+    /**
+     * Checks whether the value of a parameter is defined. This is used to
+     * filter out undefined query parameters.
+     *
+     * @param value the value to check
+     * @return a flag whether this value is defined
+     */
+    private static boolean isParameterDefined(Object value) {
+        return value != null && !value.toString().isEmpty();
     }
 }
