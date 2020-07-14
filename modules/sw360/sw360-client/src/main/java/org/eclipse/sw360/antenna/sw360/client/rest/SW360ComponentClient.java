@@ -14,16 +14,19 @@ package org.eclipse.sw360.antenna.sw360.client.rest;
 
 import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
-import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.auth.AccessTokenProvider;
-import org.eclipse.sw360.antenna.sw360.client.utils.SW360ResourceUtils;
+import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Attributes;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentList;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ResourceUtils;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -61,6 +64,36 @@ public class SW360ComponentClient extends SW360Client {
     private static final String COMPONENTS_ENDPOINT = "components";
 
     /**
+     * URL query parameter for the name search criterion.
+     */
+    private static final String PARAM_NAME = "name";
+
+    /**
+     * URL query parameter for the component type search criterion.
+     */
+    private static final String PARAM_TYPE = "type";
+
+    /**
+     * URL query parameter for the page index.
+     */
+    private static final String PARAM_PAGE = "page";
+
+    /**
+     * URL query parameter for the page size.
+     */
+    private static final String PARAM_PAGE_SIZE = "page_entries";
+
+    /**
+     * URL query parameter for the sort order.
+     */
+    private static final String PARAM_SORT = "sort";
+
+    /**
+     * URL query parameter for the fields to retrieve.
+     */
+    private static final String PARAM_FIELDS = "fields";
+
+    /**
      * Creates a new instance of {@code SW360ComponentClient} and initializes
      * it with the passed in dependencies.
      *
@@ -93,6 +126,21 @@ public class SW360ComponentClient extends SW360Client {
      */
     public CompletableFuture<List<SW360SparseComponent>> getComponents() {
         return executeJsonRequestWithDefault(HttpUtils.get(resourceUrl(COMPONENTS_ENDPOINT)), SW360ComponentList.class,
+                TAG_GET_COMPONENTS, SW360ComponentList::new)
+                .thenApply(SW360ResourceUtils::getSw360SparseComponents);
+    }
+
+    /**
+     * Returns a future with the list of all the components in the SW360
+     * instance that match the search parameters specified.
+     *
+     * @param searchParams the object with search parameters
+     * @return a future with the list of the components that were matched
+     */
+    public CompletableFuture<List<SW360SparseComponent>> search(ComponentSearchParams searchParams) {
+        Map<String, Object> params = createSearchQueryParameters(searchParams);
+        String url = HttpUtils.addQueryParameters(resourceUrl(COMPONENTS_ENDPOINT), params, true);
+        return executeJsonRequestWithDefault(HttpUtils.get(url), SW360ComponentList.class,
                 TAG_GET_COMPONENTS, SW360ComponentList::new)
                 .thenApply(SW360ResourceUtils::getSw360SparseComponents);
     }
@@ -136,5 +184,34 @@ public class SW360ComponentClient extends SW360Client {
      */
     public CompletableFuture<MultiStatusResponse> deleteComponents(Collection<String> idsToDelete) {
         return executeDeleteRequest(COMPONENTS_ENDPOINT, idsToDelete, TAG_DELETE_COMPONENTS);
+    }
+
+    /**
+     * Generates a map with query parameters for a search based on the
+     * parameters object provided.
+     *
+     * @param searchParams the search parameters
+     * @return the map with corresponding query parameters
+     */
+    private static Map<String, Object> createSearchQueryParameters(ComponentSearchParams searchParams) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(PARAM_NAME, searchParams.getName());
+        params.put(PARAM_TYPE, searchParams.getComponentType());
+        params.put(PARAM_PAGE, searchParams.getPageIndex());
+        params.put(PARAM_PAGE_SIZE, searchParams.getPageSize());
+        params.put(PARAM_SORT, multiParam(searchParams.getOrderClauses()));
+        params.put(PARAM_FIELDS, multiParam(searchParams.getFields()));
+        return params;
+    }
+
+    /**
+     * Generates a string representation for a query parameter with multiple
+     * values.
+     *
+     * @param values the list with parameter values
+     * @return the string representation of this query parameter
+     */
+    private static String multiParam(List<String> values) {
+        return String.join(",", values);
     }
 }
