@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ComponentClient;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 
@@ -36,7 +37,13 @@ public interface SW360ComponentClientAdapter {
 
     Optional<SW360Component> getComponentByName(String componentName);
 
-    List<SW360SparseComponent> getComponents();
+    /**
+     * Searches for components based on the criteria provided.
+     *
+     * @param searchParams the object with search parameters
+     * @return a list with the components found by the search
+     */
+    List<SW360SparseComponent> search(ComponentSearchParams searchParams);
 
     /**
      * Triggers a multi-delete operation for the components with the IDs

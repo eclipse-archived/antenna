@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ComponentClient;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 
@@ -37,7 +38,13 @@ public interface SW360ComponentClientAdapterAsync {
 
     CompletableFuture<Optional<SW360Component>> getComponentByName(String componentName);
 
-    CompletableFuture<List<SW360SparseComponent>> getComponents();
+    /**
+     * Searches for components based on the criteria provided.
+     *
+     * @param searchParams the object with search parameters
+     * @return a future with the list of the components found by the search
+     */
+    CompletableFuture<List<SW360SparseComponent>> search(ComponentSearchParams searchParams);
 
     /**
      * Triggers a multi-delete operation for the components with the IDs

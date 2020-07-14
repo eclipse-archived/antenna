@@ -113,18 +113,6 @@ public class SW360ComponentClient extends SW360Client {
     }
 
     /**
-     * Returns a future with a list containing all the components known to the
-     * system.
-     *
-     * @return a future with a list with all existing components
-     */
-    public CompletableFuture<List<SW360SparseComponent>> getComponents() {
-        return executeJsonRequestWithDefault(HttpUtils.get(resourceUrl(COMPONENTS_ENDPOINT)), SW360ComponentList.class,
-                TAG_GET_COMPONENTS, SW360ComponentList::new)
-                .thenApply(SW360ResourceUtils::getSw360SparseComponents);
-    }
-
-    /**
      * Returns a future with the list of all the components in the SW360
      * instance that match the search parameters specified.
      *

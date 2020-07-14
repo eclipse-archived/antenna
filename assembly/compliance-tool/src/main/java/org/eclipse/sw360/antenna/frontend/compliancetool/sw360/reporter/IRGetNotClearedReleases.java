@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.reporter;
 
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 
@@ -29,7 +30,7 @@ public class IRGetNotClearedReleases extends IRForReleases {
 
     @Override
     public Collection<SW360Release> execute(SW360Connection connection) {
-        final List<SW360SparseComponent> components = connection.getComponentAdapter().getComponents();
+        final List<SW360SparseComponent> components = connection.getComponentAdapter().search(ComponentSearchParams.ALL_COMPONENTS);
 
         final Predicate<SW360Release> releasePredicate = sw360release -> !ComplianceFeatureUtils.isApproved(sw360release);
         return getReleasesFromComponentsByPredicate(connection, components, releasePredicate);

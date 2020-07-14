@@ -15,6 +15,7 @@ import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ComponentClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentType;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
@@ -193,15 +194,19 @@ public class SW360ComponentClientAdapterAsyncImplTest {
     }
 
     @Test
-    public void testGetComponents() {
-        when(componentClient.getComponents())
+    public void testSearch() {
+        ComponentSearchParams searchParams = ComponentSearchParams.builder()
+                .withComponentType(SW360ComponentType.INNER_SOURCE)
+                .retrieveFields("name", "releaseIds")
+                .orderAscending("createdOn")
+                .build();
+        when(componentClient.search(searchParams))
                 .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseComponent)));
 
-        List<SW360SparseComponent> components = block(componentClientAdapter.getComponents());
+        List<SW360SparseComponent> components = block(componentClientAdapter.search(searchParams));
 
         assertThat(components).hasSize(1);
         assertThat(components).containsExactly(sparseComponent);
-        verify(componentClient).getComponents();
     }
 
     @Test

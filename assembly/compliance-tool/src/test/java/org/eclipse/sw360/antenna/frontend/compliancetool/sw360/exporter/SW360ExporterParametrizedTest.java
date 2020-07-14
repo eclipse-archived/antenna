@@ -20,6 +20,7 @@ import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapterAsync;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ClearingState;
@@ -126,7 +127,7 @@ public class SW360ExporterParametrizedTest {
     @Before
     public void setUp() throws IOException {
         SW360SparseComponent sparseComponent = SW360TestUtils.mkSW360SparseComponent("testComponent");
-        when(componentClientAdapterMock.getComponents())
+        when(componentClientAdapterMock.search(ComponentSearchParams.ALL_COMPONENTS))
                 .thenReturn(Collections.singletonList(sparseComponent));
 
         SW360Component component =

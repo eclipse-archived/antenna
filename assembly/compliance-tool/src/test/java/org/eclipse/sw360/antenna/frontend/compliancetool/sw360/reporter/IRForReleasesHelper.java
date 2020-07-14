@@ -16,6 +16,7 @@ import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentEmbedded;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
@@ -54,7 +55,7 @@ public class IRForReleasesHelper {
         when(componentClientAdapter.getComponentById(any()))
                 .thenReturn(Optional.of((component)));
         SW360SparseComponent sparseComponent = SW360TestUtils.mkSW360SparseComponent(name);
-        when(componentClientAdapter.getComponents())
+        when(componentClientAdapter.search(ComponentSearchParams.ALL_COMPONENTS))
                 .thenReturn(Collections.singletonList(sparseComponent));
         when(connection.getComponentAdapter())
                 .thenReturn(componentClientAdapter);

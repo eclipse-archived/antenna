@@ -81,8 +81,8 @@ class SW360ComponentClientAdapterAsyncImpl implements SW360ComponentClientAdapte
     }
 
     @Override
-    public CompletableFuture<List<SW360SparseComponent>> getComponents() {
-        return getComponentClient().getComponents();
+    public CompletableFuture<List<SW360SparseComponent>> search(ComponentSearchParams searchParams) {
+        return getComponentClient().search(searchParams);
     }
 
     @Override
