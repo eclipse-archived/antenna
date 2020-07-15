@@ -22,6 +22,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360Projec
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectListEmbedded;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.projects.SW360ProjectReleaseRelationship;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseEmbedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseLinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseListEmbedded;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.users.SW360SparseUser;
@@ -121,6 +122,22 @@ public class SW360ResourcesEqualsTest {
     @Test
     public void testEqualsReleaseListEmbedded() {
         EqualsVerifier.forClass(SW360ReleaseListEmbedded.class)
+                .suppress(Warning.NONFINAL_FIELDS)
+                .verify();
+    }
+
+    @Test
+    public void testEqualsLinkObject() {
+        EqualsVerifier.forClass(LinkObjects.class)
+                .usingGetClass()
+                .suppress(Warning.NONFINAL_FIELDS)
+                .verify();
+    }
+
+    @Test
+    public void testEqualsReleaseLinkObjects() {
+        EqualsVerifier.forClass(SW360ReleaseLinkObjects.class)
+                .withRedefinedSuperclass()
                 .suppress(Warning.NONFINAL_FIELDS)
                 .verify();
     }
