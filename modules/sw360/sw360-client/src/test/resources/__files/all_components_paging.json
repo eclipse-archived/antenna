@@ -32,13 +32,13 @@
       "href": "https://sw360.test.com//resource/api/components?page=0&page_entries=5"
     },
     "previous": {
-      "href": "https://sw360.test.com//resource/api/components?page=0&page_entries=5"
+      "href": "https://sw360.test.com//resource/api/components?page=1&page_entries=5"
     },
     "next": {
       "href": "https://sw360.test.com//resource/api/components?page=2&page_entries=5"
     },
     "last": {
-      "href": "https://sw360.test.com//resource/api/components?page=2&page_entries=5"
+      "href": "https://sw360.test.com//resource/api/components?page=3&page_entries=5"
     },
     "curies": [
       {

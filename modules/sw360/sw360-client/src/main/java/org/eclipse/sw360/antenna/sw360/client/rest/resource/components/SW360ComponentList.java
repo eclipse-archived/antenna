@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -10,11 +11,11 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.rest.resource.components;
 
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Paging;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.PagingLinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
 
-public class SW360ComponentList extends SW360HalResource<LinkObjects, SW360ComponentListEmbedded> {
+public class SW360ComponentList extends SW360HalResource<PagingLinkObjects, SW360ComponentListEmbedded> {
     private Paging page;
 
     public Paging getPage() {
@@ -26,8 +27,8 @@ public class SW360ComponentList extends SW360HalResource<LinkObjects, SW360Compo
     }
 
     @Override
-    public LinkObjects createEmptyLinks() {
-        return new LinkObjects();
+    public PagingLinkObjects createEmptyLinks() {
+        return new PagingLinkObjects();
     }
 
     @Override
