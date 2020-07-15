@@ -12,9 +12,14 @@
 #
 FROM maven:3.5.0-jdk-8-alpine AS ANTENNA_MAVEN_BUILD
 
+RUN apk update && apk add git zip
+
 COPY . /home/antenna/
 WORKDIR /home/antenna/
 RUN mkdir /maven
+
+ARG COMMIT=master
+RUN git checkout -f ${COMMIT}
 
 RUN mvn -B -e -Dmaven.repo.local=/maven install -DskipTests=true -Dskip.pmd=true
 
