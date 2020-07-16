@@ -29,12 +29,41 @@ import java.util.concurrent.CompletableFuture;
  * </p>
  */
 public interface SW360ComponentClientAdapterAsync {
+    /**
+     * Returns the {@code SW360ComponentClient} object used by this adapter to
+     * interact with the SW360 server. Clients may use this object as well if
+     * they need access to a low-level API.
+     *
+     * @return the underlying {@code SW360ComponentClient}
+     */
     SW360ComponentClient getComponentClient();
 
+    /**
+     * Creates a new component in SW360 based on the passed in data object.
+     *
+     * @param component the object describing the new component
+     * @return a future with the newly created component entity
+     */
     CompletableFuture<SW360Component> createComponent(SW360Component component);
 
+    /**
+     * Queries a component by its ID. Result is an {@code Optional}, which is
+     * empty if the component ID cannot be resolved.
+     *
+     * @param componentId the ID of the desired component
+     * @return a future with an {@code Optional} containing the resulting
+     * component
+     */
     CompletableFuture<Optional<SW360Component>> getComponentById(String componentId);
 
+    /**
+     * Queries a component by its name. Tries to find a component whose name
+     * matches the passed in string exactly. Result is an {@code Optional},
+     * which is empty if no matching component can be found.
+     *
+     * @return a future with an {@code Optional} containing the resulting
+     * component
+     */
     CompletableFuture<Optional<SW360Component>> getComponentByName(String componentName);
 
     /**
