@@ -241,10 +241,24 @@ public class HttpUtilsTest {
         params.put("foo", "bar");
         params.put("test", Boolean.TRUE);
         params.put("complex param", "this must be encoded");
+        params.put("nullValue", null);
+        params.put("emptyValue", "");
         String url = "https://test.antenna.org/query";
-        String expResult = url + "?foo=bar&test=true&complex+param=this+must+be+encoded";
+        String expResult = url + "?foo=bar&test=true&complex+param=this+must+be+encoded&nullValue=&emptyValue=";
 
         assertThat(HttpUtils.addQueryParameters(url, params)).isEqualTo(expResult);
+    }
+
+    @Test
+    public void testAddQueryParametersFiltersNullOrEmptyValues() {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("nullValue", null);
+        params.put("emptyValue", "");
+        params.put("foo", "bar");
+        String url = "https://test.antenna.org/query";
+        String expResult = url + "?foo=bar";
+
+        assertThat(HttpUtils.addQueryParameters(url, params, true)).isEqualTo(expResult);
     }
 
     @Test

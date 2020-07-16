@@ -17,7 +17,7 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.Self;
 
 import java.util.Objects;
 
-public class SW360ReleaseLinkObjects extends LinkObjects {
+public final class SW360ReleaseLinkObjects extends LinkObjects {
     @JsonProperty("sw360:component")
     private Self selfComponent;
 
@@ -33,8 +33,7 @@ public class SW360ReleaseLinkObjects extends LinkObjects {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (!(o instanceof SW360ReleaseLinkObjects) || !super.equals(o)) return false;
         SW360ReleaseLinkObjects that = (SW360ReleaseLinkObjects) o;
         return Objects.equals(selfComponent, that.selfComponent);
     }
@@ -42,5 +41,10 @@ public class SW360ReleaseLinkObjects extends LinkObjects {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), selfComponent);
+    }
+
+    @Override
+    public boolean canEqual(Object o) {
+        return o instanceof SW360ReleaseLinkObjects;
     }
 }

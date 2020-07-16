@@ -18,6 +18,7 @@ import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactSourceFile;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResource;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
@@ -80,7 +81,7 @@ public class SW360Exporter {
         LOGGER.debug("{} has started.", SW360Exporter.class.getName());
         connection = configuration.getConnection();
 
-        Collection<SW360SparseComponent> components = connection.getComponentAdapter().getComponents();
+        Collection<SW360SparseComponent> components = connection.getComponentAdapter().search(ComponentSearchParams.ALL_COMPONENTS);
 
         Collection<SW360SparseRelease> sw360SparseReleases = getReleasesFromComponents(components);
 

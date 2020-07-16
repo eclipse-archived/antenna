@@ -12,9 +12,11 @@ package org.eclipse.sw360.antenna.sw360.client.rest;
 
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
-import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360Attributes;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.Paging;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentEmbedded;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
 import org.junit.Before;
@@ -67,81 +69,78 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
     }
 
     @Test
-    public void testGetComponents() throws IOException {
+    public void testSearchNoParameters() throws IOException {
         wireMockRule.stubFor(get(urlPathEqualTo("/components"))
+                .withQueryParams(Collections.emptyMap())
                 .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
                         .withBodyFile("all_components.json")));
 
-        List<SW360SparseComponent> components = waitFor(componentClient.getComponents());
-        checkComponentsList(components);
+        PagingResult<SW360SparseComponent> result =
+                waitFor(componentClient.search(ComponentSearchParams.ALL_COMPONENTS));
+        checkComponentsList(result.getResult());
+        assertThat(result.getPaging()).isNull();
+        assertThat(result.getPagingLinkObjects().getFirst()).isNull();
     }
 
     @Test
-    public void testGetComponentsNoBody() {
+    public void testSearchNoBody() {
         wireMockRule.stubFor(get(urlPathEqualTo("/components"))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_OK)));
 
-        extractException(componentClient.getComponents(), IOException.class);
+        extractException(componentClient.search(ComponentSearchParams.ALL_COMPONENTS), IOException.class);
     }
 
     @Test
-    public void testGetComponentsStatusNoContent() throws IOException {
+    public void testSearchNoContent() throws IOException {
         wireMockRule.stubFor(get(urlPathEqualTo("/components"))
                 .willReturn(aResponse().withStatus(HttpConstants.STATUS_NO_CONTENT)));
 
-        List<SW360SparseComponent> components = waitFor(componentClient.getComponents());
-        assertThat(components).isEmpty();
+        PagingResult<SW360SparseComponent> result =
+                waitFor(componentClient.search(ComponentSearchParams.ALL_COMPONENTS));
+        assertThat(result.getResult()).isEmpty();
     }
 
     @Test
-    public void testGetComponentsError() {
+    public void testSearchError() {
         wireMockRule.stubFor(get(urlPathEqualTo("/components"))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_BAD_REQUEST)));
 
         FailedRequestException exception =
-                expectFailedRequest(componentClient.getComponents(), HttpConstants.STATUS_ERR_BAD_REQUEST);
+                expectFailedRequest(componentClient.search(ComponentSearchParams.ALL_COMPONENTS),
+                        HttpConstants.STATUS_ERR_BAD_REQUEST);
         assertThat(exception.getTag()).isEqualTo(SW360ComponentClient.TAG_GET_COMPONENTS);
     }
 
     @Test
-    public void testSearchByName() throws IOException {
-        final String componentName = "testComponentSearchPattern";
+    public void testSearchWithParameters() throws IOException {
+        final String name = "desiredComponent";
+        final SW360ComponentType componentType = SW360ComponentType.SERVICE;
+        final int pageIndex = 42;
+        final int pageSize = 11;
         wireMockRule.stubFor(get(urlPathEqualTo("/components"))
-                .withQueryParam(SW360Attributes.COMPONENT_SEARCH_BY_NAME, equalTo(componentName))
+                .withQueryParam("name", equalTo(name))
+                .withQueryParam("type", equalTo(componentType.name()))
+                .withQueryParam("page", equalTo(String.valueOf(pageIndex)))
+                .withQueryParam("page_entries", equalTo(String.valueOf(pageSize)))
+                .withQueryParam("fields", equalTo("name,createdOn,type,releaseIds"))
+                .withQueryParam("sort", equalTo("name,ASC,createdOn,DESC"))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
-                        .withBodyFile("all_components.json")));
+                        .withBodyFile("all_components_paging.json")));
 
-        List<SW360SparseComponent> components = waitFor(componentClient.searchByName(componentName));
-        checkComponentsList(components);
-    }
-
-    @Test
-    public void testSearchByNameNoResults() throws IOException {
-        wireMockRule.stubFor(get(anyUrl())
-                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
-                        .withBody("{}")));
-
-        List<SW360SparseComponent> components = waitFor(componentClient.searchByName("foo"));
-        assertThat(components).hasSize(0);
-    }
-
-    @Test
-    public void testSearchByNameStatusNoContent() throws IOException {
-        wireMockRule.stubFor(get(anyUrl())
-                .willReturn(aResponse().withStatus(HttpConstants.STATUS_NO_CONTENT)));
-
-        List<SW360SparseComponent> components = waitFor(componentClient.searchByName("test"));
-        assertThat(components).isEmpty();
-    }
-
-    @Test
-    public void testSearchByNameError() {
-        wireMockRule.stubFor(get(anyUrl())
-                .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_UNAUTHORIZED)));
-
-        FailedRequestException exception =
-                expectFailedRequest(componentClient.searchByName("foo"), HttpConstants.STATUS_ERR_UNAUTHORIZED);
-        assertThat(exception.getTag()).isEqualTo(SW360ComponentClient.TAG_GET_COMPONENTS_BY_NAME);
+        ComponentSearchParams params = ComponentSearchParams.builder()
+                .withName(name)
+                .withComponentType(componentType)
+                .withPage(pageIndex)
+                .withPageSize(pageSize)
+                .orderAscending("name")
+                .orderDescending("createdOn")
+                .retrieveFields("name", "createdOn", "type")
+                .retrieveFields("releaseIds")
+                .build();
+        PagingResult<SW360SparseComponent> result = waitFor(componentClient.search(params));
+        checkComponentsList(result.getResult());
+        assertThat(result.getPaging()).isEqualTo(new Paging(5, 1, 12, 3));
+        assertThat(result.getPagingLinkObjects().getFirst()).isNotNull();
     }
 
     @Test

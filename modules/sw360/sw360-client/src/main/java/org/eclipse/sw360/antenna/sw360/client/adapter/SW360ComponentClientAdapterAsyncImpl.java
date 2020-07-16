@@ -12,8 +12,10 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
+import org.eclipse.sw360.antenna.sw360.client.rest.PagingResult;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ComponentClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
@@ -65,9 +67,12 @@ class SW360ComponentClientAdapterAsyncImpl implements SW360ComponentClientAdapte
 
     @Override
     public CompletableFuture<Optional<SW360Component>> getComponentByName(String componentName) {
-        return getComponentClient().searchByName(componentName)
+        ComponentSearchParams searchParams = ComponentSearchParams.builder()
+                .withName(componentName)
+                .build();
+        return getComponentClient().search(searchParams)
                 .thenCompose(components ->
-                        components.stream()
+                        components.getResult().stream()
                                 .filter(c -> c.getName().equals(componentName))
                                 .map(c -> SW360HalResourceUtility.getLastIndexOfSelfLink(c.getLinks()).orElse(""))
                                 .map(this::getComponentById)
@@ -77,8 +82,14 @@ class SW360ComponentClientAdapterAsyncImpl implements SW360ComponentClientAdapte
     }
 
     @Override
-    public CompletableFuture<List<SW360SparseComponent>> getComponents() {
-        return getComponentClient().getComponents();
+    public CompletableFuture<List<SW360SparseComponent>> search(ComponentSearchParams searchParams) {
+        return searchWithPaging(searchParams)
+                .thenApply(PagingResult::getResult);
+    }
+
+    @Override
+    public CompletableFuture<PagingResult<SW360SparseComponent>> searchWithPaging(ComponentSearchParams searchParams) {
+        return getComponentClient().search(searchParams);
     }
 
     @Override
