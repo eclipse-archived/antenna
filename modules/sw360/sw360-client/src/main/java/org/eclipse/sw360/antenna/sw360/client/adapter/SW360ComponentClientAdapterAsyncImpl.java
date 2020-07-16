@@ -41,18 +41,6 @@ class SW360ComponentClientAdapterAsyncImpl implements SW360ComponentClientAdapte
     }
 
     @Override
-    public CompletableFuture<Optional<SW360Component>> getOrCreateComponent(SW360Component componentFromRelease) {
-        if (componentFromRelease.getId() != null) {
-            return getComponentById(componentFromRelease.getId());
-        }
-        return getComponentByName(componentFromRelease.getName())
-                .thenCompose(optComponent -> optComponent.isPresent() ?
-                        CompletableFuture.completedFuture(optComponent) :
-                        createComponent(componentFromRelease)
-                                .thenApply(Optional::of));
-    }
-
-    @Override
     public CompletableFuture<SW360Component> createComponent(SW360Component component) {
         if (!SW360ComponentAdapterUtils.isValidComponent(component)) {
             return failedFuture(new SW360ClientException("Can not write invalid component for " + component.getName()));

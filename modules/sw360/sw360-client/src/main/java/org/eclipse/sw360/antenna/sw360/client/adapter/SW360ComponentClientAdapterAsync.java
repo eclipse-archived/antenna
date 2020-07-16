@@ -31,8 +31,6 @@ import java.util.concurrent.CompletableFuture;
 public interface SW360ComponentClientAdapterAsync {
     SW360ComponentClient getComponentClient();
 
-    CompletableFuture<Optional<SW360Component>> getOrCreateComponent(SW360Component componentFromRelease);
-
     CompletableFuture<SW360Component> createComponent(SW360Component component);
 
     CompletableFuture<Optional<SW360Component>> getComponentById(String componentId);

@@ -30,8 +30,6 @@ import java.util.Optional;
 public interface SW360ComponentClientAdapter {
     SW360ComponentClient getComponentClient();
 
-    Optional<SW360Component> getOrCreateComponent(SW360Component componentFromRelease);
-
     SW360Component createComponent(SW360Component component);
 
     Optional<SW360Component> getComponentById(String componentId);

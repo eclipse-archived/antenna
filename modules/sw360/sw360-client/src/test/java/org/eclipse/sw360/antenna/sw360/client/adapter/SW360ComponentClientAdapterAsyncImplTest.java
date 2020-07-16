@@ -77,51 +77,6 @@ public class SW360ComponentClientAdapterAsyncImplTest {
     }
 
     @Test
-    public void testGetOrCreateComponentByID() {
-        SW360Component componentFromRelease = mock(SW360Component.class);
-        when(componentFromRelease.getId()).thenReturn(COMPONENT_ID);
-        when(componentClient.getComponent(COMPONENT_ID))
-                .thenReturn(CompletableFuture.completedFuture(component));
-
-        Optional<SW360Component> optResult = block(componentClientAdapter.getOrCreateComponent(componentFromRelease));
-        assertThat(optResult).contains(component);
-    }
-
-    @Test
-    public void testGetOrCreateComponentByName() {
-        SW360Component componentFromRelease = mock(SW360Component.class);
-        when(componentFromRelease.getId()).thenReturn(null);
-        when(componentFromRelease.getName()).thenReturn(COMPONENT_NAME);
-        LinkObjects linkObjects = makeLinkObjects();
-        sparseComponent.setName(COMPONENT_NAME)
-                .setLinks(linkObjects);
-        component.setName(COMPONENT_NAME);
-
-        when(componentClient.getComponent(COMPONENT_ID))
-                .thenReturn(CompletableFuture.completedFuture(component));
-        when(componentClient.search(NAME_SEARCH_PARAMS))
-                .thenReturn(createSearchResult(Collections.singletonList(sparseComponent)));
-
-        Optional<SW360Component> optResult = block(componentClientAdapter.getOrCreateComponent(componentFromRelease));
-        assertThat(optResult).contains(component);
-    }
-
-    @Test
-    public void testGetOrCreateComponentCreateNew() {
-        SW360Component componentFromRelease = mock(SW360Component.class);
-        when(componentFromRelease.getId()).thenReturn(null);
-        when(componentFromRelease.getName()).thenReturn(COMPONENT_NAME);
-        when(componentFromRelease.getCategories()).thenReturn(Collections.singleton("Antenna"));
-        when(componentClient.search(NAME_SEARCH_PARAMS))
-                .thenReturn(createSearchResult(Collections.emptyList()));
-        when(componentClient.createComponent(componentFromRelease))
-                .thenReturn(CompletableFuture.completedFuture(component));
-
-        Optional<SW360Component> optResult = block(componentClientAdapter.getOrCreateComponent(componentFromRelease));
-        assertThat(optResult).contains(component);
-    }
-
-    @Test
     public void testCreateComponent() {
         component.setName(COMPONENT_NAME);
         component.setCategories(Collections.singleton("Antenna"));
