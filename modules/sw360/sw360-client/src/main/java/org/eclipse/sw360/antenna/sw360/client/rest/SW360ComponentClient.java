@@ -51,6 +51,11 @@ public class SW360ComponentClient extends SW360Client {
     static final String TAG_CREATE_COMPONENT = "post_create_component";
 
     /**
+     * Tag for the request to update a component.
+     */
+    static final String TAG_UPDATE_COMPONENT = "patch_update_component";
+
+    /**
      * Tag for the request to delete components.
      */
     static final String TAG_DELETE_COMPONENTS = "delete_components";
@@ -142,6 +147,20 @@ public class SW360ComponentClient extends SW360Client {
                         .uri(resourceUrl(COMPONENTS_ENDPOINT))
                         .body(body -> body.json(sw360Component)),
                 SW360Component.class, TAG_CREATE_COMPONENT);
+    }
+
+    /**
+     * Updates a release based on the data object passed in and returns a
+     * future with the result.
+     *
+     * @param component a data object for the component to be updated
+     * @return a future with the updated component entity
+     */
+    public CompletableFuture<SW360Component> patchComponent(SW360Component component) {
+        return executeJsonRequest(builder -> builder.method(RequestBuilder.Method.PATCH)
+                        .uri(resourceUrl(COMPONENTS_ENDPOINT, component.getId()))
+                        .body(body -> body.json(component)),
+                SW360Component.class, TAG_UPDATE_COMPONENT);
     }
 
     /**

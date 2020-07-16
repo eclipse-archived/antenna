@@ -87,6 +87,8 @@ public interface SW360ComponentClientAdapter {
      */
     PagingResult<SW360SparseComponent> searchWithPaging(ComponentSearchParams searchParams);
 
+
+
     /**
      * Triggers a multi-delete operation for the components with the IDs
      * specified. Returns a {@code MultiStatusResponse} that allows checking
