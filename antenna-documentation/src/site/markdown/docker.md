@@ -32,12 +32,73 @@ docker run -it \
 ```
 
 This mounts the given configuration folder in the docker container where the antenna configuration file 
-is searched for by the docker cmd. In this folder all information the configuration file and workflow need
-from the user should be supplied. 
+is searched for by the docker cmd in the folder `\antenna`. In this folder all information the 
+configuration file and workflow need from the user should be supplied.
 
-Hence, if you want to have an Antenna run over your whole project, you should mount that project. 
-In this configuration the antenna configuration file should always be at the root of this folder.  
+Hence, if you want to have an Antenna run over your whole project, you should mount that project
+or at least its source code. 
 
 The resulting files will be saved in the output directory you specified. 
 This output directory needs to be the folder or a subfolder of the mounted folder. 
 The docker container does not have access to anything outside of the mounted folder.   
+
+## Example Setup
+
+Here an example structure is provided with which the docker image could be run:
+
+```
+project-to-scan
+├── antennaConfiguration.xml
+├── antenna-related-files (referenced from the antennaConfiguration.xml
+│   ├── workflow.xml
+│   ├── dependencies.csv
+│   └── sources
+│       └── test-component.jar
+└── src (source code of project
+    └── main
+        ├── java
+        │   └── ...
+        └── resources
+            └── ...
+```
+With this structure, the docker image could be run with this command:
+
+```
+docker run -it \
+ --mount src=<path-to-project>/project-to-scan,target=/antenna,type=bind
+```
+
+If you are executing the run of the docker image in the project folder itself you can use `pwd` instead.
+
+Another file hierarchy would be:
+
+```
+project-to-scan
+├── antenna-related-files (referenced from the antennaConfiguration.xml
+│   ├── antennaConfiguration.xml
+│   ├── workflow.xml
+│   ├── dependencies.csv
+│   └── sources
+│       └── test-component.jar
+└── src (source code of project
+    └── main
+        ├── java
+        │   └── ...
+        └── resources
+            └── ...
+```
+
+Since the image expects to find the antenna configuration file at the root of the antenna folder
+`antenna/antennaConfiguration.xml` you need to specify the subfolder where your configuration file
+is located in the run command. 
+
+```
+docker run -it \
+ --mount src=<path-to-project>/project-to-scan,target=/antenna,type=bind antenna/antenna-related-files/antennaConfiguration.xml
+``` 
+
+If you have a project that needs to be scanned by Antenna, do not simple mount the
+`antenna-related-files` folder, because then the project's source code itself would not be mounted
+and a proper scan could not be executed.
+
+
