@@ -79,18 +79,42 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
      */
     private CompletableFuture<SW360Release> assignReleaseToComponent(SW360Release release) {
         final SW360Component componentFromRelease = SW360ComponentAdapterUtils.createFromRelease(release);
-        return getComponentAdapter().getOrCreateComponent(componentFromRelease)
-                .thenApply(componentFromSW360 -> {
-                    componentFromSW360.ifPresent(cfs -> {
-                        if (cfs.getEmbedded().getReleases().stream()
-                                .map(SW360SparseRelease::getVersion)
-                                .anyMatch(release.getVersion()::equals)) {
-                            throw new SW360ClientException("The release already exists in the found component");
-                        }
-                        release.setComponentId(cfs.getId());
-                    });
+        return fetchComponentToAssign(componentFromRelease)
+                .thenApply(cta -> {
+                    if (containsRelease(cta, release)) {
+                        throw new SW360ClientException("The release already exists in the found component");
+                    }
+                    release.setComponentId(cta.getId());
                     return release;
                 });
+    }
+
+    /**
+     * Obtains the component to assign to a release. The component is looked up
+     * by the release name. If it does not exist yet, it is newly created.
+     *
+     * @param component the component created based on the release
+     * @return the component to assign to a new release
+     */
+    private CompletableFuture<SW360Component> fetchComponentToAssign(SW360Component component) {
+        return getComponentAdapter().getComponentByName(component.getName())
+                .thenCompose(optExistingComponent ->
+                        optExistingComponent.map(CompletableFuture::completedFuture)
+                                .orElseGet(() -> getComponentAdapter().createComponent(component))
+                );
+    }
+
+    /**
+     * Checks whether a component has a release matching the given one.
+     *
+     * @param component the component in question
+     * @param release   the release to check for
+     * @return a flag whether this release exists
+     */
+    private static boolean containsRelease(SW360Component component, SW360Release release) {
+        return component.getEmbedded().getReleases().stream()
+                .map(SW360SparseRelease::getVersion)
+                .anyMatch(release.getVersion()::equals);
     }
 
     @Override
