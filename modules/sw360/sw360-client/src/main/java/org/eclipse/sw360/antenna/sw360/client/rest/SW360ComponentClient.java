@@ -113,18 +113,21 @@ public class SW360ComponentClient extends SW360Client {
     }
 
     /**
-     * Returns a future with the list of all the components in the SW360
-     * instance that match the search parameters specified.
+     * Executes a search query based on the parameters provided and returns a
+     * future with a result object. The result contains the entities matched by
+     * the search criteria and paging-related metadata if available. (If the
+     * search parameters do not use paging, the paging-related objects in the
+     * result are <strong>null</strong>.)
      *
      * @param searchParams the object with search parameters
-     * @return a future with the list of the components that were matched
+     * @return a future with an object holding the search results
      */
-    public CompletableFuture<List<SW360SparseComponent>> search(ComponentSearchParams searchParams) {
+    public CompletableFuture<PagingResult<SW360SparseComponent>> search(ComponentSearchParams searchParams) {
         Map<String, Object> params = createSearchQueryParameters(searchParams);
         String url = HttpUtils.addQueryParameters(resourceUrl(COMPONENTS_ENDPOINT), params, true);
         return executeJsonRequestWithDefault(HttpUtils.get(url), SW360ComponentList.class,
                 TAG_GET_COMPONENTS, SW360ComponentList::new)
-                .thenApply(SW360ResourceUtils::getSw360SparseComponents);
+                .thenApply(SW360ComponentClient::createPagingComponentResult);
     }
 
     /**
@@ -180,5 +183,16 @@ public class SW360ComponentClient extends SW360Client {
      */
     private static String multiParam(List<String> values) {
         return String.join(",", values);
+    }
+
+    /**
+     * Converts the given component list to a paging result.
+     *
+     * @param componentList the component list
+     * @return the result with the components and paging information
+     */
+    private static PagingResult<SW360SparseComponent> createPagingComponentResult(SW360ComponentList componentList) {
+        List<SW360SparseComponent> components = SW360ResourceUtils.getSw360SparseComponents(componentList);
+        return new PagingResult<>(components, componentList.getPage(), componentList.getLinks());
     }
 }

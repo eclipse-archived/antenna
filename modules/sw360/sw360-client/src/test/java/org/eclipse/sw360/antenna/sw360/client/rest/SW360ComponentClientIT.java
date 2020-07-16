@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.sw360.client.rest;
 
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.Paging;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentEmbedded;
@@ -74,8 +75,11 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
                 .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
                         .withBodyFile("all_components.json")));
 
-        List<SW360SparseComponent> components = waitFor(componentClient.search(ComponentSearchParams.ALL_COMPONENTS));
-        checkComponentsList(components);
+        PagingResult<SW360SparseComponent> result =
+                waitFor(componentClient.search(ComponentSearchParams.ALL_COMPONENTS));
+        checkComponentsList(result.getResult());
+        assertThat(result.getPaging()).isNull();
+        assertThat(result.getPagingLinkObjects().getFirst()).isNull();
     }
 
     @Test
@@ -91,8 +95,9 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
         wireMockRule.stubFor(get(urlPathEqualTo("/components"))
                 .willReturn(aResponse().withStatus(HttpConstants.STATUS_NO_CONTENT)));
 
-        List<SW360SparseComponent> components = waitFor(componentClient.search(ComponentSearchParams.ALL_COMPONENTS));
-        assertThat(components).isEmpty();
+        PagingResult<SW360SparseComponent> result =
+                waitFor(componentClient.search(ComponentSearchParams.ALL_COMPONENTS));
+        assertThat(result.getResult()).isEmpty();
     }
 
     @Test
@@ -132,8 +137,10 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
                 .retrieveFields("name", "createdOn", "type")
                 .retrieveFields("releaseIds")
                 .build();
-        List<SW360SparseComponent> components = waitFor(componentClient.search(params));
-        checkComponentsList(components);
+        PagingResult<SW360SparseComponent> result = waitFor(componentClient.search(params));
+        checkComponentsList(result.getResult());
+        assertThat(result.getPaging()).isEqualTo(new Paging(5, 1, 12, 3));
+        assertThat(result.getPagingLinkObjects().getFirst()).isNotNull();
     }
 
     @Test

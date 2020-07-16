@@ -13,7 +13,10 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
 import org.eclipse.sw360.antenna.http.utils.HttpConstants;
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
+import org.eclipse.sw360.antenna.sw360.client.rest.PagingResult;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ComponentClient;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.Paging;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.PagingLinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentType;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
@@ -46,10 +49,12 @@ public class SW360ComponentClientAdapterAsyncImplTest {
     private final static String COMPONENT_ID = "12345";
     private final static String COMPONENT_NAME = "componentName";
 
+    private static final Paging PAGING = new Paging(11, 28, 1024, 25);
+
     private static final ComponentSearchParams NAME_SEARCH_PARAMS =
             ComponentSearchParams.builder()
-            .withName(COMPONENT_NAME)
-            .build();
+                    .withName(COMPONENT_NAME)
+                    .build();
 
     private SW360ComponentClientAdapterAsync componentClientAdapter;
 
@@ -64,6 +69,11 @@ public class SW360ComponentClientAdapterAsyncImplTest {
         componentClientAdapter = new SW360ComponentClientAdapterAsyncImpl(componentClient);
         sparseComponent = new SW360SparseComponent();
         component = new SW360Component();
+    }
+
+    private static CompletableFuture<PagingResult<SW360SparseComponent>>
+    createSearchResult(Collection<SW360SparseComponent> data) {
+        return CompletableFuture.completedFuture(new PagingResult<>(data, PAGING, new PagingLinkObjects()));
     }
 
     @Test
@@ -90,7 +100,7 @@ public class SW360ComponentClientAdapterAsyncImplTest {
         when(componentClient.getComponent(COMPONENT_ID))
                 .thenReturn(CompletableFuture.completedFuture(component));
         when(componentClient.search(NAME_SEARCH_PARAMS))
-                .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseComponent)));
+                .thenReturn(createSearchResult(Collections.singletonList(sparseComponent)));
 
         Optional<SW360Component> optResult = block(componentClientAdapter.getOrCreateComponent(componentFromRelease));
         assertThat(optResult).contains(component);
@@ -103,7 +113,7 @@ public class SW360ComponentClientAdapterAsyncImplTest {
         when(componentFromRelease.getName()).thenReturn(COMPONENT_NAME);
         when(componentFromRelease.getCategories()).thenReturn(Collections.singleton("Antenna"));
         when(componentClient.search(NAME_SEARCH_PARAMS))
-                .thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
+                .thenReturn(createSearchResult(Collections.emptyList()));
         when(componentClient.createComponent(componentFromRelease))
                 .thenReturn(CompletableFuture.completedFuture(component));
 
@@ -175,7 +185,7 @@ public class SW360ComponentClientAdapterAsyncImplTest {
         when(componentClient.getComponent(COMPONENT_ID))
                 .thenReturn(CompletableFuture.completedFuture(component));
         when(componentClient.search(NAME_SEARCH_PARAMS))
-                .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseComponent)));
+                .thenReturn(createSearchResult(Collections.singletonList(sparseComponent)));
 
         Optional<SW360Component> componentByName = block(componentClientAdapter.getComponentByName(COMPONENT_NAME));
 
@@ -187,7 +197,7 @@ public class SW360ComponentClientAdapterAsyncImplTest {
     @Test
     public void testGetComponentByNameNotFound() {
         when(componentClient.search(NAME_SEARCH_PARAMS))
-                .thenReturn(CompletableFuture.completedFuture(Collections.emptyList()));
+                .thenReturn(createSearchResult(Collections.emptyList()));
 
         Optional<SW360Component> result = block(componentClientAdapter.getComponentByName(COMPONENT_NAME));
         assertThat(result).isEmpty();
@@ -201,12 +211,28 @@ public class SW360ComponentClientAdapterAsyncImplTest {
                 .orderAscending("createdOn")
                 .build();
         when(componentClient.search(searchParams))
-                .thenReturn(CompletableFuture.completedFuture(Collections.singletonList(sparseComponent)));
+                .thenReturn(createSearchResult(Collections.singletonList(sparseComponent)));
 
         List<SW360SparseComponent> components = block(componentClientAdapter.search(searchParams));
 
         assertThat(components).hasSize(1);
         assertThat(components).containsExactly(sparseComponent);
+    }
+
+    @Test
+    public void testSearchWithPaging() {
+        ComponentSearchParams searchParams = ComponentSearchParams.builder()
+                .withComponentType(SW360ComponentType.OSS)
+                .withPage(11)
+                .withPageSize(17)
+                .orderAscending("createdOn")
+                .build();
+        when(componentClient.search(searchParams))
+                .thenReturn(createSearchResult(Collections.singletonList(sparseComponent)));
+
+        PagingResult<SW360SparseComponent> result = block(componentClientAdapter.searchWithPaging(searchParams));
+        assertThat(result.getResult()).containsOnly(sparseComponent);
+        assertThat(result.getPaging()).isEqualTo(PAGING);
     }
 
     @Test

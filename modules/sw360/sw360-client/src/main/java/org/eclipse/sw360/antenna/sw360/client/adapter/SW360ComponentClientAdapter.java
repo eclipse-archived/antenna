@@ -11,6 +11,7 @@
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
+import org.eclipse.sw360.antenna.sw360.client.rest.PagingResult;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ComponentClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
@@ -38,12 +39,28 @@ public interface SW360ComponentClientAdapter {
     Optional<SW360Component> getComponentByName(String componentName);
 
     /**
-     * Searches for components based on the criteria provided.
+     * Searches for components based on the criteria provided. Like
+     * {@link #searchWithPaging(ComponentSearchParams)}, this method supports
+     * arbitrary searches, but it ignores the paging information in the result
+     * and only returns the list of entities found. So using this method is
+     * more convenient if the caller is not interested in paging.
      *
      * @param searchParams the object with search parameters
      * @return a list with the components found by the search
      */
     List<SW360SparseComponent> search(ComponentSearchParams searchParams);
+
+    /**
+     * Searches for components based on the criteria provided and returns a
+     * {@code PagingResult} with the entities found and additional paging
+     * information. Note that paging information is available only if the
+     * search parameters make use of the paging mechanism; otherwise, in the
+     * result object only the list with entities is populated.
+     *
+     * @param searchParams the object with search parameters
+     * @return an object representing the result of the search
+     */
+    PagingResult<SW360SparseComponent> searchWithPaging(ComponentSearchParams searchParams);
 
     /**
      * Triggers a multi-delete operation for the components with the IDs
