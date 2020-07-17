@@ -87,7 +87,14 @@ public interface SW360ComponentClientAdapter {
      */
     PagingResult<SW360SparseComponent> searchWithPaging(ComponentSearchParams searchParams);
 
-
+    /**
+     * Updates a component based on the data object passed in.
+     *
+     * @param component the data object describing the component to update
+     * @return the updated component
+     * @throws org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException if an error occurs
+     */
+    SW360Component updateComponent(SW360Component component);
 
     /**
      * Triggers a multi-delete operation for the components with the IDs

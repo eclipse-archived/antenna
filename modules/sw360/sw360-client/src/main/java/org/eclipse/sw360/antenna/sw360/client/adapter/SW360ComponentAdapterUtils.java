@@ -11,6 +11,7 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
@@ -19,7 +20,8 @@ import java.util.Collections;
 
 public class SW360ComponentAdapterUtils {
 
-    private SW360ComponentAdapterUtils() {}
+    private SW360ComponentAdapterUtils() {
+    }
 
     public static void setComponentType(SW360Component component, boolean isProprietary) {
         if (isProprietary) {
@@ -37,10 +39,22 @@ public class SW360ComponentAdapterUtils {
         return sw360Component;
     }
 
-    static boolean isValidComponent(SW360Component component) {
-        return component.getName() != null &&
-                !component.getName().isEmpty() &&
-                component.getCategories() != null &&
-                !component.getCategories().isEmpty();
+    /**
+     * Validates the passed in component. Checks whether all mandatory fields
+     * are set. If the component is valid, it is returned without changes.
+     * Otherwise, an exception is thrown reporting the concrete validation
+     * failure.
+     *
+     * @param component the component to validate
+     * @return the validated component
+     */
+    static SW360Component validateComponent(SW360Component component) {
+        if (StringUtils.isEmpty(component.getName())) {
+            throw new IllegalArgumentException("Invalid component: missing property 'name'.");
+        }
+        if (component.getCategories() == null || component.getCategories().isEmpty()) {
+            throw new IllegalArgumentException("Invalid component: missing property 'categories'.");
+        }
+        return component;
     }
 }
