@@ -33,7 +33,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.anyUrl;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +48,11 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
     private static final String[] TEST_COMPONENTS = {
             "jackson-annotations", "jakarta.validation-api", "jsoup"
     };
+
+    /**
+     * Name of the test file containing a single component.
+     */
+    private static final String FILE_COMPONENT = "component.json";
 
     private SW360ComponentClient componentClient;
 
@@ -66,6 +73,16 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
                 .collect(Collectors.toList());
         assertThat(componentNames).containsExactlyInAnyOrder(TEST_COMPONENTS);
         assertHasLinks(components);
+    }
+
+    /**
+     * Returns a component instance that was read from the test JSON file.
+     *
+     * @return the component read from JSON
+     * @throws IOException if an error occurs
+     */
+    private static SW360Component componentFromJson() throws IOException {
+        return readTestJsonFile(resolveTestFileURL(FILE_COMPONENT), SW360Component.class);
     }
 
     @Test
@@ -148,7 +165,7 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
         final String componentId = "testComponentID";
         wireMockRule.stubFor(get(urlPathEqualTo("/components/" + componentId))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
-                        .withBodyFile("component.json")));
+                        .withBodyFile(FILE_COMPONENT)));
 
         SW360Component component = waitFor(componentClient.getComponent(componentId));
         assertThat(component.getName()).isEqualTo("jackson-annotations");
@@ -179,10 +196,10 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
 
     @Test
     public void testCreateComponent() throws IOException {
-        SW360Component component = readTestJsonFile(resolveTestFileURL("component.json"), SW360Component.class);
+        SW360Component component = componentFromJson();
         wireMockRule.stubFor(post(urlPathEqualTo("/components"))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_CREATED)
-                        .withBodyFile("component.json")));
+                        .withBodyFile(FILE_COMPONENT)));
 
         SW360Component createdComponent = waitFor(componentClient.createComponent(component));
         assertThat(createdComponent).isEqualTo(component);
@@ -190,13 +207,39 @@ public class SW360ComponentClientIT extends AbstractMockServerTest {
 
     @Test
     public void testCreateComponentError() throws IOException {
-        SW360Component component = readTestJsonFile(resolveTestFileURL("component.json"), SW360Component.class);
+        SW360Component component = componentFromJson();
         wireMockRule.stubFor(post(urlPathEqualTo("/components"))
                 .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_BAD_REQUEST)));
 
         FailedRequestException exception =
                 expectFailedRequest(componentClient.createComponent(component), HttpConstants.STATUS_ERR_BAD_REQUEST);
         assertThat(exception.getTag()).isEqualTo(SW360ComponentClient.TAG_CREATE_COMPONENT);
+    }
+
+    @Test
+    public void testPatchComponent() throws IOException {
+        SW360Component component = componentFromJson();
+        SW360Component componentUpdated = componentFromJson();
+        component.setName("toBeUpdated");
+        wireMockRule.stubFor(patch(urlPathEqualTo("/components/" + component.getId()))
+                .withRequestBody(equalToJson(toJson(component)))
+                .willReturn(aJsonResponse(HttpConstants.STATUS_OK)
+                        .withBodyFile(FILE_COMPONENT)));
+
+        SW360Component result = waitFor(componentClient.patchComponent(component));
+        assertThat(result).isEqualTo(componentUpdated);
+    }
+
+    @Test
+    public void testPatchComponentError() throws IOException {
+        SW360Component component = componentFromJson();
+        wireMockRule.stubFor(patch(urlPathEqualTo("/components/" + component.getId()))
+                .withRequestBody(equalToJson(toJson(component)))
+                .willReturn(aJsonResponse(HttpConstants.STATUS_ERR_UNAUTHORIZED)));
+
+        FailedRequestException exception =
+                expectFailedRequest(componentClient.patchComponent(component), HttpConstants.STATUS_ERR_UNAUTHORIZED);
+        assertThat(exception.getTag()).isEqualTo(SW360ComponentClient.TAG_UPDATE_COMPONENT);
     }
 
     @Test

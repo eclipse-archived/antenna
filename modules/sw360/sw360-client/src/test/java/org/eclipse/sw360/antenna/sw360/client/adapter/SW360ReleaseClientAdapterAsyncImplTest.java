@@ -97,7 +97,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         SW360Component component = getSw360Component(sparseRelease, "componentName");
         component.setLinks(links);
 
-        when(componentClientAdapter.getOrCreateComponent(any()))
+        when(componentClientAdapter.getComponentByName(release.getName()))
                 .thenReturn(CompletableFuture.completedFuture(Optional.of(component)));
         when(releaseClient.createRelease(release))
                 .thenReturn(CompletableFuture.completedFuture(release));
@@ -106,7 +106,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
 
         assertThat(createdRelease).isEqualTo(release);
         verify(releaseClient).createRelease(release);
-        verify(componentClientAdapter).getOrCreateComponent(any());
+        assertThat(release.getComponentId()).isEqualTo(component.getId());
     }
 
     @Test
@@ -143,7 +143,7 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
                 .setSelf(componentSelf);
         SW360Component component = getSw360Component(sparseRelease, "componentName");
         component.setLinks(links);
-        when(componentClientAdapter.getOrCreateComponent(any()))
+        when(componentClientAdapter.getComponentByName(release.getName()))
                 .thenReturn(CompletableFuture.completedFuture(Optional.of(component)));
 
         try {
@@ -152,6 +152,29 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
         } catch (SW360ClientException e) {
             assertThat(e.getMessage()).contains("release already exists");
         }
+    }
+
+    @Test
+    public void testCreateReleaseNewComponent() {
+        SW360Component componentForRelease = SW360ComponentAdapterUtils.createFromRelease(release);
+        SW360Component componentCreated = new SW360Component();
+        componentCreated.setName(release.getName());
+        componentCreated.getLinks().setSelf(new Self("https://components.org/" + ID));
+        when(componentClientAdapter.getComponentByName(release.getName()))
+                .thenReturn(CompletableFuture.completedFuture(Optional.empty()));
+        when(componentClientAdapter.createComponent(componentForRelease))
+                .thenReturn(CompletableFuture.completedFuture(componentCreated));
+        SW360Release releaseCreated = new SW360Release();
+        releaseCreated.setName(release.getName() + "_new");
+        when(releaseClient.createRelease(release))
+                .thenAnswer(invocationOnMock -> {
+                    SW360Release r = invocationOnMock.getArgument(0);
+                    assertThat(r.getComponentId()).isEqualTo(ID);
+                    return CompletableFuture.completedFuture(releaseCreated);
+                });
+
+        SW360Release result = block(releaseClientAdapter.createRelease(release));
+        assertThat(result).isEqualTo(releaseCreated);
     }
 
     private static SW360SparseAttachment createAttachment(String file) {
