@@ -91,6 +91,14 @@ public interface SW360ComponentClientAdapterAsync {
     CompletableFuture<PagingResult<SW360SparseComponent>> searchWithPaging(ComponentSearchParams searchParams);
 
     /**
+     * Updates a component based on the data object passed in.
+     *
+     * @param component the data object describing the component to update
+     * @return a future with the updated component
+     */
+    CompletableFuture<SW360Component> updateComponent(SW360Component component);
+
+    /**
      * Triggers a multi-delete operation for the components with the IDs
      * specified. Returns a {@code MultiStatusResponse} that allows checking
      * whether all the components could be deleted successfully.

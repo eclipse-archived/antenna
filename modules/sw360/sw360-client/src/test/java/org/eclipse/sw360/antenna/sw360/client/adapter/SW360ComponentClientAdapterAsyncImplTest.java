@@ -108,6 +108,29 @@ public class SW360ComponentClientAdapterAsyncImplTest {
     }
 
     @Test
+    public void testUpdateComponent() {
+        component.setName(COMPONENT_NAME);
+        component.setCategories(Collections.singleton("Antenna"));
+        SW360Component updatedComponent = new SW360Component();
+        updatedComponent.setName(COMPONENT_NAME + "_updated");
+        when(componentClient.patchComponent(component))
+                .thenReturn(CompletableFuture.completedFuture(updatedComponent));
+
+        SW360Component result = block(componentClientAdapter.updateComponent(component));
+        assertThat(result).isEqualTo(updatedComponent);
+    }
+
+    @Test
+    public void testUpdateComponentInvalid() {
+        try {
+            block(componentClientAdapter.updateComponent(component));
+            fail("Invalid component not detected.");
+        } catch (SW360ClientException e) {
+            assertThat(e.getCause()).isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Test
     public void testGetComponentById() {
         when(componentClient.getComponent(COMPONENT_ID))
                 .thenReturn(CompletableFuture.completedFuture(component));

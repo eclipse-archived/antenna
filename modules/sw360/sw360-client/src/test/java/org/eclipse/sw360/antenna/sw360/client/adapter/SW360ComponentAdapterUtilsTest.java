@@ -14,11 +14,13 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
+import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.junit.Test;
 
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class SW360ComponentAdapterUtilsTest {
     @Test
@@ -55,24 +57,65 @@ public class SW360ComponentAdapterUtilsTest {
     }
 
     @Test
-    public void testIsValidComponentWithValidComponent() {
+    public void testValidateComponentValid() {
         SW360Component component = new SW360Component();
         component.setName("test");
         component.setCategories(Collections.singleton("Antenna"));
 
-        boolean validComponent = SW360ComponentAdapterUtils.isValidComponent(component);
-
-        assertThat(validComponent).isTrue();
-
+        assertThat(SW360ComponentAdapterUtils.validateComponent(component)).isSameAs(component);
     }
 
     @Test
-    public void testIsValidComponentWithInvalidComponent() {
+    public void testValidateComponentNullName() {
         SW360Component component = new SW360Component();
+        component.setCategories(Collections.singleton("Antenna"));
 
-        boolean validComponent = SW360ComponentAdapterUtils.isValidComponent(component);
+        try {
+            SW360ComponentAdapterUtils.validateComponent(component);
+            fail("Invalid component not detected");
+        } catch (IllegalArgumentException e) {
+            assertThat(e.getMessage()).contains("missing property 'name'");
+        }
+    }
 
-        assertThat(validComponent).isFalse();
+    @Test
+    public void testValidateComponentEmptyName() {
+        SW360Component component = new SW360Component();
+        component.setName("");
+        component.setCategories(Collections.singleton("Antenna"));
 
+        try {
+            SW360ComponentAdapterUtils.validateComponent(component);
+            fail("Invalid component not detected");
+        } catch (IllegalArgumentException e) {
+            assertThat(e.getMessage()).contains("missing property 'name'");
+        }
+    }
+
+    @Test
+    public void testValidateComponentNullCategories() {
+        SW360Component component = new SW360Component();
+        component.setName("component");
+
+        try {
+            SW360ComponentAdapterUtils.validateComponent(component);
+            fail("Invalid component not detected");
+        } catch (IllegalArgumentException e) {
+            assertThat(e.getMessage()).contains("missing property 'categories'");
+        }
+    }
+
+    @Test
+    public void testValidateComponentEmptyCategories() {
+        SW360Component component = new SW360Component();
+        component.setCategories(Collections.emptySet());
+        component.setName("component");
+
+        try {
+            SW360ComponentAdapterUtils.validateComponent(component);
+            fail("Invalid component not detected");
+        } catch (IllegalArgumentException e) {
+            assertThat(e.getMessage()).contains("missing property 'categories'");
+        }
     }
 }

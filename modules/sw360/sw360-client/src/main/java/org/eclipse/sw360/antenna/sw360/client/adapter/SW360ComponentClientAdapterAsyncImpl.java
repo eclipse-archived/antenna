@@ -18,14 +18,13 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtil
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.ComponentSearchParams;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360SparseComponent;
-import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
+import org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.failedFuture;
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.optionalFuture;
 
 class SW360ComponentClientAdapterAsyncImpl implements SW360ComponentClientAdapterAsync {
@@ -42,10 +41,9 @@ class SW360ComponentClientAdapterAsyncImpl implements SW360ComponentClientAdapte
 
     @Override
     public CompletableFuture<SW360Component> createComponent(SW360Component component) {
-        if (!SW360ComponentAdapterUtils.isValidComponent(component)) {
-            return failedFuture(new SW360ClientException("Can not write invalid component for " + component.getName()));
-        }
-        return getComponentClient().createComponent(component);
+        return FutureUtils.wrapInFuture(() -> SW360ComponentAdapterUtils.validateComponent(component),
+                "Cannot create invalid component for " + component.getName())
+                .thenCompose(getComponentClient()::createComponent);
     }
 
     @Override
@@ -78,6 +76,13 @@ class SW360ComponentClientAdapterAsyncImpl implements SW360ComponentClientAdapte
     @Override
     public CompletableFuture<PagingResult<SW360SparseComponent>> searchWithPaging(ComponentSearchParams searchParams) {
         return getComponentClient().search(searchParams);
+    }
+
+    @Override
+    public CompletableFuture<SW360Component> updateComponent(SW360Component component) {
+        return FutureUtils.wrapInFuture(() -> SW360ComponentAdapterUtils.validateComponent(component),
+                "Cannot update invalid component for " + component.getName())
+                .thenCompose(getComponentClient()::patchComponent);
     }
 
     @Override
