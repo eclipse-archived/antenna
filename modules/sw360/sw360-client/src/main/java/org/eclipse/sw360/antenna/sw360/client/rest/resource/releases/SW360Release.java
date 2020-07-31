@@ -41,6 +41,8 @@ public final class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects
 
     @JsonIgnore
     private boolean isProprietary;
+    @JsonIgnore
+    private String homepageurl;
     private String name;
     private String version;
     private String createdOn;
@@ -291,6 +293,18 @@ public final class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects
         return this;
     }
 
+    @JsonIgnore
+    public String getHomepageurl() {
+        return homepageurl;
+    }
+
+    @JsonIgnore
+    public SW360Release setHomepageurl(String homepageurl) {
+        this.homepageurl = homepageurl;
+        return this;
+    }
+
+
     public Map<String,String> getExternalIds() {
         return new HashMap<>(externalIds);
     }
@@ -373,13 +387,14 @@ public final class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects
                 Objects.equals(additionalData, release.additionalData) &&
                 Objects.equals(createdOn, release.createdOn) &&
                 Objects.equals(sw360ClearingState, release.sw360ClearingState) &&
+                Objects.equals(homepageurl, release.homepageurl) &&
                 isProprietary == release.isProprietary;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), name, version, cpeId, downloadurl, externalIds, additionalData,
-                isProprietary, createdOn, sw360ClearingState);
+                isProprietary, homepageurl, createdOn, sw360ClearingState);
     }
 
     @Override
