@@ -65,6 +65,7 @@ In the following section there is an outline what data of SW360 ${docNameCap} ma
   | Software Heritage ID | A release ID in software heritage in the format "swh:1:rel:*", stored as external id with key `swh`. |
   | Copyrights | Copyrights of the release, given in a String. Individual copyrights are separated by line. Stored in the additional data section with key `copyrights` |
   | Change Status | An enumeration with values `changed` or `as-is` stored as additional data with key `change_status`. A changed component release should be stored as own release with an appendix to the original version, e.g. `1.2.3_modified_xyz`. Currently the implementation can only handle `as-is` components. |
+  | Homeapge Url | Homepage of the release that is also one of the component, given in a String. Stored in the additional data section with key `homepage` |
 
 #[[###]]## Used Attachments
  Attachments are used to store additional elements in files, like sources and known binaries.
