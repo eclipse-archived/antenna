@@ -30,6 +30,7 @@ public class TestUtils {
     public static final String RELEASE_HASH1= "b2a4d4ae21c789b689dd162deb819665567f481c";
     public static final String RELEASE_CHANGESTATUS = "AS_IS";
     public static final String RELEASE_COPYRIGHT = "Copyright xxxx Some Copyright Enterprise";
+    public static final String HOMEPAGE_URL = "dummy.page.url";
 
     public static SW360Release mkSW360Release(String name) {
         SW360Release sw360Release = new SW360Release();
@@ -74,6 +75,7 @@ public class TestUtils {
         artifact.addFact(new ArtifactClearingState(ArtifactClearingState.ClearingState.valueOf(RELEASE_CLEARING_STATE)));
         artifact.addFact(new ArtifactChangeStatus(ArtifactChangeStatus.ChangeStatus.valueOf(RELEASE_CHANGESTATUS)));
         artifact.addFact(new CopyrightStatement(RELEASE_COPYRIGHT));
+        artifact.addFact(new ArtifactHomepage(HOMEPAGE_URL));
 
         return artifact;
     }

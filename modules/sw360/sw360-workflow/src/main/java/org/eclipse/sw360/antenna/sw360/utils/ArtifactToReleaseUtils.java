@@ -71,6 +71,9 @@ public class ArtifactToReleaseUtils {
         Optional.ofNullable(release.getCopyrights())
                 .map(CopyrightStatement::new)
                 .ifPresent(artifact::addFact);
+        Optional.ofNullable(release.getHomepageUrl())
+                .map(ArtifactHomepage::new)
+                .ifPresent(artifact::addFact);
         if (release.getHashes() != null) {
             Set<String> hashes = release.getHashes();
             hashes.forEach(hash ->
@@ -111,9 +114,15 @@ public class ArtifactToReleaseUtils {
         ArtifactToReleaseUtils.setClearingStatus(release, artifact);
         ArtifactToReleaseUtils.setChangeStatus(release, artifact);
         ArtifactToReleaseUtils.setCopyrights(release, artifact);
+        ArtifactToReleaseUtils.setHomepageUrl(release, artifact);
         release.setProprietary(artifact.isProprietary());
 
         return release;
+    }
+
+    private static void setHomepageUrl(SW360Release release, Artifact artifact) {
+        artifact.askForGet(ArtifactHomepage.class)
+                .ifPresent(release::setHomepageUrl);
     }
 
     public static String createSW360ReleaseVersion(Artifact artifact) {

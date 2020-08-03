@@ -38,6 +38,7 @@ public final class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects
     private static final String CHANGESTATUS_KEY = "change_status";
     private static final String COPYRIGHTS_KEY = "copyrights";
     private static final String CLEARINGSTATE_KEY = "clearingState";
+    private static final String HOMEPAGE_KEY = "homepage";
 
     @JsonIgnore
     private boolean isProprietary;
@@ -290,6 +291,17 @@ public final class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects
         isProprietary = proprietary;
         return this;
     }
+
+    @JsonIgnore
+    public String getHomepageUrl() {
+        return additionalData.get(HOMEPAGE_KEY);
+    }
+
+    public SW360Release setHomepageUrl(String homepageUrl) {
+        additionalData.put(HOMEPAGE_KEY, homepageUrl);
+        return this;
+    }
+
 
     public Map<String,String> getExternalIds() {
         return new HashMap<>(externalIds);

@@ -14,7 +14,6 @@ package org.eclipse.sw360.antenna.sw360.client.adapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Component;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360ComponentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
-import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -46,14 +45,17 @@ public class SW360ComponentAdapterUtilsTest {
 
     @Test
     public void testCreateFromRelease() {
+        final String homepageUrl = "dummy.page.url";
         SW360Release release = new SW360Release()
                 .setName("test")
-                .setProprietary(true);
+                .setProprietary(true)
+                .setHomepageUrl(homepageUrl);
 
         SW360Component component = SW360ComponentAdapterUtils.createFromRelease(release);
 
         assertThat(component.getName()).isEqualTo(release.getName());
         assertThat(component.getComponentType()).isEqualTo(SW360ComponentType.INTERNAL);
+        assertThat(component.getHomepage()).isEqualTo(homepageUrl);
     }
 
     @Test
