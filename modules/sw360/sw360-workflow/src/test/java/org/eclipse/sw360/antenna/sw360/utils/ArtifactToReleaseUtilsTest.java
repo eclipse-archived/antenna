@@ -124,7 +124,7 @@ public class ArtifactToReleaseUtilsTest {
         assertThat(release.getDeclaredLicense()).isEqualTo(TestUtils.RELEASE_DECLEARED_LICENSE);
 
         assertThat(release.getCopyrights()).isEqualTo(TestUtils.RELEASE_COPYRIGHT);
-        assertThat(release.getHomepageurl()).isEqualTo(TestUtils.HOMEPAGE_URL);
+        assertThat(release.getHomepageUrl()).isEqualTo(TestUtils.HOMEPAGE_URL);
     }
 
     @Test

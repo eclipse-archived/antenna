@@ -36,7 +36,7 @@ public class SW360ComponentAdapterUtils {
         sw360Component.setName(release.getName());
         setComponentType(sw360Component, release.isProprietary());
         sw360Component.setCategories(Collections.singleton("Antenna"));
-        sw360Component.setHomepage(release.getHomepageurl());
+        sw360Component.setHomepage(release.getHomepageUrl());
         return sw360Component;
     }
 

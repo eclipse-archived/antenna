@@ -45,17 +45,17 @@ public class SW360ComponentAdapterUtilsTest {
 
     @Test
     public void testCreateFromRelease() {
-        final String homepageurl = "dummy.page.url";
+        final String homepageUrl = "dummy.page.url";
         SW360Release release = new SW360Release()
                 .setName("test")
                 .setProprietary(true)
-                .setHomepageurl(homepageurl);
+                .setHomepageUrl(homepageUrl);
 
         SW360Component component = SW360ComponentAdapterUtils.createFromRelease(release);
 
         assertThat(component.getName()).isEqualTo(release.getName());
         assertThat(component.getComponentType()).isEqualTo(SW360ComponentType.INTERNAL);
-        assertThat(component.getHomepage()).isEqualTo(homepageurl);
+        assertThat(component.getHomepage()).isEqualTo(homepageUrl);
     }
 
     @Test
