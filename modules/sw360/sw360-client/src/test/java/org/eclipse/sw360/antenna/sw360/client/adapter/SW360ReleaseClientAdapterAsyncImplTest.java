@@ -117,7 +117,8 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
             block(releaseClientAdapter.createRelease(release));
             fail("Invalid release not detected");
         } catch (SW360ClientException e) {
-            assertThat(e.getMessage()).contains("invalid release");
+            assertThat(e.getMessage()).contains("Cannot create release", release.getName());
+            assertThat(e.getCause()).isInstanceOf(IllegalArgumentException.class);
         }
     }
 
@@ -125,11 +126,13 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
     public void testCreateReleaseWithID() {
         addSelfLink(release);
 
+        CompletableFuture<SW360Release> futResult = releaseClientAdapter.createRelease(this.release);
         try {
-            block(releaseClientAdapter.createRelease(release));
+            block(futResult);
             fail("Release ID not detected");
         } catch (SW360ClientException e) {
-            assertThat(e.getMessage()).contains("already has the id");
+            assertThat(e.getMessage()).contains("Cannot create release", release.getName());
+            assertThat(e.getCause()).isInstanceOf(IllegalArgumentException.class);
         }
     }
 
@@ -459,9 +462,41 @@ public class SW360ReleaseClientAdapterAsyncImplTest {
     @Test
     public void testUpdateRelease() throws MalformedPackageURLException {
         SW360Release updatedRelease = mkSW360Release("updatedRelease");
+        release.getLinks().setSelf(new Self("https://releases.org/" + ID));
         when(releaseClient.patchRelease(release)).thenReturn(CompletableFuture.completedFuture(updatedRelease));
 
         assertThat(block(releaseClientAdapter.updateRelease(release))).isEqualTo(updatedRelease);
+    }
+
+    @Test
+    public void testUpdateReleaseInvalid() throws MalformedPackageURLException {
+        SW360Release updatedRelease = mkSW360Release("updatedRelease");
+        updatedRelease.setVersion("");
+
+        CompletableFuture<SW360Release> futUpdate = releaseClientAdapter.updateRelease(updatedRelease);
+        try {
+            block(futUpdate);
+            fail("Invalid release not detected");
+        } catch (SW360ClientException e) {
+            assertThat(e.getMessage()).contains("Cannot update release", updatedRelease.getName());
+            assertThat(e.getCause()).isInstanceOf(IllegalArgumentException.class);
+        }
+    }
+
+    @Test
+    public void testUpdateReleaseNoId() {
+        SW360Release updateRelease = new SW360Release();
+        updateRelease.setName("newRelease")
+                .setVersion(RELEASE_VERSION1);
+
+        CompletableFuture<SW360Release> futUpdate = releaseClientAdapter.updateRelease(updateRelease);
+        try {
+            block(futUpdate);
+            fail("Invalid release not detected");
+        } catch (SW360ClientException e) {
+            assertThat(e.getMessage()).contains("Cannot update release", updateRelease.getName());
+            assertThat(e.getCause()).isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
     @Test

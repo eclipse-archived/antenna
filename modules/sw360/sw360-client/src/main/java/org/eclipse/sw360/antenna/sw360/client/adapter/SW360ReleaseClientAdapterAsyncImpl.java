@@ -11,8 +11,8 @@
  */
 package org.eclipse.sw360.antenna.sw360.client.adapter;
 
-import org.eclipse.sw360.antenna.sw360.client.rest.SW360AttachmentAwareClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.MultiStatusResponse;
+import org.eclipse.sw360.antenna.sw360.client.rest.SW360AttachmentAwareClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.SW360ReleaseClient;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360HalResourceUtility;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.failedFuture;
 import static org.eclipse.sw360.antenna.sw360.client.utils.FutureUtils.optionalFuture;
 
 /**
@@ -57,15 +56,13 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
 
     @Override
     public CompletableFuture<SW360Release> createRelease(SW360Release release) {
-        if (!SW360ReleaseAdapterUtils.isValidRelease(release)) {
-            return failedFuture(new SW360ClientException("Can not write invalid release for " +
-                    release.getName() + "-" + release.getVersion()));
-        }
-        if (release.getId() != null) {
-            throw new SW360ClientException("Can not write release which already has the id " + release.getId());
-        }
-
-        return assignReleaseToComponent(release)
+        return FutureUtils.wrapInFuture(() -> {
+            if (release.getId() != null) {
+                throw new IllegalArgumentException("Release already has the id " + release.getId());
+            }
+            return SW360ReleaseAdapterUtils.validateRelease(release);
+        }, "Cannot create release for " + release.getName())
+                .thenCompose(this::assignReleaseToComponent)
                 .thenCompose(getReleaseClient()::createRelease);
     }
 
@@ -200,7 +197,13 @@ class SW360ReleaseClientAdapterAsyncImpl implements SW360ReleaseClientAdapterAsy
 
     @Override
     public CompletableFuture<SW360Release> updateRelease(SW360Release release) {
-        return getReleaseClient().patchRelease(release);
+        return FutureUtils.wrapInFuture(() -> {
+            if (release.getId() == null) {
+                throw new IllegalArgumentException("Cannot update release without ID");
+            }
+            return SW360ReleaseAdapterUtils.validateRelease(release);
+        }, "Cannot update release for " + release.getName())
+                .thenCompose(getReleaseClient()::patchRelease);
     }
 
     @Override
