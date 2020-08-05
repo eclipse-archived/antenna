@@ -30,7 +30,7 @@ public class SW360ClientTest {
     public void setUp() {
         SW360ClientConfig config = SW360ClientConfig.createConfig(BASE_REST_URI,
                 BASE_REST_URI + "/auth/token",
-                "scott", "tiger", "CLIENT_ID", "CLIENT_PASSWORD",
+                "scott", "tiger", "CLIENT_ID", "CLIENT_PASSWORD", "USER_TOKEN",
                 mock(HttpClient.class), mock(ObjectMapper.class));
         client = new SW360ComponentClient(config, mock(AccessTokenProvider.class));
     }

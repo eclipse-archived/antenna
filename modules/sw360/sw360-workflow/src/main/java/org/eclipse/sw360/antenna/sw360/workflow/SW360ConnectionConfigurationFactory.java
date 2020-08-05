@@ -73,6 +73,13 @@ public class SW360ConnectionConfigurationFactory {
     public static final String CLIENT_PASSWORD_KEY = "client.password";
 
     /**
+     * The name of the property from the Antenna tool configuration defining
+     * the token of the OAuth 2 client to be passed to the authorization
+     * server when requesting an access token.
+     */
+    public static final String TOKEN_KEY = "user.token";
+
+    /**
      * The factory for creating a new connection.
      */
     private final SW360ConnectionFactory connectionFactory;
@@ -115,10 +122,11 @@ public class SW360ConnectionConfigurationFactory {
         String password = getConfigValue.apply(PASSWORD_KEY);
         String clientId = getConfigValue.apply(CLIENT_USER_KEY);
         String clientPassword = getConfigValue.apply(CLIENT_PASSWORD_KEY);
+        String token = getConfigValue.apply(TOKEN_KEY);
 
         SW360ClientConfig clientConfig =
                 SW360ClientConfig.createConfig(restUrl, authUrl, user, password, clientId, clientPassword,
-                        httpClient, mapper);
+                        token, httpClient, mapper);
         return connectionFactory.newConnection(clientConfig);
     }
 

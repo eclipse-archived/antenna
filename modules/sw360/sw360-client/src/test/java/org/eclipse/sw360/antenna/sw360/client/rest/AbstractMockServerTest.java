@@ -63,6 +63,11 @@ public class AbstractMockServerTest {
     protected static final String PASSWORD = "tiger";
 
     /**
+     * Test token for the SW360 client configuration.
+     */
+    protected static final String USER_TOKEN = "123token123";
+
+    /**
      * Test client ID for the SW360 client configuration.
      */
     protected static final String CLIENT_ID = "testClient";
@@ -271,7 +276,7 @@ public class AbstractMockServerTest {
         HttpClient httpClient = clientFactory.newHttpClient(httpClientConfig);
 
         return SW360ClientConfig.createConfig(wireMockRule.baseUrl(), wireMockRule.url(TOKEN_ENDPOINT),
-                USER, PASSWORD, CLIENT_ID, CLIENT_PASSWORD, httpClient, objectMapper);
+                USER, PASSWORD, CLIENT_ID, CLIENT_PASSWORD, USER_TOKEN, httpClient, objectMapper);
     }
 
     /**
@@ -281,7 +286,7 @@ public class AbstractMockServerTest {
      */
     static class AccessTokenProviderTestImpl extends AccessTokenProvider {
         public AccessTokenProviderTestImpl(SW360AuthenticationClient authClient) {
-            super(authClient);
+            super(authClient, USER_TOKEN);
         }
 
         @Override

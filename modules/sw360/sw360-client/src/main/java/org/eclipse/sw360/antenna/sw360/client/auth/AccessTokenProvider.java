@@ -70,8 +70,10 @@ public class AccessTokenProvider {
      *
      * @param authClient the underlying authentication client
      */
-    public AccessTokenProvider(SW360AuthenticationClient authClient) {
+    public AccessTokenProvider(SW360AuthenticationClient authClient, String token) {
         this.authClient = authClient;
+        this.accessToken = new AccessToken(token);
+        this.tokenFuture = CompletableFuture.completedFuture(this.accessToken);
     }
 
     /**

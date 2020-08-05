@@ -44,8 +44,9 @@ public class AccessTokenProviderTest {
 
     @Before
     public void setUp() {
+        final String USER_TOKEN = "123token456";
         authClient = mock(SW360AuthenticationClient.class);
-        tokenProvider = new AccessTokenProvider(authClient);
+        tokenProvider = new AccessTokenProvider(authClient, USER_TOKEN);
     }
 
     /**
