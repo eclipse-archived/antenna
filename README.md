@@ -37,9 +37,10 @@ By default, this will run tests. If you want to skip running tests use
 
     $ mvn install -DskipTests
 
-The build is stable starting with Maven version `3.6.x` or higher. 
-With a lower version you will get errors when trying to resolve dependencies created in the Antenna build.
-A possible error message would look like this:
+The build is stable starting with Maven version `3.5.x` or higher, which was 
+when the [usage of the `revision` property](https://maven.apache.org/maven-ci-friendly.html) was introduced. 
+With a lower version you will get errors when trying to resolve dependencies created in the Antenna build,
+since the version is not correctly parsed. A possible error message would look like this:
 
 ```  
 Failed to process POM for org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT: 
