@@ -27,7 +27,7 @@ Some of these folders contain their own `README.md`, like e.g. `./modules/sw360/
 
 ### Install and build Antenna
 
-Please note that some dependencies of SW360antenna are only available for Java 8. So you need to use Java 8 to build the project.
+Please note that some dependencies of SW360antenna are only available for Java 8. So you need to use Java 8 to build the project. 
 
 If you want to build Antenna on the command line, just use Maven like
 
@@ -36,6 +36,19 @@ If you want to build Antenna on the command line, just use Maven like
 By default, this will run tests. If you want to skip running tests use
 
     $ mvn install -DskipTests
+
+The build is stable starting with Maven version `3.5.x` or higher, which was 
+when the [usage of the `revision` property](https://maven.apache.org/maven-ci-friendly.html) was introduced. 
+With a lower version you will get errors when trying to resolve dependencies created in the Antenna build,
+since the version is not correctly parsed. A possible error message would look like this:
+
+```  
+Failed to process POM for org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT: 
+Non-resolvable parent POM for org.eclipse.sw360.antenna:model:1.0.0-SNAPSHOT: 
+Could not find artifact org.eclipse.sw360.antenna:antenna-management:pom:${revision} 
+in central (https://repo.maven.apache.org/maven2/) and 'parent.relativePath' points at wrong local POM
+[ERROR] org.eclipse.sw360.antenna:model:jar:1.0.0-SNAPSHOT
+```
 
 #### Optional Profiles
 You can activate the following optional profiles:
