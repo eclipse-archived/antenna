@@ -63,6 +63,8 @@ public class DependencyTest {
             dependency("org.gradle", "gradle-core-api"),
             dependency("org.gradle", "gradle-logging"),
             dependency("org.codehaus.groovy", "groovy"),
+            dependency("javax.xml.bind", "jaxb-api"),
+            dependency("org.glassfish.jaxb", "jaxb-runtime"),
             dependency("org.apache.logging.log4j", "log4j-api"),
             dependency("org.apache.logging.log4j", "log4j-core"),
             dependency("org.apache.logging.log4j", "log4j-jcl"),
