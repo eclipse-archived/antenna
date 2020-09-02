@@ -218,7 +218,9 @@ Additionally, you should add descriptions to your commit messages of
 Don't just describe what is "obvious" in your code. 
 A rational explanation why the changes are necessary help the reviewer understand the reasoning *behind* your code.
 
-If there is an issue to your commit, link it using keywords as described [here](https://help.github.com/en/github/managing-your-work-on-github/closing-issues-using-keywords).
+If there is an issue to your commit, link it using keywords, as described
+[here](https://help.github.com/en/github/managing-your-work-on-github/closing-issues-using-keywords),
+at the end of your commit message body before your signature.
 
 When there are changes in a commit that are the result of discussions which arose during the review of a pull request,
 those discussions and their result should be mentioned in the commit message. 
