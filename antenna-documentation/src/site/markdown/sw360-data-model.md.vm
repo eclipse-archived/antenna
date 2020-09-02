@@ -64,8 +64,10 @@ In the following section there is an outline what data of SW360 ${docNameCap} ma
   | Release Tag Url | This is a link to the OSS repos tag of the release used stored as external id with key `orig_repo`. |
   | Software Heritage ID | A release ID in software heritage in the format "swh:1:rel:*", stored as external id with key `swh`. |
   | Copyrights | Copyrights of the release, given in a String. Individual copyrights are separated by line. Stored in the additional data section with key `copyrights` |
-  | Change Status | An enumeration with values `changed` or `as-is` stored as additional data with key `change_status`. A changed component release should be stored as own release with an appendix to the original version, e.g. `1.2.3_modified_xyz`. Currently the implementation can only handle `as-is` components. |
+  | Change Status | An enumeration with values `CHANGED` or `AS_IS` stored as additional data with key `change_status`. A changed component release should be stored as own release with an appendix to the original version, e.g. `1.2.3_modified_xyz`. Currently the implementation can only handle `AS_IS` components. |
   | Homeapge Url | Homepage of the release that is also one of the component, given in a String. Stored in the additional data section with key `homepage` |
+  | Clearing State | State reflecting the clearing state within the ${docNameCap} curation processes with the values: `INITIAL`, `EXTERNAL_SOURCE`, `AUTO_EXTRACT`, `PROJECT_APPROVED`, `OSM_APPROVED`. This is stored in the additional data field with the key `clearingState`. |
+  | SW360 Clearing State | Can not be set with any analyzer, but is a reflection of the clearing state from the SW360 instance data model itself. The SW360 instance clearing state values are `NEW_CLEARING`, `SENT_TO_CLEARING_TOOL`, `REPORT_AVAILABLE`, `APPROVED`. This state is reflected in the SW360 instances UI in the `Clearing State`. |
 
 #[[###]]## Used Attachments
  Attachments are used to store additional elements in files, like sources and known binaries.
@@ -75,3 +77,8 @@ In the following section there is an outline what data of SW360 ${docNameCap} ma
   | Source File | A zipped folder with the sources of the component. Typically uploaded by the SW360 Uploader |
   | Binary | A known binary of the component, stores also e.g. the hash that can be used to search for the metadata based on a hash. Typically uploaded by the SW360 Uploader |
   | Clearing Report | A file with curated data and the approval state. If the status of this attachment is `Accepted`, the Clearing State of the component release is `Approved`. Typically uploaded by compliance office tooling. |
+  
+  
+**Note**:
+All string fields in this data model have a limit of 2147483647 - 1 in length, since this is the frame size of the binary protocol used with thrift.
+
