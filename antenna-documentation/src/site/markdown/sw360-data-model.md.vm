@@ -77,3 +77,8 @@ In the following section there is an outline what data of SW360 ${docNameCap} ma
   | Source File | A zipped folder with the sources of the component. Typically uploaded by the SW360 Uploader |
   | Binary | A known binary of the component, stores also e.g. the hash that can be used to search for the metadata based on a hash. Typically uploaded by the SW360 Uploader |
   | Clearing Report | A file with curated data and the approval state. If the status of this attachment is `Accepted`, the Clearing State of the component release is `Approved`. Typically uploaded by compliance office tooling. |
+  
+  
+**Note**:
+All string fields in this data model have a limit of 2147483647 - 1 in length, since this is the frame size of the binary protocol used with thrift.
+
