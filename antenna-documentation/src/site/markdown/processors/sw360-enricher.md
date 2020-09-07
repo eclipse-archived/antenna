@@ -18,6 +18,7 @@ Add the following step into the `<processors>` section of your workflow.xml
         <entry key="user.password" value="12345"/>
         <entry key="client.id" value="trusted-sw360-client"/>
         <entry key="client.password" value="sw360-secret"/>
+        <entry key="user.token" value="123token123"/>
         <entry key="proxy.use" value="true"/>
         <entry key="download.attachments" value="true"/>
         <entry key="download.directory" value="${project.build.directory}/antenna/dependencies"/>
@@ -32,6 +33,7 @@ Add the following step into the `<processors>` section of your workflow.xml
 * `user.password`: The password of the SW360 user.
 * `client.id`: The REST API uses a two step authentication, this is general client id used.
 * `client.password`: The password of the client id.
+* `user.token`: The token for the user, if Authentication is not token based, provide none/empty string.
 * `proxy.use`: Use proxy for communication to SW360.
 * `download.attachments`: *(optional)* If set to true this downloads artifact source files, if their corresponding release in SW360 has an attachment with the type `SOURCE`
 * `download.directory`: *(optional)* This is only necessary if `download.attachments` is set to true.

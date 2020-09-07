@@ -65,7 +65,7 @@ public class AbstractMockServerTest {
     /**
      * Test token for the SW360 client configuration.
      */
-    protected static final String USER_TOKEN = "123token123";
+    protected static final String USER_TOKEN = "";
 
     /**
      * Test client ID for the SW360 client configuration.
@@ -286,7 +286,7 @@ public class AbstractMockServerTest {
      */
     static class AccessTokenProviderTestImpl extends AccessTokenProvider {
         public AccessTokenProviderTestImpl(SW360AuthenticationClient authClient) {
-            super(authClient, USER_TOKEN);
+            super(authClient);
         }
 
         @Override

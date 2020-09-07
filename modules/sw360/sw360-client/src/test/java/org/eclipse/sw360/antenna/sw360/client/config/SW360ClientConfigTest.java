@@ -25,7 +25,7 @@ public class SW360ClientConfigTest {
     private static final String AUTH_URL = "https://auth.sw360.org/token";
     private static final String USER = "scott";
     private static final String PASSWORD = "tiger";
-    private static final String USER_TOKEN = "123token123";
+    private static final String USER_TOKEN = "";
     private static final String CLIENT_ID = "myTestClientID";
     private static final String CLIENT_PASS = "secretClientPwd";
 
@@ -133,6 +133,26 @@ public class SW360ClientConfigTest {
         assertThat(config.getPassword()).isEqualTo(PASSWORD);
         assertThat(config.getClientId()).isEqualTo(CLIENT_ID);
         assertThat(config.getClientPassword()).isEqualTo(CLIENT_PASS);
+        assertThat(config.getToken()).isEqualTo(USER_TOKEN);
+        assertThat(config.getHttpClient()).isEqualTo(httpClient);
+        assertThat(config.getObjectMapper()).isEqualTo(mapper);
+        assertThat(config.getBaseURI().toString()).isEqualTo(REST_URL);
+    }
+
+    @Test
+    public void testCreateConfigToken() {
+        final String USER_TOKEN = "123token123";
+        SW360ClientConfig config =
+                SW360ClientConfig.createConfig(REST_URL, AUTH_URL, null, null, CLIENT_ID, CLIENT_PASS,
+                        USER_TOKEN, httpClient, mapper);
+
+        assertThat(config.getRestURL()).isEqualTo(REST_URL);
+        assertThat(config.getAuthURL()).isEqualTo(AUTH_URL);
+        assertThat(null == config.getUser());
+        assertThat(null == config.getPassword());
+        assertThat(config.getClientId()).isEqualTo(CLIENT_ID);
+        assertThat(config.getClientPassword()).isEqualTo(CLIENT_PASS);
+        assertThat(config.getToken()).isEqualTo(USER_TOKEN);
         assertThat(config.getHttpClient()).isEqualTo(httpClient);
         assertThat(config.getObjectMapper()).isEqualTo(mapper);
         assertThat(config.getBaseURI().toString()).isEqualTo(REST_URL);

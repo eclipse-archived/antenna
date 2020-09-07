@@ -41,7 +41,7 @@ public class SW360ConnectionFactory {
      */
     public SW360Connection newConnection(SW360ClientConfig config) {
         SW360AuthenticationClient authClient = new SW360AuthenticationClient(config);
-        AccessTokenProvider tokenProvider = new AccessTokenProvider(authClient, config.getToken());
+        AccessTokenProvider tokenProvider = new AccessTokenProvider(authClient);
 
         SW360ComponentClient componentClient = new SW360ComponentClient(config, tokenProvider);
         SW360ComponentClientAdapterAsync componentAdapterAsync =

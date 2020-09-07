@@ -13,6 +13,7 @@
 
 package org.eclipse.sw360.antenna.sw360.client.auth;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.sw360.antenna.http.RequestBuilder;
 import org.eclipse.sw360.antenna.http.Response;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
@@ -87,6 +88,10 @@ public class SW360AuthenticationClient {
      * @return a future with the access token received from the server
      */
     public CompletableFuture<String> getOAuth2AccessToken() {
+        String tokenCheck = getClientConfig().getToken();
+        if (!StringUtils.isEmpty(tokenCheck)){
+            return CompletableFuture.completedFuture(tokenCheck);
+        }
         return getClientConfig().getHttpClient()
                 .execute(this::initTokenRequest, HttpUtils.checkResponse(this::extractToken, TAG));
     }
