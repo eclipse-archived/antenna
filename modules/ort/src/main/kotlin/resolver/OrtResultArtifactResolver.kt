@@ -32,7 +32,7 @@ private fun mapCoordinates(pkg: Package): Coordinate {
 
     val type = pkg.id.type.toLowerCase()
     return when (type) {
-        "nuget", "dotnet" -> Coordinate(Coordinate.Types.NPM, name, version)
+        "nuget", "dotnet" -> Coordinate(Coordinate.Types.NUGET, name, version)
         "maven" -> Coordinate(Coordinate.Types.MAVEN, namespace, name, version)
         "npm" -> Coordinate(Coordinate.Types.NPM, namespace, name, version)
         else -> if (Coordinate.Types.all.contains(type)) {
