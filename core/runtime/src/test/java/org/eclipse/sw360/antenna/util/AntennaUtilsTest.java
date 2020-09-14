@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -36,7 +37,7 @@ public class AntennaUtilsTest {
 
     @Test
     public void getJarPathTestStripsPrefix() throws  Exception {
-        String fileBasename = "AntennaUtilsTest_testfile.jar";
+        String fileBasename = "AntennaUtilsTest_testfile.arc";
         final URL url = this.getClass().getClassLoader().getResource(fileBasename);
 
         final Path jarPath = AntennaUtils.getJarPath(url);

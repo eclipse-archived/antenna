@@ -44,6 +44,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.sw360.antenna</groupId>
             <artifactId>model</artifactId>
             <version>${project.version}</version>
