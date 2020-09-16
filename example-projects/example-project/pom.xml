@@ -24,7 +24,7 @@
     <name>org.eclipse.sw360.antenna.test.example</name>
 
     <properties>
-        <org.eclipse.sw360.antenna.version>1.0.0-SNAPSHOT</org.eclipse.sw360.antenna.version>
+        <org.eclipse.sw360.antenna.version>1.0.0-RC9.2</org.eclipse.sw360.antenna.version>
         <!-- configures the version of the project that is to be scanned -->
         <version_to_scan>${project.version}</version_to_scan>
     </properties>
