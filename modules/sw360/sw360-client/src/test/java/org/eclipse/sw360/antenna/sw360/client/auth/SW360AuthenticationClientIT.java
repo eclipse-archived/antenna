@@ -11,7 +11,13 @@
 package org.eclipse.sw360.antenna.sw360.client.auth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.eclipse.sw360.antenna.http.HttpClient;
+import org.eclipse.sw360.antenna.http.HttpClientFactory;
+import org.eclipse.sw360.antenna.http.HttpClientFactoryImpl;
+import org.eclipse.sw360.antenna.http.config.HttpClientConfig;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.eclipse.sw360.antenna.http.utils.FailedRequestException;
+import org.eclipse.sw360.antenna.sw360.client.config.SW360ClientConfig;
 import org.eclipse.sw360.antenna.http.utils.HttpUtils;
 import org.eclipse.sw360.antenna.sw360.client.rest.AbstractMockServerTest;
 import org.junit.Before;
@@ -32,12 +38,20 @@ import static org.eclipse.sw360.antenna.http.utils.HttpConstants.STATUS_OK;
 
 public class SW360AuthenticationClientIT extends AbstractMockServerTest {
     private static final String ACCESS_TOKEN = "theSecretAccessToken";
+    private static final String USER_TOKEN = "123token123";
 
     private SW360AuthenticationClient authenticationClient;
+    private SW360AuthenticationClient authenticationClientForUserToken;
 
     @Before
     public void setUp() {
         authenticationClient = new SW360AuthenticationClient(createClientConfig());
+        HttpClientFactory clientFactory = new HttpClientFactoryImpl();
+        HttpClientConfig httpClientConfig = HttpClientConfig.basicConfig();
+        HttpClient httpClient = clientFactory.newHttpClient(httpClientConfig);
+        authenticationClientForUserToken = new SW360AuthenticationClient(SW360ClientConfig.createConfig(wireMockRule.baseUrl(),
+                                               wireMockRule.url(TOKEN_ENDPOINT), USER, PASSWORD, CLIENT_ID, CLIENT_PASSWORD,
+                                               USER_TOKEN, httpClient, objectMapper));
     }
 
     @Test
@@ -51,6 +65,19 @@ public class SW360AuthenticationClientIT extends AbstractMockServerTest {
 
         String accessToken = HttpUtils.waitFor(authenticationClient.getOAuth2AccessToken());
         assertThat(accessToken).isEqualTo(ACCESS_TOKEN);
+    }
+
+    @Test
+    public void testGetOAuth2UserToken() throws IOException {
+        wireMockRule.stubFor(post(urlPathEqualTo(TOKEN_ENDPOINT))
+                .withRequestBody(equalTo("grant_type=password&username=" + USER + "&password=" + PASSWORD))
+                .withHeader(HEADER_CONTENT_TYPE, containing(CONTENT_TYPE_FORM))
+                .withBasicAuth(CLIENT_ID, CLIENT_PASSWORD)
+                .willReturn(aJsonResponse(STATUS_OK)
+                        .withBody("{\"access_token\": \"" + USER_TOKEN + "\"}")));
+
+        String accessToken = HttpUtils.waitFor(authenticationClientForUserToken.getOAuth2AccessToken());
+        assertThat(accessToken).isEqualTo(USER_TOKEN);
     }
 
     @Test

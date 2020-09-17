@@ -143,13 +143,13 @@ public class SW360ClientConfigTest {
     public void testCreateConfigToken() {
         final String USER_TOKEN = "123token123";
         SW360ClientConfig config =
-                SW360ClientConfig.createConfig(REST_URL, AUTH_URL, null, null, CLIENT_ID, CLIENT_PASS,
+                SW360ClientConfig.createConfig(REST_URL, AUTH_URL, "", "", CLIENT_ID, CLIENT_PASS,
                         USER_TOKEN, httpClient, mapper);
 
         assertThat(config.getRestURL()).isEqualTo(REST_URL);
         assertThat(config.getAuthURL()).isEqualTo(AUTH_URL);
-        assertThat(null == config.getUser());
-        assertThat(null == config.getPassword());
+        assertThat(config.getUser()).isEqualTo("");
+        assertThat(config.getPassword()).isEqualTo("");
         assertThat(config.getClientId()).isEqualTo(CLIENT_ID);
         assertThat(config.getClientPassword()).isEqualTo(CLIENT_PASS);
         assertThat(config.getToken()).isEqualTo(USER_TOKEN);

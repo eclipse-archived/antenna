@@ -45,11 +45,6 @@ import static org.eclipse.sw360.antenna.http.utils.HttpUtils.waitFor;
 public class SW360ClientTokenManagementIT extends AbstractMockServerTest {
 
     /**
-     * test token for sw360 client.
-     */
-    private static final String USER_TOKEN = "";
-
-    /**
      * The endpoint queried by the test client.
      */
     private static final String ENDPOINT = "/projects";
