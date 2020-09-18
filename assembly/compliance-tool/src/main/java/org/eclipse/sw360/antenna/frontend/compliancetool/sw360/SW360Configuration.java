@@ -68,6 +68,7 @@ public class SW360Configuration extends ConfigurableWorkflowItem {
                 {"auth.server.url", getConfigValue("sw360authServerUrl", properties)},
                 {"user.id", getConfigValue("sw360user", properties)},
                 {"user.password", getConfigValue("sw360password", properties)},
+                {"user.token", getConfigValue("sw360token", properties)},
                 {"client.id", getConfigValue("sw360clientId", properties)},
                 {"client.password", getConfigValue("sw360clientPassword", properties)},
                 {"download.attachments", getConfigValue("sw360downloadSources", properties, "false")}})

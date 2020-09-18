@@ -74,6 +74,11 @@ public final class SW360ClientConfig {
     private final String clientPassword;
 
     /**
+     * The SW360 user token credentials.
+     */
+    private final String token;
+
+    /**
      * The HTTP client to interact with the SW360 server.
      */
     private final HttpClient httpClient;
@@ -84,13 +89,14 @@ public final class SW360ClientConfig {
     private final ObjectMapper objectMapper;
 
     private SW360ClientConfig(URI baseURI, String authURL, String user, String password, String clientId,
-                              String clientPassword, HttpClient httpClient, ObjectMapper objectMapper) {
+                              String clientPassword, String token, HttpClient httpClient, ObjectMapper objectMapper) {
         this.baseURI = baseURI;
         this.authURL = authURL;
         this.user = user;
         this.password = password;
         this.clientId = clientId;
         this.clientPassword = clientPassword;
+        this.token = token;
         this.httpClient = httpClient;
         this.objectMapper = objectMapper;
     }
@@ -115,7 +121,19 @@ public final class SW360ClientConfig {
      */
     public static SW360ClientConfig createConfig(String restURL, String authURL, String user,
                                                  String password, String clientId, String clientPassword,
-                                                 HttpClient httpClient, ObjectMapper mapper) {
+                                                 String token, HttpClient httpClient, ObjectMapper mapper) {
+        if(!StringUtils.isEmpty(token)){
+            return new SW360ClientConfig(
+                    URI.create(stripTrailingSeparator(Validate.notEmpty(restURL, "Undefined REST URL"))),
+                    stripTrailingSeparator(Validate.notEmpty(authURL, "Undefined authentication URL")),
+                    user,
+                    password,
+                    Validate.notEmpty(clientId, "Undefined client ID"),
+                    Validate.notEmpty(clientPassword, "Undefined client password"),
+                    Validate.notEmpty(token, "Undefined token"),
+                    Validate.notNull(httpClient),
+                    Validate.notNull(mapper));
+        }
         return new SW360ClientConfig(
                 URI.create(stripTrailingSeparator(Validate.notEmpty(restURL, "Undefined REST URL"))),
                 stripTrailingSeparator(Validate.notEmpty(authURL, "Undefined authentication URL")),
@@ -123,6 +141,7 @@ public final class SW360ClientConfig {
                 Validate.notEmpty(password, "Undefined password"),
                 Validate.notEmpty(clientId, "Undefined client ID"),
                 Validate.notEmpty(clientPassword, "Undefined client password"),
+                token,
                 Validate.notNull(httpClient),
                 Validate.notNull(mapper));
     }
@@ -200,6 +219,12 @@ public final class SW360ClientConfig {
         return clientPassword;
     }
 
+    public String getToken() {
+        if (StringUtils.isBlank(token) || StringUtils.equalsIgnoreCase(token, "none")){
+              return "";
+        }
+        return token;
+    }
     /**
      * Returns a fully configured HTTP client to send requests to the SW360
      * server.
@@ -236,6 +261,7 @@ public final class SW360ClientConfig {
                 getPassword().equals(that.getPassword()) &&
                 getClientId().equals(that.getClientId()) &&
                 getClientPassword().equals(that.getClientPassword()) &&
+                getToken().equals(that.getToken()) &&
                 getHttpClient().equals(that.getHttpClient()) &&
                 getObjectMapper().equals(that.getObjectMapper());
     }
@@ -243,7 +269,7 @@ public final class SW360ClientConfig {
     @Override
     public int hashCode() {
         return Objects.hash(getRestURL(), getAuthURL(), getUser(), getPassword(), getClientId(), getClientPassword(),
-                getHttpClient(), getObjectMapper());
+                getToken(), getHttpClient(), getObjectMapper());
     }
 
     /**

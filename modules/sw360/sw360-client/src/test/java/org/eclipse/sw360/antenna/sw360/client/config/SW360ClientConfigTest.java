@@ -25,6 +25,7 @@ public class SW360ClientConfigTest {
     private static final String AUTH_URL = "https://auth.sw360.org/token";
     private static final String USER = "scott";
     private static final String PASSWORD = "tiger";
+    private static final String USER_TOKEN = "";
     private static final String CLIENT_ID = "myTestClientID";
     private static final String CLIENT_PASS = "secretClientPwd";
 
@@ -46,85 +47,85 @@ public class SW360ClientConfigTest {
 
     @Test(expected = NullPointerException.class)
     public void testNullRestUrlThrows() {
-        SW360ClientConfig.createConfig(null, AUTH_URL, USER, PASSWORD, CLIENT_ID, CLIENT_PASS, httpClient, mapper);
+        SW360ClientConfig.createConfig(null, AUTH_URL, USER, PASSWORD, CLIENT_ID, CLIENT_PASS, USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyRestUrlThrows() {
-        SW360ClientConfig.createConfig("", AUTH_URL, USER, PASSWORD, CLIENT_ID, CLIENT_PASS, httpClient, mapper);
+        SW360ClientConfig.createConfig("", AUTH_URL, USER, PASSWORD, CLIENT_ID, CLIENT_PASS, USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidResUrlThrows() {
         SW360ClientConfig.createConfig("this is not a valid URL?!", AUTH_URL, USER, PASSWORD, CLIENT_ID,
-                CLIENT_PASS, httpClient, mapper);
+                CLIENT_PASS, USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullAuthUrlThrows() {
-        SW360ClientConfig.createConfig(REST_URL, null, USER, PASSWORD, CLIENT_ID, CLIENT_PASS, httpClient, mapper);
+        SW360ClientConfig.createConfig(REST_URL, null, USER, PASSWORD, CLIENT_ID, CLIENT_PASS, USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyAuthUrlThrows() {
-        SW360ClientConfig.createConfig(REST_URL, "", USER, PASSWORD, CLIENT_ID, CLIENT_PASS, httpClient, mapper);
+        SW360ClientConfig.createConfig(REST_URL, "", USER, PASSWORD, CLIENT_ID, CLIENT_PASS, USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullUserThrows() {
-        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, null, PASSWORD, CLIENT_ID, CLIENT_PASS, httpClient, mapper);
+        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, null, PASSWORD, CLIENT_ID, CLIENT_PASS, USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyUserThrows() {
-        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, "", PASSWORD, CLIENT_ID, CLIENT_PASS, httpClient, mapper);
+        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, "", PASSWORD, CLIENT_ID, CLIENT_PASS, USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullPasswordThrows() {
-        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, null, CLIENT_ID, CLIENT_PASS, httpClient, mapper);
+        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, null, CLIENT_ID, CLIENT_PASS, USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyPasswordThrows() {
-        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, "", CLIENT_ID, CLIENT_PASS, httpClient, mapper);
+        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, "", CLIENT_ID, CLIENT_PASS, USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullClientThrows() {
-        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, null, CLIENT_PASS, httpClient, mapper);
+        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, null, CLIENT_PASS, USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyClientThrows() {
-        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, "", CLIENT_PASS, httpClient, mapper);
+        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, "", CLIENT_PASS, USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullClientPasswordThrows() {
-        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, CLIENT_ID, null, httpClient, mapper);
+        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, CLIENT_ID, null, USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyClientPasswordThrows() {
-        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, CLIENT_ID, "", httpClient, mapper);
+        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, CLIENT_ID, "", USER_TOKEN, httpClient, mapper);
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullHttpClientThrows() {
-        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, CLIENT_ID, CLIENT_PASS, null, mapper);
+        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, CLIENT_ID, CLIENT_PASS, USER_TOKEN, null, mapper);
     }
 
     @Test(expected = NullPointerException.class)
     public void testNullObjectMapperThrows() {
-        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, CLIENT_ID, CLIENT_PASS, httpClient, null);
+        SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, CLIENT_ID, CLIENT_PASS, USER_TOKEN, httpClient, null);
     }
 
     @Test
     public void testCreateConfig() {
         SW360ClientConfig config =
                 SW360ClientConfig.createConfig(REST_URL, AUTH_URL, USER, PASSWORD, CLIENT_ID, CLIENT_PASS,
-                        httpClient, mapper);
+                        USER_TOKEN, httpClient, mapper);
 
         assertThat(config.getRestURL()).isEqualTo(REST_URL);
         assertThat(config.getAuthURL()).isEqualTo(AUTH_URL);
@@ -132,6 +133,26 @@ public class SW360ClientConfigTest {
         assertThat(config.getPassword()).isEqualTo(PASSWORD);
         assertThat(config.getClientId()).isEqualTo(CLIENT_ID);
         assertThat(config.getClientPassword()).isEqualTo(CLIENT_PASS);
+        assertThat(config.getToken()).isEqualTo(USER_TOKEN);
+        assertThat(config.getHttpClient()).isEqualTo(httpClient);
+        assertThat(config.getObjectMapper()).isEqualTo(mapper);
+        assertThat(config.getBaseURI().toString()).isEqualTo(REST_URL);
+    }
+
+    @Test
+    public void testCreateConfigToken() {
+        final String USER_TOKEN = "123token123";
+        SW360ClientConfig config =
+                SW360ClientConfig.createConfig(REST_URL, AUTH_URL, "", "", CLIENT_ID, CLIENT_PASS,
+                        USER_TOKEN, httpClient, mapper);
+
+        assertThat(config.getRestURL()).isEqualTo(REST_URL);
+        assertThat(config.getAuthURL()).isEqualTo(AUTH_URL);
+        assertThat(config.getUser()).isEqualTo("");
+        assertThat(config.getPassword()).isEqualTo("");
+        assertThat(config.getClientId()).isEqualTo(CLIENT_ID);
+        assertThat(config.getClientPassword()).isEqualTo(CLIENT_PASS);
+        assertThat(config.getToken()).isEqualTo(USER_TOKEN);
         assertThat(config.getHttpClient()).isEqualTo(httpClient);
         assertThat(config.getObjectMapper()).isEqualTo(mapper);
         assertThat(config.getBaseURI().toString()).isEqualTo(REST_URL);
@@ -141,7 +162,7 @@ public class SW360ClientConfigTest {
     public void testTrailingSlashesFromURLsAreRemoved() {
         SW360ClientConfig config =
                 SW360ClientConfig.createConfig(REST_URL + "/", AUTH_URL + "/", USER, PASSWORD,
-                        CLIENT_ID, CLIENT_PASS, httpClient, mapper);
+                        CLIENT_ID, CLIENT_PASS, USER_TOKEN, httpClient, mapper);
 
         assertThat(config.getRestURL()).isEqualTo(REST_URL);
         assertThat(config.getAuthURL()).isEqualTo(AUTH_URL);

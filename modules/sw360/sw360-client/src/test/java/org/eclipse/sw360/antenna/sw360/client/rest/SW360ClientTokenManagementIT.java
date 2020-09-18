@@ -43,6 +43,7 @@ import static org.eclipse.sw360.antenna.http.utils.HttpUtils.waitFor;
  * that sends requests against the mock server.
  */
 public class SW360ClientTokenManagementIT extends AbstractMockServerTest {
+
     /**
      * The endpoint queried by the test client.
      */

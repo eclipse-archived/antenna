@@ -29,7 +29,7 @@ public class SW360ConnectionFactoryTest {
      * The test configuration passed to the factory instance.
      */
     private static final SW360ClientConfig CONFIG = SW360ClientConfig.createConfig("restURL",
-            "authURL", "user", "password", "clientId", "clientPassword",
+            "authURL", "user", "password", "clientId", "clientPassword", "token",
             mock(HttpClient.class), mock(ObjectMapper.class));
 
     /**
