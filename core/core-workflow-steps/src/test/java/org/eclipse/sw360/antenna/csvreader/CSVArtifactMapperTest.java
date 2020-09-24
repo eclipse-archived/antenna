@@ -48,6 +48,7 @@ public class CSVArtifactMapperTest {
     private static final String ARTIFACT_COPYRIGHT = "Copyright xxxx Some Copyright Enterprise";
     private static final char DELIMITER = ',';
     private static final String CLEARING_DOC_NAME = "clearing.doc";
+    private static final String COL_FILE = "File Name";
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -59,7 +60,7 @@ public class CSVArtifactMapperTest {
         csvFile = folder.newFile("csvTest.csv");
     }
 
-    private String[] csvColumns = {
+    private static final String[] CSV_COLUMNS = {
             "Artifact Id",
             "Group Id",
             "Version",
@@ -76,7 +77,7 @@ public class CSVArtifactMapperTest {
             "Clearing Document",
             "Change Status",
             "CPE",
-            "File Name"};
+            COL_FILE};
 
     @Test
     public void testRoundTripWriteRead() {
@@ -100,12 +101,12 @@ public class CSVArtifactMapperTest {
 
         assertThat(csvFile.exists()).isTrue();
 
-        CSVParser csvParser = getCsvParser(csvFile);
-        assertThat(csvParser.getRecords().size()).isEqualTo(3);
+        List<CSVRecord> records = parseCsvFile();
+        assertThat(records.size()).isEqualTo(3);
     }
 
     @Test
-    public void writeAbsoluteFilenameToCSVFileTest() throws URISyntaxException {
+    public void writeAbsoluteFilenameToCSVFileTest() throws URISyntaxException, IOException {
         Artifact artifact =
                 mkArtifact("test", false)
                         .addFact(new ArtifactSourceFile(
@@ -117,6 +118,10 @@ public class CSVArtifactMapperTest {
 
         assertThat(csvFile.exists()).isTrue();
 
+        CSVRecord record = parseCsvFile().get(0);
+        Path sourceFile = Paths.get(record.get(COL_FILE));
+        assertThat(sourceFile.isAbsolute()).isTrue();
+
         List<Artifact> artifactsList = (List<Artifact>) csvArtifactMapper.createArtifactsList();
         assertThat(artifactsList).hasSize(1);
         assertThat(artifactsList.get(0).askFor(ArtifactSourceFile.class)).isPresent();
@@ -124,22 +129,38 @@ public class CSVArtifactMapperTest {
 
     @Test
     public void writeRelativeFilenameToCSVFileTest() throws IOException {
-        String sourceFolderName = "sources";
-        String sourceFileName = "my-sources-jar";
-        Path sourceFolder = folder.newFolder(sourceFolderName).toPath();
-        Path sourceFile = Files.write(sourceFolder.resolve(sourceFileName),
-                "some source".getBytes(StandardCharsets.UTF_8));
-        Path baseDir = folder.getRoot().toPath();
+        Path sourceFile = createSourceFile();
         Artifact artifact =
                 mkArtifact("test", false)
                         .addFact(new ArtifactSourceFile(sourceFile));
         List<Artifact> artifacts = Collections.singletonList(artifact);
 
         CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER,
-                baseDir);
+                folder.getRoot().toPath());
         csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
 
         List<Artifact> artifactsList = (List<Artifact>) csvArtifactMapper.createArtifactsList();
+        assertThat(artifactsList.get(0).askFor(ArtifactSourceFile.class)).isPresent();
+    }
+
+    @Test
+    public void writeAbsoluteFilenameInSourceFolderToCSVFileTest() throws IOException {
+        Path sourceFile = createSourceFile().toAbsolutePath();
+        Artifact artifact =
+                mkArtifact("test", false)
+                        .addFact(new ArtifactSourceFile(sourceFile));
+        List<Artifact> artifacts = Collections.singletonList(artifact);
+
+        CSVArtifactMapper csvArtifactMapper = new CSVArtifactMapper(csvFile.toPath(), StandardCharsets.UTF_8, DELIMITER,
+                folder.getRoot().toPath());
+        csvArtifactMapper.writeArtifactsToCsvFile(artifacts);
+
+        CSVRecord record = parseCsvFile().get(0);
+        Path sourceFileWritten = Paths.get(record.get(COL_FILE));
+        assertThat(sourceFileWritten.isAbsolute()).isFalse();
+
+        List<Artifact> artifactsList = (List<Artifact>) csvArtifactMapper.createArtifactsList();
+        assertThat(artifactsList).hasSize(1);
         assertThat(artifactsList.get(0).askFor(ArtifactSourceFile.class)).isPresent();
     }
 
@@ -170,11 +191,10 @@ public class CSVArtifactMapperTest {
 
         assertThat(csvFile.exists()).isTrue();
 
-        CSVParser csvParser = getCsvParser(csvFile);
-        List<CSVRecord> records = csvParser.getRecords();
+        List<CSVRecord> records = parseCsvFile();
         assertThat(records.size()).isEqualTo(1);
         CSVRecord csvRecord = records.get(0);
-        for (String csvColumn : csvColumns) {
+        for (String csvColumn : CSV_COLUMNS) {
             if (!csvColumn.equals("File Name")) {
                 assertThat(csvRecord.get(csvColumn).isEmpty()).isFalse();
             }
@@ -189,13 +209,15 @@ public class CSVArtifactMapperTest {
 
         assertThat(csvFile.exists()).isTrue();
 
-        CSVParser csvParser = getCsvParser(csvFile);
-        assertThat(csvParser.getHeaderMap().size()).isEqualTo(csvColumns.length);
-        assertThat(csvParser.getRecordNumber()).isEqualTo(0);
+        withParser(csvParser -> {
+            assertThat(csvParser.getHeaderMap().size()).isEqualTo(CSV_COLUMNS.length);
+            assertThat(csvParser.getRecordNumber()).isEqualTo(0);
+            return null;
+        });
     }
 
     private Artifact mkArtifact(String name, boolean withOverridden) {
-                Artifact artifact = new Artifact("CSV");
+        Artifact artifact = new Artifact("CSV");
         artifact.addCoordinate(new Coordinate(ARTIFACT_MAVEN_COORDINATES));
 
         addLicenseFact(Optional.of("Declared-1.0"), artifact, DeclaredLicenseInformation::new, artifact.askFor(DeclaredLicenseInformation.class).isPresent());
@@ -234,12 +256,68 @@ public class CSVArtifactMapperTest {
                 .ifPresent(artifact::addFact);
     }
 
-    private static CSVParser getCsvParser(File currentCsvFile) throws IOException {
-        FileInputStream fs = new FileInputStream(currentCsvFile);
-        InputStreamReader isr = new InputStreamReader(fs, StandardCharsets.UTF_8);
-        CSVFormat csvFormat = CSVFormat.DEFAULT;
-        csvFormat = csvFormat.withFirstRecordAsHeader();
-        csvFormat = csvFormat.withDelimiter(',');
-        return new CSVParser(isr, csvFormat);
+    /**
+     * Creates a test source file with test content.
+     *
+     * @return the path to the test source file
+     * @throws IOException if an error occurs
+     */
+    private Path createSourceFile() throws IOException {
+        String sourceFolderName = "sources";
+        String sourceFileName = "my-sources-jar";
+        Path sourceFolder = folder.newFolder(sourceFolderName).toPath();
+        return Files.write(sourceFolder.resolve(sourceFileName),
+                "some source".getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * Creates an initialized CSV parser for the test CSV file and passes it to
+     * the given parse function, which can use it to produce a result. This
+     * method makes sure that all resources are properly released after using
+     * the parser.
+     *
+     * @param parseFunc the function to parse something with the parser
+     * @param <T>       the result type of the parse function
+     * @return the result returned by the parse function
+     */
+    private <T> T withParser(ParseFunction<? extends T> parseFunc) throws IOException {
+        CSVFormat csvFormat = CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .withDelimiter(',');
+        try (FileInputStream fs = new FileInputStream(csvFile);
+             InputStreamReader isr = new InputStreamReader(fs, StandardCharsets.UTF_8);
+             CSVParser parser = new CSVParser(isr, csvFormat)) {
+            return parseFunc.parse(parser);
+        }
+    }
+
+    /**
+     * Parses the test CSV file and returns a list with all the records it
+     * contains.
+     *
+     * @return the content of the test CSV file
+     * @throws IOException if an error occurs
+     */
+    private List<CSVRecord> parseCsvFile() throws IOException {
+        return withParser(CSVParser::getRecords);
+    }
+
+    /**
+     * Definition of a function that uses a CSV parser to produce a result.
+     * This is used by some tests to read test CSV data, without having to
+     * bother with proper resource cleanup.
+     *
+     * @param <R> the result type produced by the function
+     */
+    @FunctionalInterface
+    private interface ParseFunction<R> {
+        /**
+         * Produces a result with the {@code CSVParser} provided.
+         *
+         * @param parser the {@code CSVParser}
+         * @return the result of the function
+         * @throws IOException if an error occurs
+         */
+        R parse(CSVParser parser) throws IOException;
     }
 }
