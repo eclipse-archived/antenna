@@ -41,6 +41,10 @@ public final class AntennaCLIOptions extends AbstractAntennaCLIOptions {
      */
     private final String configFilePath;
 
+    /**
+     * The path to the file with environment properties.
+     */
+    private final String propertiesFilePath;
 
     /**
      * Creates a new instance of {@code AntennaCLIOptions} with the properties
@@ -52,8 +56,27 @@ public final class AntennaCLIOptions extends AbstractAntennaCLIOptions {
      * @param valid          flag whether the command line is valid
      */
     AntennaCLIOptions(String configFilePath, boolean debugLog, boolean showHelp, boolean valid) {
+        this(configFilePath, null, debugLog, showHelp, valid);
+    }
+
+    /**
+     * Creates a new instance of {@code AntennaCLIOptions} with the properties
+     * provided.
+     *
+     * @param configFilePath     the path to the Antenna config file
+     * @param propertiesFilePath the path to the properties file
+     * @param debugLog           flag whether debug log should be active
+     * @param showHelp           flag whether the help message should be printed
+     * @param valid              flag whether the command line is valid
+     */
+    AntennaCLIOptions(String configFilePath,
+                      String propertiesFilePath,
+                      boolean debugLog,
+                      boolean showHelp,
+                      boolean valid) {
         super(debugLog, showHelp, valid);
         this.configFilePath = configFilePath;
+        this.propertiesFilePath = propertiesFilePath;
     }
 
     /**
@@ -64,6 +87,16 @@ public final class AntennaCLIOptions extends AbstractAntennaCLIOptions {
      */
     String getConfigFilePath() {
         return configFilePath;
+    }
+
+    /**
+     * Returns the path to the properties file that has been
+     * specified on the command line.
+     *
+     * @return the path to the properties file
+     */
+    String getPropertiesFilePath() {
+        return propertiesFilePath;
     }
 
     /**
@@ -79,7 +112,8 @@ public final class AntennaCLIOptions extends AbstractAntennaCLIOptions {
      */
     static AntennaCLIOptions parse(String[] args) {
         List<String> paths = readPathsFromArgs(args);
-        if (paths.size() != 1) {
+        int pathsSize = paths.size();
+        if (paths.isEmpty() || pathsSize > 2) {
             return INVALID_OPTIONS;
         }
 
@@ -92,7 +126,11 @@ public final class AntennaCLIOptions extends AbstractAntennaCLIOptions {
             return INVALID_OPTIONS;
         }
 
-        return new AntennaCLIOptions(paths.get(0), debug1 || debug2, help1 || help2, true);
+        if (pathsSize == 1) {
+            return new AntennaCLIOptions(paths.get(0), debug1 || debug2, help1 || help2, true);
+        } else {
+            return new AntennaCLIOptions(paths.get(0), paths.get(1), debug1 || debug2, help1 || help2, true);
+        }
     }
 
     /**
@@ -103,7 +141,7 @@ public final class AntennaCLIOptions extends AbstractAntennaCLIOptions {
      */
     static String helpMessage() {
         String cr = System.lineSeparator();
-        return "Usage: java -jar antenna.jar [options] <pomFilePath>" + cr + cr +
+        return "Usage: java -jar antenna.jar [options] <pomFilePath> [<propertiesFilePath>]" + cr + cr +
                 "Supported options:" + cr +
                 SWITCH_HELP_SHORT + ", " + SWITCH_HELP_LONG + ":    Displays this help message." + cr +
                 SWITCH_DEBUG_SHORT + ", " + SWITCH_DEBUG_LONG +
@@ -122,18 +160,20 @@ public final class AntennaCLIOptions extends AbstractAntennaCLIOptions {
             return false;
         }
         AntennaCLIOptions that = (AntennaCLIOptions) o;
-        return Objects.equals(getConfigFilePath(), that.getConfigFilePath());
+        return Objects.equals(getConfigFilePath(), that.getConfigFilePath())
+                && Objects.equals(getPropertiesFilePath(), that.getPropertiesFilePath());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getConfigFilePath());
+        return Objects.hash(super.hashCode(), getConfigFilePath(), getPropertiesFilePath());
     }
 
     @Override
     public String toString() {
         return "AntennaCLIOptions{" +
                 "configFilePath='" + configFilePath + '\'' +
+                "propertiesFilePath='" + propertiesFilePath + '\'' +
                 ", debugLog=" + debugLog +
                 ", showHelp=" + showHelp +
                 ", valid=" + valid +

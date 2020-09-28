@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -22,6 +22,10 @@ public final class AntennaCLIFrontend extends AbstractAntennaCLIFrontend {
 
     public AntennaCLIFrontend(File file) {
         super(file);
+    }
+
+    public AntennaCLIFrontend(File pomFile, File propertiesFile) {
+        super(pomFile, propertiesFile);
     }
 
     @Override
@@ -47,7 +51,18 @@ public final class AntennaCLIFrontend extends AbstractAntennaCLIFrontend {
                 throw new IllegalArgumentException("Cannot find " + pomFilePath.toString());
             }
 
-            AntennaCLIFrontend frontend = new AntennaCLIFrontend(pomFilePath.toFile());
+            AntennaCLIFrontend frontend;
+
+            if (options.getPropertiesFilePath() != null) {
+                Path propertiesFilePath = Paths.get(options.getPropertiesFilePath()).toAbsolutePath();
+                if (!propertiesFilePath.toFile().exists()) {
+                    throw new IllegalArgumentException("Cannot find " + propertiesFilePath.toString());
+                }
+                frontend = new AntennaCLIFrontend(pomFilePath.toFile(), propertiesFilePath.toFile());
+            } else {
+                frontend = new AntennaCLIFrontend(pomFilePath.toFile());
+            }
+
             frontend.execute();
         } catch (Exception e) {
             e.printStackTrace();

@@ -121,4 +121,8 @@ public abstract class AbstractTestProjectWithExpectations extends AbstractTestPr
     public boolean requiresMaven() {
         return false;
     }
+
+    public boolean hasPropertiesFile () {
+        return false;
+    }
 }
