@@ -27,6 +27,8 @@ import static org.junit.Assert.assertTrue;
 
 public class ExampleTestProject extends AbstractTestProjectWithExpectations implements ExecutableTestProject {
 
+    private static final String PATH_TO_PROPERTIES_FILE = "example.properties";
+
     public ExampleTestProject() {
         super();
     }
@@ -35,7 +37,8 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
     public List<String> getOtherFilesToCopy() {
         return Stream.of("src/reportData.json",
                 "src/dependencies.csv",
-                "src/analyzer-result.yml")
+                "src/analyzer-result.yml",
+                PATH_TO_PROPERTIES_FILE)
                 .collect(Collectors.toList());
     }
 
@@ -211,5 +214,15 @@ public class ExampleTestProject extends AbstractTestProjectWithExpectations impl
         List<String> endingsList = super.getExpectedToolConfigurationConfigFilesEndings();
         endingsList.add(File.separator + "src" + File.separator + "antennaconf.xml");
         return endingsList;
+    }
+
+    @Override
+    public boolean hasPropertiesFile () {
+        return true;
+    }
+
+    @Override
+    public Path getPropertiesFile() {
+        return getProjectRoot().resolve(PATH_TO_PROPERTIES_FILE);
     }
 }

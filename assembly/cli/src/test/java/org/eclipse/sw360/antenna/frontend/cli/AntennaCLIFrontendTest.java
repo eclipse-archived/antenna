@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2018.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -38,7 +38,13 @@ public class AntennaCLIFrontendTest extends AbstractAntennaCLIFrontendTest {
         assumeTrue(isRunExecutionTest());
         protoypeExecutionTest(() -> {
             Path pom = testData.getProjectPom();
-            String[] args = new String[]{ pom.toAbsolutePath().toString() };
+            String[] args;
+            if (hasPropertiesFile()) {
+                Path propertiesFile = testData.getPropertiesFile();
+                args = new String[]{ pom.toAbsolutePath().toString(), propertiesFile.toAbsolutePath().toString() };
+            } else {
+                args = new String[]{ pom.toAbsolutePath().toString() };
+            }
             AntennaCLIFrontend.main(args);
         }, tf -> null);
     }

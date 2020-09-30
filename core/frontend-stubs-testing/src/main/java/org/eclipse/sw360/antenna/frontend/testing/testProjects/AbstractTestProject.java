@@ -111,5 +111,9 @@ public abstract class AbstractTestProject {
         return getProjectRoot().resolve(POM);
     }
 
+    public Path getPropertiesFile() throws NoSuchMethodException {
+        throw new NoSuchMethodException("There is no properties file for this test project");
+    }
+
     public abstract String getExpectedProjectArtifactId();
 }

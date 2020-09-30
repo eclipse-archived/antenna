@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2017.
+ * Copyright (c) Bosch.IO GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -53,6 +53,7 @@ public abstract class AbstractAntennaCLIFrontendTest extends AbstractAntennaFron
         assertNotNull(antennaContext.getProject());
 
         setRunExecutionTest(!testData.requiresMaven());
+        setHasPropertiesFile(testData.hasPropertiesFile());
     }
 
     @Ignore("would fail due to unrelated templating issues")

@@ -55,11 +55,20 @@ public abstract class AbstractAntennaFrontendTest {
         return runExecutionTest;
     }
 
+    protected boolean hasPropertiesFile() {
+        return hasPropertiesFile;
+    }
+
     protected void setRunExecutionTest(boolean runExecutionTest) {
         this.runExecutionTest = runExecutionTest;
     }
 
+    protected void setHasPropertiesFile(boolean hasPropertiesFile) {
+        this.hasPropertiesFile = hasPropertiesFile;
+    }
+
     private boolean runExecutionTest;
+    private boolean hasPropertiesFile;
 
     @Parameterized.Parameters(name = "{index}: Test data = {1}")
     public static Collection<Object[]> data() {

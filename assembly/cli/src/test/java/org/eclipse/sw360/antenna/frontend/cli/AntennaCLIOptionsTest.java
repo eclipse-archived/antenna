@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AntennaCLIOptionsTest {
     private static final String CONFIG_PATH = "path/to/config.xml";
+    private static final String PROPERTIES_PATH = "path/to/example.properties";
 
     @Test
     public void testEquals() {
@@ -30,10 +31,11 @@ public class AntennaCLIOptionsTest {
 
     @Test
     public void testToString() {
-        AntennaCLIOptions options = new AntennaCLIOptions(CONFIG_PATH, true, false, true);
+        AntennaCLIOptions options = new AntennaCLIOptions(CONFIG_PATH, PROPERTIES_PATH, true, false, true);
         String s = options.toString();
 
         assertThat(s).contains("configFilePath='" + options.getConfigFilePath());
+        assertThat(s).contains("propertiesFilePath='" + options.getPropertiesFilePath());
         assertThat(s).contains("debugLog=" + options.isDebugLog());
         assertThat(s).contains("showHelp=" + options.isShowHelp());
         assertThat(s).contains("valid=" + options.isValid());
@@ -76,8 +78,18 @@ public class AntennaCLIOptionsTest {
     }
 
     @Test
+    public void testParseConfigAndPropertiesPathOnly() {
+        checkParse(new AntennaCLIOptions(CONFIG_PATH, PROPERTIES_PATH, false, false, true), CONFIG_PATH, PROPERTIES_PATH);
+    }
+
+    @Test
     public void testParseWithXSwitch() {
         checkParse(new AntennaCLIOptions(CONFIG_PATH, true, false, true), CONFIG_PATH, "-X");
+    }
+
+    @Test
+    public void testParseWithMultiplePathsAndXSwitch() {
+        checkParse(new AntennaCLIOptions(CONFIG_PATH, PROPERTIES_PATH, true, false, true), CONFIG_PATH, PROPERTIES_PATH, "-X");
     }
 
     @Test
@@ -86,8 +98,13 @@ public class AntennaCLIOptionsTest {
     }
 
     @Test
-    public void testParseWithMultiplePaths() {
-        checkFailedParse(CONFIG_PATH, "another/path");
+    public void testParsePositionOfOptionsDoesNotMatterWithMultiplePaths() {
+        checkParse(new AntennaCLIOptions(CONFIG_PATH, PROPERTIES_PATH, true, false, true), "-X", CONFIG_PATH, PROPERTIES_PATH);
+    }
+
+    @Test
+    public void testParseWithMoreThanTwoPaths() {
+        checkFailedParse(CONFIG_PATH, PROPERTIES_PATH, "another/path");
     }
 
     @Test
@@ -101,9 +118,20 @@ public class AntennaCLIOptionsTest {
     }
 
     @Test
+    public void testParseWithMultiplePathsAndDebugSwitch() {
+        checkParse(new AntennaCLIOptions(CONFIG_PATH, PROPERTIES_PATH, true, false, true), "--debug", CONFIG_PATH, PROPERTIES_PATH);
+    }
+
+    @Test
     public void testParseWithMultipleDebugSwitches() {
         checkParse(new AntennaCLIOptions(CONFIG_PATH, true, false, true),
                 AntennaCLIOptions.SWITCH_DEBUG_LONG, CONFIG_PATH, AntennaCLIOptions.SWITCH_DEBUG_SHORT);
+    }
+
+    @Test
+    public void testParseWithMultiplePathsAndDebugSwitches() {
+        checkParse(new AntennaCLIOptions(CONFIG_PATH, PROPERTIES_PATH, true, false, true),
+                AntennaCLIOptions.SWITCH_DEBUG_LONG, CONFIG_PATH, PROPERTIES_PATH, AntennaCLIOptions.SWITCH_DEBUG_SHORT);
     }
 
     @Test
@@ -113,7 +141,19 @@ public class AntennaCLIOptionsTest {
     }
 
     @Test
+    public void testParseWithMultiplePathsAndShortHelpSwitch() {
+        checkParse(new AntennaCLIOptions(CONFIG_PATH, PROPERTIES_PATH, true, true, true),
+                CONFIG_PATH, PROPERTIES_PATH, "-X", "-h");
+    }
+
+    @Test
     public void testParseWithLongHelpSwitch() {
+        checkParse(new AntennaCLIOptions(CONFIG_PATH, false, true, true),
+                "--help", CONFIG_PATH);
+    }
+
+    @Test
+    public void testParseWithMultiplePathsAndLongHelpSwitch() {
         checkParse(new AntennaCLIOptions(CONFIG_PATH, false, true, true),
                 "--help", CONFIG_PATH);
     }

@@ -223,4 +223,12 @@ public class AntennaCLIFrontendDebugLogTest {
 
         assertThat(output).contains(Arrays.asList("Cannot find ", nonExistingPath.toString()));
     }
+
+    @Test
+    public void testNonExistingPropertiesFileIsHandled() throws UnsupportedEncodingException {
+        Path nonExistingPath = Paths.get("non", "existing", "example.properties");
+        String output = runAntennaAndExpectFailure(antennaConfigFile, nonExistingPath.toString());
+
+        assertThat(output).contains(Arrays.asList("Cannot find ", nonExistingPath.toString()));
+    }
 }

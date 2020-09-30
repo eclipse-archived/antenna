@@ -110,6 +110,14 @@ SECRET=password12345 java -jar path\to\ ${docName}.jar path\to\toolConfiguration
 Should you execute it within the command, the variable will not be saved in your environment but only exist for the run of the command.
 ${docNameCap} adheres to standards and only renders environment variables that are written in upper case letters.
 
+Alternatively, it is possible to specify environment variables inside a properties file which can be given to the analyzer command:
+
+```
+java -jar path\to\ ${docName}.jar path\to\toolConfiguration.xml path\to\example.properties
+```
+
+Note that variables in the properties file can also be lower case.
+
 Within both, your `toolConfiguration.xml` and the `workflow.xml`, you can then reference the variables.
 
 #[[##]]# Enabling debug logging
