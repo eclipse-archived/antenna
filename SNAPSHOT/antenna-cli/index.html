@@ -191,6 +191,14 @@ java -cp %CLASSPATH% $org.eclipse.sw360.antenna.frontend.AntennaCLIFrontend %TOO
 </pre></div></div>
 
 <p>Should you execute it within the command, the variable will not be saved in your environment but only exist for the run of the command. Antenna adheres to standards and only renders environment variables that are written in upper case letters.</p>
+<p>Alternatively, it is possible to specify environment variables inside a properties file which can be given to the analyzer command:</p>
+
+<div>
+<div>
+<pre class="source">java -jar path\to\ antenna.jar path\to\toolConfiguration.xml path\to\example.properties
+</pre></div></div>
+
+<p>Note that variables in the properties file can also be lower case.</p>
 <p>Within both, your <tt>toolConfiguration.xml</tt> and the <tt>workflow.xml</tt>, you can then reference the variables.</p></div>
 <div class="section">
 <h2><a name="Enabling_debug_logging"></a>Enabling debug logging</h2>
