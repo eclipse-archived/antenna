@@ -75,10 +75,10 @@ public class CSVArtifactMapper {
             CPE,
             PATH_NAME};
 
-    private Path csvFile;
-    private Charset encoding;
-    private char delimiter;
-    private Path baseDir;
+    private final Path csvFile;
+    private final Charset encoding;
+    private final char delimiter;
+    private final Path baseDir;
 
 
     public CSVArtifactMapper(Path csvFile, Charset encoding, char delimiter, Path baseDir) {
@@ -437,7 +437,8 @@ public class CSVArtifactMapper {
 
     private String getPathAsStringIfExists(Path path, Artifact artifact) {
         if (Files.exists(path)) {
-            return baseDir.relativize(path).toString();
+            Path relativePath = path.startsWith(baseDir) ? baseDir.relativize(path) : path;
+            return relativePath.toString();
         } else {
             artifact.getMainCoordinate().ifPresent(coordinate ->
                     LOGGER.debug("The given source file for artifact {} does not exist", coordinate));
