@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -87,48 +88,72 @@ public class SW360Updater {
         LOGGER.debug("{} has started.", SW360Updater.class.getName());
         Collection<Artifact> artifacts = getArtifactsFromCsvFile(configuration);
 
-        artifacts.forEach(this::uploadReleaseWithClearingDocumentFromArtifact);
-
+        Map<Artifact, SW360ClientException> exceptions = new HashMap<>();
+        for (Artifact artifact : artifacts) {
+            try {
+                uploadReleaseWithClearingDocumentFromArtifact(artifact);
+            } catch (SW360ClientException e) {
+                exceptions.put(artifact, e);
+            }
+        }
 
         LOGGER.info("The SW360Updater was executed with the following configuration:");
         configuration.logConfiguration(LOGGER);
         LOGGER.info("Path for clearing documents: {}", clearingDocDir);
+
+        if (!exceptions.isEmpty()) {
+            StringBuilder builder = new StringBuilder("There have been some errors during update:");
+            exceptions.forEach((key, value) -> {
+                String packageURL = key.getMainCoordinate()
+                        .map(coordinate ->
+                                coordinate.getPackageURL().toString())
+                        .orElse("UNKNOWN");
+
+                builder.append(System.lineSeparator());
+                builder.append(String.format("%s: %s", packageURL, value.getMessage()));
+            });
+            LOGGER.error(builder.toString());
+            throw new SW360ClientException(builder.toString());
+        }
     }
 
+    /**
+     * Upload clearing document in a release as attachment
+     *
+     * @param artifact the artifact the release comes from
+     * @throws SW360ClientException in case of error
+     */
     private void uploadReleaseWithClearingDocumentFromArtifact(Artifact artifact) {
         LOGGER.info("Processing {}.", artifact);
-        try {
-            final SW360Release sw360ReleaseFromArtifact = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
 
-            if (sw360ReleaseFromArtifact.getClearingState() != null &&
-                    !sw360ReleaseFromArtifact.getClearingState().isEmpty() &&
-                    ArtifactClearingState.ClearingState.valueOf(sw360ReleaseFromArtifact.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
-                Path clearingDoc = getOrGenerateClearingDocument(sw360ReleaseFromArtifact, artifact);
-                Map<Path, SW360AttachmentType> clearingDocUpload =
-                        Collections.singletonMap(clearingDoc, SW360AttachmentType.CLEARING_REPORT);
-                AttachmentUploadResult<SW360Release> uploadResult =
-                        updater.artifactToReleaseWithUploads(artifact, sw360ReleaseFromArtifact, clearingDocUpload);
-                SW360Release release = uploadResult.getTarget();
-                SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnection().getReleaseAdapter();
+        final SW360Release sw360ReleaseFromArtifact = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
 
-                AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
-                        .addAttachment(clearingDoc,
-                                SW360AttachmentType.CLEARING_REPORT)
-                        .build();
-                releaseClientAdapter.uploadAttachments(uploadRequest);
+        if (sw360ReleaseFromArtifact.getClearingState() != null &&
+                !sw360ReleaseFromArtifact.getClearingState().isEmpty() &&
+                ArtifactClearingState.ClearingState.valueOf(sw360ReleaseFromArtifact.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
+            Path clearingDoc = getOrGenerateClearingDocument(sw360ReleaseFromArtifact, artifact);
+            Map<Path, SW360AttachmentType> clearingDocUpload =
+                    Collections.singletonMap(clearingDoc, SW360AttachmentType.CLEARING_REPORT);
+            AttachmentUploadResult<SW360Release> uploadResult =
+                    updater.artifactToReleaseWithUploads(artifact, sw360ReleaseFromArtifact, clearingDocUpload);
+            SW360Release release = uploadResult.getTarget();
+            SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnection().getReleaseAdapter();
 
-                Set<Path> failedUploads = uploadResult.failedUploads().keySet().stream()
-                        .map(AttachmentUploadRequest.Item::getPath)
-                        .collect(Collectors.toSet());
-                if (removeClearedSources) {
-                    removeSourceArtifact(artifact, release, failedUploads);
-                }
-                if (removeClearingDocs) {
-                    removeClearingDocument(clearingDoc, failedUploads);
-                }
+            AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
+                    .addAttachment(clearingDoc,
+                            SW360AttachmentType.CLEARING_REPORT)
+                    .build();
+            releaseClientAdapter.uploadAttachments(uploadRequest);
+
+            Set<Path> failedUploads = uploadResult.failedUploads().keySet().stream()
+                    .map(AttachmentUploadRequest.Item::getPath)
+                    .collect(Collectors.toSet());
+            if (removeClearedSources) {
+                removeSourceArtifact(artifact, release, failedUploads);
             }
-        } catch (SW360ClientException e) {
-            LOGGER.error("Failed to process artifact {}.", artifact, e);
+            if (removeClearingDocs) {
+                removeClearingDocument(clearingDoc, failedUploads);
+            }
         }
     }
 

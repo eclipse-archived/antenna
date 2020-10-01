@@ -10,9 +10,11 @@
  */
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
+import org.assertj.core.api.Assertions;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState.ClearingState;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
@@ -30,6 +32,7 @@ import org.junit.runners.Parameterized;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -63,31 +66,31 @@ public class SW360UpdaterParameterizedTest {
     private final SW360Configuration configurationMock = mock(SW360Configuration.class);
     private final SW360ReleaseClientAdapter releaseClientAdapter = mock(SW360ReleaseClientAdapter.class);
 
-    private final String clearingState;
+    private final ClearingState clearingState;
     private final boolean clearingDocAvailable;
     private final boolean expectUpload;
 
-    public SW360UpdaterParameterizedTest(String clearingState, boolean clearingDocAvailable, boolean expectUpload) {
+    public SW360UpdaterParameterizedTest(@Nullable ClearingState clearingState, boolean clearingDocAvailable, boolean expectUpload) {
         this.clearingState = clearingState;
         this.clearingDocAvailable = clearingDocAvailable;
         this.expectUpload = expectUpload;
     }
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "{0}_{1}_{2}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {"OSM_APPROVED", true, true},
-                {"EXTERNAL_SOURCE", true, true},
-                {"AUTO_EXTRACT", true, true},
-                {"PROJECT_APPROVED", true, true},
-                {"INITIAL", true, false},
-                {"", true, false},
-                {"OSM_APPROVED", false, true},
-                {"EXTERNAL_SOURCE", false, true},
-                {"AUTO_EXTRACT", false, true},
-                {"PROJECT_APPROVED", false, true},
-                {"INITIAL", false, false},
-                {"", false, false}
+                {ClearingState.OSM_APPROVED, true, true},
+                {ClearingState.EXTERNAL_SOURCE, true, true},
+                {ClearingState.AUTO_EXTRACT, true, true},
+                {ClearingState.PROJECT_APPROVED, true, true},
+                {ClearingState.INITIAL, true, false},
+                {null, true, false},
+                {ClearingState.OSM_APPROVED, false, true},
+                {ClearingState.EXTERNAL_SOURCE, false, true},
+                {ClearingState.AUTO_EXTRACT, false, true},
+                {ClearingState.PROJECT_APPROVED, false, true},
+                {ClearingState.INITIAL, false, false},
+                {null, false, false}
 
         });
     }
@@ -102,7 +105,12 @@ public class SW360UpdaterParameterizedTest {
     }
 
     private void initBasicConfiguration(Path sourceAttachment, Map<String, String> propertiesMap) throws IOException {
-        Path csvFile = writeCsvFile(sourceAttachment.toString());
+        String clearingDocPath = "";
+        if (clearingDocAvailable) {
+            File clearingDoc = folder.newFile(CLEARING_DOC);
+            clearingDocPath = clearingDoc.getPath();
+        }
+        Path csvFile = SW360TestUtils.writeCsvFile(folder, sourceAttachment.toString(), clearingState, clearingDocPath);
 
         when(configurationMock.getBaseDir())
                 .thenReturn(csvFile.getParent());
@@ -187,7 +195,9 @@ public class SW360UpdaterParameterizedTest {
         }
         SW360UpdaterImpl updater = mock(SW360UpdaterImpl.class);
         SW360Release release = new SW360Release();
-        release.setClearingState(clearingState);
+        if (clearingState != null) {
+            release.setClearingState(clearingState.name());
+        }
         when(updater.artifactToReleaseWithUploads(any(), any(), anyMap()))
                 .thenAnswer((Answer<AttachmentUploadResult<SW360Release>>) invocationOnMock -> {
                     deleteSourceFileIfNotAttachmentExists(attachmentExists, sourceAttachment);
@@ -204,7 +214,13 @@ public class SW360UpdaterParameterizedTest {
 
         SW360Updater sw360Updater = new SW360Updater(updater, configurationMock, generator);
 
-        sw360Updater.execute();
+        if (clearingState == null || clearingState == ClearingState.INITIAL) {
+            sw360Updater.execute();
+        } else {
+            // the update exception will be thrown only in some clearing states
+            Assertions.assertThatThrownBy(sw360Updater::execute)
+                    .isInstanceOf(SW360ClientException.class);
+        }
 
         Map<Path, SW360AttachmentType> testAttachmentMap = createExpectedAttachmentMap();
 
@@ -261,21 +277,6 @@ public class SW360UpdaterParameterizedTest {
         }
 
         return Collections.emptyMap();
-    }
-
-    private Path writeCsvFile(String sourceAttachment) throws IOException {
-        final File tempCsvFile = folder.newFile("test.csv");
-        String clearingDocPath = "";
-        if (clearingDocAvailable) {
-            File clearingDoc = folder.newFile(CLEARING_DOC);
-            clearingDocPath = clearingDoc.getPath();
-        }
-        String csvContent = String.format("Artifact Id,Group Id,Version,Coordinate Type,Clearing State,Clearing Document,File Name%s" +
-                        "test,test,x.x.x,mvn,%s,%s,%s%s" +
-                        "error,error,y.y.y,mvn,%s,%s,%s", System.lineSeparator(), clearingState, clearingDocPath,
-                sourceAttachment, System.lineSeparator(), clearingState, clearingDocPath, System.lineSeparator());
-        Files.write(tempCsvFile.toPath(), csvContent.getBytes(StandardCharsets.UTF_8));
-        return tempCsvFile.toPath();
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Bosch Software Innovations GmbH 2019.
+ * Copyright (c) Bosch Software Innovations GmbH 2020.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -35,6 +35,6 @@ public class ArtifactClearingState extends ArtifactFactWithPayload<ArtifactClear
         EXTERNAL_SOURCE,
         AUTO_EXTRACT,
         PROJECT_APPROVED,
-        OSM_APPROVED
+        OSM_APPROVED;
     }
 }

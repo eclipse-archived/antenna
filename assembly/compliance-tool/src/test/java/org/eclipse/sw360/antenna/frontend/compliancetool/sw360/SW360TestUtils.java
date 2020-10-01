@@ -12,6 +12,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState.ClearingState;
 import org.eclipse.sw360.antenna.model.coordinates.Coordinate;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.Embedded;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
@@ -26,12 +27,16 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.components.SW360Spar
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360ReleaseEmbedded;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360SparseRelease;
+import org.junit.rules.TemporaryFolder;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
@@ -152,4 +157,34 @@ public class SW360TestUtils {
             when(mockConfig.getBooleanConfigValue(key)).thenReturn(Boolean.valueOf(value));
         });
     }
+
+    /**
+     * Create a test CSV file with 2 entries in a temporary folder. The file will be named "test.csv"
+     *
+     * <pre>
+     * Artifact Id,Group Id,Version,Coordinate Type,Clearing State,Clearing Document,File Name
+     * test,test,x.x.x,mvn,OSM_APPROVED,/tmp/junit12149496859366607291/clearing.doc,/tmp/junit12149496859366607291/sources/testSources.zip
+     * error,error,y.y.y,mvn,OSM_APPROVED,/tmp/junit12149496859366607291/clearing.doc,
+     * </pre>
+     * @param folder the temporary folder
+     * @param sourceAttachment the FQ path of the file in the first entry of the CSV
+     * @param clearingState the name of the clearing state in both entries of the CSV
+     * @param clearingDocPath the FQ path of the claring document in both entries of the CSV
+     * @return the FQ path of the test CSV file
+     * @throws IOException in case of error
+     */
+    public static Path writeCsvFile(TemporaryFolder folder,
+                                    String sourceAttachment,
+                                    @Nullable ClearingState clearingState,
+                                    String clearingDocPath) throws IOException {
+        final File tempCsvFile = folder.newFile("test.csv");
+        String clearingStateName = (clearingState == null) ? "" : clearingState.name();
+        String csvContent = String.format("Artifact Id,Group Id,Version,Coordinate Type,Clearing State,Clearing Document,File Name%s" +
+                        "test,test,x.x.x,mvn,%s,%s,%s%s" +
+                        "error,error,y.y.y,mvn,%s,%s,%s", System.lineSeparator(), clearingStateName, clearingDocPath,
+                sourceAttachment, System.lineSeparator(), clearingStateName, clearingDocPath, System.lineSeparator());
+        Files.write(tempCsvFile.toPath(), csvContent.getBytes(StandardCharsets.UTF_8));
+        return tempCsvFile.toPath();
+    }
+
 }
