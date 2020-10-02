@@ -8,6 +8,9 @@ sorted by creation date (from latest to oldest) in a csv file.
 
 The csv file follows the csv format accepted by the [CSV Analyzer](../analyzers/csv-analyzer-step.html). 
 
+Should there already be a csv file of the same name in the target directory, 
+the SW360 Exporter will overwrite it. 
+
 ### Properties
 Sources specific properties:
 
