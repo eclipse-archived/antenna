@@ -11,11 +11,15 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
 
+import org.assertj.core.api.Assertions;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState.ClearingState;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 import org.junit.Rule;
@@ -30,36 +34,28 @@ import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SW360UpdaterTest {
+/**
+ * If during the generation of the clearing document an exception is thrown, the uspdater must
+ * carry on and propagate the error at the end of the process
+ * @see <a href="https://github.com/eclipse/antenna/issues/575">original bug</a>
+ */
+public class SW360UpdaterTestWithFailure {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
     private final SW360Configuration configurationMock = mock(SW360Configuration.class);
 
-    @Test(expected = NullPointerException.class)
-    public void testUpdaterImplMustNotBeNull() {
-        new SW360Updater(null, configurationMock, mock(ClearingReportGenerator.class));
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testConfigurationMustNotBeNull() {
-        new SW360Updater(mock(SW360UpdaterImpl.class), null, mock(ClearingReportGenerator.class));
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testClearingReportGeneratorMustNotBeNull() {
-        new SW360Updater(mock(SW360UpdaterImpl.class), configurationMock, null);
-    }
-
     @Test
-    public void testIllegalStateIsCaught() throws IOException {
+    public void testUpdateWithFailure() throws IOException {
+        SW360Release testRelease = SW360TestUtils.mkSW360Release("test");
+
         SW360UpdaterImpl updaterImpl = mock(SW360UpdaterImpl.class);
         when(updaterImpl.artifactToReleaseInSW360(any(), any()))
-                .thenReturn(SW360TestUtils.mkSW360Release("test"));
+                .thenReturn(testRelease);
+        when(updaterImpl.artifactToReleaseWithUploads(any(), any(), any()))
+                .thenReturn(new AttachmentUploadResult<>(testRelease));
 
         String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).getPath();
         final Map<String, String> properties = ComplianceFeatureUtils.mapPropertiesFile(new File(propertiesFilePath));
@@ -70,20 +66,25 @@ public class SW360UpdaterTest {
         SW360Connection connection = mock(SW360Connection.class);
         when(connection.getReleaseAdapter())
                 .thenReturn(releaseClientAdapter);
+        when(configurationMock.getConnection()).thenReturn(connection);
 
+        // the creation of the clearing document will failed one time and be successful one time
+        File testClearingDocument = folder.newFile("clearing_document.test");
         final ClearingReportGenerator clearingReportGenerator = mock(ClearingReportGenerator.class);
         when(clearingReportGenerator.createClearingDocument(any(), any()))
-                .thenThrow(new SW360ClientException("Clearing doc generation error"));
+                .thenThrow(new SW360ClientException("Clearing doc generation error"))
+                .thenReturn(testClearingDocument.toPath());
         SW360Updater updater = new SW360Updater(updaterImpl, configurationMock, clearingReportGenerator);
-        updater.execute();
 
-        verify(releaseClientAdapter, never()).uploadAttachments(any());
+        // but we expect that an exception is nevertheless thrown by SW360ReleaseClientAdapterAsyncImpl
+        Assertions.assertThatThrownBy(updater::execute)
+                .isInstanceOf(SW360ClientException.class);
 
-        // TODO after #593 is fixed, put the test method in SW360UpdaterTestWithFailure in SW360UpdaterTest
+        // TODO after #593 is fixed, put this test method in SW360UpdaterTest
     }
 
     private void initConfiguration(Map<String, String> propertiesMap) throws IOException {
-        Path csvFile = folder.newFile("csvFile.csv").toPath();
+        Path csvFile = SW360TestUtils.writeCsvFile(folder, "", ClearingState.OSM_APPROVED, "");
 
         SW360TestUtils.initConfigProperties(configurationMock, propertiesMap);
         when(configurationMock.getBaseDir())
