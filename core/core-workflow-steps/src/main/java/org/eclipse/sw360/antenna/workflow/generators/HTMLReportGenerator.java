@@ -57,7 +57,7 @@ public class HTMLReportGenerator extends AbstractGenerator {
         // Get path to disclosure documents
         ToolConfiguration toolConfig = context.getToolConfiguration();
         Path reportFilePath = toolConfig.getAntennaTargetDirectory().resolve(LICENSE_REPORT_FILE);
-        URL styleSource = getClass().getResource(File.separator + LICENSE_REPORT_STYLE_FILE);
+        URL styleSource = getClass().getClassLoader().getResource(LICENSE_REPORT_STYLE_FILE);
         Path reportStyleFilePath = toolConfig.getAntennaTargetDirectory().resolve(LICENSE_REPORT_STYLE_FILE);
 
         Set<ArtifactForHTMLReport> artifactsForHTMLReport = extractRelevantArtifactInformation(artifacts);
