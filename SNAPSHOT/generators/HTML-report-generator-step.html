@@ -93,11 +93,24 @@
         &lt;step&gt;
             &lt;name&gt;HTML Report Generator&lt;/name&gt;
             &lt;classHint&gt;org.eclipse.sw360.antenna.workflow.generators.HTMLReportGenerator&lt;/classHint&gt;
+            &lt;configuration&gt;
+                &lt;entry key=&quot;license.report.template.file&quot; value=&quot;${project.basedir}/myVelocityTemplate.vm&quot;/&gt;
+                &lt;entry key=&quot;license.report.file&quot; value=&quot;${project.build.directory}/myDirectory/generatedHtmlReport.html&quot;/&gt;
+                &lt;entry key=&quot;license.report.style.file&quot; value=&quot;${project.basedir}/myStyles.css&quot;/&gt;
+            &lt;/configuration&gt;
         &lt;/step&gt;
     &lt;/generators&gt;
 &lt;/workflow&gt;
 </pre></div></div>
-</div>
+
+<div class="section">
+<h4><a name="Explanation_of_parameters"></a>Explanation of parameters</h4>
+<ul>
+
+<li><tt>license.report.template.file</tt>: Absolute path to the custom velocity template file.</li>
+<li><tt>license.report.file</tt>: The self-selected file name for the HTML file if it should not be 3rdparty-licenses.html.</li>
+<li><tt>license.report.style.file</tt>: Absolute path to the custom styles.css file.</li>
+</ul></div></div>
 <div class="section">
 <h3><a name="Magic_string_for_output_handlers"></a>Magic string for output handlers</h3>
 <p>When configuring output handlers, the output of the HTML report generator can be referred to by <tt>attribution-doc</tt>.</p></div></div>
