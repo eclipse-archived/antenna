@@ -17,10 +17,20 @@ Add this configuration to the workflow.xml
         <step>
             <name>HTML Report Generator</name>
             <classHint>org.eclipse.sw360.antenna.workflow.generators.HTMLReportGenerator</classHint>
+            <configuration>
+                <entry key="license.report.template.file" value="${project.basedir}/myVelocityTemplate.vm"/>
+                <entry key="license.report.file" value="${project.build.directory}/myDirectory/generatedHtmlReport.html"/>
+                <entry key="license.report.style.file" value="${project.basedir}/myStyles.css"/>
+            </configuration>
         </step>
     </generators>
 </workflow>
 ```
+
+#### Explanation of parameters
+* `license.report.template.file`: Absolute path to the custom velocity template file. 
+* `license.report.file`: The self-selected file name for the HTML file if it should not be 3rdparty-licenses.html.
+* `license.report.style.file`: Absolute path to the custom styles.css file.
 
 ### Magic string for output handlers
 

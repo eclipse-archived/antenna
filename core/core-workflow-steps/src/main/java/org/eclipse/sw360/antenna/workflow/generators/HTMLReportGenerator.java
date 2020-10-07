@@ -28,9 +28,11 @@ import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.model.license.LicenseInformation;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,6 +40,10 @@ import java.util.stream.Collectors;
  * Generates an HTML report of component license information.
  */
 public class HTMLReportGenerator extends AbstractGenerator {
+    private static final String LICENSE_REPORT_TEMPLATE_FILE_KEY = "license.report.template.file";
+    private static final String LICENSE_REPORT_FILE_KEY = "license.report.file";
+    private static final String LICENSE_REPORT_STYLE_FILE_KEY = "license.report.style.file";
+
     private static final String IDENTIFIER = "attribution-doc";
     private static final String CLASSIFIER = "antenna-attribution-doc";
     private static final String TYPE = "html";
@@ -45,6 +51,10 @@ public class HTMLReportGenerator extends AbstractGenerator {
     private static final String LICENSE_REPORT_TEMPLATE_FILE = "licenseReport.vm";
     private static final String LICENSE_REPORT_FILE = "3rdparty-licenses.html";
     private static final String LICENSE_REPORT_STYLE_FILE = "styles.css";
+
+    private String licenseReportTemplate;
+    private Path licenseReport;
+    private URL licenseReportStyle;
 
     private Charset encoding;
 
@@ -54,22 +64,20 @@ public class HTMLReportGenerator extends AbstractGenerator {
 
     @Override
     public Map<String, IAttachable> produce(Collection<Artifact> artifacts){
-        // Get path to disclosure documents
-        ToolConfiguration toolConfig = context.getToolConfiguration();
-        Path reportFilePath = toolConfig.getAntennaTargetDirectory().resolve(LICENSE_REPORT_FILE);
-        URL styleSource = getClass().getClassLoader().getResource(LICENSE_REPORT_STYLE_FILE);
-        Path reportStyleFilePath = toolConfig.getAntennaTargetDirectory().resolve(LICENSE_REPORT_STYLE_FILE);
+        Path copiedReportStyle = context.getToolConfiguration()
+                .getAntennaTargetDirectory()
+                .resolve(LICENSE_REPORT_STYLE_FILE);
 
         Set<ArtifactForHTMLReport> artifactsForHTMLReport = extractRelevantArtifactInformation(artifacts);
 
-        writeReportToFile(artifactsForHTMLReport, reportFilePath.toFile());
+        writeReportToFile(artifactsForHTMLReport, licenseReport.toFile());
         try {
-            FileUtils.copyURLToFile(styleSource, reportStyleFilePath.toFile());
+            FileUtils.copyURLToFile(licenseReportStyle, copiedReportStyle.toFile());
         } catch (IOException e) {
             throw new ExecutionException("Cannot write HTML style file", e);
         }
 
-        return Collections.singletonMap(IDENTIFIER, new Attachable(TYPE, CLASSIFIER, reportFilePath.toFile()));
+        return Collections.singletonMap(IDENTIFIER, new Attachable(TYPE, CLASSIFIER, licenseReport.toFile()));
     }
 
     private void writeReportToFile(Set<ArtifactForHTMLReport> artifactsForHTMLReport, File reportFile) {
@@ -78,7 +86,7 @@ public class HTMLReportGenerator extends AbstractGenerator {
 
         // Write the template to the report file
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(reportFile), encoding)) {
-            Template template = velocityEngine.getTemplate(LICENSE_REPORT_TEMPLATE_FILE, "utf-8");
+            Template template = velocityEngine.getTemplate(licenseReportTemplate, "utf-8");
             template.merge(velocityContext, writer);
         } catch (IOException e) {
             throw new ExecutionException("Cannot write HTML report file", e);
@@ -125,6 +133,30 @@ public class HTMLReportGenerator extends AbstractGenerator {
 
     @Override
     public void configure(Map<String, String> configMap) {
-        this.encoding = context.getToolConfiguration().getEncoding();
+        ToolConfiguration toolConfig = context.getToolConfiguration();
+        this.encoding = toolConfig.getEncoding();
+
+        licenseReport = Optional
+                .of(getConfigValue(LICENSE_REPORT_FILE_KEY, configMap, ""))
+                .filter(s -> !s.isEmpty())
+                .map(Paths::get)
+                .orElse(toolConfig.getAntennaTargetDirectory().resolve(LICENSE_REPORT_FILE));
+
+        licenseReportTemplate = Optional
+                .of(getConfigValue(LICENSE_REPORT_TEMPLATE_FILE_KEY, configMap, ""))
+                .filter(s -> !s.isEmpty())
+                .orElse(LICENSE_REPORT_TEMPLATE_FILE);
+
+        licenseReportStyle = Optional
+                .of(getConfigValue(LICENSE_REPORT_STYLE_FILE_KEY, configMap, ""))
+                .filter(s -> !s.isEmpty())
+                .map(file -> {
+                    try {
+                        return Paths.get(file).toUri().toURL();
+                    } catch (MalformedURLException e) {
+                        return null;
+                    }
+                })
+                .orElse(getClass().getClassLoader().getResource(LICENSE_REPORT_STYLE_FILE));
     }
 }
