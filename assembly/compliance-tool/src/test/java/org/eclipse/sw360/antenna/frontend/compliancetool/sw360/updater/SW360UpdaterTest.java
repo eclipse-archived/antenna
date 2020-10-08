@@ -11,11 +11,15 @@
 package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 
 
+import org.assertj.core.api.Assertions;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.ComplianceFeatureUtils;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
+import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
 import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
 import org.junit.Rule;
@@ -30,7 +34,7 @@ import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,10 +60,14 @@ public class SW360UpdaterTest {
     }
 
     @Test
-    public void testIllegalStateIsCaught() throws IOException {
+    public void testUpdateWithFailure() throws IOException {
+        SW360Release testRelease = SW360TestUtils.mkSW360Release("test");
+
         SW360UpdaterImpl updaterImpl = mock(SW360UpdaterImpl.class);
         when(updaterImpl.artifactToReleaseInSW360(any(), any()))
-                .thenReturn(SW360TestUtils.mkSW360Release("test"));
+                .thenReturn(testRelease);
+        when(updaterImpl.artifactToReleaseWithUploads(any(), any(), any()))
+                .thenReturn(new AttachmentUploadResult<>(testRelease));
 
         String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).getPath();
         final Map<String, String> properties = ComplianceFeatureUtils.mapPropertiesFile(new File(propertiesFilePath));
@@ -70,20 +78,28 @@ public class SW360UpdaterTest {
         SW360Connection connection = mock(SW360Connection.class);
         when(connection.getReleaseAdapter())
                 .thenReturn(releaseClientAdapter);
+        when(configurationMock.getConnection()).thenReturn(connection);
 
+        // the creation of the clearing document will failed one time and be successful one time
         final ClearingReportGenerator clearingReportGenerator = mock(ClearingReportGenerator.class);
         when(clearingReportGenerator.createClearingDocument(any(), any()))
-                .thenThrow(new SW360ClientException("Clearing doc generation error"));
+                .thenThrow(new SW360ClientException("Clearing doc generation error"))
+                .thenReturn(folder.newFile("clearing_document.test").toPath());
         SW360Updater updater = new SW360Updater(updaterImpl, configurationMock, clearingReportGenerator);
-        updater.execute();
 
-        verify(releaseClientAdapter, never()).uploadAttachments(any());
+        // and an exception is nevertheless thrown by SW360ReleaseClientAdapterAsyncImpl
+        Assertions.assertThatThrownBy(updater::execute)
+                .isInstanceOf(SW360ClientException.class);
 
-        // TODO after #593 is fixed, put the test method in SW360UpdaterTestWithFailure in SW360UpdaterTest
+        // but we expect that attachment upload worked one time exactly
+        verify(releaseClientAdapter, times(1)).uploadAttachments(any());
     }
 
     private void initConfiguration(Map<String, String> propertiesMap) throws IOException {
-        Path csvFile = folder.newFile("csvFile.csv").toPath();
+        Path csvFile = SW360TestUtils.writeCsvFile(folder,
+                "",
+                ArtifactClearingState.ClearingState.OSM_APPROVED,
+                "");
 
         SW360TestUtils.initConfigProperties(configurationMock, propertiesMap);
         when(configurationMock.getBaseDir())
