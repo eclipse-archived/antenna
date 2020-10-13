@@ -16,7 +16,6 @@ import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingDocument;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
-import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
@@ -137,13 +136,6 @@ public class SW360Updater {
             AttachmentUploadResult<SW360Release> uploadResult =
                     updater.artifactToReleaseWithUploads(artifact, sw360ReleaseFromArtifact, clearingDocUpload);
             SW360Release release = uploadResult.getTarget();
-            SW360ReleaseClientAdapter releaseClientAdapter = configuration.getConnection().getReleaseAdapter();
-
-            AttachmentUploadRequest<SW360Release> uploadRequest = AttachmentUploadRequest.builder(release)
-                    .addAttachment(clearingDoc,
-                            SW360AttachmentType.CLEARING_REPORT)
-                    .build();
-            releaseClientAdapter.uploadAttachments(uploadRequest);
 
             Set<Path> failedUploads = uploadResult.failedUploads().keySet().stream()
                     .map(AttachmentUploadRequest.Item::getPath)
