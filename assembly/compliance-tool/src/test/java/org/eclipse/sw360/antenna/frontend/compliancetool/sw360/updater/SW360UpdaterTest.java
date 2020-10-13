@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -64,21 +65,12 @@ public class SW360UpdaterTest {
         SW360Release testRelease = SW360TestUtils.mkSW360Release("test");
 
         SW360UpdaterImpl updaterImpl = mock(SW360UpdaterImpl.class);
-        when(updaterImpl.artifactToReleaseInSW360(any(), any()))
-                .thenReturn(testRelease);
         when(updaterImpl.artifactToReleaseWithUploads(any(), any(), any()))
                 .thenReturn(new AttachmentUploadResult<>(testRelease));
 
         String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).getPath();
         final Map<String, String> properties = ComplianceFeatureUtils.mapPropertiesFile(new File(propertiesFilePath));
         initConfiguration(properties);
-
-        SW360ReleaseClientAdapter releaseClientAdapter = mock(SW360ReleaseClientAdapter.class);
-
-        SW360Connection connection = mock(SW360Connection.class);
-        when(connection.getReleaseAdapter())
-                .thenReturn(releaseClientAdapter);
-        when(configurationMock.getConnection()).thenReturn(connection);
 
         // the creation of the clearing document will failed one time and be successful one time
         final ClearingReportGenerator clearingReportGenerator = mock(ClearingReportGenerator.class);
@@ -92,7 +84,7 @@ public class SW360UpdaterTest {
                 .isInstanceOf(SW360ClientException.class);
 
         // but we expect that attachment upload worked one time exactly
-        verify(releaseClientAdapter, times(1)).uploadAttachments(any());
+        verify(updaterImpl, times(1)).artifactToReleaseWithUploads(any(), any(), anyMap());
     }
 
     private void initConfiguration(Map<String, String> propertiesMap) throws IOException {
