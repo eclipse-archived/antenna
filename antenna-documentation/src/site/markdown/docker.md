@@ -52,6 +52,7 @@ project-to-scan
 ├── antenna-related-files (referenced from the antennaConfiguration.xml
 │   ├── workflow.xml
 │   ├── dependencies.csv
+│   ├── example.properties
 │   └── sources
 │       └── test-component.jar
 └── src (source code of project
@@ -78,6 +79,7 @@ project-to-scan
 │   ├── antennaConfiguration.xml
 │   ├── workflow.xml
 │   ├── dependencies.csv
+│   ├── example.properties
 │   └── sources
 │       └── test-component.jar
 └── src (source code of project
@@ -101,4 +103,23 @@ If you have a project that needs to be scanned by Antenna, do not simple mount t
 `antenna-related-files` folder, because then the project's source code itself would not be mounted
 and a proper scan could not be executed.
 
+### Using files defining properties
+The antenna CLI is able to process an optional properties file. If this file is, as in the previous hierarchy,
+part of the mounted project folder, the path can be specified in the docker run command.
 
+```
+docker run -it \
+ --mount src=<path-to-project>/project-to-scan,target=/antenna,type=bind \ 
+ antenna/antenna-related-files/antennaConfiguration.xml \
+ antenna/antenna-related-files/example.properties 
+``` 
+
+Alternatively, if the file is located somewhere else, it can be included via the docker run volume option.
+
+```
+docker run -it \
+ --mount src=<path-to-project>/project-to-scan,target=/antenna,type=bind \ 
+ -v <path-to-properties-file>:<path-alias>
+ antenna/antenna-related-files/antennaConfiguration.xml \
+ <path-alias> 
+``` 
