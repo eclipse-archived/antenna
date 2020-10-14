@@ -11,6 +11,9 @@
  */
 package org.eclipse.sw360.antenna.workflow.generators;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.eclipse.sw360.antenna.api.Attachable;
 import org.eclipse.sw360.antenna.api.IArtifactFilter;
 import org.eclipse.sw360.antenna.api.IAttachable;
@@ -29,7 +32,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.zip.*;
+import java.util.zip.Deflater;
+import java.util.zip.ZipException;
 
 public class SourceZipWriterImpl {
     private static final String IDENTIFIER = "sources-zip";
@@ -66,7 +70,8 @@ public class SourceZipWriterImpl {
             createSourceZipPath();
 
             try (FileOutputStream output = new FileOutputStream(sourceZipPath.toFile());
-                 ZipOutputStream zipOutput = new ZipOutputStream(output)) {
+                 ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(output)) {
+
                 zipOutput.setLevel(Deflater.BEST_COMPRESSION);
 
                 artifacts.stream()
@@ -117,7 +122,7 @@ public class SourceZipWriterImpl {
      * @param artifact Artifact of which the content shall be added.
      * @param zipOut   ZipOutputStream for the ZipFile.
      */
-    private void addContentToZip(Artifact artifact, ZipOutputStream zipOut) {
+    private void addContentToZip(Artifact artifact, ZipArchiveOutputStream zipOut) {
         if (notAllowed.passed(artifact)) {
             final Optional<Path> sourceFile = artifact.askForGet(ArtifactSourceFile.class);
             if (!sourceFile.isPresent()) {
@@ -146,18 +151,19 @@ public class SourceZipWriterImpl {
         }
     }
 
-    private void writeContentToZipEntry(ZipOutputStream zipOut, File sourceJar, String entryName)
+    private void writeContentToZipEntry(ZipArchiveOutputStream zipOut, File sourceJar, String entryName)
             throws IOException {
         try (ZipFile zipFile = new ZipFile(sourceJar)) {
-            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            Enumeration<? extends ZipArchiveEntry> entries = zipFile.getEntries();
             while (entries.hasMoreElements()) {
-                ZipEntry zipEntry = entries.nextElement();
+                ZipArchiveEntry zipEntry = entries.nextElement();
                 InputStream inputStream = zipFile.getInputStream(zipEntry);
-                zipOut.putNextEntry(new ZipEntry(entryName + "/" + zipEntry.getName()));
+                zipOut.putArchiveEntry(new ZipArchiveEntry(entryName + "/" + zipEntry.getName()));
                 byte[] buffer = new byte[1024 * 4];
                 for (int read = inputStream.read(buffer); -1 != read; read = inputStream.read(buffer)) {
                     zipOut.write(buffer, 0, read);
                 }
+                zipOut.closeArchiveEntry();
                 zipOut.flush();
                 inputStream.close();
             }

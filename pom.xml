@@ -302,6 +302,11 @@
                 <artifactId>pdfbox2-layout</artifactId>
                 <version>1.0.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>1.20</version>
+            </dependency>
             <!-- ################################ testing dependencies ################################ -->
             <dependency>
                 <groupId>junit</groupId>
