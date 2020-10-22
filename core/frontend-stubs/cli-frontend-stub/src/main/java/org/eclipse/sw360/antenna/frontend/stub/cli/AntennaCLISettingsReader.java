@@ -163,7 +163,7 @@ public class AntennaCLISettingsReader {
         readAntennaStringSetting(reader, "scanDir", toolConfigBuilder::setScanDir);
         readAntennaStringSetting(reader, "productName", reader.getStringProperty("productName"), toolConfigBuilder::setProductName);
         readAntennaStringSetting(reader, "productFullname", reader.getStringProperty("productFullname"), toolConfigBuilder::setProductFullName);
-        readAntennaStringSetting(reader, "version", "1.0", toolConfigBuilder::setVersion);
+        readAntennaStringSetting(reader, "version", reader.getStringProperty("version"), toolConfigBuilder::setVersion);
         readAntennaStringSetting(reader, "companyName", toolConfigBuilder::setCompanyName);
         readAntennaStringSetting(reader, "copyrightHoldersName", toolConfigBuilder::setCopyrightHoldersName);
         readAntennaStringSetting(reader, "copyrightNotice", toolConfigBuilder::setCopyrightNotice);
