@@ -43,6 +43,8 @@ public class AntennaCLISettingsReader {
 
     private TemplateRenderer tr = new TemplateRenderer();
 
+    private static final String versionString = "version";
+
     public AntennaCLISettingsReader() {
         this("antenna-maven-plugin");
     }
@@ -108,7 +110,7 @@ public class AntennaCLISettingsReader {
         try {
             String pom = new String(Files.readAllBytes(pomFile.toPath()), StandardCharsets.UTF_8);
             XmlSettingsReader reader = new XmlSettingsReader(pom);
-            String version = reader.getStringPropertyByXPath("project", "version");
+            String version = reader.getStringPropertyByXPath("project", versionString);
             if (version != null && !"".equals(version)) {
                 project.setVersion(version);
                 return;
@@ -163,7 +165,7 @@ public class AntennaCLISettingsReader {
         readAntennaStringSetting(reader, "scanDir", toolConfigBuilder::setScanDir);
         readAntennaStringSetting(reader, "productName", reader.getStringProperty("productName"), toolConfigBuilder::setProductName);
         readAntennaStringSetting(reader, "productFullname", reader.getStringProperty("productFullname"), toolConfigBuilder::setProductFullName);
-        readAntennaStringSetting(reader, "version", reader.getStringProperty("version"), toolConfigBuilder::setVersion);
+        readAntennaStringSetting(reader, versionString, reader.getStringProperty(versionString), toolConfigBuilder::setVersion);
         readAntennaStringSetting(reader, "companyName", toolConfigBuilder::setCompanyName);
         readAntennaStringSetting(reader, "copyrightHoldersName", toolConfigBuilder::setCopyrightHoldersName);
         readAntennaStringSetting(reader, "copyrightNotice", toolConfigBuilder::setCopyrightNotice);
