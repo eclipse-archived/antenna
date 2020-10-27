@@ -23,7 +23,7 @@ pipeline {
     }
 
     environment {
-        GITHUB_CREDENTIALS = credentials('7d588c11-a40f-4529-bcaa-57b6d9691af6')
+        GITHUB_CREDENTIALS = credentials('github-bot')
     }
     stages {
         stage('Configure Git') {
