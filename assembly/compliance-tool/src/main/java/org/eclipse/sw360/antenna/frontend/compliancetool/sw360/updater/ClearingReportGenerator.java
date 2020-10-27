@@ -22,7 +22,8 @@ public class ClearingReportGenerator {
     private static final String CLEARING_DOC_SUFFIX = "_clearing.json";
 
     Path createClearingDocument(SW360Release release, Path targetDir) {
-        Path clearingDocument = targetDir.resolve(release.getName() + release.getVersion() + CLEARING_DOC_SUFFIX);
+        String clearingDocumentName = release.getName() + "_" + release.getVersion() + CLEARING_DOC_SUFFIX;
+        Path clearingDocument = targetDir.resolve(clearingDocumentName.replaceAll("[/\\\\]", "_"));
         try {
             Files.createDirectories(targetDir);
             ObjectMapper mapper = new ObjectMapper();
