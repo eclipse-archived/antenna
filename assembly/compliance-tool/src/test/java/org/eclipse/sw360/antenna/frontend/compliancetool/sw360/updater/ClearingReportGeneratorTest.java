@@ -26,6 +26,9 @@ import java.nio.file.Path;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClearingReportGeneratorTest {
+    private static final String TEST_RELEASE_NAME = "testRelease.com/release\\commons";
+    private static final String EXPECTED_CLEARING_DOC_NAME = "testRelease.com_release_commons_1.0.0_clearing.json";
+
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
@@ -39,12 +42,12 @@ public class ClearingReportGeneratorTest {
     @Test
     public void createClearingDocument() throws IOException {
         File targetFolder = folder.newFolder();
-        SW360Release release = SW360TestUtils.mkSW360Release("testRelease");
+        SW360Release release = SW360TestUtils.mkSW360Release(TEST_RELEASE_NAME);
         release.setOverriddenLicense("overridden");
 
         Path clearingDocument = generator.createClearingDocument(release, targetFolder.toPath());
         assertThat(Files.exists(clearingDocument)).isTrue();
-        assertThat(clearingDocument.getFileName().toString()).isEqualTo(release.getName() + release.getVersion() + "_clearing.json");
+        assertThat(clearingDocument.getFileName().toString()).isEqualTo(EXPECTED_CLEARING_DOC_NAME);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.readValue(clearingDocument.toFile(), SW360Release.class);
