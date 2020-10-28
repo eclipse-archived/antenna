@@ -13,7 +13,7 @@ package org.eclipse.sw360.antenna.frontend.compliancetool.sw360.updater;
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuration;
 import org.eclipse.sw360.antenna.model.artifact.Artifact;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingDocument;
-import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState.ClearingState;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
@@ -126,25 +126,29 @@ public class SW360Updater {
         LOGGER.info("Processing {}.", artifact);
 
         final SW360Release sw360ReleaseFromArtifact = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
+        final String releaseClearingState = sw360ReleaseFromArtifact.getClearingState();
 
-        if (sw360ReleaseFromArtifact.getClearingState() != null &&
-                !sw360ReleaseFromArtifact.getClearingState().isEmpty() &&
-                ArtifactClearingState.ClearingState.valueOf(sw360ReleaseFromArtifact.getClearingState()) != ArtifactClearingState.ClearingState.INITIAL) {
-            Path clearingDoc = getOrGenerateClearingDocument(sw360ReleaseFromArtifact, artifact);
-            Map<Path, SW360AttachmentType> clearingDocUpload =
-                    Collections.singletonMap(clearingDoc, SW360AttachmentType.CLEARING_REPORT);
-            AttachmentUploadResult<SW360Release> uploadResult =
-                    updater.artifactToReleaseWithUploads(artifact, sw360ReleaseFromArtifact, clearingDocUpload);
-            SW360Release release = uploadResult.getTarget();
+        if (isNotEmptyOrInitialClearingState(releaseClearingState)) {
 
-            Set<Path> failedUploads = uploadResult.failedUploads().keySet().stream()
-                    .map(AttachmentUploadRequest.Item::getPath)
-                    .collect(Collectors.toSet());
-            if (removeClearedSources) {
-                removeSourceArtifact(artifact, release, failedUploads);
-            }
-            if (removeClearingDocs) {
-                removeClearingDocument(clearingDoc, failedUploads);
+            if (ClearingState.valueOf(releaseClearingState) == ClearingState.WORK_IN_PROGRESS) {
+                updater.artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact);
+            } else {
+                Path clearingDoc = getOrGenerateClearingDocument(sw360ReleaseFromArtifact, artifact);
+                Map<Path, SW360AttachmentType> clearingDocUpload =
+                        Collections.singletonMap(clearingDoc, SW360AttachmentType.CLEARING_REPORT);
+                AttachmentUploadResult<SW360Release> uploadResult =
+                        updater.artifactToReleaseWithUploads(artifact, sw360ReleaseFromArtifact, clearingDocUpload);
+                SW360Release release = uploadResult.getTarget();
+
+                Set<Path> failedUploads = uploadResult.failedUploads().keySet().stream()
+                        .map(AttachmentUploadRequest.Item::getPath)
+                        .collect(Collectors.toSet());
+                if (removeClearedSources) {
+                    removeSourceArtifact(artifact, release, failedUploads);
+                }
+                if (removeClearingDocs) {
+                    removeClearingDocument(clearingDoc, failedUploads);
+                }
             }
         }
     }
@@ -184,5 +188,10 @@ public class SW360Updater {
                 LOGGER.error("Could not delete {} {}", tag, path, e);
             }
         }
+    }
+
+    private boolean isNotEmptyOrInitialClearingState(final String clearinState) {
+        return clearinState != null && !clearinState.isEmpty() &&
+                ClearingState.valueOf(clearinState) != ClearingState.INITIAL;
     }
 }

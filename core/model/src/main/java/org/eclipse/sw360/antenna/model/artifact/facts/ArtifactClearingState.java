@@ -35,6 +35,7 @@ public class ArtifactClearingState extends ArtifactFactWithPayload<ArtifactClear
         EXTERNAL_SOURCE,
         AUTO_EXTRACT,
         PROJECT_APPROVED,
-        OSM_APPROVED;
+        OSM_APPROVED,
+        WORK_IN_PROGRESS;
     }
 }
