@@ -56,3 +56,13 @@ the antenna configuration file will be used.
 
 #### Data Model
 You can find a description of the data model mapping in the [SW360 data model](../sw360-data-model.html) section.
+
+**Note**:
+In the current implementation, SW360 automatically sets the ECC (Export Control & Customs) status of a release that 
+is to be updated or created to `APPROVED` if the following conditions are fulfilled:
+* The release contains a valid `Download URL`, i.e., the URL has a correct format. It does not necessarily need to be 
+reachable.
+* The`Component Type` is of `OSS`. This is the default if not set otherwise.
+* The SW360 user has sufficient writing rights. In terms of SW360 user groups, these are `ADMIN`, `CLEARING_ADMIN`, and
+`CLEARING_EXPERT`. Alternatively, this holds also true if the release's `contributor` field (on the SW360 side)
+contains the SW360 user's email.
