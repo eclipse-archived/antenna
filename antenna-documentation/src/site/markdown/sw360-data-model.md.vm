@@ -82,3 +82,12 @@ In the following section there is an outline what data of SW360 ${docNameCap} ma
 **Note**:
 All string fields in this data model have a limit of 2147483647 - 1 in length, since this is the frame size of the binary protocol used with thrift.
 
+**Note**:
+In the current implementation, SW360 automatically sets the ECC (Export Control & Customs) status of a release that 
+is to be updated or created to `APPROVED` if the following conditions are fulfilled:
+* The release contains a valid `Download URL`, i.e., the URL has a correct format. It does not necessarily need to be 
+reachable.
+* The`Component Type` is of `OSS`. This is the default if not set otherwise.
+* The SW360 user has sufficient writing rights. In terms of SW360 user groups, these are `ADMIN`, `CLEARING_ADMIN`, and
+`CLEARING_EXPERT`. Alternatively, this holds also true if the release's `contributor` field (on the SW360 side)
+contains the SW360 user's email.
