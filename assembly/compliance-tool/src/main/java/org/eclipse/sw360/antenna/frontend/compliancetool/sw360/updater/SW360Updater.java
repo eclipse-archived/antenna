@@ -190,8 +190,8 @@ public class SW360Updater {
         }
     }
 
-    private boolean isNotEmptyOrInitialClearingState(final String clearinState) {
-        return clearinState != null && !clearinState.isEmpty() &&
-                ClearingState.valueOf(clearinState) != ClearingState.INITIAL;
+    private boolean isNotEmptyOrInitialClearingState(final String clearingState) {
+        return clearingState != null && !clearingState.isEmpty() &&
+                ClearingState.valueOf(clearingState) != ClearingState.INITIAL;
     }
 }
