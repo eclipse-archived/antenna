@@ -125,14 +125,17 @@ public class SW360MetaDataUpdater {
      *                                 updated if it already exists
      * @return the updated or newly created release entity
      */
-    public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateExisting) {
+    public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateExisting, boolean artifactHasPrecedence) {
         Optional<SW360SparseRelease> optSparseReleaseByIds =
                 releaseClientAdapter.getSparseReleaseByExternalIds(sw360ReleaseFromArtifact.getExternalIds());
         Optional<SW360SparseRelease> optSparseRelease = optSparseReleaseByIds.isPresent() ? optSparseReleaseByIds :
                 releaseClientAdapter.getSparseReleaseByNameAndVersion(sw360ReleaseFromArtifact.getName(),
                         sw360ReleaseFromArtifact.getVersion());
-        Optional<SW360Release> optRelease = optSparseRelease.flatMap(releaseClientAdapter::enrichSparseRelease)
-                .map(sw360ReleaseFromArtifact::mergeWith);
+        Optional<SW360Release> optRelease = optSparseRelease.flatMap(releaseClientAdapter::enrichSparseRelease);
+        if (artifactHasPrecedence) {
+            optRelease = optRelease.map(release -> release.mergeWith(sw360ReleaseFromArtifact));
+        }
+        optRelease = optRelease.map(sw360ReleaseFromArtifact::mergeWith);
 
         if (optRelease.isPresent()) {
             SW360Release release = optRelease.get();

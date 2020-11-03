@@ -114,7 +114,7 @@ public class SW360UpdaterImpl {
         List<SW360Release> releases = new ArrayList<>();
         for (Artifact artifact : intermediates) {
             try {
-                SW360Release sw360ReleaseFinal = artifactToReleaseInSW360(artifact);
+                SW360Release sw360ReleaseFinal = artifactToReleaseInSW360(artifact, false);
                 releases.add(sw360ReleaseFinal);
             } catch (ExecutionException e) {
                 LOGGER.error("Release will not be created in SW360. Reason: {}", e.getMessage());
@@ -135,10 +135,10 @@ public class SW360UpdaterImpl {
      * @return SW360Release on which artifact and additional information
      * form SW360 instance have been mapped on.
      */
-    public SW360Release artifactToReleaseInSW360(Artifact artifact) {
+    public SW360Release artifactToReleaseInSW360(Artifact artifact, boolean artifactHasPrecedence) {
         final SW360Release sw360ReleaseFromArtifact = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
 
-        return artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact);
+        return artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact, artifactHasPrecedence);
     }
 
     /**
@@ -151,10 +151,10 @@ public class SW360UpdaterImpl {
      *                 information form sw360 instance will be mapped
      * @return mapped SW360Release
      */
-    public SW360Release artifactToReleaseInSW360(Artifact artifact, SW360Release release) {
+    public SW360Release artifactToReleaseInSW360(Artifact artifact, SW360Release release, boolean artifactHasPrecedence) {
         Set<String> licenseIds = getSetOfLicenseIds(artifact);
         release.setMainLicenseIds(licenseIds);
-        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release, isUpdateReleases());
+        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release, isUpdateReleases(), artifactHasPrecedence);
 
         sw360ReleaseFinal = uploadSourceAndAttachments(sw360ReleaseFinal, artifact, Collections.emptyMap()).getTarget();
 
@@ -173,10 +173,11 @@ public class SW360UpdaterImpl {
      * @return an object with the result of the upload operation
      */
     public AttachmentUploadResult<SW360Release> artifactToReleaseWithUploads(Artifact artifact, SW360Release release,
-                                                                             Map<Path, SW360AttachmentType> uploads) {
+                                                                             Map<Path, SW360AttachmentType> uploads,
+                                                                             boolean artifactHasPrecedence) {
         Set<String> licenseIds = getSetOfLicenseIds(artifact);
         release.setMainLicenseIds(licenseIds);
-        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release, isUpdateReleases());
+        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release, isUpdateReleases(), artifactHasPrecedence);
 
         return uploadSourceAndAttachments(sw360ReleaseFinal, artifact, uploads);
     }

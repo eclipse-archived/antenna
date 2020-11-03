@@ -47,6 +47,7 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -69,30 +70,32 @@ public class SW360UpdaterParameterizedTest {
     private final ClearingState clearingState;
     private final boolean clearingDocAvailable;
     private final boolean expectUpload;
+    private final boolean artifactHasPrecedence;
 
-    public SW360UpdaterParameterizedTest(@Nullable ClearingState clearingState, boolean clearingDocAvailable, boolean expectUpload) {
+    public SW360UpdaterParameterizedTest(@Nullable ClearingState clearingState, boolean clearingDocAvailable, boolean expectUpload, boolean artifactHasPrecedence) {
         this.clearingState = clearingState;
         this.clearingDocAvailable = clearingDocAvailable;
         this.expectUpload = expectUpload;
+        this.artifactHasPrecedence = artifactHasPrecedence;
     }
 
-    @Parameterized.Parameters(name = "{0}_{1}_{2}")
+    @Parameterized.Parameters(name = "{0}_{1}_{2}_{3}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {ClearingState.OSM_APPROVED, true, true},
-                {ClearingState.EXTERNAL_SOURCE, true, true},
-                {ClearingState.AUTO_EXTRACT, true, true},
-                {ClearingState.PROJECT_APPROVED, true, true},
-                {ClearingState.INITIAL, true, false},
-                {ClearingState.WORK_IN_PROGRESS, false, false},
-                {null, true, false},
-                {ClearingState.OSM_APPROVED, false, true},
-                {ClearingState.EXTERNAL_SOURCE, false, true},
-                {ClearingState.AUTO_EXTRACT, false, true},
-                {ClearingState.PROJECT_APPROVED, false, true},
-                {ClearingState.INITIAL, false, false},
-                {ClearingState.WORK_IN_PROGRESS, true, false},
-                {null, false, false}
+                {ClearingState.OSM_APPROVED, true, true, false},
+                {ClearingState.EXTERNAL_SOURCE, true, true, false},
+                {ClearingState.AUTO_EXTRACT, true, true, false},
+                {ClearingState.PROJECT_APPROVED, true, true, false},
+                {ClearingState.INITIAL, true, false, false},
+                {ClearingState.WORK_IN_PROGRESS, false, false, true},
+                {null, true, false, false},
+                {ClearingState.OSM_APPROVED, false, true, false},
+                {ClearingState.EXTERNAL_SOURCE, false, true, false},
+                {ClearingState.AUTO_EXTRACT, false, true, false},
+                {ClearingState.PROJECT_APPROVED, false, true, false},
+                {ClearingState.INITIAL, false, false, false},
+                {ClearingState.WORK_IN_PROGRESS, true, false, true},
+                {null, false, false, false}
 
         });
     }
@@ -200,7 +203,7 @@ public class SW360UpdaterParameterizedTest {
         if (clearingState != null) {
             release.setClearingState(clearingState.name());
         }
-        when(updater.artifactToReleaseWithUploads(any(), any(), anyMap()))
+        when(updater.artifactToReleaseWithUploads(any(), any(), anyMap(), eq(artifactHasPrecedence)))
                 .thenAnswer((Answer<AttachmentUploadResult<SW360Release>>) invocationOnMock -> {
                     deleteSourceFileIfNotAttachmentExists(attachmentExists, sourceAttachment);
                     return AttachmentUploadResult.newResult(release, Collections.emptySet(), uploadFailures);
@@ -230,7 +233,7 @@ public class SW360UpdaterParameterizedTest {
             ArgumentCaptor<SW360Release> captorAllReleases = ArgumentCaptor.forClass(SW360Release.class);
             ArgumentCaptor<SW360Release> captorClearedReleases = ArgumentCaptor.forClass(SW360Release.class);
             verify(updater, times(2))
-                    .artifactToReleaseWithUploads(any(), captorAllReleases.capture(), anyMap());
+                    .artifactToReleaseWithUploads(any(), captorAllReleases.capture(), anyMap(), eq(artifactHasPrecedence));
             verify(generator, times(2))
                     .createClearingDocument(captorClearedReleases.capture(), eq(clearingDocDir));
             assertThat(captorClearedReleases.getAllValues()).containsOnlyElementsOf(captorAllReleases.getAllValues());
@@ -238,14 +241,14 @@ public class SW360UpdaterParameterizedTest {
         if (expectUpload) {
             @SuppressWarnings("unchecked")
             ArgumentCaptor<Map<Path, SW360AttachmentType>> captor = ArgumentCaptor.forClass(Map.class);
-            verify(updater, times(2)).artifactToReleaseWithUploads(any(), any(), captor.capture());
+            verify(updater, times(2)).artifactToReleaseWithUploads(any(), any(), captor.capture(), eq(artifactHasPrecedence));
             assertThat(captor.getAllValues().stream().anyMatch(map -> map.equals(testAttachmentMap))).isTrue();
         } else {
             deleteSourceFileIfNotAttachmentExists(attachmentExists, sourceAttachment);
-            verify(updater, never()).artifactToReleaseWithUploads(any(), any(), anyMap());
+            verify(updater, never()).artifactToReleaseWithUploads(any(), any(), anyMap(), anyBoolean());
 
             if(clearingState == ClearingState.WORK_IN_PROGRESS) {
-                verify(updater, times(2)).artifactToReleaseInSW360(any(), any());
+                verify(updater, times(2)).artifactToReleaseInSW360(any(), any(), eq(artifactHasPrecedence));
             }
         }
 

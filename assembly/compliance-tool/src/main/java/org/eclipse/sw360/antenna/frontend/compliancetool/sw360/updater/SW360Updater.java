@@ -131,13 +131,13 @@ public class SW360Updater {
         if (isNotEmptyOrInitialClearingState(releaseClearingState)) {
 
             if (ClearingState.valueOf(releaseClearingState) == ClearingState.WORK_IN_PROGRESS) {
-                updater.artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact);
+                updater.artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact, true);
             } else {
                 Path clearingDoc = getOrGenerateClearingDocument(sw360ReleaseFromArtifact, artifact);
                 Map<Path, SW360AttachmentType> clearingDocUpload =
                         Collections.singletonMap(clearingDoc, SW360AttachmentType.CLEARING_REPORT);
                 AttachmentUploadResult<SW360Release> uploadResult =
-                        updater.artifactToReleaseWithUploads(artifact, sw360ReleaseFromArtifact, clearingDocUpload);
+                        updater.artifactToReleaseWithUploads(artifact, sw360ReleaseFromArtifact, clearingDocUpload, false);
                 SW360Release release = uploadResult.getTarget();
 
                 Set<Path> failedUploads = uploadResult.failedUploads().keySet().stream()
