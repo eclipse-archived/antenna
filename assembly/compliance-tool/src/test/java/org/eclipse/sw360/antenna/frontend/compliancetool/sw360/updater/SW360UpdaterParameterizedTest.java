@@ -84,12 +84,14 @@ public class SW360UpdaterParameterizedTest {
                 {ClearingState.AUTO_EXTRACT, true, true},
                 {ClearingState.PROJECT_APPROVED, true, true},
                 {ClearingState.INITIAL, true, false},
+                {ClearingState.WORK_IN_PROGRESS, false, false},
                 {null, true, false},
                 {ClearingState.OSM_APPROVED, false, true},
                 {ClearingState.EXTERNAL_SOURCE, false, true},
                 {ClearingState.AUTO_EXTRACT, false, true},
                 {ClearingState.PROJECT_APPROVED, false, true},
                 {ClearingState.INITIAL, false, false},
+                {ClearingState.WORK_IN_PROGRESS, true, false},
                 {null, false, false}
 
         });
@@ -214,7 +216,7 @@ public class SW360UpdaterParameterizedTest {
 
         SW360Updater sw360Updater = new SW360Updater(updater, configurationMock, generator);
 
-        if (clearingState == null || clearingState == ClearingState.INITIAL) {
+        if (clearingState == null || clearingState == ClearingState.INITIAL || clearingState == ClearingState.WORK_IN_PROGRESS) {
             sw360Updater.execute();
         } else {
             // the update exception will be thrown only in some clearing states
@@ -241,6 +243,10 @@ public class SW360UpdaterParameterizedTest {
         } else {
             deleteSourceFileIfNotAttachmentExists(attachmentExists, sourceAttachment);
             verify(updater, never()).artifactToReleaseWithUploads(any(), any(), anyMap());
+
+            if(clearingState == ClearingState.WORK_IN_PROGRESS) {
+                verify(updater, times(2)).artifactToReleaseInSW360(any(), any());
+            }
         }
 
         boolean sourcePresent = Files.exists(sourceAttachment);
