@@ -306,6 +306,32 @@ public class SW360MetaDataUpdaterTest {
     }
 
     @Test
+    public void testGetOrCreateReleaseFoundByExternalIDsWithArtifactPrecedenceAndLowerClearingState() {
+        SW360SparseRelease sparseRelease = new SW360SparseRelease();
+        SW360Release foundRelease = new SW360Release();
+        SW360Release queryRelease = new SW360Release();
+        SW360Release patchedRelease = new SW360Release();
+        Map<String, String> extIDs = Collections.singletonMap("foo", "bar");
+        final String queryCopyright = "(C) Test copyright query";
+        final String foundCopyright = "(C) Test copyright found";
+        queryRelease.setExternalIds(extIDs);
+        queryRelease.setCopyrights(queryCopyright);
+        foundRelease.setCopyrights(foundCopyright);
+        foundRelease.setClearingState("OSM_APPROVED");
+        when(releaseClientAdapter.getSparseReleaseByExternalIds(extIDs)).thenReturn(Optional.of(sparseRelease));
+        when(releaseClientAdapter.enrichSparseRelease(sparseRelease)).thenReturn(Optional.of(foundRelease));
+        when(releaseClientAdapter.updateRelease(any()))
+                .thenAnswer((Answer<SW360Release>) invocationOnMock -> {
+                    SW360Release rel = invocationOnMock.getArgument(0);
+                    assertThat(rel.getExternalIds()).isEqualTo(extIDs);
+                    assertThat(rel.getCopyrights()).isEqualTo(foundCopyright);
+                    return patchedRelease;
+                });
+
+        assertThat(metaDataUpdater.getOrCreateRelease(queryRelease, true, true)).isEqualTo(patchedRelease);
+    }
+
+    @Test
     public void testGetOrCreateReleaseFoundByNameAndVersion() {
         SW360SparseRelease sparseRelease = new SW360SparseRelease();
         SW360Release foundRelease = new SW360Release();

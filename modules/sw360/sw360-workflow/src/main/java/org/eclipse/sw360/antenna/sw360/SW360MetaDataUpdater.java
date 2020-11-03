@@ -12,6 +12,7 @@
 
 package org.eclipse.sw360.antenna.sw360;
 
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
 import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
@@ -132,7 +133,8 @@ public class SW360MetaDataUpdater {
                 releaseClientAdapter.getSparseReleaseByNameAndVersion(sw360ReleaseFromArtifact.getName(),
                         sw360ReleaseFromArtifact.getVersion());
         Optional<SW360Release> optRelease = optSparseRelease.flatMap(releaseClientAdapter::enrichSparseRelease);
-        if (artifactHasPrecedence) {
+        Optional<String> clearingState = optRelease.map(SW360Release::getClearingState);
+        if (artifactHasPrecedence && artifactClearingStateIsHigherOrEqualToSW360Release(sw360ReleaseFromArtifact, clearingState)) {
             optRelease = optRelease.map(release -> release.mergeWith(sw360ReleaseFromArtifact));
         }
         optRelease = optRelease.map(sw360ReleaseFromArtifact::mergeWith);
@@ -143,6 +145,24 @@ public class SW360MetaDataUpdater {
                     releaseClientAdapter.updateRelease(release) : release;
         }
         return releaseClientAdapter.createRelease(sw360ReleaseFromArtifact);
+    }
+
+    /**
+     * Checks whether a given release has a higher or equal ordered clearing release state than a given clearing state string.
+     * @param sw360ReleaseFromArtifact given release that might have a clearing state information
+     * @param clearingState Optional clearing state that gets checked against
+     * @return true if the release as a higher or equal clearing state to the optional string or if the optional clearing state or both are null or empty
+     */
+    private boolean artifactClearingStateIsHigherOrEqualToSW360Release(SW360Release sw360ReleaseFromArtifact, Optional<String> clearingState) {
+        ArtifactClearingState.ClearingState artifactClearingState;
+        if (!clearingState.isPresent()) {
+            return true;
+        } else if ( sw360ReleaseFromArtifact.getClearingState()== null || sw360ReleaseFromArtifact.getClearingState().isEmpty()) {
+            artifactClearingState = ArtifactClearingState.ClearingState.valueOf("INITIAL");
+        } else {
+            artifactClearingState = ArtifactClearingState.ClearingState.valueOf(sw360ReleaseFromArtifact.getClearingState());
+        }
+        return artifactClearingState.hasHigherOrEqualClearingStateThan(ArtifactClearingState.ClearingState.valueOf(clearingState.get()));
     }
 
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) {
