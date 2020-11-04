@@ -135,12 +135,13 @@ public class SW360MetaDataUpdater {
         Optional<SW360SparseRelease> optSparseRelease = optSparseReleaseByIds.isPresent() ? optSparseReleaseByIds :
                 releaseClientAdapter.getSparseReleaseByNameAndVersion(sw360ReleaseFromArtifact.getName(),
                         sw360ReleaseFromArtifact.getVersion());
-        Optional<SW360Release> optRelease = optSparseRelease.flatMap(releaseClientAdapter::enrichSparseRelease);
-        Optional<String> clearingState = optRelease.map(SW360Release::getClearingState);
-        if (overwriteSW360Data && updateAllowed(clearingState)) {
-            optRelease = optRelease.map(release -> release.mergeWith(sw360ReleaseFromArtifact));
-        }
-        optRelease = optRelease.map(sw360ReleaseFromArtifact::mergeWith);
+        Optional<SW360Release> optRelease = optSparseRelease.flatMap(releaseClientAdapter::enrichSparseRelease)
+                .map(release -> {
+                    if (overwriteSW360Data && updateAllowed(release.getClearingState())) {
+                        return release.mergeWith(sw360ReleaseFromArtifact);
+                    }
+                    return sw360ReleaseFromArtifact.mergeWith(release);
+                });
 
         if (optRelease.isPresent()) {
             SW360Release release = optRelease.get();
@@ -170,13 +171,11 @@ public class SW360MetaDataUpdater {
      * @param clearingState Optional clearing state that gets checked against
      * @return true if the optional clearing state string are null or empty or of the clearing state allows for updates.
      */
-    private boolean updateAllowed(Optional<String> clearingState) {
-        if (!clearingState.isPresent()) {
-            return true;
-        } else if (clearingState.get().isEmpty()) {
+    private boolean updateAllowed(String clearingState) {
+        if (clearingState == null || clearingState.isEmpty()) {
             return true;
         } else {
-            return ArtifactClearingState.ClearingState.valueOf(clearingState.get()).isUpdateAllowed();
+            return ArtifactClearingState.ClearingState.valueOf(clearingState).isUpdateAllowed();
         }
     }
 
