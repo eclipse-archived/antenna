@@ -65,7 +65,7 @@ public class SW360UpdaterTest {
         SW360Release testRelease = SW360TestUtils.mkSW360Release("test");
 
         SW360UpdaterImpl updaterImpl = mock(SW360UpdaterImpl.class);
-        when(updaterImpl.artifactToReleaseWithUploads(any(), any(), any(), eq(false)))
+        when(updaterImpl.artifactToReleaseWithUploads(any(), any(), any()))
                 .thenReturn(new AttachmentUploadResult<>(testRelease));
 
         String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).getPath();
@@ -84,7 +84,7 @@ public class SW360UpdaterTest {
                 .isInstanceOf(SW360ClientException.class);
 
         // but we expect that attachment upload worked one time exactly
-        verify(updaterImpl, times(1)).artifactToReleaseWithUploads(any(), any(), anyMap(), anyBoolean());
+        verify(updaterImpl, times(1)).artifactToReleaseWithUploads(any(), any(), anyMap());
     }
 
     private void initConfiguration(Map<String, String> propertiesMap, ArtifactClearingState.ClearingState clearingState) throws IOException {

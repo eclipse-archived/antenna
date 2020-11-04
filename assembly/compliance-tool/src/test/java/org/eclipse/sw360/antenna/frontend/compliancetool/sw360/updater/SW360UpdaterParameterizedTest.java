@@ -203,7 +203,7 @@ public class SW360UpdaterParameterizedTest {
         if (clearingState != null) {
             release.setClearingState(clearingState.name());
         }
-        when(updater.artifactToReleaseWithUploads(any(), any(), anyMap(), eq(artifactHasPrecedence)))
+        when(updater.artifactToReleaseWithUploads(any(), any(), anyMap()))
                 .thenAnswer((Answer<AttachmentUploadResult<SW360Release>>) invocationOnMock -> {
                     deleteSourceFileIfNotAttachmentExists(attachmentExists, sourceAttachment);
                     return AttachmentUploadResult.newResult(release, Collections.emptySet(), uploadFailures);
@@ -233,7 +233,7 @@ public class SW360UpdaterParameterizedTest {
             ArgumentCaptor<SW360Release> captorAllReleases = ArgumentCaptor.forClass(SW360Release.class);
             ArgumentCaptor<SW360Release> captorClearedReleases = ArgumentCaptor.forClass(SW360Release.class);
             verify(updater, times(2))
-                    .artifactToReleaseWithUploads(any(), captorAllReleases.capture(), anyMap(), eq(artifactHasPrecedence));
+                    .artifactToReleaseWithUploads(any(), captorAllReleases.capture(), anyMap());
             verify(generator, times(2))
                     .createClearingDocument(captorClearedReleases.capture(), eq(clearingDocDir));
             assertThat(captorClearedReleases.getAllValues()).containsOnlyElementsOf(captorAllReleases.getAllValues());
@@ -241,11 +241,11 @@ public class SW360UpdaterParameterizedTest {
         if (expectUpload) {
             @SuppressWarnings("unchecked")
             ArgumentCaptor<Map<Path, SW360AttachmentType>> captor = ArgumentCaptor.forClass(Map.class);
-            verify(updater, times(2)).artifactToReleaseWithUploads(any(), any(), captor.capture(), eq(artifactHasPrecedence));
+            verify(updater, times(2)).artifactToReleaseWithUploads(any(), any(), captor.capture());
             assertThat(captor.getAllValues().stream().anyMatch(map -> map.equals(testAttachmentMap))).isTrue();
         } else {
             deleteSourceFileIfNotAttachmentExists(attachmentExists, sourceAttachment);
-            verify(updater, never()).artifactToReleaseWithUploads(any(), any(), anyMap(), anyBoolean());
+            verify(updater, never()).artifactToReleaseWithUploads(any(), any(), anyMap());
 
             if(clearingState == ClearingState.WORK_IN_PROGRESS) {
                 verify(updater, times(2)).artifactToReleaseInSW360(any(), any(), eq(artifactHasPrecedence));

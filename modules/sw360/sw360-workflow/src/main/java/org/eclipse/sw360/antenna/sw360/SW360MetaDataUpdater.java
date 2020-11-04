@@ -124,6 +124,9 @@ public class SW360MetaDataUpdater {
      * @param sw360ReleaseFromArtifact the release to update or create
      * @param updateExisting           a flag whether the release should be
      *                                 updated if it already exists
+     * @param artifactHasPrecedence    a flag whether the release derived from
+     *                                 the artifact takes precedence when
+     *                                 merging with release found in SW360
      * @return the updated or newly created release entity
      */
     public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateExisting, boolean artifactHasPrecedence) {
@@ -145,6 +148,21 @@ public class SW360MetaDataUpdater {
                     releaseClientAdapter.updateRelease(release) : release;
         }
         return releaseClientAdapter.createRelease(sw360ReleaseFromArtifact);
+    }
+
+    /**
+     * Makes sure that a release corresponding to the passed in data object
+     * exists in SW360 and returns it. If no matching release is found, a new
+     * one is created. Otherwise, based on the {@code updateExisting} flag, the
+     * release found in SW360 may or may not be updated.
+     *
+     * @param sw360ReleaseFromArtifact the release to update or create
+     * @param updateExisting           a flag whether the release should be
+     *                                 updated if it already exists
+     * @return the updated or newly created release entity
+     */
+    public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateExisting) {
+        return getOrCreateRelease(sw360ReleaseFromArtifact, updateExisting, false);
     }
 
     /**

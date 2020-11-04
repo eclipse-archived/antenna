@@ -114,7 +114,7 @@ public class SW360UpdaterImpl {
         List<SW360Release> releases = new ArrayList<>();
         for (Artifact artifact : intermediates) {
             try {
-                SW360Release sw360ReleaseFinal = artifactToReleaseInSW360(artifact, false);
+                SW360Release sw360ReleaseFinal = artifactToReleaseInSW360(artifact);
                 releases.add(sw360ReleaseFinal);
             } catch (ExecutionException e) {
                 LOGGER.error("Release will not be created in SW360. Reason: {}", e.getMessage());
@@ -135,10 +135,10 @@ public class SW360UpdaterImpl {
      * @return SW360Release on which artifact and additional information
      * form SW360 instance have been mapped on.
      */
-    public SW360Release artifactToReleaseInSW360(Artifact artifact, boolean artifactHasPrecedence) {
+    public SW360Release artifactToReleaseInSW360(Artifact artifact) {
         final SW360Release sw360ReleaseFromArtifact = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
 
-        return artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact, artifactHasPrecedence);
+        return artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact, false);
     }
 
     /**
@@ -146,9 +146,11 @@ public class SW360UpdaterImpl {
      * either gets information about it from a SW360 instance or,
      * if it does not exist in the instance yet, creates it.
      *
-     * @param artifact artifact to be transformed to release
-     * @param release  release on which artifact license, sources and
-     *                 information form sw360 instance will be mapped
+     * @param artifact              artifact to be transformed to release
+     * @param release               release on which artifact license, sources and
+     *                              information form sw360 instance will be mapped
+     * @param artifactHasPrecedence flag that indicates whether artifact information
+     *                              takes precedence over existing sw360 release data
      * @return mapped SW360Release
      */
     public SW360Release artifactToReleaseInSW360(Artifact artifact, SW360Release release, boolean artifactHasPrecedence) {
@@ -173,11 +175,10 @@ public class SW360UpdaterImpl {
      * @return an object with the result of the upload operation
      */
     public AttachmentUploadResult<SW360Release> artifactToReleaseWithUploads(Artifact artifact, SW360Release release,
-                                                                             Map<Path, SW360AttachmentType> uploads,
-                                                                             boolean artifactHasPrecedence) {
+                                                                             Map<Path, SW360AttachmentType> uploads) {
         Set<String> licenseIds = getSetOfLicenseIds(artifact);
         release.setMainLicenseIds(licenseIds);
-        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release, isUpdateReleases(), artifactHasPrecedence);
+        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release, isUpdateReleases());
 
         return uploadSourceAndAttachments(sw360ReleaseFinal, artifact, uploads);
     }

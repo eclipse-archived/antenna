@@ -115,13 +115,13 @@ public class SW360UpdaterImplTest {
         SW360Release updatedRelease = createRelease("testUpdated", null);
         when(metaDataUpdater.getLicenses(Collections.singletonList(license)))
                 .thenReturn(Collections.singleton(sw360License));
-        when(metaDataUpdater.getOrCreateRelease(release, true, false))
+        when(metaDataUpdater.getOrCreateRelease(release, true))
                 .thenReturn(updatedRelease);
         SW360UpdaterImpl updater = new SW360UpdaterImpl(metaDataUpdater, "test", "version",
                 true, true, false);
 
         AttachmentUploadResult<SW360Release> result =
-                updater.artifactToReleaseWithUploads(artifact, release, Collections.emptyMap(), false);
+                updater.artifactToReleaseWithUploads(artifact, release, Collections.emptyMap());
         assertThat(result.getTarget()).isEqualTo(updatedRelease);
         assertThat(release.getMainLicenseIds()).containsOnly(sw360License.getShortName());
         verify(metaDataUpdater, never()).uploadAttachments(any(), any(), anyBoolean());
@@ -138,7 +138,7 @@ public class SW360UpdaterImplTest {
         Map<Path, SW360AttachmentType> uploadMap = Collections.singletonMap(sourceFile, SW360AttachmentType.SOURCE);
         AttachmentUploadResult<SW360Release> uploadResult = new AttachmentUploadResult<>(updatedRelease);
 
-        when(metaDataUpdater.getOrCreateRelease(release, false, false))
+        when(metaDataUpdater.getOrCreateRelease(release, false))
                 .thenReturn(createdRelease);
         when(metaDataUpdater.uploadAttachments(createdRelease, uploadMap, false))
                 .thenReturn(uploadResult);
@@ -147,7 +147,7 @@ public class SW360UpdaterImplTest {
                 false, true, false);
 
         AttachmentUploadResult<SW360Release> result =
-                updater.artifactToReleaseWithUploads(artifact, release, Collections.emptyMap(), false);
+                updater.artifactToReleaseWithUploads(artifact, release, Collections.emptyMap());
         assertThat(result).isEqualTo(uploadResult);
         verify(metaDataUpdater, never()).deleteSourceAttachments(any());
     }
@@ -159,13 +159,13 @@ public class SW360UpdaterImplTest {
         artifact.addFact(new ArtifactSourceFile(sourceFile));
         SW360Release release = createRelease("test", sourceFile);
         SW360Release createdRelease = createRelease("testCreated", sourceFile);
-        when(metaDataUpdater.getOrCreateRelease(release, true, false))
+        when(metaDataUpdater.getOrCreateRelease(release, true))
                 .thenReturn(createdRelease);
         SW360UpdaterImpl updater = new SW360UpdaterImpl(metaDataUpdater, "test", "version",
                 true, false, false);
 
         AttachmentUploadResult<SW360Release> result =
-                updater.artifactToReleaseWithUploads(artifact, release, Collections.emptyMap(), false);
+                updater.artifactToReleaseWithUploads(artifact, release, Collections.emptyMap());
 
         assertThat(result.getTarget()).isEqualTo(createdRelease);
         verify(metaDataUpdater, never()).uploadAttachments(any(), any(), anyBoolean());
@@ -181,7 +181,7 @@ public class SW360UpdaterImplTest {
         SW360Release createdRelease = createRelease("testCreated", null);
         SW360Release uploadedRelease = createRelease("uploadedRelease", null);
         AttachmentUploadResult<SW360Release> uploadResult = new AttachmentUploadResult<>(uploadedRelease);
-        when(metaDataUpdater.getOrCreateRelease(release, false, false))
+        when(metaDataUpdater.getOrCreateRelease(release, false))
                 .thenReturn(createdRelease);
         when(metaDataUpdater.uploadAttachments(createdRelease, uploadMap, false))
                 .thenReturn(uploadResult);
@@ -189,7 +189,7 @@ public class SW360UpdaterImplTest {
                 false, false, false);
 
         AttachmentUploadResult<SW360Release> result =
-                updater.artifactToReleaseWithUploads(artifact, release, uploadMap, false);
+                updater.artifactToReleaseWithUploads(artifact, release, uploadMap);
         assertThat(result).isEqualTo(uploadResult);
     }
 
@@ -209,7 +209,7 @@ public class SW360UpdaterImplTest {
         expUploads.put(sourceFile, SW360AttachmentType.SOURCE);
         expUploads.put(uploadFile, SW360AttachmentType.CLEARING_REPORT);
 
-        when(metaDataUpdater.getOrCreateRelease(release, false, false))
+        when(metaDataUpdater.getOrCreateRelease(release, false))
                 .thenReturn(createdRelease);
         when(metaDataUpdater.uploadAttachments(createdRelease, expUploads, false))
                 .thenReturn(uploadResult);
@@ -218,7 +218,7 @@ public class SW360UpdaterImplTest {
                 false, true, false);
 
         AttachmentUploadResult<SW360Release> result =
-                updater.artifactToReleaseWithUploads(artifact, release, uploadMap, false);
+                updater.artifactToReleaseWithUploads(artifact, release, uploadMap);
         assertThat(result).isEqualTo(uploadResult);
     }
 
@@ -235,7 +235,7 @@ public class SW360UpdaterImplTest {
         SW360Release release = createRelease("test", null);
         SW360Release createdRelease = createRelease("testCreated", null);
         SW360Release deletedRelease = createRelease("releaseNoAttachments", null);
-        when(metaDataUpdater.getOrCreateRelease(release, false, false))
+        when(metaDataUpdater.getOrCreateRelease(release, false))
                 .thenReturn(createdRelease);
         when(metaDataUpdater.deleteAttachments(eq(createdRelease), any()))
                 .thenReturn(deletedRelease);
@@ -243,7 +243,7 @@ public class SW360UpdaterImplTest {
                 false, false, true);
 
         AttachmentUploadResult<SW360Release> result =
-                updater.artifactToReleaseWithUploads(artifact, release, Collections.emptyMap(), false);
+                updater.artifactToReleaseWithUploads(artifact, release, Collections.emptyMap());
         assertThat(result.getTarget()).isEqualTo(deletedRelease);
         Predicate<SW360SparseAttachment> predicate = extractPredicateForDeleteAttachments(createdRelease);
         assertThat(predicate.test(createAttachment(Paths.get("foo"), SW360AttachmentType.SOURCE)))
@@ -264,7 +264,7 @@ public class SW360UpdaterImplTest {
         Map<Path, SW360AttachmentType> uploadMap = Collections.singletonMap(sourceFile, SW360AttachmentType.SOURCE);
         AttachmentUploadResult<SW360Release> uploadResult = new AttachmentUploadResult<>(updatedRelease);
 
-        when(metaDataUpdater.getOrCreateRelease(release, false, false))
+        when(metaDataUpdater.getOrCreateRelease(release, false))
                 .thenReturn(createdRelease);
         when(metaDataUpdater.deleteAttachments(eq(createdRelease), any())).thenReturn(srcDeletedRelease);
         when(metaDataUpdater.uploadAttachments(srcDeletedRelease, uploadMap, true))
@@ -273,7 +273,7 @@ public class SW360UpdaterImplTest {
                 false, true, true);
 
         AttachmentUploadResult<SW360Release> result =
-                updater.artifactToReleaseWithUploads(artifact, release, uploadMap, false);
+                updater.artifactToReleaseWithUploads(artifact, release, uploadMap);
         assertThat(result).isEqualTo(uploadResult);
         Predicate<SW360SparseAttachment> predicate = extractPredicateForDeleteAttachments(createdRelease);
         assertThat(predicate.test(createAttachment(Paths.get("foo"), SW360AttachmentType.SOURCE)))
@@ -293,7 +293,7 @@ public class SW360UpdaterImplTest {
         Map<Path, SW360AttachmentType> uploadMap = Collections.singletonMap(sourceFile, SW360AttachmentType.SOURCE);
         AttachmentUploadResult<SW360Release> uploadResult = new AttachmentUploadResult<>(updatedRelease);
 
-        when(metaDataUpdater.getOrCreateRelease(release, true, false)).thenReturn(createdRelease);
+        when(metaDataUpdater.getOrCreateRelease(release, true)).thenReturn(createdRelease);
         when(metaDataUpdater.deleteAttachments(any(), any()))
                 .thenThrow(new SW360ClientException("Delete operation failed"));
         when(metaDataUpdater.uploadAttachments(createdRelease, uploadMap, true))
@@ -302,7 +302,7 @@ public class SW360UpdaterImplTest {
                 true, true, true);
 
         AttachmentUploadResult<SW360Release> result =
-                updater.artifactToReleaseWithUploads(artifact, release, Collections.emptyMap(), false);
+                updater.artifactToReleaseWithUploads(artifact, release, Collections.emptyMap());
         assertThat(result).isEqualTo(uploadResult);
     }
 }

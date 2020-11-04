@@ -137,7 +137,7 @@ public class SW360Updater {
                 Map<Path, SW360AttachmentType> clearingDocUpload =
                         Collections.singletonMap(clearingDoc, SW360AttachmentType.CLEARING_REPORT);
                 AttachmentUploadResult<SW360Release> uploadResult =
-                        updater.artifactToReleaseWithUploads(artifact, sw360ReleaseFromArtifact, clearingDocUpload, false);
+                        updater.artifactToReleaseWithUploads(artifact, sw360ReleaseFromArtifact, clearingDocUpload);
                 SW360Release release = uploadResult.getTarget();
 
                 Set<Path> failedUploads = uploadResult.failedUploads().keySet().stream()
