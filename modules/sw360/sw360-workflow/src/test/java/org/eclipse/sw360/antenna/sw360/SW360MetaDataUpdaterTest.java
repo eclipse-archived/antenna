@@ -265,15 +265,7 @@ public class SW360MetaDataUpdaterTest {
         final String copyright = "(C) Test copyright";
         queryRelease.setExternalIds(extIDs);
         foundRelease.setCopyrights(copyright);
-        when(releaseClientAdapter.getSparseReleaseByExternalIds(extIDs)).thenReturn(Optional.of(sparseRelease));
-        when(releaseClientAdapter.enrichSparseRelease(sparseRelease)).thenReturn(Optional.of(foundRelease));
-        when(releaseClientAdapter.updateRelease(any()))
-                .thenAnswer((Answer<SW360Release>) invocationOnMock -> {
-                    SW360Release rel = invocationOnMock.getArgument(0);
-                    assertThat(rel.getExternalIds()).isEqualTo(extIDs);
-                    assertThat(rel.getCopyrights()).isEqualTo(copyright);
-                    return patchedRelease;
-                });
+        prepareReleaseClientAdapterForGetOrCreateReleaseByExternalID(sparseRelease, foundRelease, patchedRelease, extIDs, copyright);
 
         assertThat(metaDataUpdater.getOrCreateRelease(queryRelease, true, false)).isEqualTo(patchedRelease);
     }
@@ -292,15 +284,7 @@ public class SW360MetaDataUpdaterTest {
         queryRelease.setExternalIds(extIDs);
         queryRelease.setCopyrights(queryCopyright);
         foundRelease.setCopyrights(foundCopyright);
-        when(releaseClientAdapter.getSparseReleaseByExternalIds(extIDs)).thenReturn(Optional.of(sparseRelease));
-        when(releaseClientAdapter.enrichSparseRelease(sparseRelease)).thenReturn(Optional.of(foundRelease));
-        when(releaseClientAdapter.updateRelease(any()))
-                .thenAnswer((Answer<SW360Release>) invocationOnMock -> {
-                    SW360Release rel = invocationOnMock.getArgument(0);
-                    assertThat(rel.getExternalIds()).isEqualTo(extIDs);
-                    assertThat(rel.getCopyrights()).isEqualTo(queryCopyright);
-                    return patchedRelease;
-                });
+        prepareReleaseClientAdapterForGetOrCreateReleaseByExternalID(sparseRelease, foundRelease, patchedRelease, extIDs, queryCopyright);
 
         assertThat(metaDataUpdater.getOrCreateRelease(queryRelease, true, true)).isEqualTo(patchedRelease);
     }
@@ -318,15 +302,7 @@ public class SW360MetaDataUpdaterTest {
         queryRelease.setCopyrights(queryCopyright);
         foundRelease.setCopyrights(foundCopyright);
         foundRelease.setClearingState("OSM_APPROVED");
-        when(releaseClientAdapter.getSparseReleaseByExternalIds(extIDs)).thenReturn(Optional.of(sparseRelease));
-        when(releaseClientAdapter.enrichSparseRelease(sparseRelease)).thenReturn(Optional.of(foundRelease));
-        when(releaseClientAdapter.updateRelease(any()))
-                .thenAnswer((Answer<SW360Release>) invocationOnMock -> {
-                    SW360Release rel = invocationOnMock.getArgument(0);
-                    assertThat(rel.getExternalIds()).isEqualTo(extIDs);
-                    assertThat(rel.getCopyrights()).isEqualTo(foundCopyright);
-                    return patchedRelease;
-                });
+        prepareReleaseClientAdapterForGetOrCreateReleaseByExternalID(sparseRelease, foundRelease, patchedRelease, extIDs, foundCopyright);
 
         assertThat(metaDataUpdater.getOrCreateRelease(queryRelease, true, true)).isEqualTo(patchedRelease);
     }
@@ -344,6 +320,20 @@ public class SW360MetaDataUpdaterTest {
         queryRelease.setCopyrights(queryCopyright);
         foundRelease.setCopyrights(foundCopyright);
         foundRelease.setClearingState("EXTERNAL_SOURCE");
+        prepareReleaseClientAdapterForGetOrCreateReleaseByExternalID(sparseRelease, foundRelease, patchedRelease, extIDs, queryCopyright);
+
+        assertThat(metaDataUpdater.getOrCreateRelease(queryRelease, true, true)).isEqualTo(patchedRelease);
+    }
+
+    /**
+     * Prepare release client adapter methods called when GetOrCreateRelease by ExternalID is tested
+     * @param sparseRelease SparseRelease for getting release
+     * @param foundRelease release "found" in SW360
+     * @param patchedRelease release "queried" to Sw360
+     * @param extIDs externalIDs in both releases
+     * @param queryCopyright data that shows which information was used
+     */
+    private void prepareReleaseClientAdapterForGetOrCreateReleaseByExternalID(SW360SparseRelease sparseRelease, SW360Release foundRelease, SW360Release patchedRelease, Map<String, String> extIDs, String queryCopyright) {
         when(releaseClientAdapter.getSparseReleaseByExternalIds(extIDs)).thenReturn(Optional.of(sparseRelease));
         when(releaseClientAdapter.enrichSparseRelease(sparseRelease)).thenReturn(Optional.of(foundRelease));
         when(releaseClientAdapter.updateRelease(any()))
@@ -353,8 +343,6 @@ public class SW360MetaDataUpdaterTest {
                     assertThat(rel.getCopyrights()).isEqualTo(queryCopyright);
                     return patchedRelease;
                 });
-
-        assertThat(metaDataUpdater.getOrCreateRelease(queryRelease, true, true)).isEqualTo(patchedRelease);
     }
 
     @Test
