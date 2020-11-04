@@ -134,7 +134,7 @@ public class SW360MetaDataUpdater {
                         sw360ReleaseFromArtifact.getVersion());
         Optional<SW360Release> optRelease = optSparseRelease.flatMap(releaseClientAdapter::enrichSparseRelease);
         Optional<String> clearingState = optRelease.map(SW360Release::getClearingState);
-        if (artifactHasPrecedence && artifactClearingStateIsHigherOrEqualToSW360Release(sw360ReleaseFromArtifact, clearingState)) {
+        if (artifactHasPrecedence && updateAllowed(clearingState)) {
             optRelease = optRelease.map(release -> release.mergeWith(sw360ReleaseFromArtifact));
         }
         optRelease = optRelease.map(sw360ReleaseFromArtifact::mergeWith);
@@ -148,21 +148,18 @@ public class SW360MetaDataUpdater {
     }
 
     /**
-     * Checks whether a given release has a higher or equal ordered clearing release state than a given clearing state string.
-     * @param sw360ReleaseFromArtifact given release that might have a clearing state information
+     * Checks whether a given Optional clearing state string allows for the release to be updated.
      * @param clearingState Optional clearing state that gets checked against
-     * @return true if the release as a higher or equal clearing state to the optional string or if the optional clearing state or both are null or empty
+     * @return true if the optional clearing state string are null or empty or of the clearing state allows for updates.
      */
-    private boolean artifactClearingStateIsHigherOrEqualToSW360Release(SW360Release sw360ReleaseFromArtifact, Optional<String> clearingState) {
-        ArtifactClearingState.ClearingState artifactClearingState;
+    private boolean updateAllowed(Optional<String> clearingState) {
         if (!clearingState.isPresent()) {
             return true;
-        } else if ( sw360ReleaseFromArtifact.getClearingState()== null || sw360ReleaseFromArtifact.getClearingState().isEmpty()) {
-            artifactClearingState = ArtifactClearingState.ClearingState.valueOf("INITIAL");
+        } else if (clearingState.get().isEmpty()) {
+            return true;
         } else {
-            artifactClearingState = ArtifactClearingState.ClearingState.valueOf(sw360ReleaseFromArtifact.getClearingState());
+            return ArtifactClearingState.ClearingState.valueOf(clearingState.get()).isUpdateAllowed();
         }
-        return artifactClearingState.hasHigherOrEqualClearingStateThan(ArtifactClearingState.ClearingState.valueOf(clearingState.get()));
     }
 
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) {

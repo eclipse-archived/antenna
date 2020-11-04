@@ -10,7 +10,7 @@ It has the ability to update and approve release information of already existing
 To approve a release the `Clearing State` must be set according to the description in the [SW360 Data Model](../sw360-data-model.html).
 A functionality to simply add information without approving it was provided by having a `Clearing State` called `WORK_IN_PROGRESS`.
 This allows to add and change already existing information easily. It is important to note that information of releases that
-has already been approved can not be changed anymore, even if the `Clearing State` is set back to `WORK_IN_PROGRESS`.
+have already been approved can not be changed anymore, even if the `Clearing State` is set back to `WORK_IN_PROGRESS`.
 
 ### Properties
 Specific properties that need to be set for sources and clearing document handling:

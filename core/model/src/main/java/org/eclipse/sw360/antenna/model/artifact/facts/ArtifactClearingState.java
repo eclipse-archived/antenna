@@ -31,21 +31,21 @@ public class ArtifactClearingState extends ArtifactFactWithPayload<ArtifactClear
     }
 
     public enum ClearingState {
-        INITIAL(1),
-        WORK_IN_PROGRESS(2),
-        EXTERNAL_SOURCE(3),
-        AUTO_EXTRACT(4),
-        PROJECT_APPROVED(5),
-        OSM_APPROVED(6);
+        INITIAL(true),
+        WORK_IN_PROGRESS(true),
+        EXTERNAL_SOURCE(true),
+        AUTO_EXTRACT(true),
+        PROJECT_APPROVED(false),
+        OSM_APPROVED(false);
 
-        private int order;
+        private boolean updateAllowed;
 
-        ClearingState(int order) {
-            this.order = order;
+        ClearingState(boolean updateAllowed) {
+            this.updateAllowed = updateAllowed;
         }
 
-        public boolean hasHigherOrEqualClearingStateThan(ClearingState other) {
-            return this.order >= other.order;
+        public boolean isUpdateAllowed() {
+            return this.updateAllowed;
         }
     }
 }
