@@ -47,7 +47,6 @@ import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -70,13 +69,13 @@ public class SW360UpdaterParameterizedTest {
     private final ClearingState clearingState;
     private final boolean clearingDocAvailable;
     private final boolean expectUpload;
-    private final boolean artifactHasPrecedence;
+    private final boolean overwriteSW360Data;
 
-    public SW360UpdaterParameterizedTest(@Nullable ClearingState clearingState, boolean clearingDocAvailable, boolean expectUpload, boolean artifactHasPrecedence) {
+    public SW360UpdaterParameterizedTest(@Nullable ClearingState clearingState, boolean clearingDocAvailable, boolean expectUpload, boolean overwriteSW360Data) {
         this.clearingState = clearingState;
         this.clearingDocAvailable = clearingDocAvailable;
         this.expectUpload = expectUpload;
-        this.artifactHasPrecedence = artifactHasPrecedence;
+        this.overwriteSW360Data = overwriteSW360Data;
     }
 
     @Parameterized.Parameters(name = "{0}_{1}_{2}_{3}")
@@ -248,7 +247,7 @@ public class SW360UpdaterParameterizedTest {
             verify(updater, never()).artifactToReleaseWithUploads(any(), any(), anyMap());
 
             if(clearingState == ClearingState.WORK_IN_PROGRESS) {
-                verify(updater, times(2)).artifactToReleaseInSW360(any(), any(), eq(artifactHasPrecedence));
+                verify(updater, times(2)).artifactToReleaseInSW360(any(), any(), eq(overwriteSW360Data));
             }
         }
 

@@ -149,14 +149,14 @@ public class SW360UpdaterImpl {
      * @param artifact              artifact to be transformed to release
      * @param release               release on which artifact license, sources and
      *                              information form sw360 instance will be mapped
-     * @param artifactHasPrecedence flag that indicates whether artifact information
+     * @param overwriteSW360Data flag that indicates whether artifact information
      *                              takes precedence over existing sw360 release data
      * @return mapped SW360Release
      */
-    public SW360Release artifactToReleaseInSW360(Artifact artifact, SW360Release release, boolean artifactHasPrecedence) {
+    public SW360Release artifactToReleaseInSW360(Artifact artifact, SW360Release release, boolean overwriteSW360Data) {
         Set<String> licenseIds = getSetOfLicenseIds(artifact);
         release.setMainLicenseIds(licenseIds);
-        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release, isUpdateReleases(), artifactHasPrecedence);
+        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release, isUpdateReleases(), overwriteSW360Data);
 
         sw360ReleaseFinal = uploadSourceAndAttachments(sw360ReleaseFinal, artifact, Collections.emptyMap()).getTarget();
 

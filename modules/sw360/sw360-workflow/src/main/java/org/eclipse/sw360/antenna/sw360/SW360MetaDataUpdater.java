@@ -124,12 +124,12 @@ public class SW360MetaDataUpdater {
      * @param sw360ReleaseFromArtifact the release to update or create
      * @param updateExisting           a flag whether the release should be
      *                                 updated if it already exists
-     * @param artifactHasPrecedence    a flag whether the release derived from
+     * @param overwriteSW360Data    a flag whether the release derived from
      *                                 the artifact takes precedence when
      *                                 merging with release found in SW360
      * @return the updated or newly created release entity
      */
-    public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateExisting, boolean artifactHasPrecedence) {
+    public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateExisting, boolean overwriteSW360Data) {
         Optional<SW360SparseRelease> optSparseReleaseByIds =
                 releaseClientAdapter.getSparseReleaseByExternalIds(sw360ReleaseFromArtifact.getExternalIds());
         Optional<SW360SparseRelease> optSparseRelease = optSparseReleaseByIds.isPresent() ? optSparseReleaseByIds :
@@ -137,7 +137,7 @@ public class SW360MetaDataUpdater {
                         sw360ReleaseFromArtifact.getVersion());
         Optional<SW360Release> optRelease = optSparseRelease.flatMap(releaseClientAdapter::enrichSparseRelease);
         Optional<String> clearingState = optRelease.map(SW360Release::getClearingState);
-        if (artifactHasPrecedence && updateAllowed(clearingState)) {
+        if (overwriteSW360Data && updateAllowed(clearingState)) {
             optRelease = optRelease.map(release -> release.mergeWith(sw360ReleaseFromArtifact));
         }
         optRelease = optRelease.map(sw360ReleaseFromArtifact::mergeWith);
