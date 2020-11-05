@@ -12,6 +12,7 @@
 
 package org.eclipse.sw360.antenna.sw360;
 
+import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
 import org.eclipse.sw360.antenna.model.license.License;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadRequest;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
@@ -123,16 +124,24 @@ public class SW360MetaDataUpdater {
      * @param sw360ReleaseFromArtifact the release to update or create
      * @param updateExisting           a flag whether the release should be
      *                                 updated if it already exists
+     * @param overwriteSW360Data    a flag whether the release derived from
+     *                                 the artifact takes precedence when
+     *                                 merging with release found in SW360
      * @return the updated or newly created release entity
      */
-    public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateExisting) {
+    public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateExisting, boolean overwriteSW360Data) {
         Optional<SW360SparseRelease> optSparseReleaseByIds =
                 releaseClientAdapter.getSparseReleaseByExternalIds(sw360ReleaseFromArtifact.getExternalIds());
         Optional<SW360SparseRelease> optSparseRelease = optSparseReleaseByIds.isPresent() ? optSparseReleaseByIds :
                 releaseClientAdapter.getSparseReleaseByNameAndVersion(sw360ReleaseFromArtifact.getName(),
                         sw360ReleaseFromArtifact.getVersion());
         Optional<SW360Release> optRelease = optSparseRelease.flatMap(releaseClientAdapter::enrichSparseRelease)
-                .map(sw360ReleaseFromArtifact::mergeWith);
+                .map(release -> {
+                    if (overwriteSW360Data && updateAllowed(release.getClearingState())) {
+                        return release.mergeWith(sw360ReleaseFromArtifact);
+                    }
+                    return sw360ReleaseFromArtifact.mergeWith(release);
+                });
 
         if (optRelease.isPresent()) {
             SW360Release release = optRelease.get();
@@ -140,6 +149,34 @@ public class SW360MetaDataUpdater {
                     releaseClientAdapter.updateRelease(release) : release;
         }
         return releaseClientAdapter.createRelease(sw360ReleaseFromArtifact);
+    }
+
+    /**
+     * Makes sure that a release corresponding to the passed in data object
+     * exists in SW360 and returns it. If no matching release is found, a new
+     * one is created. Otherwise, based on the {@code updateExisting} flag, the
+     * release found in SW360 may or may not be updated.
+     *
+     * @param sw360ReleaseFromArtifact the release to update or create
+     * @param updateExisting           a flag whether the release should be
+     *                                 updated if it already exists
+     * @return the updated or newly created release entity
+     */
+    public SW360Release getOrCreateRelease(SW360Release sw360ReleaseFromArtifact, boolean updateExisting) {
+        return getOrCreateRelease(sw360ReleaseFromArtifact, updateExisting, false);
+    }
+
+    /**
+     * Checks whether a given Optional clearing state string allows for the release to be updated.
+     * @param clearingState Optional clearing state that gets checked against
+     * @return true if the optional clearing state string are null or empty or of the clearing state allows for updates.
+     */
+    private boolean updateAllowed(String clearingState) {
+        if (clearingState == null || clearingState.isEmpty()) {
+            return true;
+        } else {
+            return ArtifactClearingState.ClearingState.valueOf(clearingState).isUpdateAllowed();
+        }
     }
 
     public void createProject(String projectName, String projectVersion, Collection<SW360Release> releases) {

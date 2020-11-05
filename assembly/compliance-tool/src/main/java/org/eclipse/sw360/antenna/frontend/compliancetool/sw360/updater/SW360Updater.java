@@ -131,7 +131,7 @@ public class SW360Updater {
         if (isNotEmptyOrInitialClearingState(releaseClearingState)) {
 
             if (ClearingState.valueOf(releaseClearingState) == ClearingState.WORK_IN_PROGRESS) {
-                updater.artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact);
+                updater.artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact, true);
             } else {
                 Path clearingDoc = getOrGenerateClearingDocument(sw360ReleaseFromArtifact, artifact);
                 Map<Path, SW360AttachmentType> clearingDocUpload =
@@ -190,8 +190,8 @@ public class SW360Updater {
         }
     }
 
-    private boolean isNotEmptyOrInitialClearingState(final String clearinState) {
-        return clearinState != null && !clearinState.isEmpty() &&
-                ClearingState.valueOf(clearinState) != ClearingState.INITIAL;
+    private boolean isNotEmptyOrInitialClearingState(final String clearingState) {
+        return clearingState != null && !clearingState.isEmpty() &&
+                ClearingState.valueOf(clearingState) != ClearingState.INITIAL;
     }
 }

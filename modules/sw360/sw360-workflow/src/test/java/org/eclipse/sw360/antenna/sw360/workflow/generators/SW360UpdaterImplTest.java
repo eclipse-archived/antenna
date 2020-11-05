@@ -90,7 +90,7 @@ public class SW360UpdaterImplTest {
 
         updater.produce(artifacts);
 
-        verify(metaDataUpdater).getOrCreateRelease(any(), eq(updateReleases));
+        verify(metaDataUpdater).getOrCreateRelease(any(), eq(updateReleases), eq(false));
         verify(metaDataUpdater, atLeast(1)).createProject(eq("test"), eq("version"), any());
     }
 

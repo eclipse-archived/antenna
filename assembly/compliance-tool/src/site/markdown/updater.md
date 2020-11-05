@@ -4,7 +4,13 @@
 The SW360Updater takes a given csv file with release
 information and maps the contents on SW360Release objects
 that are posted into the given SW360 instance. 
-It has the ability to update release information of already existing releases. 
+It has the ability to update and approve release information of already existing releases.
+
+
+To approve a release the `Clearing State` must be set according to the description in the [SW360 Data Model](../sw360-data-model.html).
+A functionality to simply add information without approving it was provided by having a `Clearing State` called `WORK_IN_PROGRESS`.
+This allows to add and change already existing information easily. It is important to note that information of releases that
+have already been approved can not be changed anymore, even if the `Clearing State` is set back to `WORK_IN_PROGRESS`.
 
 ### Properties
 Specific properties that need to be set for sources and clearing document handling:

@@ -138,7 +138,7 @@ public class SW360UpdaterImpl {
     public SW360Release artifactToReleaseInSW360(Artifact artifact) {
         final SW360Release sw360ReleaseFromArtifact = ArtifactToReleaseUtils.convertToReleaseWithoutAttachments(artifact);
 
-        return artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact);
+        return artifactToReleaseInSW360(artifact, sw360ReleaseFromArtifact, false);
     }
 
     /**
@@ -146,15 +146,17 @@ public class SW360UpdaterImpl {
      * either gets information about it from a SW360 instance or,
      * if it does not exist in the instance yet, creates it.
      *
-     * @param artifact artifact to be transformed to release
-     * @param release  release on which artifact license, sources and
-     *                 information form sw360 instance will be mapped
+     * @param artifact              artifact to be transformed to release
+     * @param release               release on which artifact license, sources and
+     *                              information form sw360 instance will be mapped
+     * @param overwriteSW360Data flag that indicates whether artifact information
+     *                              takes precedence over existing sw360 release data
      * @return mapped SW360Release
      */
-    public SW360Release artifactToReleaseInSW360(Artifact artifact, SW360Release release) {
+    public SW360Release artifactToReleaseInSW360(Artifact artifact, SW360Release release, boolean overwriteSW360Data) {
         Set<String> licenseIds = getSetOfLicenseIds(artifact);
         release.setMainLicenseIds(licenseIds);
-        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release, isUpdateReleases());
+        SW360Release sw360ReleaseFinal = sw360MetaDataUpdater.getOrCreateRelease(release, isUpdateReleases(), overwriteSW360Data);
 
         sw360ReleaseFinal = uploadSourceAndAttachments(sw360ReleaseFinal, artifact, Collections.emptyMap()).getTarget();
 

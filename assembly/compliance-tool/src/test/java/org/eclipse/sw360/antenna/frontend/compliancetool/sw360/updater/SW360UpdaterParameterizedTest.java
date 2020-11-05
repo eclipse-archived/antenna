@@ -69,30 +69,32 @@ public class SW360UpdaterParameterizedTest {
     private final ClearingState clearingState;
     private final boolean clearingDocAvailable;
     private final boolean expectUpload;
+    private final boolean overwriteSW360Data;
 
-    public SW360UpdaterParameterizedTest(@Nullable ClearingState clearingState, boolean clearingDocAvailable, boolean expectUpload) {
+    public SW360UpdaterParameterizedTest(@Nullable ClearingState clearingState, boolean clearingDocAvailable, boolean expectUpload, boolean overwriteSW360Data) {
         this.clearingState = clearingState;
         this.clearingDocAvailable = clearingDocAvailable;
         this.expectUpload = expectUpload;
+        this.overwriteSW360Data = overwriteSW360Data;
     }
 
-    @Parameterized.Parameters(name = "{0}_{1}_{2}")
+    @Parameterized.Parameters(name = "{0}_{1}_{2}_{3}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {ClearingState.OSM_APPROVED, true, true},
-                {ClearingState.EXTERNAL_SOURCE, true, true},
-                {ClearingState.AUTO_EXTRACT, true, true},
-                {ClearingState.PROJECT_APPROVED, true, true},
-                {ClearingState.INITIAL, true, false},
-                {ClearingState.WORK_IN_PROGRESS, false, false},
-                {null, true, false},
-                {ClearingState.OSM_APPROVED, false, true},
-                {ClearingState.EXTERNAL_SOURCE, false, true},
-                {ClearingState.AUTO_EXTRACT, false, true},
-                {ClearingState.PROJECT_APPROVED, false, true},
-                {ClearingState.INITIAL, false, false},
-                {ClearingState.WORK_IN_PROGRESS, true, false},
-                {null, false, false}
+                {ClearingState.OSM_APPROVED, true, true, false},
+                {ClearingState.EXTERNAL_SOURCE, true, true, false},
+                {ClearingState.AUTO_EXTRACT, true, true, false},
+                {ClearingState.PROJECT_APPROVED, true, true, false},
+                {ClearingState.INITIAL, true, false, false},
+                {ClearingState.WORK_IN_PROGRESS, false, false, true},
+                {null, true, false, false},
+                {ClearingState.OSM_APPROVED, false, true, false},
+                {ClearingState.EXTERNAL_SOURCE, false, true, false},
+                {ClearingState.AUTO_EXTRACT, false, true, false},
+                {ClearingState.PROJECT_APPROVED, false, true, false},
+                {ClearingState.INITIAL, false, false, false},
+                {ClearingState.WORK_IN_PROGRESS, true, false, true},
+                {null, false, false, false}
 
         });
     }
@@ -245,7 +247,7 @@ public class SW360UpdaterParameterizedTest {
             verify(updater, never()).artifactToReleaseWithUploads(any(), any(), anyMap());
 
             if(clearingState == ClearingState.WORK_IN_PROGRESS) {
-                verify(updater, times(2)).artifactToReleaseInSW360(any(), any());
+                verify(updater, times(2)).artifactToReleaseInSW360(any(), any(), eq(overwriteSW360Data));
             }
         }
 

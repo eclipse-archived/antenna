@@ -17,8 +17,6 @@ import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360Configuratio
 import org.eclipse.sw360.antenna.frontend.compliancetool.sw360.SW360TestUtils;
 import org.eclipse.sw360.antenna.model.artifact.facts.ArtifactClearingState;
 import org.eclipse.sw360.antenna.sw360.client.adapter.AttachmentUploadResult;
-import org.eclipse.sw360.antenna.sw360.client.adapter.SW360Connection;
-import org.eclipse.sw360.antenna.sw360.client.adapter.SW360ReleaseClientAdapter;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.releases.SW360Release;
 import org.eclipse.sw360.antenna.sw360.client.utils.SW360ClientException;
 import org.eclipse.sw360.antenna.sw360.workflow.generators.SW360UpdaterImpl;
@@ -33,7 +31,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -70,7 +70,7 @@ public class SW360UpdaterTest {
 
         String propertiesFilePath = Objects.requireNonNull(this.getClass().getClassLoader().getResource("compliancetool-updater.properties")).getPath();
         final Map<String, String> properties = ComplianceFeatureUtils.mapPropertiesFile(new File(propertiesFilePath));
-        initConfiguration(properties);
+        initConfiguration(properties, ArtifactClearingState.ClearingState.OSM_APPROVED);
 
         // the creation of the clearing document will failed one time and be successful one time
         final ClearingReportGenerator clearingReportGenerator = mock(ClearingReportGenerator.class);
@@ -87,10 +87,10 @@ public class SW360UpdaterTest {
         verify(updaterImpl, times(1)).artifactToReleaseWithUploads(any(), any(), anyMap());
     }
 
-    private void initConfiguration(Map<String, String> propertiesMap) throws IOException {
+    private void initConfiguration(Map<String, String> propertiesMap, ArtifactClearingState.ClearingState clearingState) throws IOException {
         Path csvFile = SW360TestUtils.writeCsvFile(folder,
                 "",
-                ArtifactClearingState.ClearingState.OSM_APPROVED,
+                clearingState,
                 "");
 
         SW360TestUtils.initConfigProperties(configurationMock, propertiesMap);
