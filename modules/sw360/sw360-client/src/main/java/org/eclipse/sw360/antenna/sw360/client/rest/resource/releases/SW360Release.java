@@ -115,10 +115,11 @@ public final class SW360Release extends SW360HalResource<SW360ReleaseLinkObjects
         return Optional.ofNullable(getEmbedded().getLicenses())
                 .map(lics -> lics
                         .stream()
+                        .filter(Objects::nonNull)
                         .map(SW360SparseLicense::getShortName)
                         .collect(Collectors.toSet()))
                 .orElse(Collections.emptySet());
-    }
+        }
 
     public SW360Release setMainLicenseIds(Set<String> mainLicenseIds) {
         if (!mainLicenseIds.isEmpty()) {

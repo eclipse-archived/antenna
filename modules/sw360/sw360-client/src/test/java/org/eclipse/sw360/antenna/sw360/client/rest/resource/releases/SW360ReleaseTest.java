@@ -15,15 +15,15 @@ import org.eclipse.sw360.antenna.sw360.client.rest.resource.LinkObjects;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.SW360ResourcesTestUtils;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360AttachmentType;
 import org.eclipse.sw360.antenna.sw360.client.rest.resource.attachments.SW360SparseAttachment;
+import org.eclipse.sw360.antenna.sw360.client.rest.resource.licenses.SW360SparseLicense;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.mockito.Mockito.mock;
 
 public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
@@ -200,5 +200,38 @@ public class SW360ReleaseTest extends SW360ResourcesTestUtils<SW360Release> {
         sw360Release1.mergeWith(sw360Release2);
 
         assertThat(sw360Release1.getEmbedded().getAttachments()).hasSize(2);
+    }
+
+    @Test
+    public void testReleaseGetMainLicenseWhenLicenseIsNull() {
+        SW360Release release = prepareItemWithoutOptionalInput();
+
+        SW360ReleaseEmbedded embedded = new SW360ReleaseEmbedded();
+        List<SW360SparseLicense> licenses = new ArrayList<>();
+        licenses.add(null);
+        embedded.setLicenses(licenses);
+
+        release.setEmbedded(embedded);
+
+        Set<String> emptyLicenses = release.getMainLicenseIds();
+
+        assertThat(emptyLicenses).isEqualTo(Collections.emptySet());
+    }
+
+    @Test
+    public void testReleaseGetMainLicenseWhenLicenseIsContained() {
+        SW360Release release = prepareItemWithoutOptionalInput();
+
+        SW360ReleaseEmbedded embedded = new SW360ReleaseEmbedded();
+        List<SW360SparseLicense> licenses = new ArrayList<>();
+        final String some_license = "some license";
+        licenses.add(new SW360SparseLicense().setShortName(some_license));
+        embedded.setLicenses(licenses);
+
+        release.setEmbedded(embedded);
+
+        Set<String> emptyLicenses = release.getMainLicenseIds();
+
+        assertThat(emptyLicenses).containsExactly(some_license);
     }
 }
