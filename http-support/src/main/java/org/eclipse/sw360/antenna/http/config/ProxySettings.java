@@ -26,16 +26,24 @@ import java.util.Objects;
 public final class ProxySettings {
     /**
      * Constant representing an undefined proxy host. If this value is set for
-     * the host, this is interpreted as if no proxy is to be used.
+     * the host, this is interpreted as the default proxy selector.
      */
-    public static final String UNDEFINED_HOST = "";
+    private static final String UNDEFINED_HOST = "";
 
     /**
      * Constant representing an undefined port.
      */
-    public static final int UNDEFINED_PORT = -1;
+    private static final int UNDEFINED_PORT = -1;
 
-    private static final ProxySettings EMPTY_SETTINGS = new ProxySettings(UNDEFINED_HOST, UNDEFINED_PORT);
+    /**
+     * Constant for an instance pointing to the default proxy selector.
+     */
+    private static final ProxySettings DEFAULT_SELECTOR_SETTINGS = new ProxySettings(UNDEFINED_HOST, 0);
+
+    /**
+     * Constant for an instance that disables proxy usage.
+     */
+    private static final ProxySettings NO_PROXY_SETTINGS = new ProxySettings(null, UNDEFINED_PORT);
 
     private final String proxyHost;
     private final int proxyPort;
@@ -59,7 +67,20 @@ public final class ProxySettings {
      * @return an instance with an empty proxy configuration
      */
     public static ProxySettings noProxy() {
-        return EMPTY_SETTINGS;
+        return NO_PROXY_SETTINGS;
+    }
+
+    /**
+     * Returns an instance of {@code ProxySettings} that indicates that the
+     * default {@code ProxySelector} (obtained via the
+     * {@code ProxySelector.getDefault()} method) should be queried for each
+     * request. In this mode, the usage of proxies can be enabled or disabled
+     * on a per URL basis.
+     *
+     * @return an instance enabling the default {@code ProxySelector}
+     */
+    public static ProxySettings defaultProxySelector() {
+        return DEFAULT_SELECTOR_SETTINGS;
     }
 
     /**
@@ -79,7 +100,9 @@ public final class ProxySettings {
      * configuration settings. In the configuration, it can be stated
      * explicitly whether a proxy is to be used or not. So it is possible that
      * valid settings for the proxy host and port are provided, but the
-     * resulting settings should nevertheless refer to an undefined proxy.
+     * resulting settings should nevertheless refer to an undefined proxy. If
+     * proxy usage is explicitly enabled, but no valid proxy host or port are
+     * configured, the resulting settings point to the default proxy selector.
      *
      * @param useProxy flag whether a proxy should be used
      * @param host     the proxy host (may be undefined)
@@ -87,17 +110,46 @@ public final class ProxySettings {
      * @return the new {@code ProxySettings} instance
      */
     public static ProxySettings fromConfig(boolean useProxy, String host, int port) {
-        return useProxy && settingsDefined(host, port) ? useProxy(host, port) : noProxy();
+        if (!useProxy) {
+            return noProxy();
+        }
+
+        return host != null && !UNDEFINED_HOST.equals(host) && port > 0 ? useProxy(host, port) :
+                defaultProxySelector();
     }
 
     /**
      * Returns a flag whether a proxy should be used.
      *
      * @return <strong>true</strong> if the proxy server defined by this object
-     * should be used; <strong>false</strong> for a direct internet connection
+     * should be used; <strong>false</strong> for a direct Internet connection
      */
     public boolean isProxyUse() {
-        return settingsDefined(proxyHost, proxyPort);
+        return getProxyHost() != null && getProxyPort() != UNDEFINED_PORT;
+    }
+
+    /**
+     * Returns a flag whether the default proxy selector should be used. In
+     * this mode, from the {@code ProxySelector.getDefault()} method the
+     * default proxy selector is obtained. This selector is then called for
+     * each request to obtain a proxy on a per URL basis.
+     *
+     * @return <strong>true</strong> if the default proxy selector should be
+     * used; <strong>false</strong> otherwise
+     */
+    public boolean isDefaultProxySelectorUse() {
+        return UNDEFINED_HOST.equals(getProxyHost());
+    }
+
+    /**
+     * Returns a flag whether a proxy should be completely disabled. In this
+     * mode, a direct Internet connection is enforced.
+     *
+     * @return <strong>true</strong> if direct Internet connections are used;
+     * <strong>false</strong> whether requests go via a proxy
+     */
+    public boolean isNoProxy() {
+        return !isProxyUse() && !isDefaultProxySelectorUse();
     }
 
     /**
@@ -147,15 +199,4 @@ public final class ProxySettings {
                 '}';
     }
 
-    /**
-     * Checks whether the settings for the proxy host and port are defined and
-     * valid.
-     *
-     * @param proxyHost the proxy host
-     * @param proxyPort the proxy port
-     * @return a flag whether the settings are defined
-     */
-    private static boolean settingsDefined(String proxyHost, int proxyPort) {
-        return proxyPort != UNDEFINED_PORT && proxyHost != null && !proxyHost.equals(UNDEFINED_HOST);
-    }
 }
