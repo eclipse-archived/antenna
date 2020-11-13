@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.ProxySelector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -55,6 +56,7 @@ public class HttpClientFactoryImplTest {
         HttpClientImpl client = createClient(config);
         assertThat(client.getMapper()).isSameAs(mapper);
         assertThat(client.getClient().proxy()).isNull();
+        assertThat(client.getClient().proxySelector()).isEqualTo(ProxySelector.getDefault());
     }
 
     @Test
@@ -73,6 +75,18 @@ public class HttpClientFactoryImplTest {
         assertThat(address.getHostName()).isEqualTo(host);
         assertThat(address.getPort()).isEqualTo(port);
         assertThat(proxy.type()).isEqualTo(Proxy.Type.HTTP);
+    }
+
+    @Test
+    public void testNewClientWithNoProxy() {
+        ObjectMapper mapper = mock(ObjectMapper.class);
+        HttpClientConfig config = HttpClientConfig.basicConfig()
+                .withObjectMapper(mapper)
+                .withProxySettings(ProxySettings.noProxy());
+
+        HttpClientImpl client = createClient(config);
+        assertThat(client.getMapper()).isSameAs(mapper);
+        assertThat(client.getClient().proxy()).isEqualTo(Proxy.NO_PROXY);
     }
 
     @Test

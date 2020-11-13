@@ -32,7 +32,7 @@ public final class HttpClientConfig {
      * Constant for the basic configuration instance.
      */
     private static final HttpClientConfig BASIC_CONFIG =
-            new HttpClientConfig(null, ProxySettings.noProxy());
+            new HttpClientConfig(null, ProxySettings.defaultProxySelector());
 
     /**
      * Stores a custom JSON object mapper. The field is null if no custom

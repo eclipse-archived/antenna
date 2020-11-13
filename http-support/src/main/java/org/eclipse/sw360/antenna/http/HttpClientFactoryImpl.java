@@ -43,10 +43,12 @@ public class HttpClientFactoryImpl implements HttpClientFactory {
      */
     private static OkHttpClient createClient(HttpClientConfig config) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        if (config.proxySettings().isProxyUse()) {
-            Proxy proxy = createProxy(config.proxySettings());
+        if (!config.proxySettings().isDefaultProxySelectorUse()) {
+            Proxy proxy = config.proxySettings().isNoProxy() ? Proxy.NO_PROXY :
+                    createProxy(config.proxySettings());
             builder.proxy(proxy);
         }
+
         if (unverifiedSSLCertificate()) {
             builder.hostnameVerifier((s, sslSession) -> true);
         }

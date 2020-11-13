@@ -23,7 +23,7 @@ public class HttpClientConfigTest {
         HttpClientConfig basicConfig = HttpClientConfig.basicConfig();
 
         assertThat(basicConfig.customObjectMapper()).isNotPresent();
-        assertThat(basicConfig.proxySettings().isProxyUse()).isFalse();
+        assertThat(basicConfig.proxySettings()).isEqualTo(ProxySettings.defaultProxySelector());
     }
 
     @Test
