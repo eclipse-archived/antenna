@@ -36,11 +36,11 @@ public class ProxySettingsTest {
 
     @Test
     public void testNoProxy() {
-        ProxySettings emptySettings = ProxySettings.noProxy();
+        ProxySettings settings = ProxySettings.noProxy();
 
-        assertThat(emptySettings.isProxyUse()).isFalse();
-        assertThat(emptySettings.getProxyHost()).isEqualTo(ProxySettings.UNDEFINED_HOST);
-        assertThat(emptySettings.getProxyPort()).isEqualTo(ProxySettings.UNDEFINED_PORT);
+        assertThat(settings.isNoProxy()).isTrue();
+        assertThat(settings.isProxyUse()).isFalse();
+        assertThat(settings.isDefaultProxySelectorUse()).isFalse();
     }
 
     @Test
@@ -51,17 +51,37 @@ public class ProxySettingsTest {
     }
 
     @Test
+    public void testDefaultProxySelector() {
+        ProxySettings settings = ProxySettings.defaultProxySelector();
+
+        assertThat(settings.isDefaultProxySelectorUse()).isTrue();
+        assertThat(settings.isProxyUse()).isTrue();
+        assertThat(settings.isNoProxy()).isFalse();
+    }
+
+    @Test
+    public void testDefaultProxySelectorReturnsACachedInstance() {
+        ProxySettings settings = ProxySettings.defaultProxySelector();
+
+        assertThat(ProxySettings.defaultProxySelector()).isSameAs(settings);
+    }
+
+    @Test
     public void testIsProxyUseNullHost() {
-        ProxySettings settings = ProxySettings.useProxy(null, -1);
+        ProxySettings settings = ProxySettings.useProxy(null, 0);
 
         assertThat(settings.isProxyUse()).isFalse();
+        assertThat(settings.isDefaultProxySelectorUse()).isFalse();
+        assertThat(settings.isNoProxy()).isTrue();
     }
 
     @Test
     public void testIsProxyUseUndefinedPort() {
-        ProxySettings settings = ProxySettings.useProxy(PROXY_HOST, ProxySettings.UNDEFINED_PORT);
+        ProxySettings settings = ProxySettings.useProxy(PROXY_HOST, -1);
 
         assertThat(settings.isProxyUse()).isFalse();
+        assertThat(settings.isDefaultProxySelectorUse()).isFalse();
+        assertThat(settings.isNoProxy()).isTrue();
     }
 
     @Test
@@ -71,6 +91,8 @@ public class ProxySettingsTest {
         assertThat(settings.getProxyHost()).isEqualTo(PROXY_HOST);
         assertThat(settings.getProxyPort()).isEqualTo(PROXY_PORT);
         assertThat(settings.isProxyUse()).isTrue();
+        assertThat(settings.isNoProxy()).isFalse();
+        assertThat(settings.isDefaultProxySelectorUse()).isFalse();
     }
 
     @Test
@@ -90,9 +112,23 @@ public class ProxySettingsTest {
     }
 
     @Test
-    public void testFromConfigUndefined() {
+    public void testFromConfigUndefinedHost() {
         ProxySettings settings = ProxySettings.fromConfig(true, null, 128);
 
-        assertThat(settings).isEqualTo(ProxySettings.noProxy());
+        assertThat(settings).isEqualTo(ProxySettings.defaultProxySelector());
+    }
+
+    @Test
+    public void testFromConfigEmptyHost() {
+        ProxySettings settings = ProxySettings.fromConfig(true, "", 128);
+
+        assertThat(settings).isEqualTo(ProxySettings.defaultProxySelector());
+    }
+
+    @Test
+    public void testFromConfigUndefinedPort() {
+        ProxySettings settings = ProxySettings.fromConfig(true, PROXY_HOST, 0);
+
+        assertThat(settings).isEqualTo(ProxySettings.defaultProxySelector());
     }
 }

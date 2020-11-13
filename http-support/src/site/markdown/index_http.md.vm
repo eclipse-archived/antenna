@@ -69,8 +69,17 @@ The properties that can be changed in a client configuration are the following:
   generate the payload for JSON requests.
 * Proxy settings: Requests can be routed through an HTTP proxy. For this 
   purpose, the _ProxySettings_ class exists that collects the properties of the
-  proxy server.
-* SSL Certificate Verification: Dynmically, ssl certificate verification can be
+  proxy server. There are multiple options:
+  * Users can configure a specific proxy to be used for all requests with the
+    `ProxySettings.useProxy()` method.
+  * Usage of a proxy can be disabled completely by using
+    `ProxySettings.noProxy()`.
+  * The selection of a proxy can be delegated to the default
+    [ProxySelector](https://docs.oracle.com/javase/8/docs/api/java/net/ProxySelector.html)
+    installed in the JVM by using `ProxySettings.defaultProxySelector()`. This
+    option is the default if the client configuration does not contain any
+    explicit settings.
+* SSL Certificate Verification: Dynamically, ssl certificate verification can be
   disabled by setting the system property _client.access.unverified_ to true.
 
 Below is a code fragment that shows the construction of an _HttpClientConfig_ 
