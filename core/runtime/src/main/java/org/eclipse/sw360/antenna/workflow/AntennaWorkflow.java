@@ -1,5 +1,6 @@
 /*
  * Copyright (c) Bosch Software Innovations GmbH 2017.
+ * Copyright (c) Bosch.IO GmbH 2021.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -46,6 +47,7 @@ public class AntennaWorkflow {
             Collection<WorkflowStepResult> sourcesResults = getArtifactsFromAnalyzers();
             ProcessingState processingState = new ProcessingState(sourcesResults);
             if (processingState.getArtifacts().isEmpty()) {
+                throwOnFailCausingResult(processingState);
                 LOGGER.warn("No analyzer yielded artifacts, skip all other workflow steps");
                 return processingState.getAttachables();
             }
@@ -58,10 +60,7 @@ public class AntennaWorkflow {
 
             generatedOutput.putAll(processingState.getAttachables());
 
-            if(!processingState.getFailCausingResults().isEmpty()) {
-                logFailCausingResults(processingState.getFailCausingResults());
-                throw new ExecutionException("Build failed due to fail causing results.");
-            }
+            throwOnFailCausingResult(processingState);
 
             if(postSinksHooks.size() > 0) {
                 LOGGER.debug("Post process output");
@@ -74,6 +73,13 @@ public class AntennaWorkflow {
             cleanup();
             LOGGER.debug("Clean up workflow done");
             LOGGER.debug("Workflow execution done");
+        }
+    }
+
+    private void throwOnFailCausingResult(ProcessingState processingState) {
+        if (!processingState.getFailCausingResults().isEmpty()) {
+            logFailCausingResults(processingState.getFailCausingResults());
+            throw new ExecutionException("Build failed due to fail causing results.");
         }
     }
 
