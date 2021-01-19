@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) Bosch Software Innovations GmbH 2018.
-# Copyright (c) Bosch.IO GmbH 2020.
+# Copyright (c) Bosch.IO GmbH 2020-2021.
 #
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v2.0
@@ -36,7 +36,7 @@ testFile() {
     if ! head -15 $file | grep -q 'Copyright (c)'; then
         echo "ERROR: No copyright remark found in $file"
         failure=true
-    elif ! head -15 $file | grep -q "^.*Copyright (c) .* $(date +%Y).*$"; then
+    elif ! head -15 $file | grep -q "^.*Copyright (c) .*$(date +%Y).*$"; then
         echo "ERROR: The year of your copyright remark is not correct in $file"
         failure=true
     fi
