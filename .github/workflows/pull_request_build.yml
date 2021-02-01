@@ -13,9 +13,9 @@ name: Antenna Build
 on:
   push:
     branches: [ master ]
-
   pull_request:
     branches: [ master ]
+    types: [ opened, reopened, synchronize, labeled, unlabeled ]
 
 jobs:
   build:
