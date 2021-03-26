@@ -291,6 +291,17 @@ public class JsonReader {
         return Optional.empty();
     }
 
+    private Optional<Coordinate> mapNpmCoordinates(JsonObject objCoordinates) {
+        if (objCoordinates != null) {
+            return Optional.of(new Coordinate(
+                    Coordinate.Types.NPM,
+                    (String) objCoordinates.get("packageId"),
+                    (String) objCoordinates.get(JSON_OBJ_VERSION)
+            ));
+        }
+        return Optional.empty();
+    }
+
     private Optional<Coordinate> mapCoordinates(JsonObject object) {
         JsonObject objComponentIdentifier = (JsonObject) object.get("componentIdentifier");
         if (objComponentIdentifier != null) {
@@ -300,6 +311,8 @@ public class JsonReader {
                     return mapJavaScriptCoordinates((JsonObject) objComponentIdentifier.get(JSON_OBJ_COORDINATES));
                 case "maven":
                     return mapMavenCoordinates((JsonObject) objComponentIdentifier.get(JSON_OBJ_COORDINATES));
+                case "npm":
+                    return mapNpmCoordinates((JsonObject) objComponentIdentifier.get(JSON_OBJ_COORDINATES));
                 case "nuget":
                     return mapDotNetCoordinates((JsonObject) objComponentIdentifier.get(JSON_OBJ_COORDINATES));
             }
