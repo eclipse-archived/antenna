@@ -13,9 +13,9 @@ name: Antenna Build
 on:
   push:
     branches: [ master ]
-
   pull_request:
     branches: [ master ]
+    types: [ opened, reopened, synchronize, labeled, unlabeled ]
 
 jobs:
   build:
@@ -52,13 +52,13 @@ jobs:
         java-version: 1.8
 
     - name: Build with Maven
-      run: mvn -B clean install -Pcoverage -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+      run: ./mvnw -B clean install -Pcoverage -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
     - name: Run SCA Analysis
-      run: mvn verify -DskipTests pmd:pmd checkstyle:checkstyle-aggregate spotbugs:check
+      run: ./mvnw verify -DskipTests pmd:pmd checkstyle:checkstyle-aggregate spotbugs:check
 
     - name: Run SonarCloud Analysis
-      run: mvn sonar:sonar -Dsonar.organization=sw360antenna -Dsonar.projectKey=sw360antenna -Dsonar.host.url=https://sonarcloud.io
+      run: ./mvnw sonar:sonar -Dsonar.organization=sw360antenna -Dsonar.projectKey=sw360antenna -Dsonar.host.url=https://sonarcloud.io
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: "e5dbb8f62a0b8bf02dbbcf4c9fd745c31b63f4b3"
@@ -66,7 +66,7 @@ jobs:
     - name: Run Example Project Test with JDK8
       run: |
         cd example-projects/example-project
-        mvn -B clean verify
+        ./mvnw -B clean verify
 
     - name: CLI Frontend Test
       run: bash .ci-scripts/test-ExampleTestProject-with-CLI.sh
@@ -91,4 +91,4 @@ jobs:
     - name: Test with JDK 11
       run: |
         cd example-projects/example-project
-        mvn -B clean verify -Dmaven.compiler.source=11 -Dmaven.compiler.target=11
+        ./mvnw -B clean verify -Dmaven.compiler.source=11 -Dmaven.compiler.target=11
